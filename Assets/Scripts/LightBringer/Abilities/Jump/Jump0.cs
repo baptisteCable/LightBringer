@@ -10,9 +10,16 @@ namespace LightBringer
         private const float c_height = 3f;
         private const float c_maxRange = 12f;
 
-        public Jump0(GameObject jumpLandingZonePrefab) :
-            base(c_coolDownDuration, c_channelingDuration, c_abilityDuration, jumpLandingZonePrefab)
+        private GameObject landingIndicatorPrefab;
+        private GameObject rangeIndicatorPrefab;
+        private GameObject landingIndicator;
+        private GameObject rangeIndicator;
+
+        public Jump0(GameObject landingIndicatorPrefab, GameObject rangeIndicatorPrefab) :
+            base(c_coolDownDuration, c_channelingDuration, c_abilityDuration)
         {
+            this.landingIndicatorPrefab = landingIndicatorPrefab;
+            this.rangeIndicatorPrefab = rangeIndicatorPrefab;
         }
 
         private void computeChannelingCurves(Vector3 playerPosition)
@@ -74,11 +81,18 @@ namespace LightBringer
             }
 
             this.targetPosition.y = 0f;
-            indicator.transform.position = this.targetPosition;
+            landingIndicator.transform.position = new Vector3(this.targetPosition.x, GameManager.projectorHeight, this.targetPosition.z);
         }
 
         public override void StartChanneling(Vector3 playerPosition)
         {
+            // Spaw the landing point
+            landingIndicator = Object.Instantiate(landingIndicatorPrefab);
+            rangeIndicator = Object.Instantiate(rangeIndicatorPrefab);
+            rangeIndicator.transform.position = new Vector3(playerPosition.x, GameManager.projectorHeight, playerPosition.z);
+            Projector rangeProj = rangeIndicator.GetComponent<Projector>();
+            rangeProj.orthographicSize = c_maxRange;
+
             computeChannelingCurves(playerPosition);
             coolDownRemaining = coolDownDuration;
             channelingTime = 0;
@@ -93,7 +107,8 @@ namespace LightBringer
 
         public override void End()
         {
-            Object.Destroy(indicator);
+            Object.Destroy(landingIndicator);
+            Object.Destroy(rangeIndicator);
         }
     }
 }

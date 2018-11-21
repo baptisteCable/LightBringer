@@ -392,7 +392,7 @@ GameObject:
   - component: {fileID: 188813861}
   - component: {fileID: 188813860}
   - component: {fileID: 188813859}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -807,7 +807,7 @@ GameObject:
   - component: {fileID: 739135038}
   - component: {fileID: 739135037}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -819,7 +819,7 @@ BoxCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 739135036}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: dca7b5ba2bb6e4240a87cd0514150efb, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -909,12 +909,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3ca60306fedb01148af6007d2db68340, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHP: 0
+  currentHP: 0
   moveSpeed: 8
   rotationSpeed: 8
   cam: {fileID: 534669904}
   characterContainer: {fileID: 14182431}
   gm: {fileID: 1045735883}
-  landingPointPrefab: {fileID: 1288580073321784, guid: 6d72c52a2b4a9064292005f3628dfbaf,
+  landingIndicatorPrefab: {fileID: 1901841423608326, guid: 2a3a60da8796c834b955894d3d8faa21,
+    type: 2}
+  rangeIndicatorPrefab: {fileID: 1653763609266002, guid: 977a9c4e12597e3438e20825fcdc44f0,
     type: 2}
   m_Animator: {fileID: 14182432}
 --- !u!4 &741779592
@@ -1283,6 +1287,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookingHeight: 0
+  camPositionFromPlayer: {x: 0, y: 0, z: 0}
+  staticCamera: 0
 --- !u!4 &1045735884
 Transform:
   m_ObjectHideFlags: 0
@@ -1869,6 +1875,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1900373947}
+  - component: {fileID: 1900373948}
   m_Layer: 0
   m_Name: ennemyKnight
   m_TagString: Untagged
@@ -1905,6 +1912,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!136 &1900373948
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1900373946}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1991286901
 GameObject:
   m_ObjectHideFlags: 0

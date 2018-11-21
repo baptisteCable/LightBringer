@@ -17,17 +17,14 @@ namespace LightBringer
         public AnimationCurve jumpCurveX { get; set; }
         public AnimationCurve jumpCurveY { get; set; }
         public AnimationCurve jumpCurveZ { get; set; }
-        public GameObject indicatorPrefab { get; set; }
-        public GameObject indicator { get; set; }
         public Vector3 targetPosition;
 
-        public Ability(float coolDownDuration, float channelingDuration, float abilityDuration, GameObject indicatorPrefab)
+        public Ability(float coolDownDuration, float channelingDuration, float abilityDuration)
         {
             coolDownUp = true;
             this.coolDownDuration = coolDownDuration;
             this.channelingDuration = channelingDuration;
             this.abilityDuration = abilityDuration;
-            this.indicatorPrefab = indicatorPrefab;
         }
 
         public abstract Vector3 GetChannelingPosition();

@@ -4,6 +4,10 @@ using UnityEngine;
 using LightBringer;
 
 public class Character : MonoBehaviour {
+    // status
+    public float maxHP;
+    public float currentHP;
+
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
 
@@ -16,7 +20,8 @@ public class Character : MonoBehaviour {
     public Transform characterContainer;
     public GameManager gm;
 
-    public GameObject landingPointPrefab;
+    public GameObject landingIndicatorPrefab;
+    public GameObject rangeIndicatorPrefab;
 
     private Vector3 lookingPoint;
 
@@ -32,25 +37,22 @@ public class Character : MonoBehaviour {
     private int currentAbility = -1;
     private int currentChanneling = -1;
 
-    private Jump0[] abilities;
+    private Ability[] abilities;
 
     private bool physicsApplies = false;
-
-    private Vector3 cameraBasePosition;
 
     public Animator m_Animator;
     private Rigidbody rb;
 
     // Use this for initialization
     void Start () {
-        cameraBasePosition = cam.transform.position - transform.position;
         rb = GetComponent<Rigidbody>();
 
         // Abilities
-        abilities = new Jump0[1];
+        abilities = new Ability[1];
 
         // jump ability[0]
-        abilities[0] = new Jump0(landingPointPrefab);
+        abilities[0] = new Jump0(landingIndicatorPrefab, rangeIndicatorPrefab);
 
 
 }
@@ -114,11 +116,23 @@ public class Character : MonoBehaviour {
             // Smoothly rotate towards the target point.
             characterContainer.rotation = Quaternion.Slerp(characterContainer.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
-            cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
-                    transform.position.x + cameraBasePosition.x + (lookingPoint.x - transform.position.x) * .3f,
-                    transform.position.y + cameraBasePosition.y,
-                    transform.position.z + cameraBasePosition.z + (lookingPoint.z - transform.position.z) * .3f
-                ), Time.deltaTime * 8f);            
+            if (gm.staticCamera)
+            {
+                cam.transform.position = new Vector3(
+                        transform.position.x + gm.camPositionFromPlayer.x,
+                        gm.camPositionFromPlayer.y,
+                        transform.position.z + gm.camPositionFromPlayer.z
+                    );
+            }
+            else
+            {
+                cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
+                        transform.position.x + gm.camPositionFromPlayer.x + (lookingPoint.x - transform.position.x) * .3f,
+                        gm.camPositionFromPlayer.y,
+                        transform.position.z + gm.camPositionFromPlayer.z + (lookingPoint.z - transform.position.z) * .3f
+                    ), Time.deltaTime * 8f);
+            }
+                 
         }     
     }
 
@@ -152,9 +166,6 @@ public class Character : MonoBehaviour {
     {
         // animation
         m_Animator.Play("JumpChanneling");
-
-        // Spaw the landing point
-        abilities[0].indicator = Instantiate(abilities[0].indicatorPrefab);
 
         abilities[0].StartChanneling(transform.position);
 
@@ -205,17 +216,8 @@ public class Character : MonoBehaviour {
 }
 
 /*
- * Empêcher de glisser au sol (bool grounded ?). Désactivé sur les mouvements forcés ? Variable physicsApplying ?
- * 
- * Glisser le long des murs inclinés
- * 
  * Compétences, combat, CD des compétences
  * Mouvement réduit pendant la canalisation, possibilité de bouger encore le curseur.
  * Compétence peut être annulée. int pour canalisation avec le numéro de la capacité canalisée.
  * 
- * Couche pour l'affichage des marqueurs de compétence
- * 
- * Option caméra fixe
- * 
- * Git
  * */
