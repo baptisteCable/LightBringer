@@ -1,0 +1,241 @@
+fileFormatVersion: 2
+guid: 75316747eb84c164c81ef2c6bf61eb87
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Armature
+    100002: Cable1
+    100004: Cable2
+    100006: Cable3
+    100008: Cable4
+    100010: Chest
+    100012: ControlerShield
+    100014: ControlerShield_end
+    100016: ControlerSpear
+    100018: ControlerSpear_end
+    100020: Dress
+    100022: Dress 1
+    100024: Elbow.L
+    100026: Elbow.L.001
+    100028: Elbow.L.002
+    100030: Elbow.L.002_end
+    100032: Elbow.R
+    100034: //RootNode
+    100036: Hand.R
+    100038: Hand.R.001
+    100040: Hand.R.001_end
+    100042: Helmet
+    100044: Helmet 1
+    100046: Helmet_end
+    100048: Shield
+    100050: Shoulder.L
+    100052: Shoulder.R
+    100054: Spear.D
+    100056: Spear.L
+    100058: Spear.R
+    100060: Spear.U
+    100062: Sphere
+    100064: SphereChest
+    100066: SphereElbow.L
+    100068: SphereElbow.R
+    100070: SphereFeet
+    100072: SphereHand.R
+    100074: SphereShoulder.L
+    100076: SphereShoulder.R
+    400000: Armature
+    400002: Cable1
+    400004: Cable2
+    400006: Cable3
+    400008: Cable4
+    400010: Chest
+    400012: ControlerShield
+    400014: ControlerShield_end
+    400016: ControlerSpear
+    400018: ControlerSpear_end
+    400020: Dress
+    400022: Dress 1
+    400024: Elbow.L
+    400026: Elbow.L.001
+    400028: Elbow.L.002
+    400030: Elbow.L.002_end
+    400032: Elbow.R
+    400034: //RootNode
+    400036: Hand.R
+    400038: Hand.R.001
+    400040: Hand.R.001_end
+    400042: Helmet
+    400044: Helmet 1
+    400046: Helmet_end
+    400048: Shield
+    400050: Shoulder.L
+    400052: Shoulder.R
+    400054: Spear.D
+    400056: Spear.L
+    400058: Spear.R
+    400060: Spear.U
+    400062: Sphere
+    400064: SphereChest
+    400066: SphereElbow.L
+    400068: SphereElbow.R
+    400070: SphereFeet
+    400072: SphereHand.R
+    400074: SphereShoulder.L
+    400076: SphereShoulder.R
+    2100000: No Name
+    2300000: SphereFeet
+    3300000: SphereFeet
+    4300000: Spear.U
+    4300002: Cable4
+    4300004: Spear.L
+    4300006: Spear.D
+    4300008: Sphere
+    4300010: Helmet
+    4300012: Dress
+    4300014: SphereChest
+    4300016: Cable3
+    4300018: Shield
+    4300020: SphereShoulder.L
+    4300022: SphereElbow.L
+    4300024: SphereShoulder.R
+    4300026: SphereElbow.R
+    4300028: SphereHand.R
+    4300030: Spear.R
+    4300032: Cable1
+    4300034: Cable2
+    4300036: SphereFeet
+    7400000: Armature|Idle
+    9500000: //RootNode
+    13700000: Cable1
+    13700002: Cable2
+    13700004: Cable3
+    13700006: Cable4
+    13700008: Dress
+    13700010: Helmet
+    13700012: Shield
+    13700014: Spear.D
+    13700016: Spear.L
+    13700018: Spear.R
+    13700020: Spear.U
+    13700022: Sphere
+    13700024: SphereChest
+    13700026: SphereElbow.L
+    13700028: SphereElbow.R
+    13700030: SphereHand.R
+    13700032: SphereShoulder.L
+    13700034: SphereShoulder.R
+    2186277476908879412: ImportLogs
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: No Name
+    second: {fileID: 2100000, guid: 012600ab396b27444b373a5b310c81b8, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Armature|Idle
+      takeName: Armature|Idle
+      firstFrame: 0
+      lastFrame: 19
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

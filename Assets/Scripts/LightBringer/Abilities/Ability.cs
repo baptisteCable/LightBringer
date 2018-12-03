@@ -11,33 +11,30 @@ namespace LightBringer
         public float abilityTime { get; set; }
         public float channelingDuration { get; set; }
         public float channelingTime { get; set; }
-        public AnimationCurve channelingCurveX { get; set; }
-        public AnimationCurve channelingCurveY { get; set; }
-        public AnimationCurve channelingCurveZ { get; set; }
-        public AnimationCurve jumpCurveX { get; set; }
-        public AnimationCurve jumpCurveY { get; set; }
-        public AnimationCurve jumpCurveZ { get; set; }
-        public Vector3 targetPosition;
+        public bool channelingCancellable { get; set; }
+        protected Character character;
 
-        public Ability(float coolDownDuration, float channelingDuration, float abilityDuration)
+        public Ability(float coolDownDuration, float channelingDuration, float abilityDuration, Character character, bool channelingCancellable)
         {
             coolDownUp = true;
             this.coolDownDuration = coolDownDuration;
             this.channelingDuration = channelingDuration;
             this.abilityDuration = abilityDuration;
+            this.character = character;
+            this.channelingCancellable = channelingCancellable;
         }
 
-        public abstract Vector3 GetChannelingPosition();
+        public abstract void StartChanneling();
 
-        public abstract Vector3 GetAbilityPosition();
+        public abstract void Channel();
 
-        public abstract void ModifyTarget(Vector3 playerPosition, Vector3 targetPosition);
+        public abstract void StartAbility();
 
-        public abstract void StartChanneling(Vector3 playerPosition);
-
-        public abstract void StartAbility(Vector3 playerPosition, Vector3 targetPosition);
+        public abstract void DoAbility();
 
         public abstract void End();
+
+        public abstract void CancelChanelling();
     }
 }
 

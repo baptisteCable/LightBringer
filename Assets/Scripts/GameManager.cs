@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour {
     public Plane lookingPlane;
     public static float projectorHeight = 8f;
     public Vector3 camPositionFromPlayer;
-    public bool staticCamera = false;
+    public bool staticCamera = true;
 
 	// Use this for initialization
 	void Start () {

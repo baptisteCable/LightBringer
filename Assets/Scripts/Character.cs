@@ -11,11 +11,13 @@ public class Character : MonoBehaviour {
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
 
+    // inputs
     private string inputTop = "z";
     private string inputBottom = "s";
     private string inputLeft = "q";
     private string inputRight = "d";
 
+    // game objects
     public Camera cam;
     public Transform characterContainer;
     public GameManager gm;
@@ -23,7 +25,14 @@ public class Character : MonoBehaviour {
     public GameObject landingIndicatorPrefab;
     public GameObject rangeIndicatorPrefab;
 
-    private Vector3 lookingPoint;
+    public Animator m_Animator;
+    private Rigidbody rb;
+
+    // misc
+    public Vector3 lookingPoint;
+    private bool physicsApplies = false;
+    public bool canRotate;
+
 
     /* Abilities :
      *      0: None
@@ -34,27 +43,23 @@ public class Character : MonoBehaviour {
      *      Step 2: Channeling. Can be cancelled. Target can be modified. Channeling animation.
      *      Step 3: Casting. When channeling ends, cast the ability. Can't be cancelled manually. 
      */
-    private int currentAbility = -1;
-    private int currentChanneling = -1;
-
+    public Ability currentAbility = null;
+    public Ability currentChanneling = null;
     private Ability[] abilities;
 
-    private bool physicsApplies = false;
-
-    public Animator m_Animator;
-    private Rigidbody rb;
-
+   
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
 
         // Abilities
-        abilities = new Ability[1];
+        abilities = new Ability[2];
 
         // jump ability[0]
-        abilities[0] = new Jump0(landingIndicatorPrefab, rangeIndicatorPrefab);
+        abilities[0] = new Jump0(this);
+        abilities[1] = new Attack1(this);
 
-
+        canRotate = true;
 }
 
     // Update is called once per frame
@@ -64,19 +69,34 @@ public class Character : MonoBehaviour {
         lookAtMouse();
 
         // jump
-        if (Input.GetKey(KeyCode.Space) && currentAbility == -1 && abilities[0].coolDownUp)
+        if (Input.GetKey(KeyCode.Space) && currentAbility == null && abilities[0].coolDownUp)
         {
-            Jump();
+            if (currentChanneling != null)
+            {
+                currentChanneling.CancelChanelling();
+            }
+
+            // animation
+            m_Animator.Play("JumpChanneling");
+            abilities[0].StartChanneling();
         }
 
-        if (currentChanneling == 0)
+        // main attack
+        if (Input.GetMouseButton(0) && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
         {
-            ChannelingJump();
+            abilities[1].StartChanneling();
         }
 
-        if (currentAbility == 0)
+        // Channel
+        if (currentChanneling != null)
         {
-            Jumping();
+            currentChanneling.Channel();
+        }
+
+        // Do ability
+        if (currentAbility != null)
+        {
+            currentAbility.DoAbility();
         }
 
         // cooldowns
@@ -91,16 +111,12 @@ public class Character : MonoBehaviour {
         }        
 	}
 
-    private void LateUpdate()
-    {
-        
-    }
-
     private void FixedUpdate()
     {
         move();
     }
 
+    // look at mouse and camera positionning procedure
     void lookAtMouse()
     {
         Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
@@ -110,12 +126,15 @@ public class Character : MonoBehaviour {
         if (gm.lookingPlane.Raycast(mouseRay, out distance))
         {
             lookingPoint = mouseRay.GetPoint(distance);
-           
-            
-            var targetRotation = Quaternion.LookRotation(lookingPoint - new Vector3 (transform.position.x, gm.lookingHeight, transform.position.z));
-            // Smoothly rotate towards the target point.
-            characterContainer.rotation = Quaternion.Slerp(characterContainer.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
+            if (canRotate)
+            {
+                // Smoothly rotate towards the target point.
+                var targetRotation = Quaternion.LookRotation(lookingPoint - new Vector3(transform.position.x, gm.lookingHeight, transform.position.z));
+                characterContainer.rotation = Quaternion.Slerp(characterContainer.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            }
+
+            // camera positionning
             if (gm.staticCamera)
             {
                 cam.transform.position = new Vector3(
@@ -136,10 +155,11 @@ public class Character : MonoBehaviour {
         }     
     }
 
+    // move procedure
     void move()
     {
         // Moving
-        if (currentAbility != 0 && (Input.GetKey(inputTop) || Input.GetKey(inputBottom) || Input.GetKey(inputLeft) || Input.GetKey(inputRight)))
+        if (currentAbility == null && (Input.GetKey(inputTop) || Input.GetKey(inputBottom) || Input.GetKey(inputLeft) || Input.GetKey(inputRight)))
         {
             Vector3 direction = new Vector3(
                     (Input.GetKey(inputTop) ? 1f : 0f) - (Input.GetKey(inputBottom) ? 1f : 0f)
@@ -162,56 +182,15 @@ public class Character : MonoBehaviour {
         }
     }
 
-    void Jump()
-    {
-        // animation
-        m_Animator.Play("JumpChanneling");
-
-        abilities[0].StartChanneling(transform.position);
-
-        currentChanneling = 0;
-    }
-
-    void ChannelingJump()
-    {
-        abilities[0].channelingTime += Time.deltaTime;
-
-        abilities[0].ModifyTarget(transform.position, lookingPoint);
-
-        if (abilities[0].channelingTime > abilities[0].channelingDuration)
-        {
-            currentChanneling = -1;
-            currentAbility = 0;
-            abilities[0].StartAbility(transform.position, lookingPoint);
-        }
-        else
-        {
-            transform.position = abilities[0].GetChannelingPosition();
-        }
-    }
-
-    void Jumping()
-    {
-        abilities[0].abilityTime += Time.deltaTime;
-        if (abilities[0].abilityTime > abilities[0].abilityDuration)
-        {
-            currentAbility = -1;
-            abilities[0].End();
-        }
-        else
-        {
-            transform.position = abilities[0].GetAbilityPosition();
-        }
-        
-    }
-    
     private void OnGUI()
     {
         GUI.contentColor = Color.black;
         GUILayout.BeginArea(new Rect(20, 20, 250, 120));
         GUILayout.Label("Position sur le plan: " + (lookingPoint ));
         GUILayout.Label("Position camera: " + cam.transform.position);
+        GUILayout.Label("Static: " + gm.staticCamera);
         GUILayout.EndArea();
+        
     }
 }
 
