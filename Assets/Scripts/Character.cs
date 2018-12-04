@@ -25,7 +25,7 @@ public class Character : MonoBehaviour {
     public GameObject landingIndicatorPrefab;
     public GameObject rangeIndicatorPrefab;
 
-    public Animator m_Animator;
+    public Animator animator;
     private Rigidbody rb;
 
     // misc
@@ -77,7 +77,7 @@ public class Character : MonoBehaviour {
             }
 
             // animation
-            m_Animator.Play("JumpChanneling");
+            animator.Play("JumpChanneling");
             abilities[0].StartChanneling();
         }
 
@@ -170,18 +170,18 @@ public class Character : MonoBehaviour {
                 );
 
             rb.velocity = (direction.normalized * moveSpeed);
-            m_Animator.SetBool("isMoving", true);
+            animator.SetBool("isMoving", true);
         }
         else
         {
-            m_Animator.SetBool("isMoving", false);
+            animator.SetBool("isMoving", false);
             if (!physicsApplies)
             {
                 rb.velocity = new Vector3(0f, 0f, 0f);
             }
         }
     }
-
+    /*
     private void OnGUI()
     {
         GUI.contentColor = Color.black;
@@ -191,12 +191,15 @@ public class Character : MonoBehaviour {
         GUILayout.Label("Static: " + gm.staticCamera);
         GUILayout.EndArea();
         
-    }
+    }*/
 }
 
 /*
- * Compétences, combat, CD des compétences
+ * Attack type l'épée touche. Attaque de rayon. Attaque de projectile.
+ * 
+ * Saut : problème si souris trop éloignée
+ * 
  * Mouvement réduit pendant la canalisation, possibilité de bouger encore le curseur.
- * Compétence peut être annulée. int pour canalisation avec le numéro de la capacité canalisée.
+ * Compétence peut être annulée.
  * 
  * */

@@ -76,7 +76,7 @@ namespace LightBringer
             }
             else
             {
-                targetPosition = character.gameObject.transform.position + (targetPosition - character.gameObject.transform.position).normalized * c_maxRange;
+                targetPosition = character.gameObject.transform.position + (character.lookingPoint - character.gameObject.transform.position).normalized * c_maxRange;
             }
 
             targetPosition.y = 0f;
