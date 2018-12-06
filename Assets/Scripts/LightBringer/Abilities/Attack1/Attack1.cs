@@ -4,13 +4,15 @@ namespace LightBringer
 {
     public class Attack1 : Ability
     {
-        private const float c_coolDownDuration = .5f;
+        private const float c_coolDownDuration = .01f;
         private const float c_abilityDuration = .1f;
         private const float c_channelingDuration = .4f;
         private const float c_height = 3f;
         private const float c_maxRange = 1.5f;
         private const bool c_channelingCancellable = true;
 
+        private const float c_channelingMoveMultiplicator = .7f;
+        private const float c_doingMoveMultiplicator = .3f;
         private const float c_timeBeforeDamage = .05f;
 
         private GameObject abilityTriggerPrefab;
@@ -27,9 +29,9 @@ namespace LightBringer
         
         public override void StartChanneling()
         {
-            coolDownRemaining = coolDownDuration;
             channelingTime = 0;
             character.currentChanneling = this;
+            character.abilityMoveMultiplicator = c_channelingMoveMultiplicator;
             character.animator.Play("ChannelAttack1");
         }
 
@@ -50,11 +52,12 @@ namespace LightBringer
 
             // No more rotation
             character.canRotate = false;
-
+            
             triggerCreated = false;
 
             character.currentAbility = this;
             character.currentChanneling = null;
+            character.abilityMoveMultiplicator = c_doingMoveMultiplicator;
             abilityTime = 0;
         }
 
@@ -80,13 +83,15 @@ namespace LightBringer
 
         public override void End()
         {
-            // Rotations back
+            // movement back
             character.canRotate = true;
+            character.abilityMoveMultiplicator = 1f;
 
             // détruire le trigger
             Object.Destroy(abilityTrigger);
 
             character.currentAbility = null;
+            coolDownRemaining = coolDownDuration;
 
             // animation
             character.animator.SetBool("startAttack1", false);
@@ -97,7 +102,7 @@ namespace LightBringer
             character.currentChanneling = null;
 
             // animation
-            character.animator.SetBool("startAttack1", false);
+            character.animator.Play("NoAction");
         }
     }
 }

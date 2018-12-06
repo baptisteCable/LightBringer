@@ -4,7 +4,7 @@ namespace LightBringer
 {
     public class Jump0 : Ability
     {
-        private const float c_coolDownDuration = 5f;
+        private const float c_coolDownDuration = 4f;
         private const float c_abilityDuration = .5f;
         private const float c_channelingDuration = .5f;
         private const float c_height = 3f;
@@ -99,8 +99,11 @@ namespace LightBringer
             rangeProj.orthographicSize = c_maxRange;
 
             computeChannelingCurves(character.gameObject.transform.position);
-            coolDownRemaining = coolDownDuration;
             channelingTime = 0;
+
+            // animation
+            character.animator.Play("JumpChanneling");
+
         }
 
         public override void Channel()
@@ -155,6 +158,7 @@ namespace LightBringer
             Object.Destroy(landingIndicator);
             Object.Destroy(rangeIndicator);
             character.currentAbility = null;
+            coolDownRemaining = coolDownDuration;
         }
 
         public override void CancelChanelling()

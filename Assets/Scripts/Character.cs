@@ -7,6 +7,8 @@ public class Character : MonoBehaviour {
     // status
     public float maxHP;
     public float currentHP;
+    public float maxMP;
+    public float currentMP;
 
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
@@ -16,6 +18,7 @@ public class Character : MonoBehaviour {
     private string inputBottom = "s";
     private string inputLeft = "q";
     private string inputRight = "d";
+    private string inputCancel = "c";
 
     // game objects
     public Camera cam;
@@ -32,6 +35,8 @@ public class Character : MonoBehaviour {
     public Vector3 lookingPoint;
     private bool physicsApplies = false;
     public bool canRotate;
+    public bool abilityBlockingMove;
+    public float abilityMoveMultiplicator;
 
 
     /* Abilities :
@@ -45,7 +50,7 @@ public class Character : MonoBehaviour {
      */
     public Ability currentAbility = null;
     public Ability currentChanneling = null;
-    private Ability[] abilities;
+    public Ability[] abilities;
 
    
     // Use this for initialization
@@ -60,6 +65,8 @@ public class Character : MonoBehaviour {
         abilities[1] = new Attack1(this);
 
         canRotate = true;
+        abilityBlockingMove = false;
+        abilityMoveMultiplicator = 1f;
 }
 
     // Update is called once per frame
@@ -73,18 +80,26 @@ public class Character : MonoBehaviour {
         {
             if (currentChanneling != null)
             {
-                currentChanneling.CancelChanelling();
+                if (currentChanneling.channelingCancellable)
+                    currentChanneling.CancelChanelling();
+            }
+            else
+            {
+                abilities[0].StartChanneling();
             }
 
-            // animation
-            animator.Play("JumpChanneling");
-            abilities[0].StartChanneling();
         }
 
         // main attack
         if (Input.GetMouseButton(0) && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
         {
             abilities[1].StartChanneling();
+        }
+
+        // Cancel
+        if (Input.GetKeyDown(inputCancel) && currentChanneling != null && currentChanneling.channelingCancellable)
+        {
+            currentChanneling.CancelChanelling();
         }
 
         // Channel
@@ -159,7 +174,7 @@ public class Character : MonoBehaviour {
     void move()
     {
         // Moving
-        if (currentAbility == null && (Input.GetKey(inputTop) || Input.GetKey(inputBottom) || Input.GetKey(inputLeft) || Input.GetKey(inputRight)))
+        if (!abilityBlockingMove && (Input.GetKey(inputTop) || Input.GetKey(inputBottom) || Input.GetKey(inputLeft) || Input.GetKey(inputRight)))
         {
             Vector3 direction = new Vector3(
                     (Input.GetKey(inputTop) ? 1f : 0f) - (Input.GetKey(inputBottom) ? 1f : 0f)
@@ -169,7 +184,7 @@ public class Character : MonoBehaviour {
                     - (Input.GetKey(inputRight) ? 1f : 0f) + (Input.GetKey(inputLeft) ? 1f : 0f)
                 );
 
-            rb.velocity = (direction.normalized * moveSpeed);
+            rb.velocity = (direction.normalized * moveSpeed * abilityMoveMultiplicator);
             animator.SetBool("isMoving", true);
         }
         else
@@ -197,9 +212,11 @@ public class Character : MonoBehaviour {
 /*
  * Attack type l'épée touche. Attaque de rayon. Attaque de projectile.
  * 
- * Saut : problème si souris trop éloignée
- * 
  * Mouvement réduit pendant la canalisation, possibilité de bouger encore le curseur.
  * Compétence peut être annulée.
+ * 
+ * UI des compétences
+ * 
+ * IA ennemi
  * 
  * */

@@ -22,7 +22,6 @@ public class DamageController : MonoBehaviour {
 	
 	public void TakeDamage(float amount)
     {
-        Debug.Log("L'ennemi a encaissé " + amount.ToString() + " points de dégâts.");
         currentHP -= amount;
     }
 }
