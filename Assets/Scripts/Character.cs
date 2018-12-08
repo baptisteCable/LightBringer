@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using LightBringer;
 
 public class Character : MonoBehaviour {
@@ -13,20 +11,10 @@ public class Character : MonoBehaviour {
     public float moveSpeed = 5f;
     public float rotationSpeed = 5f;
 
-    // inputs
-    private string inputTop = "z";
-    private string inputBottom = "s";
-    private string inputLeft = "q";
-    private string inputRight = "d";
-    private string inputCancel = "c";
-
     // game objects
     public Camera cam;
     public Transform characterContainer;
     public GameManager gm;
-
-    public GameObject landingIndicatorPrefab;
-    public GameObject rangeIndicatorPrefab;
 
     public Animator animator;
     private Rigidbody rb;
@@ -37,6 +25,10 @@ public class Character : MonoBehaviour {
     public bool canRotate;
     public bool abilityBlockingMove;
     public float abilityMoveMultiplicator;
+
+    // body parts
+    public Transform weaponSlotR;
+    public GameObject weaponR;
 
 
     /* Abilities :
@@ -57,17 +49,24 @@ public class Character : MonoBehaviour {
     void Start () {
         rb = GetComponent<Rigidbody>();
 
+        // TEST
+        GameObject sword = Resources.Load("Weapons/Sword") as GameObject;
+        weaponR = Instantiate(sword, weaponSlotR);
+        
         // Abilities
-        abilities = new Ability[2];
+        abilities = new Ability[3];
 
         // jump ability[0]
         abilities[0] = new Jump0(this);
-        abilities[1] = new Attack1(this);
+        abilities[1] = new MeleeAttack1(this, weaponR);
+        abilities[2] = new MeleeAoE1(this);
 
         canRotate = true;
         abilityBlockingMove = false;
         abilityMoveMultiplicator = 1f;
-}
+
+        
+    }
 
     // Update is called once per frame
     void Update () {
@@ -76,12 +75,13 @@ public class Character : MonoBehaviour {
         lookAtMouse();
 
         // jump
-        if (Input.GetKey(KeyCode.Space) && currentAbility == null && abilities[0].coolDownUp)
+        if (Input.GetButtonDown("Jump") && currentAbility == null && abilities[0].coolDownUp)
         {
             if (currentChanneling != null)
             {
                 if (currentChanneling.channelingCancellable)
                     currentChanneling.CancelChanelling();
+                    abilities[0].StartChanneling();
             }
             else
             {
@@ -91,15 +91,21 @@ public class Character : MonoBehaviour {
         }
 
         // main attack
-        if (Input.GetMouseButton(0) && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
+        if (Input.GetButton("Fire1") && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
         {
             abilities[1].StartChanneling();
         }
 
-        // Cancel
-        if (Input.GetKeyDown(inputCancel) && currentChanneling != null && currentChanneling.channelingCancellable)
+        // sword attack
+        if (Input.GetButton("Fire2") && currentAbility == null && currentChanneling == null && abilities[2].coolDownUp)
         {
-            currentChanneling.CancelChanelling();
+            abilities[2].StartChanneling();
+        }
+
+        // Cancel
+        if (Input.GetButtonDown("CancelChanneling") && currentChanneling != null && currentChanneling.channelingCancellable)
+        {
+            currentChanneling.CancelChanelling(); 
         }
 
         // Channel
@@ -174,15 +180,11 @@ public class Character : MonoBehaviour {
     void move()
     {
         // Moving
-        if (!abilityBlockingMove && (Input.GetKey(inputTop) || Input.GetKey(inputBottom) || Input.GetKey(inputLeft) || Input.GetKey(inputRight)))
+        float v = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
+        if (!abilityBlockingMove && (v * v + h * h) > .01f)
         {
-            Vector3 direction = new Vector3(
-                    (Input.GetKey(inputTop) ? 1f : 0f) - (Input.GetKey(inputBottom) ? 1f : 0f)
-                    + (Input.GetKey(inputRight) ? 1f : 0f) - (Input.GetKey(inputLeft) ? 1f : 0f),
-                    0,
-                    (Input.GetKey(inputTop) ? 1f : 0f) - (Input.GetKey(inputBottom) ? 1f : 0f)
-                    - (Input.GetKey(inputRight) ? 1f : 0f) + (Input.GetKey(inputLeft) ? 1f : 0f)
-                );
+            Vector3 direction = new Vector3(v + h, 0, v - h);
 
             rb.velocity = (direction.normalized * moveSpeed * abilityMoveMultiplicator);
             animator.SetBool("isMoving", true);
@@ -192,7 +194,7 @@ public class Character : MonoBehaviour {
             animator.SetBool("isMoving", false);
             if (!physicsApplies)
             {
-                rb.velocity = new Vector3(0f, 0f, 0f);
+                rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
             }
         }
     }
@@ -201,8 +203,8 @@ public class Character : MonoBehaviour {
     {
         GUI.contentColor = Color.black;
         GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-        GUILayout.Label("Position sur le plan: " + (lookingPoint ));
-        GUILayout.Label("Position camera: " + cam.transform.position);
+        GUILayout.Label("Fire1: " + Input.GetAxis("Fire1"));
+        GUILayout.Label("Vertical: " + Input.GetAxis("Vertical"));
         GUILayout.Label("Static: " + gm.staticCamera);
         GUILayout.EndArea();
         
@@ -210,12 +212,9 @@ public class Character : MonoBehaviour {
 }
 
 /*
+ * Barre de statut qui suit le personnage (world canvas)
+ * 
  * Attack type l'épée touche. Attaque de rayon. Attaque de projectile.
- * 
- * Mouvement réduit pendant la canalisation, possibilité de bouger encore le curseur.
- * Compétence peut être annulée.
- * 
- * UI des compétences
  * 
  * IA ennemi
  * 

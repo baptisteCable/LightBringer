@@ -4,7 +4,6 @@ namespace LightBringer
 {
     public class AbilityTrigger : MonoBehaviour
     {
-
         protected Mesh mesh;
         protected MeshCollider meshCollider;
 

@@ -44,9 +44,9 @@ public class AbilityImage : MonoBehaviour
             channelingImage.gameObject.SetActive(false);
         }
 
-        if (character.currentChanneling == character.abilities[abilityIndex] || character.currentAbility == character.abilities[abilityIndex])
+        if (character.currentAbility == character.abilities[abilityIndex])
         {
-            abilityImage.color = Color.cyan;
+            abilityImage.color = Color.red;
         }
         else
         {

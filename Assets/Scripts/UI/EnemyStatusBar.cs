@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class EnemyStatusBar : MonoBehaviour {
 
-    private const float c_timeBeforeDelete = .5f;
+    private const float c_timeBeforeDelete = 1f;
 
     public GameObject enemy;
     public float displayHeight;
@@ -12,8 +10,9 @@ public class EnemyStatusBar : MonoBehaviour {
     private UnityEngine.UI.Image deletedImage;
     private DamageController damageController;
 
-    private float timeBeforeDelete = -1f;
     private bool deleting = false;
+    private float timeSinceDmg;
+    private float lastHP;
 
     private void Awake()
     {
@@ -26,30 +25,37 @@ public class EnemyStatusBar : MonoBehaviour {
         damageController = (DamageController)(enemy.GetComponent("DamageController"));
 
         deletedImage.fillAmount = damageController.currentHP / damageController.maxHP;
+        lastHP = damageController.currentHP;
+        timeSinceDmg = 10f;
     }
 	
 	void Update () {
         transform.position = Camera.main.WorldToScreenPoint(enemy.transform.position + new Vector3(0, displayHeight - .6f, 0)) + new Vector3(0,60,0);
         hpImage.fillAmount = damageController.currentHP / damageController.maxHP;
 
-        if (deletedImage.fillAmount > hpImage.fillAmount)
+        if (lastHP > damageController.currentHP)
         {
-            if (!deleting)
+            lastHP = damageController.currentHP;
+            deleting = false;
+            timeSinceDmg = 0;
+        }
+
+        if (!deleting && deletedImage.fillAmount > hpImage.fillAmount)
+        {
+            timeSinceDmg += Time.deltaTime;
+            if (timeSinceDmg > c_timeBeforeDelete)
             {
                 deleting = true;
-                timeBeforeDelete = c_timeBeforeDelete;
             }
+        }
 
-            timeBeforeDelete -= Time.deltaTime;
-
-            if (timeBeforeDelete < 0f)
+        if (deletedImage.fillAmount > hpImage.fillAmount && deleting)
+        {
+            deletedImage.fillAmount -= .5f * Time.deltaTime;
+            if (deletedImage.fillAmount <= hpImage.fillAmount)
             {
-                deletedImage.fillAmount -= .5f * Time.deltaTime;
-                if (deletedImage.fillAmount <= hpImage.fillAmount)
-                {
-                    deletedImage.fillAmount = hpImage.fillAmount;
-                    deleting = false;
-                }
+                deletedImage.fillAmount = hpImage.fillAmount;
+                deleting = false;
             }
         }
 	}
