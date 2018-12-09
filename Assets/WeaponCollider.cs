@@ -6,7 +6,7 @@ using LightBringer;
 public class WeaponCollider : MonoBehaviour {
 
     private Collider col;
-    private MeleeAttack1 currentAbility;
+    private CollisionAbility currentAbility;
 
 	void Start () {
         col = GetComponent<Collider>();
@@ -14,11 +14,10 @@ public class WeaponCollider : MonoBehaviour {
         currentAbility = null;
 	}
 
-    public void SetAbility(MeleeAttack1 ability)
+    public void SetAbility(CollisionAbility ability)
     {
         col.enabled = true;
         currentAbility = ability;
-        Debug.Log("Ability : " + currentAbility.ToString());
     }
 	
     public void UnsetAbility()
@@ -30,7 +29,6 @@ public class WeaponCollider : MonoBehaviour {
     private void OnTriggerEnter(Collider other)
     {
         currentAbility.OnCollision(other);
-        Debug.Log("Ennemi détecté : " + other.name);
     }
 
 }

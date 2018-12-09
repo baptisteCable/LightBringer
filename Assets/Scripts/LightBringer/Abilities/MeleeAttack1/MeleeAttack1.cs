@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LightBringer
 {
-    public class MeleeAttack1 : Ability
+    public class MeleeAttack1 : CollisionAbility
     {
         private const float COOLDOWN_DURATION = .01f;
         private const float ABILITY_DURATION = .2f;
@@ -12,7 +12,7 @@ namespace LightBringer
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float DOING_MOVE_MULTIPLICATOR = .3f;
-        private const float DAMAGE = 5f;
+        private const float DAMAGE = 2f;
         
         private WeaponCollider weaponCollider;
         private List<Collider> enemies;
@@ -99,7 +99,7 @@ namespace LightBringer
             character.animator.Play("NoAction");
         }
 
-        public void OnCollision(Collider col)
+        public override void OnCollision(Collider col)
         {
             if (col.tag == "Enemy")
             {
@@ -109,6 +109,30 @@ namespace LightBringer
                     col.GetComponent<DamageController>().TakeDamage(DAMAGE);
                 }
             }
+
+            if (col.tag == "Shield")
+            {
+                Interrupt();
+            }
+        }
+
+        public void Interrupt()
+        {
+            // movement back
+            character.canRotate = true;
+            character.abilityMoveMultiplicator = 1f;
+
+            character.currentAbility = null;
+            coolDownRemaining = coolDownDuration;
+
+            // animation
+            character.animator.SetBool("startMeleeAttack1", false);
+
+            // desactivate collider
+            weaponCollider.UnsetAbility();
+
+            // Interrupt character
+            character.Interrupt();
         }
     }
 }

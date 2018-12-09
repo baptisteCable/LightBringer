@@ -18,7 +18,6 @@ namespace LightBringer
             if (col.tag == "Enemy")
             {   
                 caller.AddEnemyDamageController(col.GetComponent("DamageController") as DamageController);
-                Debug.Log("Dans la zone : " + col.name);
             }
         }
 
@@ -27,7 +26,6 @@ namespace LightBringer
             if (col.tag == "Enemy")
             {
                 caller.RemoveEnemyDamageController(col.GetComponent("DamageController") as DamageController);
-                Debug.Log("Hors de la zone : " + col.name);
             }
         }
     }

@@ -11,11 +11,12 @@ namespace LightBringer
         private const float HEIGHT = 3f;
         private const float MAX_RANGE = 1.5f;
         private const bool CHANNELING_CANCELLABLE = true;
-        private const float DPS = 30f;
+        private const float DPS = 8f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float DIONG_MOVE_MULTIPLICATOR = .3f;
-        
+        private const float DOING_MOVE_MULTIPLICATOR = .3f;
+        private const float DOING_ROTATION_MULTIPLICATOR = 0;
+
         private GameObject abilityTriggerPrefab;
         private GameObject abilityTrigger;
         private GameObject abilityDisplayPrefab;
@@ -54,9 +55,6 @@ namespace LightBringer
             // animation
             character.animator.SetBool("startMeleeAoE1", true);
 
-            // No more rotation
-            character.canRotate = false;
-
             // créer le trigger
             abilityTrigger = GameObject.Instantiate(abilityTriggerPrefab);
             abilityTrigger.transform.SetParent(character.gameObject.transform.Find("CharacterContainer"));
@@ -70,9 +68,12 @@ namespace LightBringer
             abilityDisplay.transform.localPosition = new Vector3(0f, -.79f, 0f);
             abilityDisplay.transform.localRotation = Quaternion.identity;
 
+            // Movement restrictions
+            character.abilityMoveMultiplicator = DOING_MOVE_MULTIPLICATOR;
+            character.abilityRotationMultiplicator = DOING_ROTATION_MULTIPLICATOR;
+
             character.currentAbility = this;
             character.currentChanneling = null;
-            character.abilityMoveMultiplicator = DIONG_MOVE_MULTIPLICATOR;
             abilityTime = 0;
 
             // Enemy list
@@ -96,9 +97,9 @@ namespace LightBringer
 
         public override void End()
         {
-            // movement back
-            character.canRotate = true;
+            // Movement restrictions
             character.abilityMoveMultiplicator = 1f;
+            character.abilityRotationMultiplicator = 1f;
 
             // détruire le trigger
             Object.Destroy(abilityTrigger);
@@ -113,6 +114,9 @@ namespace LightBringer
 
         public override void CancelChanelling()
         {
+            // Movement restrictions
+            character.abilityMoveMultiplicator = 1f;
+
             character.currentChanneling = null;
 
             // animation
