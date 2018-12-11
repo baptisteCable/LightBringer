@@ -5,18 +5,21 @@ namespace LightBringer
 {
     public class CubeSkillShot : Ability
     {
+        // cancelling const
+        private const bool CHANNELING_CANCELLABLE = true;
+        private const bool CASTING_CANCELLABLE = true;
+
+        // const
         private const float COOLDOWN_DURATION = 1f;
         private const float ABILITY_DURATION = .1f;
         private const float CHANNELING_DURATION = .3f;
         private const float HEIGHT = 1.4f;
         private const float MAX_RANGE = 25f;
-        private const bool CHANNELING_CANCELLABLE = true;
         private const float DAMAGE = 8f;
         private const float PROJECTILE_SPEED = 20f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float DOING_MOVE_MULTIPLICATOR = 0;
-        private const float DOING_ROTATION_MULTIPLICATOR = 1f;
+        private const float CASTING_MOVE_MULTIPLICATOR = 0;
 
         private GameObject cubePrefab;
         private GameObject cube;
@@ -24,7 +27,7 @@ namespace LightBringer
         private List<DamageController> dcs;
 
         public CubeSkillShot(Character character) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             cubePrefab = Resources.Load("Abilities/CubeSkillShot") as GameObject;
         }
@@ -62,19 +65,18 @@ namespace LightBringer
             cube.GetComponent<CubeSkillShotTrigger>().ability = this;
            
             // Movement restrictions
-            character.abilityMoveMultiplicator = DOING_MOVE_MULTIPLICATOR;
-            character.abilityRotationMultiplicator = DOING_ROTATION_MULTIPLICATOR;
+            character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
 
             character.currentAbility = this;
             character.currentChanneling = null;
-            abilityTime = 0;
+            castingTime = 0;
         }
 
         public override void DoAbility()
         {
-            abilityTime += Time.deltaTime;
+            castingTime += Time.deltaTime;
 
-            if (abilityTime > abilityDuration)
+            if (castingTime > castingDuration)
             {
                 End();
             }
@@ -84,7 +86,6 @@ namespace LightBringer
         {
             // Movement restrictions
             character.abilityMoveMultiplicator = 1f;
-            character.abilityRotationMultiplicator = 1f;
 
             character.currentAbility = null;
             coolDownRemaining = coolDownDuration;

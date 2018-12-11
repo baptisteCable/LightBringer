@@ -5,17 +5,21 @@ namespace LightBringer
 {
     public class MeleeAoE1 : Ability
     {
+        // cancelling const
+        private const bool CHANNELING_CANCELLABLE = true;
+        private const bool CASTING_CANCELLABLE = true;
+
+        // const
         private const float COOLDOWN_DURATION = 3f;
         private const float ABILITY_DURATION = 3f;
         private const float CHANNELING_DURATION = .8f;
         private const float HEIGHT = 3f;
         private const float MAX_RANGE = 1.5f;
-        private const bool CHANNELING_CANCELLABLE = true;
         private const float DPS = 8f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float DOING_MOVE_MULTIPLICATOR = .3f;
-        private const float DOING_ROTATION_MULTIPLICATOR = 0;
+        private const float CASTING_MOVE_MULTIPLICATOR = .3f;
+        private const float CASTING_MAX_ROTATION = 0;
 
         private GameObject abilityTriggerPrefab;
         private GameObject abilityTrigger;
@@ -25,7 +29,7 @@ namespace LightBringer
         private List<DamageController> dcs;
 
         public MeleeAoE1(Character character) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             abilityTriggerPrefab = Resources.Load("Abilities/MeleeAoE1Trigger") as GameObject;
             abilityDisplayPrefab = Resources.Load("Abilities/MeleeAoE1Display") as GameObject;
@@ -58,7 +62,7 @@ namespace LightBringer
             // créer le trigger
             abilityTrigger = GameObject.Instantiate(abilityTriggerPrefab);
             abilityTrigger.transform.SetParent(character.gameObject.transform.Find("CharacterContainer"));
-            abilityTrigger.transform.localPosition = new Vector3(0f, -.8f, 0f);
+            abilityTrigger.transform.localPosition = new Vector3(0f, .1f, 0f);
             abilityTrigger.transform.localRotation = Quaternion.identity;
             abilityTrigger.GetComponent<MeleeAoE1Trigger>().caller = this;
 
@@ -69,12 +73,12 @@ namespace LightBringer
             abilityDisplay.transform.localRotation = Quaternion.identity;
 
             // Movement restrictions
-            character.abilityMoveMultiplicator = DOING_MOVE_MULTIPLICATOR;
-            character.abilityRotationMultiplicator = DOING_ROTATION_MULTIPLICATOR;
+            character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
+            character.abilityMaxRotation = CASTING_MAX_ROTATION;
 
             character.currentAbility = this;
             character.currentChanneling = null;
-            abilityTime = 0;
+            castingTime = 0;
 
             // Enemy list
             dcs = new List<DamageController>();
@@ -82,14 +86,14 @@ namespace LightBringer
 
         public override void DoAbility()
         {
-            abilityTime += Time.deltaTime;
+            castingTime += Time.deltaTime;
 
             foreach(DamageController dc in dcs)
             {
                 dc.TakeDamage(DPS * Time.deltaTime);
             }
             
-            if (abilityTime > abilityDuration)
+            if (castingTime > castingDuration)
             {
                 End();
             }
@@ -99,7 +103,7 @@ namespace LightBringer
         {
             // Movement restrictions
             character.abilityMoveMultiplicator = 1f;
-            character.abilityRotationMultiplicator = 1f;
+            character.abilityMaxRotation = -1f;
 
             // détruire le trigger
             Object.Destroy(abilityTrigger);

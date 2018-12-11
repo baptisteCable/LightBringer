@@ -4,12 +4,16 @@ namespace LightBringer
 {
     public class Jump0 : Ability
     {
-        private const float c_coolDownDuration = 4f;
-        private const float c_abilityDuration = .5f;
-        private const float c_channelingDuration = .5f;
-        private const float c_height = 3f;
-        private const float c_maxRange = 12f;
-        private const bool c_channelingCancellable = false;
+        // cancelling const
+        private const bool CHANNELING_CANCELLABLE = false;
+        private const bool CASTING_CANCELLABLE = false;
+
+        // const
+        private const float COOLDOWN_DURATION = 4f;
+        private const float CASTING_DURATION = .5f;
+        private const float CHANNELING_DURATION = .5f;
+        private const float HEIGHT = 3f;
+        private const float MAX_RANGE = 12f;
 
         private GameObject landingIndicatorPrefab;
         private GameObject rangeIndicatorPrefab;
@@ -26,7 +30,7 @@ namespace LightBringer
         private Vector3 targetPosition;
 
         public Jump0(Character character) :
-            base(c_coolDownDuration, c_channelingDuration, c_abilityDuration, character, c_channelingCancellable)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, CASTING_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             landingIndicatorPrefab = Resources.Load("Projectors/CircleSAbilityIndicatorPrefab") as GameObject;
             rangeIndicatorPrefab = Resources.Load("Projectors/CircleMAbilityIndicatorPrefab") as GameObject;
@@ -46,10 +50,10 @@ namespace LightBringer
             channelingCurveY.AddKey(new Keyframe(.25f * channelingDuration, playerPosition.y));
             channelingCurveZ.AddKey(new Keyframe(.25f * channelingDuration, playerPosition.z));
 
-            channelingCurveY.AddKey(new Keyframe(.75f * channelingDuration, .95f * c_height + playerPosition.y, 2 * c_height, 2 * c_height));
+            channelingCurveY.AddKey(new Keyframe(.75f * channelingDuration, .95f * HEIGHT + playerPosition.y, 2 * HEIGHT, 2 * HEIGHT));
 
             channelingCurveX.AddKey(new Keyframe(1f * channelingDuration, playerPosition.x));
-            channelingCurveY.AddKey(new Keyframe(1f * channelingDuration, c_height + playerPosition.y, 0f, 0f, 0f, 1f));
+            channelingCurveY.AddKey(new Keyframe(1f * channelingDuration, HEIGHT + playerPosition.y, 0f, 0f, 0f, 1f));
             channelingCurveZ.AddKey(new Keyframe(1f * channelingDuration, playerPosition.z));
         }
 
@@ -63,20 +67,20 @@ namespace LightBringer
             jumpCurveY.AddKey(new Keyframe(0f, character.gameObject.transform.position.y));
             jumpCurveZ.AddKey(new Keyframe(0f, character.gameObject.transform.position.z));
 
-            jumpCurveX.AddKey(new Keyframe(abilityDuration, targetPosition.x));
-            jumpCurveY.AddKey(new Keyframe(abilityDuration, targetPosition.y));
-            jumpCurveZ.AddKey(new Keyframe(abilityDuration, targetPosition.z));
+            jumpCurveX.AddKey(new Keyframe(castingDuration, targetPosition.x));
+            jumpCurveY.AddKey(new Keyframe(castingDuration, targetPosition.y));
+            jumpCurveZ.AddKey(new Keyframe(castingDuration, targetPosition.z));
         }
 
         private void ModifyTarget()
         {
-            if ((character.gameObject.transform.position - character.lookingPoint).magnitude < c_maxRange)
+            if ((character.gameObject.transform.position - character.lookingPoint).magnitude < MAX_RANGE)
             {
                 targetPosition = character.lookingPoint;
             }
             else
             {
-                targetPosition = character.gameObject.transform.position + (character.lookingPoint - character.gameObject.transform.position).normalized * c_maxRange;
+                targetPosition = character.gameObject.transform.position + (character.lookingPoint - character.gameObject.transform.position).normalized * MAX_RANGE;
             }
 
             targetPosition.y = 0f;
@@ -96,7 +100,7 @@ namespace LightBringer
                     character.gameObject.transform.position.z
                 );
             Projector rangeProj = rangeIndicator.GetComponent<Projector>();
-            rangeProj.orthographicSize = c_maxRange;
+            rangeProj.orthographicSize = MAX_RANGE;
 
             computeChannelingCurves(character.gameObject.transform.position);
             channelingTime = 0;
@@ -133,22 +137,22 @@ namespace LightBringer
 
             character.currentAbility = this;
             character.currentChanneling = null;
-            abilityTime = 0;
+            castingTime = 0;
         }
 
         public override void DoAbility()
         {
-            abilityTime += Time.deltaTime;
-            if (abilityTime > abilityDuration)
+            castingTime += Time.deltaTime;
+            if (castingTime > castingDuration)
             {
                 End();
             }
             else
             {
                 character.gameObject.transform.position = new Vector3(
-                        jumpCurveX.Evaluate(abilityTime),
-                        jumpCurveY.Evaluate(abilityTime),
-                        jumpCurveZ.Evaluate(abilityTime)
+                        jumpCurveX.Evaluate(castingTime),
+                        jumpCurveY.Evaluate(castingTime),
+                        jumpCurveZ.Evaluate(castingTime)
                     );
             }
         }

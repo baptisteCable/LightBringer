@@ -5,13 +5,17 @@ namespace LightBringer
 {
     public class MeleeAttack1 : CollisionAbility
     {
+        // cancelling const
+        private const bool CHANNELING_CANCELLABLE = true;
+        private const bool CASTING_CANCELLABLE = true;
+
+        // const
         private const float COOLDOWN_DURATION = .01f;
         private const float ABILITY_DURATION = .2f;
         private const float CHANNELING_DURATION = .4f;
-        private const bool CHANNELING_CANCELLABLE = true;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float DOING_MOVE_MULTIPLICATOR = .3f;
+        private const float CASTING_MOVE_MULTIPLICATOR = .3f;
         private const float DAMAGE = 2f;
         
         private WeaponCollider weaponCollider;
@@ -21,7 +25,7 @@ namespace LightBringer
         private bool triggerCreated;
         
         public MeleeAttack1(Character character, GameObject weapon) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.weaponCollider = weapon.GetComponent<WeaponCollider>();
         }
@@ -55,8 +59,8 @@ namespace LightBringer
             
             character.currentAbility = this;
             character.currentChanneling = null;
-            character.abilityMoveMultiplicator = DOING_MOVE_MULTIPLICATOR;
-            abilityTime = 0;
+            character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
+            castingTime = 0;
 
             // enemy list
             enemies = new List<Collider>();
@@ -67,9 +71,9 @@ namespace LightBringer
 
         public override void DoAbility()
         {
-            abilityTime += Time.deltaTime;
+            castingTime += Time.deltaTime;
 
-            if (abilityTime > abilityDuration)
+            if (castingTime > castingDuration)
             {
                 End();
             }

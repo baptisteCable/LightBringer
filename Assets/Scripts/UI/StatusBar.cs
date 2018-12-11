@@ -1,31 +1,36 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusBar : MonoBehaviour {
+public class StatusBar : BaseStatusBar {
 
-    public GameObject characterGo;
+    public Character character;
     public Camera cam;
 
-    private Character character;
-    private Image hpContent;
     private Image mpContent;
     private Image channelingContent;
     private GameObject channelingBar;
+    
+
 
     void Start () {
-        character = characterGo.GetComponent<Character>();
-        hpContent = transform.Find("HPBackGroung").Find("Content").GetComponent<Image>();
-        mpContent = transform.Find("MPBackGroung").Find("Content").GetComponent<Image>();
-        channelingContent = transform.Find("ChannelingBackGroung").Find("Content").GetComponent<Image>();
-        channelingBar = transform.Find("ChannelingBackGroung").gameObject;
+        Transform hpBG = transform.Find("BackGround").Find("HPBackGroung");
+        hpImage = hpBG.Find("Content").GetComponent<Image>();
+        deleteHPdImage = hpBG.Find("Deleted").GetComponent<UnityEngine.UI.Image>();
+
+        Transform mpBG = transform.Find("BackGround").Find("MPBackGroung");
+        mpContent = mpBG.Find("Content").GetComponent<Image>();
+
+        Transform channelingBG = transform.Find("BackGround").Find("ChannelingBackGroung");
+        channelingContent = channelingBG.Find("Content").GetComponent<Image>();
+        channelingBar = channelingBG.gameObject;
         channelingBar.SetActive(false);
     }
 	
 	void Update () {
-        transform.position = cam.WorldToScreenPoint(characterGo.transform.position + new Vector3(0, 1f, 0)) + new Vector3(0,60,0);
-        hpContent.fillAmount = character.currentHP / character.maxHP;
+        LookAtCamera(cam);
+
+        ComputeHPBar(character.currentHP, character.maxHP);
+
         mpContent.fillAmount = character.currentMP / character.maxMP;
         if (character.currentChanneling != null)
         {

@@ -2,6 +2,11 @@
 using LightBringer;
 
 public class Character : MonoBehaviour {
+    float currentRotationSpeed;
+    
+    // constants
+    private const float ROTATION_SPEED = 12f;
+    
     // status
     public float maxHP;
     public float currentHP;
@@ -9,7 +14,7 @@ public class Character : MonoBehaviour {
     public float currentMP;
 
     public float moveSpeed = 5f;
-    public float rotationSpeed = 5f;
+    private float rotationSpeed = ROTATION_SPEED;
 
     // game objects
     public Camera cam;
@@ -24,7 +29,7 @@ public class Character : MonoBehaviour {
     private bool physicsApplies = false;
     public bool canRotate;
     public float abilityMoveMultiplicator;
-    public float abilityRotationMultiplicator;
+    public float abilityMaxRotation = 0f;
 
     // body parts
     public Transform weaponSlotR;
@@ -69,7 +74,7 @@ public class Character : MonoBehaviour {
 
         canRotate = true;
         abilityMoveMultiplicator = 1f;
-        abilityRotationMultiplicator = 1f;
+        abilityMaxRotation = -1f;
 
         
     }
@@ -192,13 +197,23 @@ public class Character : MonoBehaviour {
             
             // Smoothly rotate towards the target point.
             var targetRotation = Quaternion.LookRotation(lookingPoint - new Vector3(transform.position.x, gm.lookingHeight, transform.position.z));
-            characterContainer.rotation = Quaternion.Slerp(
+            Quaternion rotation = Quaternion.Slerp(
                     characterContainer.rotation,
                     targetRotation,
-                    abilityRotationMultiplicator * rotationSpeed * Time.deltaTime
+                    rotationSpeed * Time.deltaTime
                 );
-            
 
+            currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
+
+            if (abilityMaxRotation >= 0 && Mathf.Abs(currentRotationSpeed) > abilityMaxRotation)
+            {
+                characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * abilityMaxRotation * Time.deltaTime);
+            }
+            else
+            {
+                characterContainer.rotation = rotation;
+            }
+                
             // camera positionning
             if (gm.staticCamera)
             {
@@ -253,23 +268,27 @@ public class Character : MonoBehaviour {
         interruptedDuration = 1f;
     }
 
-    /*
     private void OnGUI()
     {
         GUI.contentColor = Color.black;
         GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-        GUILayout.Label("Range : " + ((RaySpell)abilities[3]).range);
+        GUILayout.Label("Rotation speed : " + currentRotationSpeed);
         GUILayout.EndArea();
         
     }
-    */
 }
 
 /*
- * Barre de statut qui suit le personnage (world canvas)
+ * vitesse rotation max plutôt que vitesse rotation réduite
  * 
- * Attack type l'épée touche. Attaque de rayon. Attaque de projectile.
+ * lancer les skills shots vers le curseur
+ * 
+ * Trigger continu épée
+ * 
+ * cancel de cast
  * 
  * IA ennemi
+ * 
+ * animation attaque bloquée
  * 
  * */
