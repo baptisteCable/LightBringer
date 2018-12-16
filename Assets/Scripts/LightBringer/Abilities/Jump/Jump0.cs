@@ -74,13 +74,13 @@ namespace LightBringer
 
         private void ModifyTarget()
         {
-            if ((character.gameObject.transform.position - character.lookingPoint).magnitude < MAX_RANGE)
+            if ((character.gameObject.transform.position - GameManager.gm.lookedPoint).magnitude < MAX_RANGE)
             {
-                targetPosition = character.lookingPoint;
+                targetPosition = GameManager.gm.lookedPoint;
             }
             else
             {
-                targetPosition = character.gameObject.transform.position + (character.lookingPoint - character.gameObject.transform.position).normalized * MAX_RANGE;
+                targetPosition = character.gameObject.transform.position + (GameManager.gm.lookedPoint - character.gameObject.transform.position).normalized * MAX_RANGE;
             }
 
             targetPosition.y = 0f;

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LightBringer
 {
-    public class MeleeAttack1 : CollisionAbility
+    public class MeleeAttack1 : CollisionPlayerAbility
     {
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = true;
@@ -18,7 +18,7 @@ namespace LightBringer
         private const float CASTING_MOVE_MULTIPLICATOR = .3f;
         private const float DAMAGE = 2f;
         
-        private WeaponCollider weaponCollider;
+        private AbilityColliderTrigger weaponCollider;
         private List<Collider> enemies;
 
 
@@ -27,7 +27,7 @@ namespace LightBringer
         public MeleeAttack1(Character character, GameObject weapon) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
-            this.weaponCollider = weapon.GetComponent<WeaponCollider>();
+            this.weaponCollider = weapon.GetComponent<AbilityColliderTrigger>();
         }
 
         
@@ -103,7 +103,7 @@ namespace LightBringer
             character.animator.Play("NoAction");
         }
 
-        public override void OnCollision(Collider col)
+        public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
             if (col.tag == "Enemy")
             {

@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33251639895264510}
   - component: {fileID: 23320901584861802}
   - component: {fileID: 136515818652611590}
-  - component: {fileID: 114297540523703966}
+  - component: {fileID: 114513127157410856}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Weapon
@@ -85,7 +85,7 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1991370249303908}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &114297540523703966
+--- !u!114 &114513127157410856
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,7 +93,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1991370249303908}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ac24719f3db6824bae3965bbb340b3c, type: 3}
+  m_Script: {fileID: 11500000, guid: deee0d341f0dca4439d93f486dd8d514, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!136 &136515818652611590

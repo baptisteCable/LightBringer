@@ -1,16 +1,9 @@
 ﻿using UnityEngine;
-using System.Collections.Generic;
 
 namespace LightBringer
 {
-    public abstract class CollisionAbility : Ability
+    public interface CollisionAbility
     {
-        public CollisionAbility(float coolDownDuration, float channelingDuration, float abilityDuration, Character character,
-            bool channelingCancellable, bool castingCancellable) :
-            base(coolDownDuration, channelingDuration, abilityDuration, character, channelingCancellable, castingCancellable)
-        {
-        }
-
-        public abstract void OnCollision(Collider col);
+        void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col);
     }
 }

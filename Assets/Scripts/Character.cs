@@ -19,13 +19,11 @@ public class Character : MonoBehaviour {
     // game objects
     public Camera cam;
     public Transform characterContainer;
-    public GameManager gm;
-
+    
     public Animator animator;
     private Rigidbody rb;
 
     // misc
-    public Vector3 lookingPoint;
     private bool physicsApplies = false;
     public bool canRotate;
     public float abilityMoveMultiplicator;
@@ -185,18 +183,11 @@ public class Character : MonoBehaviour {
 
     // look at mouse and camera positionning procedure
     void lookAtMouse()
-    {
-        Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
-        
-        float distance;
-
-        if (gm.lookingPlane.Raycast(mouseRay, out distance))
-        {
-            lookingPoint = mouseRay.GetPoint(distance);
-
-            
+    {        
             // Smoothly rotate towards the target point.
-            var targetRotation = Quaternion.LookRotation(lookingPoint - new Vector3(transform.position.x, gm.lookingHeight, transform.position.z));
+            var targetRotation = Quaternion.LookRotation(
+                    GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)
+                );
             Quaternion rotation = Quaternion.Slerp(
                     characterContainer.rotation,
                     targetRotation,
@@ -212,27 +203,7 @@ public class Character : MonoBehaviour {
             else
             {
                 characterContainer.rotation = rotation;
-            }
-                
-            // camera positionning
-            if (gm.staticCamera)
-            {
-                cam.transform.position = new Vector3(
-                        transform.position.x + gm.camPositionFromPlayer.x,
-                        gm.camPositionFromPlayer.y,
-                        transform.position.z + gm.camPositionFromPlayer.z
-                    );
-            }
-            else
-            {
-                cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
-                        transform.position.x + gm.camPositionFromPlayer.x + (lookingPoint.x - transform.position.x) * .3f,
-                        gm.camPositionFromPlayer.y,
-                        transform.position.z + gm.camPositionFromPlayer.z + (lookingPoint.z - transform.position.z) * .3f
-                    ), Time.deltaTime * 8f);
-            }
-                 
-        }     
+            }          
     }
 
     // move procedure
@@ -267,28 +238,37 @@ public class Character : MonoBehaviour {
         isInterrupted = true;
         interruptedDuration = 1f;
     }
-
+    /*
     private void OnGUI()
     {
         GUI.contentColor = Color.black;
         GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-        GUILayout.Label("Rotation speed : " + currentRotationSpeed);
+        GUILayout.Label("Knight velocity : " + velocity);
+        GUILayout.Label("Update : " + agent.updatePosition);
+        GUILayout.Label("Trans Position : " + transform.position);
+        GUILayout.Label("Next  Position : " + agent.nextPosition);
         GUILayout.EndArea();
-        
     }
+    */
 }
 
 /*
- * vitesse rotation max plutôt que vitesse rotation réduite
+ * Gérer les colliders qui se déclenchent pendant attack1 (premiere attaque de Attack1 gérée mais ne marche pas)
+ * 
+ * Réorienter Knight entre les attaques de Attack1
+ *
+ * Collision pendant Attack1 (charge ?)
+ * 
+ * Collider du shield qui ne bouge pas avec l'animation.
  * 
  * lancer les skills shots vers le curseur
- * 
- * Trigger continu épée
  * 
  * cancel de cast
  * 
  * IA ennemi
  * 
  * animation attaque bloquée
+ * 
+ * combat plus dynamique
  * 
  * */
