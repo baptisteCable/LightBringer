@@ -21,9 +21,10 @@ namespace LightBringer.Knight
         private const float MAX_ROTATION_SPEED_FIGHT = 520f;
         private const float MAX_ROTATION_SPEED_RAGE = 800f;
 
+        [HideInInspector]
         public NavMeshAgent agent;
+
         private Vector2 smoothDeltaPosition = Vector2.zero;
-        private Vector2 velocity = Vector2.zero;
 
         // Movement
         private float moveSpeed;
@@ -33,13 +34,17 @@ namespace LightBringer.Knight
         private float currentRotationSpeed;
         private float rotationAcceleration;
         private float rotationSpeed = 0f;
-        
+
         // Components
+        [HideInInspector]
         public Animator anim;
 
         // Colliders GO
+        [HideInInspector]
         public GameObject attack1act1GO;
+        [HideInInspector]
         public GameObject attack1act2GO;
+        [HideInInspector]
         public GameObject attack1act3GO;
 
         //Animation acceleration smooth
@@ -86,7 +91,7 @@ namespace LightBringer.Knight
 
             // Update velocity if delta time is safe
             //if (Time.deltaTime > 1e-5f)
-                velocity = smoothDeltaPosition / Time.deltaTime;
+            Vector2 velocity = smoothDeltaPosition / Time.deltaTime;
 
             bool shouldMove = velocity.magnitude > 0.5f && agent.remainingDistance > agent.radius;
 

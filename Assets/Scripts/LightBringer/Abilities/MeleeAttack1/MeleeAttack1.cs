@@ -18,6 +18,8 @@ namespace LightBringer
         private const float CASTING_MOVE_MULTIPLICATOR = .3f;
         private const float DAMAGE = 2f;
         
+        private const float INTERRUPT_DURATION = .6f;
+
         private AbilityColliderTrigger weaponCollider;
         private List<Collider> enemies;
 
@@ -33,34 +35,21 @@ namespace LightBringer
         
         public override void StartChanneling()
         {
-            channelingTime = 0;
-            character.currentChanneling = this;
+            base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             character.animator.Play("ChannelMeleeAttack1");
         }
 
-        public override void Channel()
-        {
-            channelingTime += Time.deltaTime;
-
-            if (channelingTime > channelingDuration)
-            {
-                StartAbility();
-            }
-        }
-
         public override void StartAbility()
         {
+            base.StartAbility();
+
             // animation
             character.animator.SetBool("startMeleeAttack1", true);
 
             // No more rotation
             character.canRotate = false;
-            
-            character.currentAbility = this;
-            character.currentChanneling = null;
             character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
-            castingTime = 0;
 
             // enemy list
             enemies = new List<Collider>();
@@ -69,24 +58,9 @@ namespace LightBringer
             weaponCollider.SetAbility(this);
         }
 
-        public override void DoAbility()
-        {
-            castingTime += Time.deltaTime;
-
-            if (castingTime > castingDuration)
-            {
-                End();
-            }
-        }
-
         public override void End()
         {
-            // movement back
-            character.canRotate = true;
-            character.abilityMoveMultiplicator = 1f;
-
-            character.currentAbility = null;
-            coolDownRemaining = coolDownDuration;
+            base.End();
 
             // animation
             character.animator.SetBool("startMeleeAttack1", false);
@@ -95,12 +69,12 @@ namespace LightBringer
             weaponCollider.UnsetAbility();
         }
 
-        public override void CancelChanelling()
+        public override void AbortCasting()
         {
-            character.currentChanneling = null;
+            base.AbortCasting();
 
-            // animation
-            character.animator.Play("NoAction");
+            // desactivate collider
+            weaponCollider.UnsetAbility();
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
@@ -136,7 +110,7 @@ namespace LightBringer
             weaponCollider.UnsetAbility();
 
             // Interrupt character
-            character.Interrupt();
+            character.psm.Interrupt(INTERRUPT_DURATION);
         }
     }
 }

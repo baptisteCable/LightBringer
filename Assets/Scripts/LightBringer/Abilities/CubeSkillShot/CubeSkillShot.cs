@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LightBringer
 {
-    public class CubeSkillShot : Ability
+    public class CubeSkillShot : Ability, CollisionAbility
     {
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = true;
@@ -34,24 +34,15 @@ namespace LightBringer
 
         public override void StartChanneling()
         {
-            channelingTime = 0;
-            character.currentChanneling = this;
+            base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             character.animator.Play("ChannelCubeSkillShot");
         }
 
-        public override void Channel()
-        {
-            channelingTime += Time.deltaTime;
-
-            if (channelingTime > channelingDuration)
-            {
-                StartAbility();
-            }
-        }
-
         public override void StartAbility()
         {
+            base.StartAbility();
+
             // animation
             character.animator.SetBool("startCubeSkillShot", true);
 
@@ -62,50 +53,22 @@ namespace LightBringer
             cube.GetComponent<Rigidbody>().AddForce(PROJECTILE_SPEED * direction, ForceMode.Impulse);
             cube.GetComponent<Rigidbody>().AddTorque(35f * character.transform.Find("CharacterContainer").transform.right, ForceMode.Impulse);
             Object.Destroy(cube, MAX_RANGE / PROJECTILE_SPEED);
-            cube.GetComponent<CubeSkillShotTrigger>().ability = this;
-           
+            cube.GetComponent<AbilityColliderTrigger>().ForcedStart();
+            cube.GetComponent<AbilityColliderTrigger>().SetAbility(this);
+
             // Movement restrictions
             character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
-
-            character.currentAbility = this;
-            character.currentChanneling = null;
-            castingTime = 0;
-        }
-
-        public override void DoAbility()
-        {
-            castingTime += Time.deltaTime;
-
-            if (castingTime > castingDuration)
-            {
-                End();
-            }
         }
 
         public override void End()
         {
-            // Movement restrictions
-            character.abilityMoveMultiplicator = 1f;
-
-            character.currentAbility = null;
-            coolDownRemaining = coolDownDuration;
+            base.End();
 
             // animation
             character.animator.SetBool("startCubeSkillShot", false);
         }
 
-        public override void CancelChanelling()
-        {
-            // Movement restrictions
-            character.abilityMoveMultiplicator = 1f;
-
-            character.currentChanneling = null;
-
-            // animation
-            character.animator.Play("NoAction");
-        }
-
-        public void OnCollision(Collider col)
+        public void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             if (col.name == "Character")
             {

@@ -89,7 +89,9 @@ namespace LightBringer
 
         public override void StartChanneling()
         {
-            character.currentChanneling = this;
+            base.StartChanneling();
+
+            character.GetComponent<Collider>().enabled = false;
             
             // Spaw the landing point
             landingIndicator = Object.Instantiate(landingIndicatorPrefab);
@@ -103,7 +105,6 @@ namespace LightBringer
             rangeProj.orthographicSize = MAX_RANGE;
 
             computeChannelingCurves(character.gameObject.transform.position);
-            channelingTime = 0;
 
             // animation
             character.animator.Play("JumpChanneling");
@@ -112,62 +113,56 @@ namespace LightBringer
 
         public override void Channel()
         {
-            channelingTime += Time.deltaTime;
+            base.Channel();
 
             ModifyTarget();
-
-            if (channelingTime > channelingDuration)
-            {
-                StartAbility();
-            }
-            else
-            {
-                character.gameObject.transform.position = new Vector3(
-                        channelingCurveX.Evaluate(channelingTime),
-                        channelingCurveY.Evaluate(channelingTime),
-                        channelingCurveZ.Evaluate(channelingTime)
-                    );
-            }
+            
+            character.gameObject.transform.position = new Vector3(
+                    channelingCurveX.Evaluate(channelingTime),
+                    channelingCurveY.Evaluate(channelingTime),
+                    channelingCurveZ.Evaluate(channelingTime)
+                );
         }
 
         public override void StartAbility()
         {
+            base.StartAbility();
             ModifyTarget();
             computeAbilityCurve();
-
-            character.currentAbility = this;
-            character.currentChanneling = null;
-            castingTime = 0;
         }
 
-        public override void DoAbility()
+        public override void Cast()
         {
-            castingTime += Time.deltaTime;
-            if (castingTime > castingDuration)
-            {
-                End();
-            }
-            else
-            {
-                character.gameObject.transform.position = new Vector3(
-                        jumpCurveX.Evaluate(castingTime),
-                        jumpCurveY.Evaluate(castingTime),
-                        jumpCurveZ.Evaluate(castingTime)
-                    );
-            }
+            base.Cast();
+
+            character.gameObject.transform.position = new Vector3(
+                    jumpCurveX.Evaluate(castingTime),
+                    jumpCurveY.Evaluate(castingTime),
+                    jumpCurveZ.Evaluate(castingTime)
+                );
         }
 
         public override void End()
         {
+            base.End();
             Object.Destroy(landingIndicator);
             Object.Destroy(rangeIndicator);
-            character.currentAbility = null;
-            coolDownRemaining = coolDownDuration;
+            character.GetComponent<Collider>().enabled = true;
         }
 
         public override void CancelChanelling()
         {
-            throw new System.NotImplementedException();
+            Debug.LogError("Jump cant be cancelled");
+        }
+
+        public override void AbortChanelling()
+        {
+            Debug.LogError("Jump cant be aborted");
+        }
+
+        public override void AbortCasting()
+        {
+            Debug.LogError("Jump cant be aborted");
         }
     }
 }

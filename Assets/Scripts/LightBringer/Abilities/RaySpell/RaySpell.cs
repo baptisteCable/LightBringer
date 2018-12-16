@@ -35,28 +35,18 @@ namespace LightBringer
             rayDisplayPrefab = Resources.Load("Abilities/RayDisplay") as GameObject;
             rayBallDisplayPrefab = Resources.Load("Abilities/RayBallDisplay") as GameObject;
         }
-
         
         public override void StartChanneling()
         {
-            channelingTime = 0;
-            character.currentChanneling = this;
+            base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             character.animator.Play("ChannelRaySpell");
         }
 
-        public override void Channel()
-        {
-            channelingTime += Time.deltaTime;
-
-            if (channelingTime > channelingDuration)
-            {
-                StartAbility();
-            }
-        }
-
         public override void StartAbility()
         {
+            base.StartAbility();
+
             // animation
             character.animator.SetBool("startRaySpell", true);
 
@@ -71,17 +61,12 @@ namespace LightBringer
             rayDisplay.transform.localPosition = new Vector3(0f, HEIGHT, .7f);
             rayDisplay.transform.localRotation = Quaternion.identity;
             rayBallDisplay = GameObject.Instantiate(rayBallDisplayPrefab);
-
-
-            character.currentAbility = this;
-            character.currentChanneling = null;
-            castingTime = 0;
         }
 
-        public override void DoAbility()
+        public override void Cast()
         {
-            castingTime += Time.deltaTime;
-
+            base.Cast();
+            
             // raycast
             RaycastHit rch;
             Vector3 start = new Vector3(character.transform.position.x, HEIGHT, character.transform.position.z);
@@ -103,38 +88,27 @@ namespace LightBringer
 
             // display length
             rayDisplay.transform.localScale = new Vector3(rayDisplay.transform.localScale.x, rayDisplay.transform.localScale.y, range);
-            
-            
-            if (castingTime > castingDuration)
-            {
-                End();
-            }
         }
 
         public override void End()
         {
-            // movement back
-            character.canRotate = true;
-            character.abilityMoveMultiplicator = 1f;
-            character.abilityMaxRotation = -1f;
-
-            // destroy display
-            Object.Destroy(rayDisplay);
-            Object.Destroy(rayBallDisplay);
-
-            character.currentAbility = null;
-            coolDownRemaining = coolDownDuration;
+            base.End();
+            DestroyDisplay();
 
             // animation
             character.animator.SetBool("startRaySpell", false);
         }
 
-        public override void CancelChanelling()
+        public override void AbortCasting()
         {
-            character.currentChanneling = null;
+            base.AbortCasting();
+            DestroyDisplay();
+        }
 
-            // animation
-            character.animator.Play("NoAction");
+        private void DestroyDisplay()
+        {
+            Object.Destroy(rayDisplay);
+            Object.Destroy(rayBallDisplay);
         }
     }
 }

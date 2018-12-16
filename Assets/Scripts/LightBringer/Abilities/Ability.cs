@@ -4,6 +4,8 @@ namespace LightBringer
 {
     public abstract class Ability
     {
+        public const float CANCELLING_CC_FACTOR = .3f;
+
         public bool coolDownUp;
         public float coolDownRemaining;
         public float coolDownDuration;
@@ -23,19 +25,105 @@ namespace LightBringer
             this.castingDuration = castingDuration;
             this.character = character;
             this.channelingCancellable = channelingCancellable;
+            this.castingCancellable = castingCancellable;
         }
 
-        public abstract void StartChanneling();
+        public virtual void CancelChanelling()
+        {
+            // Movement restrictions
+            resetMovementRestrictions();
 
-        public abstract void Channel();
+            // current ability
+            character.currentChanneling = null;
 
-        public abstract void StartAbility();
+            // Cooldown
+            coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
 
-        public abstract void DoAbility();
+            // animation
+            character.animator.Play("NoAction");
+        }
 
-        public abstract void End();
+        public virtual void AbortChanelling()
+        {
+            // Movement restrictions
+            resetMovementRestrictions();
 
-        public abstract void CancelChanelling();
+            // current ability
+            character.currentChanneling = null;
+
+            // Cooldown
+            coolDownRemaining = coolDownDuration;
+
+            // animation
+            character.animator.Play("NoAction");
+        }
+
+        public virtual void AbortCasting()
+        {
+            // Movement restrictions
+            resetMovementRestrictions();
+
+            // current ability
+            character.currentAbility = null;
+
+            // Cooldown
+            coolDownRemaining = coolDownDuration;
+
+            // animation
+            character.animator.Play("NoAction");
+        }
+
+        public virtual void End()
+        {
+            // Movement restrictions
+            resetMovementRestrictions();
+
+            // current ability
+            character.currentAbility = null;
+
+            // Cooldown
+            coolDownRemaining = coolDownDuration;
+        }
+
+        public virtual void Channel()
+        {
+            channelingTime += Time.deltaTime;
+
+            if (channelingTime > channelingDuration)
+            {
+                StartAbility();
+            }
+        }
+
+        public virtual void Cast()
+        {
+            castingTime += Time.deltaTime;
+
+            if (castingTime > castingDuration)
+            {
+                End();
+            }
+        }
+
+        public virtual void StartChanneling()
+        {
+            channelingTime = 0;
+            character.currentChanneling = this;
+        }
+
+        public virtual void StartAbility()
+        {
+            character.currentAbility = this;
+            character.currentChanneling = null;
+            castingTime = 0;
+        }
+
+        protected void resetMovementRestrictions()
+        {
+            character.canRotate = true;
+            character.abilityMoveMultiplicator = 1f;
+            character.abilityMaxRotation = -1f;
+        }
     }
 }
 

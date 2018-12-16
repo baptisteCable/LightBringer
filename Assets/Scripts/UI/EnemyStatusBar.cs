@@ -2,8 +2,6 @@
 
 public class EnemyStatusBar : BaseStatusBar {
 
-    private const float c_timeBeforeDelete = 1f;
-
     public DamageController damageController;
 
     private void Awake()

@@ -38,24 +38,15 @@ namespace LightBringer
         
         public override void StartChanneling()
         {
-            channelingTime = 0;
-            character.currentChanneling = this;
+            base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             character.animator.Play("ChannelMeleeAoE1");
         }
 
-        public override void Channel()
-        {
-            channelingTime += Time.deltaTime;
-
-            if (channelingTime > channelingDuration)
-            {
-                StartAbility();
-            }
-        }
-
         public override void StartAbility()
         {
+            base.StartAbility();
+
             // animation
             character.animator.SetBool("startMeleeAoE1", true);
 
@@ -76,55 +67,33 @@ namespace LightBringer
             character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
             character.abilityMaxRotation = CASTING_MAX_ROTATION;
 
-            character.currentAbility = this;
-            character.currentChanneling = null;
-            castingTime = 0;
-
             // Enemy list
             dcs = new List<DamageController>();
         }
 
-        public override void DoAbility()
+        public override void Cast()
         {
-            castingTime += Time.deltaTime;
+            base.Cast();
 
             foreach(DamageController dc in dcs)
             {
                 dc.TakeDamage(DPS * Time.deltaTime);
             }
-            
-            if (castingTime > castingDuration)
-            {
-                End();
-            }
         }
 
         public override void End()
         {
-            // Movement restrictions
-            character.abilityMoveMultiplicator = 1f;
-            character.abilityMaxRotation = -1f;
-
-            // détruire le trigger
-            Object.Destroy(abilityTrigger);
-            Object.Destroy(abilityDisplay);
-
-            character.currentAbility = null;
-            coolDownRemaining = coolDownDuration;
+            base.End();
+            DestroyTrigger();
 
             // animation
             character.animator.SetBool("startMeleeAoE1", false);
         }
 
-        public override void CancelChanelling()
+        public override void AbortCasting()
         {
-            // Movement restrictions
-            character.abilityMoveMultiplicator = 1f;
-
-            character.currentChanneling = null;
-
-            // animation
-            character.animator.Play("NoAction");
+            base.AbortCasting();
+            DestroyTrigger();
         }
 
         public void AddEnemyDamageController(DamageController enemyDC)
@@ -135,6 +104,12 @@ namespace LightBringer
         public void RemoveEnemyDamageController(DamageController enemyDC)
         {
             dcs.Remove(enemyDC);
+        }
+
+        private void DestroyTrigger()
+        {
+            Object.Destroy(abilityTrigger);
+            Object.Destroy(abilityDisplay);
         }
     }
 }

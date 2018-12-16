@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
+using LightBringer.Player;
+using System.Collections.Generic;
 
 namespace LightBringer.Knight
 {
@@ -28,9 +29,17 @@ namespace LightBringer.Knight
         private AbilityColliderTrigger act2;
         private AbilityColliderTrigger act3;
 
+        // Collider list
+        private List<Collider> cols;
+
         // Charge curves
         private AnimationCurve positionCurveX;
         private AnimationCurve positionCurveZ;
+
+        // Init booleans
+        private bool part1Initialized = false;
+        private bool part2Initialized = false;
+        private bool part3Initialized = false;
 
         float stopDist;
         Transform target;
@@ -60,11 +69,7 @@ namespace LightBringer.Knight
             // DMG 1
             if (ellapsedTime >= DMG_CHECKPOINT_1_START && ellapsedTime <= DMG_CHECKPOINT_1_END)
             {
-                if (!act1GO.activeSelf)
-                {
-                    act1GO.SetActive(true);
-                    act1.SetAbility(this);
-                }
+                InitPart1();
             }
             if (act1GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_1_END)
             {
@@ -75,11 +80,7 @@ namespace LightBringer.Knight
             // DMG 2
             if (ellapsedTime >= DMG_CHECKPOINT_2_START && ellapsedTime <= DMG_CHECKPOINT_2_END)
             {
-                if (!act2GO.activeSelf)
-                {
-                    act2GO.SetActive(true);
-                    act2.SetAbility(this);
-                }
+                InitPart2();
             }
             if (act2GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_2_END)
             {
@@ -90,6 +91,8 @@ namespace LightBringer.Knight
             // DMG 3
             if (ellapsedTime >= DMG_CHECKPOINT_3_START && ellapsedTime <= DMG_CHECKPOINT_3_END)
             {
+                InitPart3();
+
                 // Position
                 if (positionCurveX == null)
                 {
@@ -103,13 +106,6 @@ namespace LightBringer.Knight
                     );
 
                 em.agent.nextPosition = em.transform.position;
-
-                // Damage
-                if (!act3GO.activeSelf)
-                {
-                    act3GO.SetActive(true);
-                    act3.SetAbility(this);
-                }
             }
             if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
             {
@@ -158,18 +154,83 @@ namespace LightBringer.Knight
             {
                 if (abilityColliderTrigger == act1GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Debug.Log("Touché par la première partie de Attack1");
+                    Part1(col);
                 }
 
                 if (abilityColliderTrigger == act2GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Debug.Log("Touché par la deuxième partie de Attack1");
+                    Part2(col);
                 }
 
                 if (abilityColliderTrigger == act3GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Debug.Log("Touché par la troisième partie de Attack1");
+                    Part3(col);
                 }
+            }
+        }
+
+        private void Part1(Collider col)
+        {
+            if (!cols.Contains(col))
+            {
+                cols.Add(col);
+                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
+                psm.TakeDamage(15f);
+            }
+        }
+
+        private void Part2(Collider col)
+        {
+            if (!cols.Contains(col))
+            {
+                cols.Add(col);
+                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
+                psm.TakeDamage(5f);
+                psm.Stun(1f);
+            }
+        }
+
+        private void Part3(Collider col)
+        {
+            if (!cols.Contains(col))
+            {
+                cols.Add(col);
+                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
+                psm.TakeDamage(25f);
+                psm.Interrupt(1f);
+            }
+        }
+
+        private void InitPart1()
+        {
+            if (!part1Initialized)
+            {
+                act1GO.SetActive(true);
+                act1.SetAbility(this);
+                cols = new List<Collider>();
+                part1Initialized = true;
+            }
+        }
+
+        private void InitPart2()
+        {
+            if (!part2Initialized)
+            {
+                act2GO.SetActive(true);
+                act2.SetAbility(this);
+                cols = new List<Collider>();
+                part2Initialized = true;
+            }
+        }
+
+        private void InitPart3()
+        {
+            if (!part3Initialized)
+            {
+                act3GO.SetActive(true);
+                act3.SetAbility(this);
+                cols = new List<Collider>();
+                part3Initialized = true;
             }
         }
     }

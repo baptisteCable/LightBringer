@@ -7,12 +7,14 @@ namespace LightBringer
 
         private Collider col;
         private CollisionAbility currentAbility;
+        private bool forcedStart = false;
 
         void Start()
         {
-            col = GetComponent<Collider>();
-            col.enabled = false;
-            currentAbility = null;
+            if (!forcedStart)
+            {
+                RunAtStart();
+            }
         }
 
         public void SetAbility(CollisionAbility ability)
@@ -30,6 +32,19 @@ namespace LightBringer
         private void OnTriggerEnter(Collider other)
         {
             currentAbility.OnCollision(this, other);
+        }
+
+        public void ForcedStart()
+        {
+            RunAtStart();
+            forcedStart = true;
+        }
+
+        private void RunAtStart()
+        {
+            col = GetComponent<Collider>();
+            col.enabled = false;
+            currentAbility = null;
         }
     }
 }

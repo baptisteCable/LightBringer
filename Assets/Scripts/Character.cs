@@ -1,27 +1,27 @@
 ﻿using UnityEngine;
 using LightBringer;
+using LightBringer.Player;
 
+[RequireComponent(typeof(PlayerStatusManager))]
+[RequireComponent(typeof(Rigidbody))]
 public class Character : MonoBehaviour {
     float currentRotationSpeed;
     
     // constants
     private const float ROTATION_SPEED = 12f;
     
-    // status
-    public float maxHP;
-    public float currentHP;
-    public float maxMP;
-    public float currentMP;
-
-    public float moveSpeed = 5f;
+    public float moveSpeed;
     private float rotationSpeed = ROTATION_SPEED;
 
     // game objects
     public Camera cam;
     public Transform characterContainer;
     
+    // Components
     public Animator animator;
     private Rigidbody rb;
+    [HideInInspector]
+    public PlayerStatusManager psm;
 
     // misc
     private bool physicsApplies = false;
@@ -32,10 +32,6 @@ public class Character : MonoBehaviour {
     // body parts
     public Transform weaponSlotR;
     public GameObject weaponR;
-
-    // crowd control
-    public bool isInterrupted = false;
-    public float interruptedDuration;
 
 
     /* Abilities :
@@ -55,6 +51,7 @@ public class Character : MonoBehaviour {
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
+        psm = GetComponent<PlayerStatusManager>();
 
         // TEST
         GameObject sword = Resources.Load("Weapons/Sword") as GameObject;
@@ -80,36 +77,25 @@ public class Character : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         // CC progression
-        if (isInterrupted)
-        {
-            interruptedDuration -= Time.deltaTime;
-            if (interruptedDuration <= 0f)
-            {
-                isInterrupted = false;
-                animator.SetBool("isInterrupted", false);
-            }
-        }
+        psm.CCComputation();
 
         // look at mouse point and move camera
-        lookAtMouse();
+        if (!psm.isStunned)
+        {
+            lookAtMouse();
+        }
 
         // depending on blocking CC
-        if (!isInterrupted)
+        if (!psm.isInterrupted && !psm.isStunned)
         {
             // jump
-            if (Input.GetButtonDown("Jump") && currentAbility == null && abilities[0].coolDownUp)
+            if (Input.GetButtonDown("Jump") && abilities[0].coolDownUp && !psm.isRooted)
             {
-                if (currentChanneling != null)
-                {
-                    if (currentChanneling.channelingCancellable)
-                        currentChanneling.CancelChanelling();
-                    abilities[0].StartChanneling();
-                }
-                else
+                Cancel();
+                if (currentAbility == null)
                 {
                     abilities[0].StartChanneling();
                 }
-
             }
 
             // Sword attack
@@ -137,12 +123,14 @@ public class Character : MonoBehaviour {
             }
 
             // Cancel
-            if (Input.GetButtonDown("CancelChanneling") && currentChanneling != null && currentChanneling.channelingCancellable)
+            if (Input.GetButtonDown("CancelChanneling"))
             {
-                currentChanneling.CancelChanelling();
+                Cancel();
             }
         }
-        
+
+        // CC effects on channeling and casting
+        CCConsequences();
 
         // Channel
         if (currentChanneling != null)
@@ -150,10 +138,10 @@ public class Character : MonoBehaviour {
             currentChanneling.Channel();
         }
 
-        // Do ability
+        // Cast ability
         if (currentAbility != null)
         {
-            currentAbility.DoAbility();
+            currentAbility.Cast();
         }
 
         // cooldowns
@@ -168,10 +156,24 @@ public class Character : MonoBehaviour {
         }        
 	}
 
+    private void Cancel()
+    {
+        Debug.Log("Cancel");
+        if (currentChanneling != null && currentChanneling.channelingCancellable)
+        {
+            currentChanneling.CancelChanelling();
+        }
+        if (currentAbility != null && currentAbility.castingCancellable)
+        {
+            Debug.Log("Cancel casting");
+            currentAbility.AbortCasting();
+        }
+    }
+
     private void FixedUpdate()
     {
         // depending on blocking CC
-        if (!isInterrupted)
+        if (!psm.isInterrupted && !psm.isRooted && !psm.isStunned)
         {
             move();
         }
@@ -229,14 +231,30 @@ public class Character : MonoBehaviour {
         }
     }
 
-    public void Interrupt()
+    private void CCConsequences()
     {
-        Debug.Log("Interrupt");
-        // animation
-        animator.SetBool("isInterrupted", true);
-
-        isInterrupted = true;
-        interruptedDuration = 1f;
+        if (currentChanneling != null)
+        {
+            if (psm.isStunned)
+            {
+                currentChanneling.AbortChanelling();
+            }
+            if (psm.isInterrupted)
+            {
+                currentChanneling.AbortChanelling();
+            }
+        }
+        if (currentAbility != null)
+        {
+            if (psm.isStunned)
+            {
+                currentAbility.AbortCasting();
+            }
+            if (psm.isInterrupted)
+            {
+                currentAbility.AbortCasting();
+            }
+        }
     }
     /*
     private void OnGUI()
