@@ -46,20 +46,22 @@ namespace LightBringer.Knight
 
         float ellapsedTime = 0f;
 
-        public Attack1Behaviour(KnightMotor enemyMotor, float stopDist, Transform target, GameObject attack1act1GO,
+        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
             GameObject attack1act2GO, GameObject attack1act3GO) : base(enemyMotor)
         {
             this.target = target;
-            em.agent.isStopped = true;
-            em.anim.SetBool("castingAttack1", true);
-            em.anim.Play("Attack1");
             act1GO = attack1act1GO;
             act2GO = attack1act2GO;
             act3GO = attack1act3GO;
+        }
+
+        public override void Init()
+        {
+            em.anim.SetBool("castingAttack1", true);
+            em.anim.Play("Attack1");
             act1 = act1GO.GetComponent<AbilityColliderTrigger>();
             act2 = act2GO.GetComponent<AbilityColliderTrigger>();
             act3 = act3GO.GetComponent<AbilityColliderTrigger>();
-
         }
 
         public override void Run()
@@ -98,14 +100,15 @@ namespace LightBringer.Knight
                 {
                     ComputeCharge();
                 }
-
+                /*
                 em.transform.position = new Vector3(
                         positionCurveX.Evaluate(ellapsedTime - DMG_CHECKPOINT_3_START),
                         em.transform.position.y,
                         positionCurveZ.Evaluate(ellapsedTime - DMG_CHECKPOINT_3_START)
                     );
-
+                */
                 em.agent.nextPosition = em.transform.position;
+                em.cc.Move(em.transform.forward * 30 * Time.deltaTime);
             }
             if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
             {
@@ -129,6 +132,8 @@ namespace LightBringer.Knight
 
         public void End()
         {
+            em.agent.SetDestination(em.transform.position);
+            em.agent.nextPosition = em.transform.position;
             em.anim.SetBool("castingAttack1", false);
             complete = true;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
+    public const float GRAVITY = 20f;
 
     public float lookingHeight = 0f;
     public Plane lookingPlane;

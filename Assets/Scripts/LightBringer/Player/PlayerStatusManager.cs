@@ -49,19 +49,28 @@ namespace LightBringer.Player
         public void Stun(float duration)
         {
             isStunned = true;
-            stunDuration = duration;
+            if (stunDuration < duration)
+            {
+                stunDuration = duration;
+            }
         }
 
         public void Root(float duration)
         {
             isRooted = true;
-            rootDuration = duration;
+            if (rootDuration < duration)
+            {
+                rootDuration = duration;
+            }
         }
 
         public void Interrupt(float duration)
         {
             isInterrupted = true;
-            interruptedDuration = duration;
+            if (interruptedDuration < duration)
+            {
+                interruptedDuration = duration;
+            }
             character.animator.SetBool("isInterrupted", true);
             character.animator.Play("Interrupt");
         }

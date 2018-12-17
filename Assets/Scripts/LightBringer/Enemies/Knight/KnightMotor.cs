@@ -3,9 +3,10 @@ using UnityEngine.AI;
 
 namespace LightBringer.Knight
 {
+    [RequireComponent(typeof(CharacterController))]
     public class KnightMotor : MonoBehaviour
     {
-       private const float MAX_MOVE_SPEED_PASSIVE = 4f;
+        private const float MAX_MOVE_SPEED_PASSIVE = 4f;
         private const float MAX_MOVE_SPEED_FIGHT = 12f;
         private const float MAX_MOVE_SPEED_RAGE = 20f;
 
@@ -38,6 +39,8 @@ namespace LightBringer.Knight
         // Components
         [HideInInspector]
         public Animator anim;
+        [HideInInspector]
+        public CharacterController cc;
 
         // Colliders GO
         [HideInInspector]
@@ -50,11 +53,14 @@ namespace LightBringer.Knight
         //Animation acceleration smooth
         Vector3 animAcceleration;
         Vector3 newAcceleration;
-        
+
         private void Start()
         {
             // Animator
             anim = transform.Find("EnemyContainer").GetComponent<Animator>();
+
+            // Character controller
+            cc = GetComponent<CharacterController>();
 
             // Agent
             agent = GetComponent<NavMeshAgent>();
@@ -77,7 +83,9 @@ namespace LightBringer.Knight
             //RotateTowards(characterGO.transform.position - transform.position, EnemyMode.Fight);
 
             Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
-            transform.position = agent.nextPosition;
+            Vector3 moveDirection = agent.velocity;
+            moveDirection.y = moveDirection.y - GameManager.GRAVITY;
+            cc.Move(moveDirection * Time.deltaTime);
 
             // Map 'worldDeltaPosition' to local space
             float dx = Vector3.Dot(transform.right, worldDeltaPosition);
@@ -103,7 +111,7 @@ namespace LightBringer.Knight
             LookAt lookAt = GetComponent<LookAt>();
             if (lookAt)
                 lookAt.lookAtTargetPosition = agent.steeringTarget + transform.forward;
-            
+
         }
 
         public void SetMode(int mode)
@@ -191,6 +199,8 @@ namespace LightBringer.Knight
             GUI.contentColor = Color.black;
             GUILayout.BeginArea(new Rect(20, 20, 250, 120));
             GUILayout.Label("Knight position : " + transform.position);
+            GUILayout.Label("Agent position : " + agent.nextPosition);
+            GUILayout.Label("Agent stopé : " + agent.isStopped);
             GUILayout.EndArea();
         }
     }

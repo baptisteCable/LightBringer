@@ -11,8 +11,13 @@ namespace LightBringer.Knight
         public GoToPointBehaviour(KnightMotor enemyMotor, float stopDist, Transform target) : base(enemyMotor)
         {
             this.stopDist = stopDist;
-            em.agent.SetDestination(target.position);
             this.target = target;
+        }
+
+        public override void Init()
+        {
+            em.agent.SetDestination(target.position);
+            em.agent.isStopped = false;
         }
 
         public override void Run()
@@ -24,13 +29,13 @@ namespace LightBringer.Knight
 
             if (em.agent.remainingDistance < em.agent.stoppingDistance + stopDist)
             {
-                em.agent.isStopped = true;
                 End();
             }
         }
 
         public void End()
         {
+            em.agent.isStopped = true;
             complete = true;
         }
     }

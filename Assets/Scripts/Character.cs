@@ -172,15 +172,7 @@ public class Character : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        // depending on blocking CC
-        if (!psm.isInterrupted && !psm.isRooted && !psm.isStunned)
-        {
-            move();
-        }
-        else
-        {
-            animator.SetBool("isMoving", false);
-        }
+        Move();
     }
 
     // look at mouse and camera positionning procedure
@@ -209,12 +201,12 @@ public class Character : MonoBehaviour {
     }
 
     // move procedure
-    void move()
+    void Move()
     {
         // Moving
         float v = Input.GetAxisRaw("Vertical");
         float h = Input.GetAxisRaw("Horizontal");
-        if ((v * v + h * h) > .01f)
+        if (!psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
         {
             Vector3 direction = new Vector3(v + h, 0, v - h);
 
@@ -271,21 +263,10 @@ public class Character : MonoBehaviour {
 }
 
 /*
- * Gérer les colliders qui se déclenchent pendant attack1 (premiere attaque de Attack1 gérée mais ne marche pas)
- * 
- * Réorienter Knight entre les attaques de Attack1
  *
- * Collision pendant Attack1 (charge ?)
- * 
- * Collider du shield qui ne bouge pas avec l'animation.
+ * Mieux timer les attaques (montre trop rapide, qui ne cherche pas assez)
  * 
  * lancer les skills shots vers le curseur
- * 
- * cancel de cast
- * 
- * IA ennemi
- * 
- * animation attaque bloquée
  * 
  * combat plus dynamique
  * 

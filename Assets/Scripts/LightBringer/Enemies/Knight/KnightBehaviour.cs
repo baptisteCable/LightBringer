@@ -14,5 +14,9 @@ namespace LightBringer.Knight
         }
 
         public abstract void Run();
+
+        public virtual void Init()
+        {
+        }
     }
 }
