@@ -53,24 +53,27 @@ namespace LightBringer.Knight
         // Update is called once per frame
         void Update()
         {
-            RefreshCD();
-
-            if (!readyForNext)
+            if (!motor.isDead)
             {
-                currentBehaviour.Run();
-            }
+                RefreshCD();
 
-            // New behaviour after run to have 1 frame to compute agent path
-            if (readyForNext)
-            {
-                ComputeNextBehaviour();
-                readyForNext = false;
-            }
+                if (!readyForNext)
+                {
+                    currentBehaviour.Run();
+                }
 
-            // let one frame for animator before next behaviour
-            if (currentBehaviour.complete)
-            {
-                readyForNext = true;
+                // New behaviour after run to have 1 frame to compute agent path
+                if (readyForNext)
+                {
+                    ComputeNextBehaviour();
+                    readyForNext = false;
+                }
+
+                // let one frame for animator before next behaviour
+                if (currentBehaviour.complete)
+                {
+                    readyForNext = true;
+                }
             }
         }
 

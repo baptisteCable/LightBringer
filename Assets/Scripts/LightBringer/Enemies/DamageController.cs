@@ -1,21 +1,30 @@
 ﻿using System.Collections;
 using UnityEngine;
+using LightBringer;
 
+[RequireComponent(typeof(EnemyMotor))]
 public class DamageController : MonoBehaviour {
     // status
     public float maxHP;
     public float currentHP;
     public GameObject statusBarGO;
     public float displayHeight;
+    private EnemyMotor motor;
 
     void Start () {
         EnemyStatusBar esb = (EnemyStatusBar)(statusBarGO.GetComponent("EnemyStatusBar"));
+        motor = GetComponent<EnemyMotor>();
         esb.damageController = this;
     }
 	
 	public void TakeDamage(float amount)
     {
         currentHP -= amount;
+
+        if (currentHP <= 0)
+        {
+            motor.Die();
+        }
 
         StopCoroutine("Flash");
         StartCoroutine("Flash");

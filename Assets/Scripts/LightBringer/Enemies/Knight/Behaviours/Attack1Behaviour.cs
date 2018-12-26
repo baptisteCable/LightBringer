@@ -32,10 +32,6 @@ namespace LightBringer.Knight
         // Collider list
         private List<Collider> cols;
 
-        // Charge curves
-        private AnimationCurve positionCurveX;
-        private AnimationCurve positionCurveZ;
-
         // Init booleans
         private bool part1Initialized = false;
         private bool part2Initialized = false;
@@ -94,12 +90,7 @@ namespace LightBringer.Knight
             if (ellapsedTime >= DMG_CHECKPOINT_3_START && ellapsedTime <= DMG_CHECKPOINT_3_END)
             {
                 InitPart3();
-
-                // Position
-                if (positionCurveX == null)
-                {
-                    em.SetOverrideAgent(true);
-                }
+                
                 em.Move(em.transform.forward * 30);
             }
             if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
@@ -206,6 +197,7 @@ namespace LightBringer.Knight
         {
             if (!part3Initialized)
             {
+                em.SetOverrideAgent(true);
                 act3GO.SetActive(true);
                 act3.SetAbility(this);
                 cols = new List<Collider>();
