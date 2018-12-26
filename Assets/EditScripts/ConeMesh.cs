@@ -2,16 +2,31 @@
 
 [ExecuteInEditMode]
 public class ConeMesh : MonoBehaviour {
-    private const float TRIGGER_TOP = 3f;
+    public float distance;
+    public float angle;
+    public float top;
+
+    private Mesh s;
 
     void Start () {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
         
-        CreateAngularAoEMesh(2f, 120f, TRIGGER_TOP, ref mesh);
+        CreateAngularAoEMesh(distance, angle, top);
     }
 
-    private void CreateAngularAoEMesh(float distance, float angle, float height, ref Mesh mesh)
+    private void CreateAngularAoEMesh(float distance, float angle, float height)
     {
+        s = new Mesh();
+        if (GetComponent<MeshFilter>())
+        {
+            GetComponent<MeshFilter>().mesh = s;
+        }
+        if (GetComponent<MeshCollider>())
+        {
+            GetComponent<MeshCollider>().sharedMesh = s;
+        }
+
+        s.name = "S";
+
         Vector3[] vertices;
         int[] triangles;
         int j = 0;
@@ -67,9 +82,8 @@ public class ConeMesh : MonoBehaviour {
         triangles[j++] = 2 * nbVert - 1;
 
 
-        mesh.Clear();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        s.vertices = vertices;
+        s.triangles = triangles;
 
     }
 

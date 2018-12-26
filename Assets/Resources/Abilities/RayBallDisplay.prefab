@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4975735916721650}
   - component: {fileID: 33025411508010504}
   - component: {fileID: 23262733372531690}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RayBallDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}

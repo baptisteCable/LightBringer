@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageController : MonoBehaviour {
@@ -31,7 +30,7 @@ public class DamageController : MonoBehaviour {
 
     private void RecFlashOn(Transform tr)
     {
-        if (tr.tag != "Shield")
+        if (tr.tag != "Shield" && tr.tag != "UI")
         {
             Renderer renderer = tr.GetComponent<Renderer>();
 
@@ -52,7 +51,7 @@ public class DamageController : MonoBehaviour {
 
     private void RecFlashOff(Transform tr)
     {
-        if (tr.tag != "Shield")
+        if (tr.tag != "Shield" && tr.tag != "UI")
         {
             Renderer renderer = tr.GetComponent<Renderer>();
 

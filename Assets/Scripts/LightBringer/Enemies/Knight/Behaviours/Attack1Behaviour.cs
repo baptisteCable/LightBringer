@@ -98,17 +98,9 @@ namespace LightBringer.Knight
                 // Position
                 if (positionCurveX == null)
                 {
-                    ComputeCharge();
+                    em.SetOverrideAgent(true);
                 }
-                /*
-                em.transform.position = new Vector3(
-                        positionCurveX.Evaluate(ellapsedTime - DMG_CHECKPOINT_3_START),
-                        em.transform.position.y,
-                        positionCurveZ.Evaluate(ellapsedTime - DMG_CHECKPOINT_3_START)
-                    );
-                */
-                em.agent.nextPosition = em.transform.position;
-                em.cc.Move(em.transform.forward * 30 * Time.deltaTime);
+                em.Move(em.transform.forward * 30);
             }
             if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
             {
@@ -117,9 +109,7 @@ namespace LightBringer.Knight
             }
 
             // POS init, 1 AND 2
-            if (ellapsedTime <= DMG_CHECKPOINT_1_START
-                || (ellapsedTime >= POS_CHECKPOINT_1_START && ellapsedTime <= POS_CHECKPOINT_1_END)
-                || (ellapsedTime >= POS_CHECKPOINT_2_START && ellapsedTime <= POS_CHECKPOINT_2_END))
+            if (ellapsedTime <= DMG_CHECKPOINT_1_START || (ellapsedTime >= POS_CHECKPOINT_1_START && ellapsedTime <= POS_CHECKPOINT_1_END))
             {
                 em.RotateTowards(this.target.position - em.transform.position);
             }
@@ -132,25 +122,9 @@ namespace LightBringer.Knight
 
         public void End()
         {
-            em.agent.SetDestination(em.transform.position);
-            em.agent.nextPosition = em.transform.position;
             em.anim.SetBool("castingAttack1", false);
             complete = true;
-        }
-
-        private void ComputeCharge()
-        {
-            positionCurveX = new AnimationCurve();
-            positionCurveZ = new AnimationCurve();
-
-            positionCurveX.AddKey(new Keyframe(0f, em.transform.position.x, 0f, 0f));
-            positionCurveZ.AddKey(new Keyframe(0f, em.transform.position.z, 0f, 0f));
-
-            positionCurveX.AddKey(new Keyframe(.7f, (em.transform.position + em.transform.forward * CHARGE_RANGE).x, 0f, 0f));
-            positionCurveZ.AddKey(new Keyframe(.7f, (em.transform.position + em.transform.forward * CHARGE_RANGE).z, 0f, 0f));
-
-            positionCurveX.AddKey(new Keyframe(1f, (em.transform.position + em.transform.forward * CHARGE_RANGE).x, 0f, 0f));
-            positionCurveZ.AddKey(new Keyframe(1f, (em.transform.position + em.transform.forward * CHARGE_RANGE).z, 0f, 0f));
+            em.SetOverrideAgent(false);
         }
 
         public void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)

@@ -4,7 +4,8 @@ using UnityEngine;
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(Character))]
-    public class PlayerStatusManager : MonoBehaviour {
+    public class PlayerStatusManager : MonoBehaviour
+    {
         // HP MP
         public float maxHP;
         public float currentHP;
@@ -116,7 +117,7 @@ namespace LightBringer.Player
 
         private void RecFlashOn(Transform tr)
         {
-            if (tr.tag != "Shield" && tr.tag != "Weapon")
+            if (tr.tag != "Shield" && tr.tag != "Weapon" && tr.tag != "Spell" && tr.tag != "UI" && tr.tag != "MainCamera")
             {
                 Renderer renderer = tr.GetComponent<Renderer>();
 
@@ -127,17 +128,17 @@ namespace LightBringer.Player
                     mat.EnableKeyword("_EMISSION");
                     mat.SetColor("_EmissionColor", new Color(1f, 153f / 255, 153f / 255));
                 }
-            }
 
-            foreach (Transform child in tr)
-            {
-                RecFlashOn(child);
+                foreach (Transform child in tr)
+                {
+                    RecFlashOn(child);
+                }
             }
         }
 
         private void RecFlashOff(Transform tr)
         {
-            if (tr.tag != "Shield" && tr.tag != "Weapon")
+            if (tr.tag != "Shield" && tr.tag != "Weapon" && tr.tag != "Spell" && tr.tag != "UI" && tr.tag != "MainCamera")
             {
                 Renderer renderer = tr.GetComponent<Renderer>();
 
@@ -147,11 +148,11 @@ namespace LightBringer.Player
 
                     mat.DisableKeyword("_EMISSION");
                 }
-            }
 
-            foreach (Transform child in tr)
-            {
-                RecFlashOff(child);
+                foreach (Transform child in tr)
+                {
+                    RecFlashOff(child);
+                }
             }
         }
         #endregion

@@ -7,6 +7,11 @@ namespace LightBringer.Knight
     [RequireComponent(typeof(KnightMotor))]
     public class KnightController : MonoBehaviour
     {
+        private const int ATTACK1 = 0;
+        private const int ATTACK2 = 1;
+        private const float ATTACK1_CD = 8f;
+        private const float ATTACK2_CD = 17f;
+
         // Components
         KnightMotor motor;
         private NavMeshAgent agent;
@@ -15,6 +20,10 @@ namespace LightBringer.Knight
         private KnightBehaviour currentBehaviour;
         private KnightBehaviour lastBehaviour;
         private bool readyForNext = false;
+
+        // CD
+        private float[] remainingCD;
+        private bool[] CDUp;
 
         // Environment
         public Transform target;
@@ -25,13 +34,27 @@ namespace LightBringer.Knight
             motor = GetComponent<KnightMotor>();
             agent = GetComponent<NavMeshAgent>();
             agent.destination = transform.position;
-            currentBehaviour = new GoToPointBehaviour(motor, 3f, target);
-            lastBehaviour = new WaitBehaviour(motor, 2f);
+
+            // last behaviour
+            currentBehaviour = new WaitBehaviour(motor, 2f);
+
+            // new (and starting) behaviour
+            SetBehaviour(new GoAroundPlayerBehaviour(motor, 2f, target, false));
+
+            // CD
+            remainingCD = new float[2];
+            CDUp = new bool[2];
+            CDUp[ATTACK1] = false;
+            CDUp[ATTACK2] = false;
+            remainingCD[ATTACK1] = ATTACK1_CD;
+            remainingCD[ATTACK2] = ATTACK2_CD;
         }
 
         // Update is called once per frame
         void Update()
         {
+            RefreshCD();
+
             if (!readyForNext)
             {
                 currentBehaviour.Run();
@@ -41,7 +64,6 @@ namespace LightBringer.Knight
             if (readyForNext)
             {
                 ComputeNextBehaviour();
-                currentBehaviour.Init();
                 readyForNext = false;
             }
 
@@ -52,87 +74,67 @@ namespace LightBringer.Knight
             }
         }
 
+        private void RefreshCD()
+        {
+            for (int i = 0; i < CDUp.Length; i++)
+            {
+                if (!CDUp[i])
+                {
+                    remainingCD[i] -= Time.deltaTime;
+                    if (remainingCD[i] < 0)
+                    {
+                        CDUp[i] = true;
+                    }
+                }
+            }
+        }
+
         private void ComputeNextBehaviour()
         {
             Dictionary<KnightBehaviour, float> list = new Dictionary<KnightBehaviour, float>();
+            float weight = 0;
 
+            // Wait behaviour
+            weight = 1f;
             if (currentBehaviour.GetType() == typeof(WaitBehaviour))
             {
-                list.Add(new WaitAndRotateBehaviour(motor, Random.value * 1.5f, target), 1f);
-
-                if (lastBehaviour.GetType() != typeof(WaitBehaviour))
-                {
-                    list.Add(new WaitBehaviour(motor, Random.value + .5f), .5f);
-                }
-                
-                if ((target.position - motor.transform.position).magnitude > 4)
-                {
-                    list.Add(new GoToPointBehaviour(motor, 3f, target), (target.position - motor.transform.position).magnitude / 2f);
-                }
-                
-                if ((target.position - motor.transform.position).magnitude < 8)
-                {
-                    list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), 4f);
-                }
+                weight -= .5f;
             }
+            list.Add(new WaitBehaviour(motor, Random.value + .5f), weight);
 
-            else if (currentBehaviour.GetType() == typeof(WaitAndRotateBehaviour))
+            // Wait and rotate behaviour
+            weight = 1.5f;
+            if (currentBehaviour.GetType() == typeof(WaitAndRotateBehaviour))
             {
-                list.Add(new WaitAndRotateBehaviour(motor, Random.value * 1.5f, target), .5f);
-
-                if (lastBehaviour.GetType() != typeof(WaitBehaviour))
-                {
-                    list.Add(new WaitBehaviour(motor, Random.value + .5f), .5f);
-                }
-
-                if ((target.position - motor.transform.position).magnitude > 4)
-                {
-                    list.Add(new GoToPointBehaviour(motor, 3f, target), (target.position - motor.transform.position).magnitude / 2f);
-                }
-                
-                if ((target.position - motor.transform.position).magnitude < 8)
-                {
-                    list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), 4f);
-                }
+                weight -= .5f;
             }
+            list.Add(new WaitAndRotateBehaviour(motor, Random.value * 2.5f + .5f, target), weight);
 
-            else if (currentBehaviour.GetType() == typeof(GoToPointBehaviour))
+            // Go to player behaviour
+            weight = 0;
+            if ((target.position - motor.transform.position).magnitude > 4)
             {
-                list.Add(new WaitAndRotateBehaviour(motor, Random.value * 2f, target), 1f);
-
-                list.Add(new WaitBehaviour(motor, Random.value * 2f), .5f);
-                
-                if ((target.position - motor.transform.position).magnitude > 4)
-                {
-                    list.Add(new GoToPointBehaviour(motor, 3f, target), (target.position - motor.transform.position).magnitude / 2f);
-                }
-                
-                if ((target.position - motor.transform.position).magnitude < 8)
-                {
-                    list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), 8f);
-                }
+                weight = ((target.position - motor.transform.position).magnitude - 4) / 2f;
             }
-            
-            else if (currentBehaviour.GetType() == typeof(Attack1Behaviour))
+            list.Add(new GoToPointBehaviour(motor, 3f, target), weight);
+
+            // Go around player
+            weight = 1f;
+            list.Add(new GoAroundPlayerBehaviour(motor, .5f + Random.value * 2.5f, target, Random.value < .5f), weight);
+
+            // Side steps
+            weight = 1.5f;
+            list.Add(new SideStepsBehaviour(motor, 1f + Random.value * 4f, target), weight);
+
+            // Attack 1 behaviour
+            weight = 0f;
+            if (CDUp[ATTACK1] && (target.position - motor.transform.position).magnitude < 8f)
             {
-                list.Add(new WaitAndRotateBehaviour(motor, Random.value * 1.2f + .3f, target), 1f);
-
-                if (lastBehaviour.GetType() != typeof(WaitBehaviour))
-                {
-                    list.Add(new WaitBehaviour(motor, Random.value * .8f + .5f), 4f);
-                }
-
-                if ((target.position - motor.transform.position).magnitude > 4)
-                {
-                    list.Add(new GoToPointBehaviour(motor, 3f, target), (target.position - motor.transform.position).magnitude / 3f);
-                }
+                weight = 6f + .5f * (8f - ((target.position - motor.transform.position).magnitude));
             }
+            list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
 
-            else
-            {
-                Debug.Log("No current Behaviour for Knight...");
-            }
-            
+            // Determine next behaviour from list
             ActivateNextBehaviourFromDictionary(list);
         }
 
@@ -159,7 +161,7 @@ namespace LightBringer.Knight
                 sum += en.Current.Value;
                 if (sum > rnd)
                 {
-                    currentBehaviour = en.Current.Key;
+                    SetBehaviour(en.Current.Key);
                 }
                 else
                 {
@@ -170,7 +172,18 @@ namespace LightBringer.Knight
             Debug.Log(currentBehaviour);
         }
 
-        private Dictionary<KnightBehaviour, float> NormalizedDictionary(Dictionary<KnightBehaviour, float> list)
+        private void SetBehaviour(KnightBehaviour behaviour)
+        {
+            if (behaviour.GetType() == typeof(Attack1Behaviour))
+            {
+                CDUp[ATTACK1] = false;
+                remainingCD[ATTACK1] = ATTACK1_CD;
+            }
+            currentBehaviour = behaviour;
+            currentBehaviour.Init();
+        }
+
+        private static Dictionary<KnightBehaviour, float> NormalizedDictionary(Dictionary<KnightBehaviour, float> list)
         {
             float sum = 0;
 
@@ -187,6 +200,15 @@ namespace LightBringer.Knight
             }
 
             return normalized;
+        }
+
+        private void OnGUI()
+        {
+            GUI.contentColor = Color.black;
+            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+            GUILayout.Label("Attack 1 up : " + CDUp[ATTACK1]);
+            GUILayout.Label("Attack 1 cd : " + remainingCD[ATTACK1]);
+            GUILayout.EndArea();
         }
     }
 }

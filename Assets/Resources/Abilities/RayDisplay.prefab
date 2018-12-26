@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4671772549698148}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RayDisplay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   - component: {fileID: 4550608768979150}
   - component: {fileID: 33971564505171268}
   - component: {fileID: 23888542781585474}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}

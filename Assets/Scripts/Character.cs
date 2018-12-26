@@ -262,7 +262,11 @@ public class Character : MonoBehaviour {
     */
 }
 
-/*
+/* 
+ * Attack 2 et 3
+ * Petits pas normaux plutôt qu'immobile
+ * 
+ * La charge pousse le joueur et ne monte pas dessus.
  *
  * Mieux timer les attaques (montre trop rapide, qui ne cherche pas assez)
  * 

@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 65041591543263124}
   - component: {fileID: 54967062558512194}
   - component: {fileID: 114374436661773084}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CubeSkillShot
   m_TagString: Untagged
   m_Icon: {fileID: 0}

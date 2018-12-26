@@ -30,6 +30,8 @@ namespace LightBringer.Knight
         // Movement
         private float moveSpeed;
         private float acceleration;
+        private Vector3 lastPosition;
+        private bool overrideAgent;
 
         // Rotation
         private float currentRotationSpeed;
@@ -65,6 +67,7 @@ namespace LightBringer.Knight
             // Agent
             agent = GetComponent<NavMeshAgent>();
             agent.updatePosition = false;
+            overrideAgent = false;
 
             // Colliders
             attack1act1GO = transform.Find("EnemyContainer/Attack1Trigger").gameObject;
@@ -76,22 +79,20 @@ namespace LightBringer.Knight
 
             // Initial mode
             SetMode(EnemyMode.Fight);
+
+            // Last position
+            lastPosition = transform.position;
         }
 
         private void Update()
         {
-            //RotateTowards(characterGO.transform.position - transform.position, EnemyMode.Fight);
-
-            Vector3 worldDeltaPosition = agent.nextPosition - transform.position;
-            Vector3 moveDirection = agent.velocity;
-            moveDirection.y = moveDirection.y - GameManager.GRAVITY;
-            cc.Move(moveDirection * Time.deltaTime);
+            Vector3 worldDeltaPosition = transform.position - lastPosition;
+            lastPosition = transform.position;
 
             // Map 'worldDeltaPosition' to local space
             float dx = Vector3.Dot(transform.right, worldDeltaPosition);
             float dy = Vector3.Dot(transform.forward, worldDeltaPosition);
             Vector2 deltaPosition = new Vector2(dx, dy);
-
 
             // Low-pass filter the deltaMove
             float smooth = Mathf.Min(1.0f, Time.deltaTime / 0.15f);
@@ -108,10 +109,33 @@ namespace LightBringer.Knight
             anim.SetFloat("VelX", velocity.x);
             anim.SetFloat("VelY", velocity.y);
 
+            if (agent.velocity.magnitude > 0 && !overrideAgent)
+            {
+                Move(agent.velocity);
+            }
+                
+
+            /*
             LookAt lookAt = GetComponent<LookAt>();
             if (lookAt)
                 lookAt.lookAtTargetPosition = agent.steeringTarget + transform.forward;
+                */
 
+        }
+
+        public void MoveInDirection(Vector3 direction)
+        {
+            Move(direction.normalized * moveSpeed);
+        }
+
+        public void Move(Vector3 velocity)
+        {
+            velocity.y = velocity.y - GameManager.GRAVITY;
+            cc.Move(velocity * Time.deltaTime);
+            if (overrideAgent)
+            {
+                agent.nextPosition = transform.position + velocity * Time.deltaTime;
+            }
         }
 
         public void SetMode(int mode)
@@ -194,14 +218,20 @@ namespace LightBringer.Knight
             agent.angularSpeed = rotationSpeed;
         }
 
-        private void OnGUI()
+        public void SetOverrideAgent(bool oa)
         {
-            GUI.contentColor = Color.black;
-            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("Knight position : " + transform.position);
-            GUILayout.Label("Agent position : " + agent.nextPosition);
-            GUILayout.Label("Agent stopé : " + agent.isStopped);
-            GUILayout.EndArea();
+            if (oa)
+            {
+                agent.velocity = Vector3.zero;
+                agent.isStopped = true;
+                overrideAgent = true;
+            }
+            else
+            {
+                agent.nextPosition = transform.position;
+                agent.SetDestination(transform.position);
+                overrideAgent = false;
+            }
         }
     }
 }
