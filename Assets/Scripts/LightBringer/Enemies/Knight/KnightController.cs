@@ -10,9 +10,9 @@ namespace LightBringer.Knight
         private const int ATTACK1 = 0;
         private const int ATTACK2 = 1;
         private const int ATTACK3 = 2;
-        private const float ATTACK1_CD = 7f;
-        private const float ATTACK2_CD = 21f;
-        private const float ATTACK3_CD = 13f;
+        private const float ATTACK1_CD = 6f;
+        private const float ATTACK2_CD = 15f;
+        private const float ATTACK3_CD = 11f;
 
         // Components
         KnightMotor motor;
@@ -45,7 +45,7 @@ namespace LightBringer.Knight
             CDUp[ATTACK1] = false;
             CDUp[ATTACK2] = false;
             CDUp[ATTACK3] = false;
-            remainingCD[ATTACK1] = ATTACK1_CD;
+            remainingCD[ATTACK1] = 0f;
             remainingCD[ATTACK2] = ATTACK2_CD;
             remainingCD[ATTACK3] = ATTACK3_CD;
         }
@@ -103,7 +103,7 @@ namespace LightBringer.Knight
             {
                 weight -= .5f;
             }
-            list.Add(new WaitBehaviour(motor, Random.value + .5f), weight);
+            list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
 
             // Wait and rotate behaviour
             weight = 1.5f;
@@ -111,7 +111,7 @@ namespace LightBringer.Knight
             {
                 weight -= .5f;
             }
-            list.Add(new WaitAndRotateBehaviour(motor, Random.value * 2.5f + .5f, target), weight);
+            list.Add(new WaitAndRotateBehaviour(motor, Random.value * .8f + .2f, target), weight);
 
             // Go to player behaviour
             weight = 0;
@@ -123,27 +123,49 @@ namespace LightBringer.Knight
 
             // Go around player
             weight = 1f;
-            list.Add(new GoAroundPlayerBehaviour(motor, .5f + Random.value * 2.5f, target, Random.value < .5f), weight);
+            list.Add(new GoAroundPlayerBehaviour(motor, .5f + Random.value * 1.2f, target, Random.value < .5f), weight);
 
             // Side steps
             weight = 1.5f;
-            list.Add(new SideStepsBehaviour(motor, 1f + Random.value * 4f, target), weight);
+            list.Add(new SideStepsBehaviour(motor, .5f + Random.value * 1.2f, target), weight);
 
             // Attack 1 behaviour
             weight = 0f;
-            if (CDUp[ATTACK1] && (target.position - motor.transform.position).magnitude < 8f)
+            if (CDUp[ATTACK1])
             {
-                weight = 6f + .5f * (8f - ((target.position - motor.transform.position).magnitude));
+                if ((target.position - motor.transform.position).magnitude < 5f)
+                {
+                    weight = 8f;
+                }
+                else if ((target.position - motor.transform.position).magnitude < 10f)
+                {
+                    weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
+                }
             }
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
 
             // Attack 2 behaviour
             weight = 0f;
-            if (CDUp[ATTACK2] && (target.position - motor.transform.position).magnitude < 20f)
+            if (CDUp[ATTACK2] && (target.position - motor.transform.position).magnitude < 22f)
             {
                 weight = 10f;
             }
             list.Add(new Attack2Behaviour(motor, target), weight);
+
+            // Attack 3 behaviour
+            weight = 0f;
+            if (CDUp[ATTACK3])
+            {
+                if ((target.position - motor.transform.position).magnitude < 6f)
+                {
+                    weight = 10f;
+                }
+                else if ((target.position - motor.transform.position).magnitude < 20f)
+                {
+                    weight = 10f * (20f - (target.position - motor.transform.position).magnitude) / (20f - 6f);
+                }
+            }
+            list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider), weight);
 
             // Determine next behaviour from list
             ActivateNextBehaviourFromDictionary(list);
@@ -191,6 +213,11 @@ namespace LightBringer.Knight
             {
                 CDUp[ATTACK2] = false;
                 remainingCD[ATTACK2] = ATTACK2_CD;
+            }
+            else if (behaviour.GetType() == typeof(Attack3Behaviour))
+            {
+                CDUp[ATTACK3] = false;
+                remainingCD[ATTACK3] = ATTACK3_CD;
             }
             currentBehaviour = behaviour;
             currentBehaviour.Init();

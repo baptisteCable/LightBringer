@@ -19,7 +19,7 @@ namespace LightBringer.Knight
         {
             em.SetOverrideAgent(true);
             left = (Random.value < .5f);
-            currentDirectionDuration = Random.value * 2 + .5f;
+            NewDirection();
         }
 
         public override void Run()
@@ -36,8 +36,7 @@ namespace LightBringer.Knight
             currentDirectionDuration -= Time.deltaTime;
             if (currentDirectionDuration < 0)
             {
-                left = !left;
-                currentDirectionDuration = Random.value * 2 + .5f;
+                NewDirection();
             }
 
             duration -= Time.deltaTime;
@@ -46,6 +45,12 @@ namespace LightBringer.Knight
             {
                 End();
             }
+        }
+
+        private void NewDirection()
+        {
+            left = !left;
+            currentDirectionDuration = Random.value * .3f + .3f;
         }
 
         public void End()
