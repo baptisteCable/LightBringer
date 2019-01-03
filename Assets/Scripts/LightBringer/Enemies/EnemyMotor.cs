@@ -6,21 +6,21 @@ namespace LightBringer
     [RequireComponent(typeof(CharacterController))]
     public abstract class EnemyMotor : MonoBehaviour
     {
-        protected abstract float MAX_MOVE_SPEED_PASSIVE { get; }
-        protected abstract float MAX_MOVE_SPEED_FIGHT { get; }
-        protected abstract float MAX_MOVE_SPEED_RAGE { get; }
+        public float MaxMoveSpeedPassive;
+        public float MaxMoveSpeedFight;
+        public float MaxMoveSpeedRage;
 
-        protected abstract float ACCELERATION_PASSIVE { get; }
-        protected abstract float ACCELERATION_FIGHT { get; }
-        protected abstract float ACCELERATION_RAGE { get; }
+        public float AccelerationPassive;
+        public float AccelerationFight;
+        public float AccelerationRage;
 
-        protected abstract float ROTATION_ACCELERATION_PASSIVE { get; }
-        protected abstract float ROTATION_ACCELERATION_FIGHT { get; }
-        protected abstract float ROTATION_ACCELERATION_RAGE { get; }
+        public float RotationAccelerationPassive;
+        public float RotationAccelerationFight;
+        public float RotationAccelerationRage;
 
-        protected abstract float MAX_ROTATION_SPEED_PASSIVE { get; }
-        protected abstract float MAX_ROTATION_SPEED_FIGHT { get; }
-        protected abstract float MAX_ROTATION_SPEED_RAGE { get; }
+        public float MaxRotationSpeedPassive;
+        public float MaxRotationSpeedFight;
+        public float MaxRotationSpeedRage;
 
         [HideInInspector]
         public NavMeshAgent agent;
@@ -153,16 +153,16 @@ namespace LightBringer
             switch (mode)
             {
                 case EnemyMode.Passive:
-                    SetMovementParameters(MAX_MOVE_SPEED_PASSIVE, ACCELERATION_PASSIVE);
-                    SetRotationParameters(MAX_ROTATION_SPEED_PASSIVE, ROTATION_ACCELERATION_PASSIVE);
+                    SetMovementParameters(MaxMoveSpeedPassive, AccelerationPassive);
+                    SetRotationParameters(MaxRotationSpeedPassive, RotationAccelerationPassive);
                     break;
                 case EnemyMode.Fight:
-                    SetMovementParameters(MAX_MOVE_SPEED_FIGHT, ACCELERATION_FIGHT);
-                    SetRotationParameters(MAX_ROTATION_SPEED_FIGHT, ROTATION_ACCELERATION_FIGHT);
+                    SetMovementParameters(MaxMoveSpeedFight, AccelerationFight);
+                    SetRotationParameters(MaxRotationSpeedFight, RotationAccelerationFight);
                     break;
                 case EnemyMode.Rage:
-                    SetMovementParameters(MAX_MOVE_SPEED_RAGE, ACCELERATION_RAGE);
-                    SetRotationParameters(MAX_ROTATION_SPEED_RAGE, ROTATION_ACCELERATION_RAGE);
+                    SetMovementParameters(MaxMoveSpeedRage, AccelerationRage);
+                    SetRotationParameters(MaxRotationSpeedRage, RotationAccelerationRage);
                     break;
                 default: throw new System.Exception("Invalid Enemy Mode");
             }

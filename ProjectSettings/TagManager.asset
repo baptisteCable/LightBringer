@@ -10,6 +10,7 @@ TagManager:
   - Obstacle
   - Spell
   - UI
+  - Ground
   layers:
   - Default
   - TransparentFX

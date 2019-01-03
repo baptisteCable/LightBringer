@@ -24,7 +24,9 @@ public class DamageController : MonoBehaviour {
         if (currentHP <= 0)
         {
             motor.Die();
+            Destroy(statusBarGO);
         }
+
 
         StopCoroutine("Flash");
         StartCoroutine("Flash");

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using LightBringer.Player;
 
-namespace LightBringer {
+namespace LightBringer.Player
+{
     public class CCBar : MonoBehaviour {
         private GameObject rooted;
         private GameObject stunned;

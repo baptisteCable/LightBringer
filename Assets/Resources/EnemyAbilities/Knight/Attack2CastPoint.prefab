@@ -9,52 +9,51 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1901841423608326}
+  m_RootGameObject: {fileID: 1219392242389180}
   m_IsPrefabAsset: 1
---- !u!1 &1901841423608326
+--- !u!1 &1219392242389180
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4962836878516842}
-  - component: {fileID: 119762285520474654}
+  - component: {fileID: 4634204556962542}
+  - component: {fileID: 114080440326863012}
   m_Layer: 0
-  m_Name: CircleSAbilityIndicatorPrefab
+  m_Name: Attack2CastPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4962836878516842
+--- !u!4 &4634204556962542
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1901841423608326}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 8, z: 0}
+  m_GameObject: {fileID: 1219392242389180}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
---- !u!119 &119762285520474654
-Projector:
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114080440326863012
+MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1901841423608326}
+  m_GameObject: {fileID: 1219392242389180}
   m_Enabled: 1
-  serializedVersion: 2
-  m_NearClipPlane: 0.1
-  m_FarClipPlane: 60
-  m_FieldOfView: 60
-  m_AspectRatio: 1
-  m_Orthographic: 1
-  m_OrthographicSize: 1
-  m_Material: {fileID: 2100000, guid: ad890b893813d4e45b8423fe9e836907, type: 2}
-  m_IgnoreLayers:
-    serializedVersion: 2
-    m_Bits: 3383
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40ae8422056d6cd4dafbb586470ec4d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeBeforeNext: 2
+  remainingShots: 10
+  range: 15
+  radius: 1
+  ImpactPrefab: {fileID: 1836717430356120, guid: 8bbcc1c9cd8d26d4d9bba513b6babe19,
+    type: 2}

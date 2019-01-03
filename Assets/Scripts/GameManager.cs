@@ -22,6 +22,6 @@ public class GameManager : MonoBehaviour {
         }
         gm = this;
 		lookingPlane = new Plane(new Vector3(0, 1, 0), new Vector3(0, lookingHeight, 0));
-        camPositionFromPlayer = new Vector3(-4.8f, 18f, -4.8f);
+        camPositionFromPlayer = Camera.main.transform.position;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using LightBringer.Player;
 using System.Collections.Generic;
+using LightBringer.Abilities;
 
 namespace LightBringer.Knight
 {

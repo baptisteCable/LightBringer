@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightBringer
+namespace LightBringer.Abilities
 {
     public interface CollisionAbility
     {

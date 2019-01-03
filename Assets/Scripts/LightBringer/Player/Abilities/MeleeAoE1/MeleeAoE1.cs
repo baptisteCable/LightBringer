@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-namespace LightBringer
+namespace LightBringer.Player.Abilities
 {
     public class MeleeAoE1 : Ability
     {
@@ -12,7 +12,7 @@ namespace LightBringer
         // const
         private const float COOLDOWN_DURATION = 3f;
         private const float ABILITY_DURATION = 3f;
-        private const float CHANNELING_DURATION = .8f;
+        private const float CHANNELING_DURATION = .3f;
         private const float HEIGHT = 3f;
         private const float MAX_RANGE = 1.5f;
         private const float DPS = 8f;

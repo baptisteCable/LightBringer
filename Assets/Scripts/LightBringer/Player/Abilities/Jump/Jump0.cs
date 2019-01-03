@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightBringer
+namespace LightBringer.Player.Abilities
 {
     public class Jump0 : Ability
     {

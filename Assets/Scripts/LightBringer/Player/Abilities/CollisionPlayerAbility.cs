@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using LightBringer.Abilities;
+using UnityEngine;
 
-namespace LightBringer
+namespace LightBringer.Player.Abilities
 {
     public abstract class CollisionPlayerAbility : Ability, CollisionAbility
     {

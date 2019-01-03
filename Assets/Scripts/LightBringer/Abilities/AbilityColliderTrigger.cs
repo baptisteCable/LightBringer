@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightBringer
+namespace LightBringer.Abilities
 {
     [RequireComponent(typeof(Collider))]
     public class AbilityColliderTrigger : MonoBehaviour {

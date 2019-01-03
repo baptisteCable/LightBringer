@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using LightBringer.Abilities;
 
-namespace LightBringer
+namespace LightBringer.Player.Abilities
 {
     public class CubeSkillShot : Ability, CollisionAbility
     {

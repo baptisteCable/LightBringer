@@ -9,8 +9,10 @@ namespace LightBringer.Knight
     {
         private const int ATTACK1 = 0;
         private const int ATTACK2 = 1;
-        private const float ATTACK1_CD = 8f;
-        private const float ATTACK2_CD = 17f;
+        private const int ATTACK3 = 2;
+        private const float ATTACK1_CD = 7f;
+        private const float ATTACK2_CD = 21f;
+        private const float ATTACK3_CD = 13f;
 
         // Components
         KnightMotor motor;
@@ -18,8 +20,7 @@ namespace LightBringer.Knight
 
         // Behaviours
         private KnightBehaviour currentBehaviour;
-        private KnightBehaviour lastBehaviour;
-        private bool readyForNext = false;
+        private bool readyForNext = true;
 
         // CD
         private float[] remainingCD;
@@ -38,16 +39,15 @@ namespace LightBringer.Knight
             // last behaviour
             currentBehaviour = new WaitBehaviour(motor, 2f);
 
-            // new (and starting) behaviour
-            SetBehaviour(new GoAroundPlayerBehaviour(motor, 2f, target, false));
-
             // CD
-            remainingCD = new float[2];
-            CDUp = new bool[2];
+            remainingCD = new float[3];
+            CDUp = new bool[3];
             CDUp[ATTACK1] = false;
             CDUp[ATTACK2] = false;
+            CDUp[ATTACK3] = false;
             remainingCD[ATTACK1] = ATTACK1_CD;
             remainingCD[ATTACK2] = ATTACK2_CD;
+            remainingCD[ATTACK3] = ATTACK3_CD;
         }
 
         // Update is called once per frame
@@ -137,13 +137,20 @@ namespace LightBringer.Knight
             }
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
 
+            // Attack 2 behaviour
+            weight = 0f;
+            if (CDUp[ATTACK2] && (target.position - motor.transform.position).magnitude < 20f)
+            {
+                weight = 10f;
+            }
+            list.Add(new Attack2Behaviour(motor, target), weight);
+
             // Determine next behaviour from list
             ActivateNextBehaviourFromDictionary(list);
         }
 
         private void ActivateNextBehaviourFromDictionary(Dictionary<KnightBehaviour, float> list)
         {
-            lastBehaviour = currentBehaviour;
             currentBehaviour = null;
 
             if (list.Count == 0)
@@ -171,8 +178,6 @@ namespace LightBringer.Knight
                     en.MoveNext();
                 }
             }
-
-            Debug.Log(currentBehaviour);
         }
 
         private void SetBehaviour(KnightBehaviour behaviour)
@@ -181,6 +186,11 @@ namespace LightBringer.Knight
             {
                 CDUp[ATTACK1] = false;
                 remainingCD[ATTACK1] = ATTACK1_CD;
+            }
+            else if (behaviour.GetType() == typeof(Attack2Behaviour))
+            {
+                CDUp[ATTACK2] = false;
+                remainingCD[ATTACK2] = ATTACK2_CD;
             }
             currentBehaviour = behaviour;
             currentBehaviour.Init();

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightBringer
+namespace LightBringer.Player.Abilities
 {
     public class RaySpell : Ability
     {
@@ -11,7 +11,7 @@ namespace LightBringer
         // const
         private const float COOLDOWN_DURATION = 4f;
         private const float ABILITY_DURATION = 3f;
-        private const float CHANNELING_DURATION = 1.5f;
+        private const float CHANNELING_DURATION = .6f;
         private const float HEIGHT = 1.4f;
         private const float MAX_RANGE = 12f;
         private const float DPS = 12f;
