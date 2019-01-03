@@ -59,7 +59,7 @@ namespace LightBringer.Player
             psm = GetComponent<PlayerStatusManager>();
 
             // TEST
-            GameObject sword = Resources.Load("Weapons/Sword") as GameObject;
+            GameObject sword = Resources.Load("Player/Light/LongSword/Sword") as GameObject;
             weaponR = Instantiate(sword, weaponSlotR);
 
             // Abilities
@@ -104,7 +104,7 @@ namespace LightBringer.Player
                     }
                 }
 
-                // Sword attack
+                // Ab1
                 if (Input.GetButton("Skill1") && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
                 {
                     abilities[1].StartChanneling();
@@ -272,6 +272,8 @@ namespace LightBringer.Player
      * Attack 3
      * 
      * La charge pousse le joueur et ne monte pas dessus.
+     * 
+     * Prochaine ability mise en mémoire
      * 
      * */
 }
