@@ -200,22 +200,27 @@ namespace LightBringer
         public void RotateTowards(Vector3 direction)
         {
             float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-            float rotationSpeed;
-            if (currentRotationSpeed * angle < 0)
+            
+            // rotate if not to close to avoid shivering
+            if (Mathf.Abs(angle) >= 2f || (transform.position - direction).magnitude > 5)
             {
-                rotationSpeed = rotationAcceleration * Time.fixedDeltaTime - Mathf.Abs(currentRotationSpeed);
-            }
-            else
-            {
-                rotationSpeed = Mathf.Min(
-                Mathf.Abs(currentRotationSpeed) + rotationAcceleration * Time.fixedDeltaTime,
-                Mathf.Abs(angle) * rotationAcceleration / 40,
-                this.rotationSpeed);
-            }
+                float rotationSpeed;
+                if (currentRotationSpeed * angle < 0)
+                {
+                    rotationSpeed = rotationAcceleration * Time.fixedDeltaTime - Mathf.Abs(currentRotationSpeed);
+                }
+                else
+                {
+                    rotationSpeed = Mathf.Min(
+                    Mathf.Abs(currentRotationSpeed) + rotationAcceleration * Time.fixedDeltaTime,
+                    Mathf.Abs(angle) * rotationAcceleration / 40,
+                    this.rotationSpeed);
+                }
 
-            currentRotationSpeed = Mathf.Sign(angle) * rotationSpeed;
+                currentRotationSpeed = Mathf.Sign(angle) * rotationSpeed;
 
-            transform.Rotate(Vector3.up, currentRotationSpeed * Time.fixedDeltaTime);
+                transform.Rotate(Vector3.up, currentRotationSpeed * Time.fixedDeltaTime);
+            }
         }
 
         public virtual void Die()
