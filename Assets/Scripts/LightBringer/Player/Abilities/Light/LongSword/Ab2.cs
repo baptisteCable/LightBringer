@@ -15,8 +15,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float COOLDOWN_DURATION = 2f;
         private const float CHANNELING_DURATION = 18f / 60f;
         private const float ABILITY_DURATION = 6f / 60f;
-        private const float DMG_TIME = 5f / 60f;
-        private const float TRIGGER_DURATION = 4f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = 0f;
         private const float CASTING_MOVE_MULTIPLICATOR = 0f;
@@ -58,6 +56,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void StartChanneling()
         {
+            if (CannotStartStandard())
+            {
+                return;
+            }
+
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             interrupted = false;
@@ -98,13 +101,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     closestZone.Absorb();
                     sword.Load();
                 }
-            }            
+            }
         }
 
         public override void StartAbility()
         {
             base.StartAbility();
-            
+
             // No more rotation
             character.abilityMaxRotation = 0f;
 
@@ -113,7 +116,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.SetMovementMode(MovementMode.Ability);
 
             newCols = new Dictionary<Collider, float>();
-            
+
         }
 
         public override void Cast()

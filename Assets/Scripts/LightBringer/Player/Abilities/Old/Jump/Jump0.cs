@@ -89,6 +89,11 @@ namespace LightBringer.Player.Abilities
 
         public override void StartChanneling()
         {
+            if (!JumpIntialisation())
+            {
+                return;
+            }
+
             base.StartChanneling();
 
             character.GetComponent<Collider>().enabled = false;

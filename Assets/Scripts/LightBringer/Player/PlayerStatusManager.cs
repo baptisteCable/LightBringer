@@ -20,6 +20,11 @@ namespace LightBringer.Player
         public float stunDuration;
         public float interruptedDuration;
 
+        // Special status
+        public Transform anchor;
+        public bool isTargetable;
+        public bool abilitySuppress; // Can't do anything because an ability prevents it
+
         // Components
         public StatusBar statusBar;
         private Character character;
@@ -37,6 +42,9 @@ namespace LightBringer.Player
             rootDuration = 0f;
             stunDuration = 0f;
             interruptedDuration = 0f;
+            anchor = null;
+            isTargetable = true;
+            abilitySuppress = false;
         }
 
         public void TakeDamage(float amount)

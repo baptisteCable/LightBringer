@@ -11,30 +11,31 @@ public class AbilityImage : MonoBehaviour
     private Image cdImage;
     private Image channelingImage;
     private Image abilityImage;
+    private GameObject lockedImage;
 
 
-    // Use this for initialization
     void Start()
     {
         cdImage = transform.Find("CDImage").GetComponent<Image>();
         channelingImage = transform.Find("ChannelingImage").GetComponent<Image>();
+        lockedImage = transform.Find("LockedImage").gameObject;
         abilityImage = transform.GetComponent<Image>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        // CD running
         if (!character.abilities[abilityIndex].coolDownUp)
         {
             cdImage.gameObject.SetActive(true);
             cdImage.fillAmount = character.abilities[abilityIndex].coolDownRemaining / character.abilities[abilityIndex].coolDownDuration;
         }
+        // CD Up
         else
         {
             cdImage.gameObject.SetActive(false);
         }
-
+        // Channeling?
         if (character.currentChanneling == character.abilities[abilityIndex])
         {
             channelingImage.gameObject.SetActive(true);
@@ -45,6 +46,7 @@ public class AbilityImage : MonoBehaviour
             channelingImage.gameObject.SetActive(false);
         }
 
+        // Current ability
         if (character.currentAbility == character.abilities[abilityIndex])
         {
             abilityImage.color = Color.red;
@@ -53,6 +55,9 @@ public class AbilityImage : MonoBehaviour
         {
             abilityImage.color = Color.white;
         }
+
+        // Locked
+        lockedImage.SetActive(character.abilities[abilityIndex].locked);
     }
 }
 

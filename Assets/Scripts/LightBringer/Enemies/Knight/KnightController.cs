@@ -242,14 +242,5 @@ namespace LightBringer.Knight
 
             return normalized;
         }
-
-        private void OnGUI()
-        {
-            GUI.contentColor = Color.black;
-            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("Attack 1 up : " + CDUp[ATTACK1]);
-            GUILayout.Label("Attack 1 cd : " + remainingCD[ATTACK1]);
-            GUILayout.EndArea();
-        }
     }
 }

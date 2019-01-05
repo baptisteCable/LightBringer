@@ -58,6 +58,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void StartChanneling()
         {
+            if (CannotStartStandard())
+            {
+                return;
+            }
+
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 

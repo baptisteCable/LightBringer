@@ -9,6 +9,7 @@ namespace LightBringer.Player.Abilities.Light
         private const float DURATION = 8f;
 
         private float destructionTime;
+        private bool destructionPlanned = false;
 
         void Start()
         {
@@ -17,7 +18,7 @@ namespace LightBringer.Player.Abilities.Light
 
         void Update()
         {
-            if (Time.time > destructionTime)
+            if (Time.time > destructionTime && !destructionPlanned)
             {
                 SelfDestroy();
             }
@@ -27,6 +28,7 @@ namespace LightBringer.Player.Abilities.Light
         {
             GetComponent<Animator>().Play("SelfDestroy");
             Destroy(gameObject, 13f / 60f);
+            destructionPlanned = true;
         }
 
         public void Absorb()
@@ -35,6 +37,7 @@ namespace LightBringer.Player.Abilities.Light
             transform.Find("FxParticules").GetComponent<ParticleSystem>().Stop(false, ParticleSystemStopBehavior.StopEmitting);
             GetComponent<Animator>().Play("Absorb");
             Destroy(gameObject, 4f);
+            destructionPlanned = true;
         }
     }
 

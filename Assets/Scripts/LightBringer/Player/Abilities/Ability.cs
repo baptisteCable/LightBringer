@@ -15,11 +15,13 @@ namespace LightBringer.Player.Abilities
         public float channelingTime;
         public bool channelingCancellable;
         public bool castingCancellable;
+        public bool locked;
         protected Character character;
 
         public Ability(float coolDownDuration, float channelingDuration, float castingDuration, Character character, bool channelingCancellable, bool castingCancellable)
         {
             coolDownUp = true;
+            locked = false;
             this.coolDownDuration = coolDownDuration;
             this.channelingDuration = channelingDuration;
             this.castingDuration = castingDuration;
@@ -125,6 +127,50 @@ namespace LightBringer.Player.Abilities
         {
             character.abilityMoveMultiplicator = 1f;
             character.abilityMaxRotation = -1f;
+        }
+
+        public virtual void ComputeSpecial()
+        {
+        }
+
+        protected void SetLockedOtherAbilities(bool locked)
+        {
+            for (int i = 0; i < character.abilities.Length; i++)
+            {
+                if (character.abilities[i] != this)
+                {
+                    character.abilities[i].locked = locked;
+                }
+            }
+        }
+
+        protected bool CannotStartStandard()
+        {
+            return
+                    !coolDownUp ||
+                    character.currentAbility != null ||
+                    character.currentChanneling != null ||
+                    character.psm.isInterrupted ||
+                    character.psm.isStunned ||
+                    locked;
+        }
+
+        protected bool JumpIntialisation()
+        {
+            if (
+                    !coolDownUp ||
+                    character.psm.isRooted ||
+                    character.psm.isInterrupted ||
+                    character.psm.isStunned ||
+                    locked
+                )
+            {
+                return false;
+            }
+
+            character.Cancel();
+
+            return character.currentAbility == null;
         }
     }
 }

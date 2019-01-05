@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using LightBringer.Player.Abilities;
-using LightBringer.Player.Abilities.Light.LongSword;
 
 namespace LightBringer.Player
 {
@@ -26,6 +25,8 @@ namespace LightBringer.Player
         public Rigidbody rb;
         [HideInInspector]
         public PlayerStatusManager psm;
+        [HideInInspector]
+        public Collider coll;
 
         // misc
         private MovementMode movementMode;
@@ -33,6 +34,7 @@ namespace LightBringer.Player
         public float abilityMoveMultiplicator;
         [HideInInspector]
         public float abilityMaxRotation = 0f;
+        private bool visible = true;
 
         // body parts
         public Transform weaponSlotR;
@@ -58,20 +60,21 @@ namespace LightBringer.Player
         {
             rb = GetComponent<Rigidbody>();
             psm = GetComponent<PlayerStatusManager>();
+            coll = GetComponent<Collider>();
 
             // TEST
             GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword") as GameObject;
             swordObject = Instantiate(swordPrefab, weaponSlotR);
-            LightSword sword = swordObject.GetComponent<LightSword>();
+            Abilities.Light.LongSword.LightSword sword = swordObject.GetComponent<Abilities.Light.LongSword.LightSword>();
 
             // Abilities
             abilities = new Ability[5];
 
             // jump ability[0]
             abilities[0] = new Jump0(this);
-            abilities[1] = new Ab1(this, sword);
-            abilities[2] = new Ab2(this, sword);
-            abilities[3] = new RaySpell(this);
+            abilities[1] = new Abilities.Light.LongSword.Ab1(this, sword);
+            abilities[2] = new Abilities.Light.LongSword.Ab2(this, sword);
+            abilities[3] = new Abilities.Light.LongSword.AbOff(this, sword);
             abilities[4] = new CubeSkillShot(this);
 
             abilityMoveMultiplicator = 1f;
@@ -92,49 +95,47 @@ namespace LightBringer.Player
                 lookAtMouse();
             }
 
-            // depending on blocking CC
-            if (!psm.isInterrupted && !psm.isStunned)
+
+            // jump
+            if (Input.GetButton("Jump"))
             {
-                // jump
-                if (Input.GetButton("Jump") && abilities[0].coolDownUp && !psm.isRooted)
+                Cancel();
+                if (currentAbility == null)
                 {
-                    Cancel();
-                    if (currentAbility == null)
-                    {
-                        abilities[0].StartChanneling();
-                    }
-                }
-
-                // Ab1
-                if (Input.GetButton("Skill1") && currentAbility == null && currentChanneling == null && abilities[1].coolDownUp)
-                {
-                    abilities[1].StartChanneling();
-                }
-
-                // Ab2
-                if (Input.GetButton("Skill2") && currentAbility == null && currentChanneling == null && abilities[2].coolDownUp)
-                {
-                    abilities[2].StartChanneling();
-                }
-
-                // AbOff
-                if (Input.GetButton("SkillOff") && currentAbility == null && currentChanneling == null && abilities[3].coolDownUp)
-                {
-                    abilities[3].StartChanneling();
-                }
-
-                // AbDeff
-                if (Input.GetButtonDown("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
-                {
-                    abilities[4].StartChanneling();
-                }
-
-                // Cancel
-                if (Input.GetButtonDown("CancelChanneling"))
-                {
-                    Cancel();
+                    abilities[0].StartChanneling();
                 }
             }
+
+            // Ab1
+            if (Input.GetButton("Skill1"))
+            {
+                abilities[1].StartChanneling();
+            }
+
+            // Ab2
+            if (Input.GetButton("Skill2"))
+            {
+                abilities[2].StartChanneling();
+            }
+
+            // AbOff
+            if (Input.GetButton("SkillOff"))
+            {
+                abilities[3].StartChanneling();
+            }
+
+            // AbDeff
+            if (Input.GetButtonDown("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
+            {
+                abilities[4].StartChanneling();
+            }
+
+            // Cancel
+            if (Input.GetButtonDown("CancelChanneling"))
+            {
+                Cancel();
+            }
+
 
             // CC effects on channeling and casting
             CCConsequences();
@@ -161,9 +162,23 @@ namespace LightBringer.Player
                 }
 
             }
+
+            // Special computations on abilities
+            ComputeAbilitiesSpecial();
+
+            // Anchor move (no action, most of the time)
+            Move();
         }
 
-        private void Cancel()
+        private void ComputeAbilitiesSpecial()
+        {
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                abilities[i].ComputeSpecial();
+            }
+        }
+
+        public void Cancel()
         {
             if (currentChanneling != null && currentChanneling.channelingCancellable)
             {
@@ -176,9 +191,24 @@ namespace LightBringer.Player
             }
         }
 
+        private void Move()
+        {
+            if (movementMode == MovementMode.Anchor)
+            {
+                if (psm.anchor != null)
+                {
+                    transform.position = psm.anchor.position;
+                }
+                else
+                {
+                    Debug.LogError("No anchor object");
+                }
+            }
+        }
+
         private void FixedUpdate()
         {
-            Move();
+            MoveFixed();
         }
 
         // look at mouse and camera positionning procedure
@@ -207,7 +237,7 @@ namespace LightBringer.Player
         }
 
         // move procedure
-        void Move()
+        void MoveFixed()
         {
             // Moving
             float v = Input.GetAxisRaw("Vertical");
@@ -221,7 +251,11 @@ namespace LightBringer.Player
             }
             else
             {
-                animator.SetBool("isMoving", false);
+                if (movementMode != MovementMode.Anchor)
+                {
+                    animator.SetBool("isMoving", false);
+                }
+
                 if (movementMode == MovementMode.Player)
                 {
                     rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
@@ -257,35 +291,57 @@ namespace LightBringer.Player
 
         public void SetMovementMode(MovementMode mode)
         {
+            if (movementMode == MovementMode.Anchor && mode != MovementMode.Anchor)
+            {
+                psm.anchor = null;
+                MakeVisible();
+                coll.enabled = true;
+            }
+
             movementMode = mode;
 
             // Set Physics material
             // TODO if needed
         }
-        /*
+
+        public void MergeWith(Transform anchor, bool hide = true)
+        {
+            psm.anchor = anchor;
+            coll.enabled = false;
+            MakeInvisible();
+            rb.velocity = Vector3.zero;
+            movementMode = MovementMode.Anchor;
+
+        }
+
+        private void MakeVisible()
+        {
+            visible = true;
+            characterContainer.gameObject.SetActive(true);
+        }
+
+        private void MakeInvisible()
+        {
+            visible = false;
+            characterContainer.gameObject.SetActive(false);
+        }
+
         private void OnGUI()
         {
             GUI.contentColor = Color.black;
             GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("Knight velocity : " + velocity);
-            GUILayout.Label("Update : " + agent.updatePosition);
-            GUILayout.Label("Trans Position : " + transform.position);
-            GUILayout.Label("Next  Position : " + agent.nextPosition);
+            GUILayout.Label(abilities[3].coolDownRemaining + " / " + abilities[3].coolDownDuration);
             GUILayout.EndArea();
         }
-        */
     }
 
     /* 
      * 
      * La charge pousse le joueur et ne monte pas dessus.
      * 
-     * Ab2 : frapper dans l'ordre de proximité (car si shield)
-     * 
-     * Effets de particules chargement épée lumière
-     * 
-     * Particules à l'impact
+     * Indicators
      *
+     * Movement mode merged with (new procedure to set the transform?)
      * 
      * */
 }
