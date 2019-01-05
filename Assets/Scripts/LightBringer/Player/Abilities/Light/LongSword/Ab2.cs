@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using LightBringer.Abilities;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
@@ -28,20 +29,28 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // Colliders
         private List<Collider> encounteredCols;
+        private Dictionary<Collider, float> newCols;
 
         // Prefabs
         private GameObject triggerPrefab;
+        private GameObject impactEffetPrefab;
+        private GameObject loadedImpactEffetPrefab;
 
         // GameObjects
         private LightSword sword;
         private GameObject trigger;
         private Transform characterContainer;
 
+        // Status
+        private bool interrupted = false;
+
         public Ab2(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;
             triggerPrefab = Resources.Load("Player/Light/LongSword/Ab2/Trigger") as GameObject;
+            impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
+            loadedImpactEffetPrefab = Resources.Load("Player/Light/LongSword/Ab2/LoadedImpactEffect") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
@@ -51,6 +60,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
+            interrupted = false;
 
             character.animator.Play("Ab2");
 
@@ -101,6 +111,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             CreateTrigger();
 
             character.SetMovementMode(MovementMode.Ability);
+
+            newCols = new Dictionary<Collider, float>();
             
         }
 
@@ -110,6 +122,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // movement
             character.rb.velocity = characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION;
+
+            ApplyEffectToNew();
         }
 
         private void CreateTrigger()
@@ -151,15 +165,57 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.SetMovementMode(MovementMode.Player);
         }
 
+        private void ApplyEffectToNew()
+        {
+            while (newCols.Count > 0 && !interrupted)
+            {
+                Collider col = newCols.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
+                ApplyEffect(col);
+                newCols.Remove(col);
+            }
+        }
+
+        private void ApplyEffect(Collider col)
+        {
+            if (col.tag == "Enemy")
+            {
+                ApplyDamage(col);
+            }
+            else if (col.tag == "Shield")
+            {
+                // Interrupt character
+                character.psm.Interrupt(INTERRUPT_DURATION);
+                interrupted = true;
+            }
+        }
+
         private void ApplyDamage(Collider col)
         {
+            Vector3 impactPoint = col.ClosestPoint(character.transform.position + Vector3.up);
+            Quaternion impactRotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+
+            // base damage
             float damage = DAMAGE_UNLOADED;
             if (sword.isLoaded)
             {
+                // damage update
                 damage = DAMAGE_LOADED;
+
+                // Effect
+                GameObject loadedImpactEffect = GameObject.Instantiate(loadedImpactEffetPrefab, null);
+                loadedImpactEffect.transform.position = impactPoint;
+                loadedImpactEffect.transform.rotation = impactRotation;
+                GameObject.Destroy(loadedImpactEffect, 1f);
             }
 
+            // Apply damage
             col.GetComponent<DamageController>().TakeDamage(damage);
+
+            // Effect
+            GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
+            impactEffect.transform.position = impactPoint;
+            impactEffect.transform.rotation = impactRotation;
+            GameObject.Destroy(impactEffect, 1f);
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
@@ -167,15 +223,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.Contains(col))
             {
                 encounteredCols.Add(col);
-                if (col.tag == "Enemy")
-                {
-                    ApplyDamage(col);
-                }
-                else if (col.tag == "Shield")
-                {
-                    // Interrupt character
-                    character.psm.Interrupt(INTERRUPT_DURATION);
-                }
+                float distance = (col.ClosestPoint(character.transform.position) - character.transform.position).magnitude;
+                newCols.Add(col, distance);
             }
         }
     }

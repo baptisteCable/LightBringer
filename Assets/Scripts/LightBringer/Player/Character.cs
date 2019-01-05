@@ -22,17 +22,21 @@ namespace LightBringer.Player
 
         // Components
         public Animator animator;
+        [HideInInspector]
         public Rigidbody rb;
         [HideInInspector]
         public PlayerStatusManager psm;
 
         // misc
         private MovementMode movementMode;
+        [HideInInspector]
         public float abilityMoveMultiplicator;
+        [HideInInspector]
         public float abilityMaxRotation = 0f;
 
         // body parts
         public Transform weaponSlotR;
+        [HideInInspector]
         public GameObject swordObject;
 
 
@@ -161,7 +165,6 @@ namespace LightBringer.Player
 
         private void Cancel()
         {
-            Debug.Log("Cancel");
             if (currentChanneling != null && currentChanneling.channelingCancellable)
             {
                 currentChanneling.CancelChanelling();

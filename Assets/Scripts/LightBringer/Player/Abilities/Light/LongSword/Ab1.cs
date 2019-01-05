@@ -37,7 +37,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private GameObject lightZonePrefab;
         private GameObject abTriggerPrefab;
         private GameObject cTriggerPrefab;
-        private GameObject lightSpawnEffet;
+        private GameObject lightSpawnEffetPrefab;
+        private GameObject impactEffetPrefab;
 
         // GameObjects
         private LightSword sword;
@@ -50,7 +51,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             lightZonePrefab = Resources.Load("Player/Light/LightZone/LightZone") as GameObject;
             abTriggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1ab") as GameObject;
             cTriggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1c") as GameObject;
-            lightSpawnEffet = Resources.Load("Player/Light/LongSword/Ab1/LightSpawnEffect") as GameObject;
+            lightSpawnEffetPrefab = Resources.Load("Player/Light/LongSword/Ab1/LightSpawnEffect") as GameObject;
+            impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
         }
 
 
@@ -136,9 +138,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             lightZone.transform.position = pos;
 
             // Particle effect
-            GameObject particle = GameObject.Instantiate(lightSpawnEffet, null);
-            particle.transform.position = pos;
-            GameObject.Destroy(particle, 1f);
+            GameObject lightSpawn = GameObject.Instantiate(lightSpawnEffetPrefab, null);
+            lightSpawn.transform.position = pos;
+            GameObject.Destroy(lightSpawn, 1f);
 
             // Damage zone (trigger)
             trigger = GameObject.Instantiate(cTriggerPrefab, null);
@@ -154,7 +156,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // Combo
             if (currentAttack < 3)
             {
-                ApplyDamageAB();
+                ApplyAllDamageAB();
                 comboTime = Time.time + COMBO_DURATION;
             }
             else
@@ -179,16 +181,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
-        private void ApplyDamageAB()
+        private void ApplyAllDamageAB()
         {
             Collider closestCol = null;
             float minDist = 10000f;
             float dist;
+            Vector3 basePoint = character.transform.position + Vector3.up;
 
             // find the closest collider
             foreach (Collider col in encounteredCols)
             {
-                Vector3 basePoint = character.transform.position + Vector3.up;
                 dist = (col.ClosestPoint(basePoint) - basePoint).magnitude;
                 if (dist < minDist)
                 {
@@ -201,8 +203,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 if (closestCol.tag == "Enemy")
                 {
-                    // Apply damage
-                    closestCol.GetComponent<DamageController>().TakeDamage(DAMAGE_AB);
+                    ApplyDamageAB(closestCol, closestCol.ClosestPoint(basePoint));
                 }
                 else if (closestCol.tag == "Shield")
                 {
@@ -210,6 +211,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     character.psm.Interrupt(INTERRUPT_DURATION);
                 }
             }
+        }
+
+        private void ApplyDamageAB(Collider col, Vector3 impactPoint)
+        {
+            col.GetComponent<DamageController>().TakeDamage(DAMAGE_AB);
+            GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
+            impactEffect.transform.position = impactPoint;
+            impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+            GameObject.Destroy(impactEffect, 1f);
         }
 
         private void ApplyDamageC()
