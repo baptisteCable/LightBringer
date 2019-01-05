@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
+[RequireComponent(typeof(MeshCollider))]
 public class ConeMesh : MonoBehaviour {
     public float distance;
     public float angle;
@@ -16,17 +17,7 @@ public class ConeMesh : MonoBehaviour {
     private void CreateAngularAoEMesh(float distance, float angle, float height)
     {
         s = new Mesh();
-        if (GetComponent<MeshFilter>())
-        {
-            GetComponent<MeshFilter>().mesh = s;
-        }
-        if (GetComponent<MeshCollider>())
-        {
-            GetComponent<MeshCollider>().sharedMesh = s;
-        }
-
-        s.name = "S";
-
+        
         Vector3[] vertices;
         int[] triangles;
         int j = 0;
@@ -80,11 +71,21 @@ public class ConeMesh : MonoBehaviour {
         triangles[j++] = 0;
         triangles[j++] = nbVert;
         triangles[j++] = 2 * nbVert - 1;
-
-
+        
         s.vertices = vertices;
         s.triangles = triangles;
 
+        if (GetComponent<MeshFilter>())
+        {
+            GetComponent<MeshFilter>().mesh = s;
+        }
+        if (GetComponent<MeshCollider>())
+        {
+            GetComponent<MeshCollider>().sharedMesh = null;
+            GetComponent<MeshCollider>().sharedMesh = s;
+        }
+
+        s.name = "S";
     }
 
     private Vector3 cartFromPol(float module, float angle, float y)

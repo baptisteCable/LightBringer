@@ -70,7 +70,10 @@ namespace LightBringer.Player.Abilities
             coolDownRemaining = coolDownDuration;
 
             // animation
-            character.animator.Play("NoAction");
+            if (!character.psm.isInterrupted)
+            {
+                character.animator.Play("NoAction");
+            }
         }
 
         public virtual void End()
@@ -120,7 +123,6 @@ namespace LightBringer.Player.Abilities
 
         protected void resetMovementRestrictions()
         {
-            character.canRotate = true;
             character.abilityMoveMultiplicator = 1f;
             character.abilityMaxRotation = -1f;
         }

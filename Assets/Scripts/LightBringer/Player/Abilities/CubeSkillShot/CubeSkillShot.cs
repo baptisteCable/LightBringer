@@ -54,7 +54,6 @@ namespace LightBringer.Player.Abilities
             cube.GetComponent<Rigidbody>().AddForce(PROJECTILE_SPEED * direction, ForceMode.Impulse);
             cube.GetComponent<Rigidbody>().AddTorque(35f * character.transform.Find("CharacterContainer").transform.right, ForceMode.Impulse);
             Object.Destroy(cube, MAX_RANGE / PROJECTILE_SPEED);
-            cube.GetComponent<AbilityColliderTrigger>().ForcedStart();
             cube.GetComponent<AbilityColliderTrigger>().SetAbility(this);
 
             // Movement restrictions

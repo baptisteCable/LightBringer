@@ -1,10 +1,9 @@
-﻿using LightBringer.Player.Abilities;
-using UnityEngine;
+﻿using UnityEngine;
+using LightBringer.Player.Abilities;
+using LightBringer.Player.Abilities.Light.LongSword;
 
 namespace LightBringer.Player
 {
-
-
     [RequireComponent(typeof(PlayerStatusManager))]
     [RequireComponent(typeof(Rigidbody))]
     public class Character : MonoBehaviour
@@ -12,7 +11,7 @@ namespace LightBringer.Player
         float currentRotationSpeed;
 
         // constants
-        private const float ROTATION_SPEED = 12f;
+        private const float ROTATION_SPEED = 24f;
 
         public float moveSpeed;
         private float rotationSpeed = ROTATION_SPEED;
@@ -23,19 +22,18 @@ namespace LightBringer.Player
 
         // Components
         public Animator animator;
-        private Rigidbody rb;
+        public Rigidbody rb;
         [HideInInspector]
         public PlayerStatusManager psm;
 
         // misc
-        private bool physicsApplies = false;
-        public bool canRotate;
+        private MovementMode movementMode;
         public float abilityMoveMultiplicator;
         public float abilityMaxRotation = 0f;
 
         // body parts
         public Transform weaponSlotR;
-        public GameObject weaponR;
+        public GameObject swordObject;
 
 
         /* Abilities :
@@ -51,7 +49,6 @@ namespace LightBringer.Player
         public Ability currentChanneling = null;
         public Ability[] abilities;
 
-
         // Use this for initialization
         void Start()
         {
@@ -59,20 +56,20 @@ namespace LightBringer.Player
             psm = GetComponent<PlayerStatusManager>();
 
             // TEST
-            GameObject sword = Resources.Load("Player/Light/LongSword/Sword") as GameObject;
-            weaponR = Instantiate(sword, weaponSlotR);
+            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword") as GameObject;
+            swordObject = Instantiate(swordPrefab, weaponSlotR);
+            LightSword sword = swordObject.GetComponent<LightSword>();
 
             // Abilities
             abilities = new Ability[5];
 
             // jump ability[0]
             abilities[0] = new Jump0(this);
-            abilities[1] = new MeleeAttack1(this, weaponR);
-            abilities[2] = new MeleeAoE1(this);
+            abilities[1] = new Ab1(this, sword);
+            abilities[2] = new Ab2(this, sword);
             abilities[3] = new RaySpell(this);
             abilities[4] = new CubeSkillShot(this);
 
-            canRotate = true;
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
 
@@ -95,7 +92,7 @@ namespace LightBringer.Player
             if (!psm.isInterrupted && !psm.isStunned)
             {
                 // jump
-                if (Input.GetButtonDown("Jump") && abilities[0].coolDownUp && !psm.isRooted)
+                if (Input.GetButton("Jump") && abilities[0].coolDownUp && !psm.isRooted)
                 {
                     Cancel();
                     if (currentAbility == null)
@@ -110,20 +107,20 @@ namespace LightBringer.Player
                     abilities[1].StartChanneling();
                 }
 
-                // Melee AoE
+                // Ab2
                 if (Input.GetButton("Skill2") && currentAbility == null && currentChanneling == null && abilities[2].coolDownUp)
                 {
                     abilities[2].StartChanneling();
                 }
 
-                // Ray Spell
-                if (Input.GetButton("Skill3") && currentAbility == null && currentChanneling == null && abilities[3].coolDownUp)
+                // AbOff
+                if (Input.GetButton("SkillOff") && currentAbility == null && currentChanneling == null && abilities[3].coolDownUp)
                 {
                     abilities[3].StartChanneling();
                 }
 
-                // Cube skill shot
-                if (Input.GetButton("Skill4") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
+                // AbDeff
+                if (Input.GetButtonDown("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
                 {
                     abilities[4].StartChanneling();
                 }
@@ -212,7 +209,7 @@ namespace LightBringer.Player
             // Moving
             float v = Input.GetAxisRaw("Vertical");
             float h = Input.GetAxisRaw("Horizontal");
-            if (!psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
+            if (movementMode == MovementMode.Player && !psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
             {
                 Vector3 direction = new Vector3(v + h, 0, v - h);
 
@@ -222,7 +219,7 @@ namespace LightBringer.Player
             else
             {
                 animator.SetBool("isMoving", false);
-                if (!physicsApplies)
+                if (movementMode == MovementMode.Player)
                 {
                     rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
                 }
@@ -254,6 +251,14 @@ namespace LightBringer.Player
                 }
             }
         }
+
+        public void SetMovementMode(MovementMode mode)
+        {
+            movementMode = mode;
+
+            // Set Physics material
+            // TODO if needed
+        }
         /*
         private void OnGUI()
         {
@@ -269,11 +274,15 @@ namespace LightBringer.Player
     }
 
     /* 
-     * Attack 3
      * 
      * La charge pousse le joueur et ne monte pas dessus.
      * 
-     * Prochaine ability mise en mémoire
+     * Ab2 : frapper dans l'ordre de proximité (car si shield)
+     * 
+     * Effets de particules chargement épée lumière
+     * 
+     * Particules à l'impact
+     *
      * 
      * */
 }

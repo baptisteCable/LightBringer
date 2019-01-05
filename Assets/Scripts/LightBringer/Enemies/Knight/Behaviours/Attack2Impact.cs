@@ -28,7 +28,6 @@ namespace LightBringer.Knight
             explosion = transform.Find("Explosion").gameObject;
             explosion.transform.localScale *= radius;
             AbilityColliderTrigger act = explosion.transform.Find("Effect").GetComponent<AbilityColliderTrigger>();
-            act.ForcedStart();
             act.SetAbility(ability);
 
             startingTime = Time.time;

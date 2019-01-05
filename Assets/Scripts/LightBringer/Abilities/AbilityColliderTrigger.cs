@@ -3,30 +3,31 @@
 namespace LightBringer.Abilities
 {
     [RequireComponent(typeof(Collider))]
-    public class AbilityColliderTrigger : MonoBehaviour {
+    public class AbilityColliderTrigger : MonoBehaviour
+    {
 
         private Collider col;
         private CollisionAbility currentAbility;
-        private bool forcedStart = false;
+        public string abTag;
 
         void Start()
         {
-            if (!forcedStart)
-            {
-                RunAtStart();
-            }
+            Prepare();
         }
 
-        public void SetAbility(CollisionAbility ability)
+        public void SetAbility(CollisionAbility ability, string tag = "")
         {
+            Prepare();
             col.enabled = true;
             currentAbility = ability;
+            abTag = tag;
         }
 
         public void UnsetAbility()
         {
             col.enabled = false;
             currentAbility = null;
+            abTag = "";
         }
 
         private void OnTriggerEnter(Collider other)
@@ -34,17 +35,15 @@ namespace LightBringer.Abilities
             currentAbility.OnCollision(this, other);
         }
 
-        public void ForcedStart()
+        private void Prepare()
         {
-            RunAtStart();
-            forcedStart = true;
-        }
-
-        private void RunAtStart()
-        {
-            col = GetComponent<Collider>();
-            col.enabled = false;
-            currentAbility = null;
+            if (col == null)
+            {
+                col = GetComponent<Collider>();
+                col.enabled = false;
+                currentAbility = null;
+                abTag = "";
+            }
         }
     }
 }

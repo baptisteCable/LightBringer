@@ -20,6 +20,7 @@ namespace LightBringer.Player.Abilities
             {   
                 caller.AddEnemyDamageController(col.GetComponent("DamageController") as DamageController);
             }
+            Debug.Log(col.name);
         }
 
         private void OnTriggerExit(Collider col)
