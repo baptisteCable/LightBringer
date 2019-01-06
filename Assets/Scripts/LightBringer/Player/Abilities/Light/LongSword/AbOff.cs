@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using LightBringer.Abilities;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
@@ -15,7 +14,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float COOLDOWN_DURATION_A = 1f; // TODO 10f
         private const float COOLDOWN_DURATION_B = .1f;
         private const float CHANNELING_DURATION_A = 12f / 60f;
-        private const float CHANNELING_DURATION_B = 6f / 60f;
+        private const float CHANNELING_DURATION_B = 12f / 60f;
         private const float ABILITY_DURATION_A = 6f / 60f;
         private const float ABILITY_DURATION_B = 6f / 60f;
 
@@ -36,6 +35,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private GameObject impactEffetPrefab;
         private GameObject fadeOutEffetPrefab;
         private GameObject fadeInEffetPrefab;
+        private GameObject lightColumnPrefab;
 
         // GameObjects
         private LightSword sword;
@@ -48,8 +48,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private float forcedFadeInTime;
 
         // Respawn point relatively to enemy center
-        private Vector3 fadeInPosition;
-        private Quaternion fadeInRotation;
+        Transform spawnPoint;
 
         public AbOff(Character character, LightSword sword) :
             base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -57,8 +56,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             this.sword = sword;
             triggerPrefab = Resources.Load("Player/Light/LongSword/AbOff/Trigger") as GameObject;
             impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
-            //fadeOutEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeOutEffect") as GameObject;
-            //fadeInEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeInEffect") as GameObject;
+            fadeOutEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeOutEffect") as GameObject;
+            fadeInEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeInEffect") as GameObject;
+            lightColumnPrefab = Resources.Load("Player/Light/LongSword/AbOff/LightColumn") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
@@ -85,13 +85,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else
             {
 
-                // No more rotation
-                character.abilityMaxRotation = 0f;
-
-                FadeIn();
+                FadeInAnimation();
 
                 currentAttack = 2;
-                character.animator.Play("AbOffb");
                 channelingDuration = CHANNELING_DURATION_B;
             }
             
@@ -102,40 +98,77 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.StartAbility();
 
-            // Trail effect
-            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
-
             // No more rotation
             character.abilityMaxRotation = 0f;
+
+            if (currentAttack == 2)
+            {
+                FadeIn();
+                character.animator.Play("AbOffb");
+            }
+
+            // Trail effect
+            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
 
             CreateTrigger();
             
         }
 
+        private void FadeInAnimation()
+        {
+            // Effect
+            GameObject effect = GameObject.Instantiate(fadeInEffetPrefab);
+            effect.transform.position = spawnPoint.position;
+            GameObject.Destroy(effect, .3f);
+            GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = spawnPoint.position;
+            GameObject.Destroy(lightColumn, .5f);
+            
+            // Anchor with column
+            character.MergeWith(lightColumn.transform);
+        }
+
         private void FadeIn()
         {
-            // TODO effect
-            Debug.Log(fadeInPosition);
-            Vector3 pos = character.psm.anchor.position + fadeInPosition;
+            // Positionning character
             character.SetMovementMode(MovementMode.Player);
-            character.transform.position = pos;
-            characterContainer.rotation = fadeInRotation;
+            character.transform.position = spawnPoint.position;
+            characterContainer.rotation = spawnPoint.rotation;
+
+            // Reset state
             character.psm.isTargetable = true;
             vanished = false;
+
+            // Long cooldown
             coolDownDuration = COOLDOWN_DURATION_A;
+
+            // unlock other abilities
             SetLockedOtherAbilities(false);
         }
 
         private void FadeOut(Collider col)
         {
-            // TODO effect
-            fadeInPosition = col.transform.position - character.transform.position;
-            fadeInRotation = Quaternion.LookRotation(new Vector3(-fadeInPosition.x, 0, -fadeInPosition.z), Vector3.up);
+            // effect
+            GameObject effect = GameObject.Instantiate(fadeOutEffetPrefab);
+            effect.transform.position = character.transform.position;
+            GameObject.Destroy(effect, .2f);
+            GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = character.transform.position;
+            GameObject.Destroy(lightColumn, .5f);
+
+            // Fade in position and rotation
+            spawnPoint = col.GetComponent<BackSpawn>().backSpawPoint;
+
+            // Anchor character
             character.MergeWith(col.transform);
             character.psm.isTargetable = false;
             vanished = true;
+
+            // short CD and set fadeIn time
             coolDownDuration = COOLDOWN_DURATION_B;
             forcedFadeInTime = Time.time + VANISH_DURATION;
+
+            // Lock other abilities
             SetLockedOtherAbilities(true);
         }
 

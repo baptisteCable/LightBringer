@@ -95,7 +95,44 @@ namespace LightBringer.Player
                 lookAtMouse();
             }
 
+            // Check buttons and start abilities
+            StartAbilities();
 
+            // CC effects on channeling and casting
+            CCConsequences();
+
+            // Channel
+            if (currentChanneling != null)
+            {
+                currentChanneling.Channel();
+            }
+
+            // Cast ability
+            if (currentAbility != null)
+            {
+                currentAbility.Cast();
+            }
+
+            // cooldowns
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                if (abilities[i].coolDownRemaining > 0)
+                {
+                    abilities[i].coolDownRemaining -= Time.deltaTime;
+                    abilities[i].coolDownUp = (abilities[i].coolDownRemaining < 0);
+                }
+
+            }
+
+            // Special computations on abilities
+            ComputeAbilitiesSpecial();
+
+            // Anchor move (no action, most of the time)
+            Move();
+        }
+
+        private void StartAbilities()
+        {
             // jump
             if (Input.GetButton("Jump"))
             {
@@ -135,39 +172,6 @@ namespace LightBringer.Player
             {
                 Cancel();
             }
-
-
-            // CC effects on channeling and casting
-            CCConsequences();
-
-            // Channel
-            if (currentChanneling != null)
-            {
-                currentChanneling.Channel();
-            }
-
-            // Cast ability
-            if (currentAbility != null)
-            {
-                currentAbility.Cast();
-            }
-
-            // cooldowns
-            for (int i = 0; i < abilities.Length; i++)
-            {
-                if (abilities[i].coolDownRemaining > 0)
-                {
-                    abilities[i].coolDownRemaining -= Time.deltaTime;
-                    abilities[i].coolDownUp = (abilities[i].coolDownRemaining < 0);
-                }
-
-            }
-
-            // Special computations on abilities
-            ComputeAbilitiesSpecial();
-
-            // Anchor move (no action, most of the time)
-            Move();
         }
 
         private void ComputeAbilitiesSpecial()
@@ -339,9 +343,17 @@ namespace LightBringer.Player
      * 
      * La charge pousse le joueur et ne monte pas dessus.
      * 
-     * Indicators
+     * Indicators player
+     * 
+     * Indicators enemies
      *
-     * Movement mode merged with (new procedure to set the transform?)
+     * Ressortir avec AbOff hors de tout collider (aller plus loin si besoin, sinon à droite ou à gauche)
+     * 
+     * Mort du monstre : désactiver les colliders
+     * 
+     * Chercher autre méthode Slash
+     * 
+     * Enlever tous les projecteurs
      * 
      * */
 }

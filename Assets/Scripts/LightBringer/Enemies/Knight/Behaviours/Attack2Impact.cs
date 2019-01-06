@@ -23,7 +23,7 @@ namespace LightBringer.Knight
             bullet.transform.localScale *= radius;
 
             indicator = transform.Find("Indicator").gameObject;
-            indicator.GetComponent<Projector>().orthographicSize *= radius;
+            indicator.transform.localScale *= radius;
 
             explosion = transform.Find("Explosion").gameObject;
             explosion.transform.localScale *= radius;

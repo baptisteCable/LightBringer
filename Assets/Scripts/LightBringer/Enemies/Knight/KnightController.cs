@@ -103,7 +103,7 @@ namespace LightBringer.Knight
             {
                 weight -= .5f;
             }
-            weight = 1000000f; // Debug
+            //weight = 1000000f; // Debug
             list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
 
             // Wait and rotate behaviour

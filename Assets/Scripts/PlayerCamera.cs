@@ -1,20 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
-public class PlayerCamera : MonoBehaviour {
+public class PlayerCamera : MonoBehaviour
+{
 
     private Camera cam;
-    private Transform character;
+    public Transform character;
 
     private void Start()
     {
         cam = GetComponent<Camera>();
-        character = transform.parent;
     }
-   
-    void Update () {
+
+    void Update()
+    {
         GetLookedPoint();
         MoveCamera();
     }

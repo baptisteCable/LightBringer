@@ -55,5 +55,5 @@ MonoBehaviour:
   remainingShots: 10
   range: 15
   radius: 1
-  ImpactPrefab: {fileID: 1836717430356120, guid: 8bbcc1c9cd8d26d4d9bba513b6babe19,
+  ImpactPrefab: {fileID: 1523946655699152, guid: 8bbcc1c9cd8d26d4d9bba513b6babe19,
     type: 2}

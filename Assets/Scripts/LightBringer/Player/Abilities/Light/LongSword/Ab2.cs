@@ -16,7 +16,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float CHANNELING_DURATION = 18f / 60f;
         private const float ABILITY_DURATION = 6f / 60f;
 
-        private const float CHANNELING_MOVE_MULTIPLICATOR = 0f;
+        private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR = 0f;
         private const float DAMAGE_UNLOADED = 10f;
         private const float DAMAGE_LOADED = 25f;
@@ -188,6 +188,12 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 // Interrupt character
                 character.psm.Interrupt(INTERRUPT_DURATION);
+
+                if (sword.isLoaded)
+                {
+                    sword.Unload();
+                }
+
                 interrupted = true;
             }
         }
