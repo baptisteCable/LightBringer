@@ -16,6 +16,7 @@ namespace LightBringer.Knight
         private const float SHIELD_DMG_START = 57f / 60f;
         private const float SPEAR_DMG_STOP = 59f / 60f;
         private const float SHIELD_DMG_STOP = 85f / 60f;
+        private const float INDICATOR_B_START = 32f / 60f;
 
         // Colliders GO
         private GameObject act1GO;
@@ -27,17 +28,25 @@ namespace LightBringer.Knight
         // Init booleans
         private bool part1Initialized = false;
         private bool part2Initialized = false;
+        private bool shieldIndicator = false;
+
+        // Indicators
+        private GameObject indicatora, indicatorb;
 
         float stopDist;
         Transform target;
 
         float ellapsedTime = 0f;
 
-        public Attack3Behaviour(KnightMotor enemyMotor, GameObject attack3act1GO, GameObject attack3act2GO, GameObject shieldCollider) : base(enemyMotor)
+        public Attack3Behaviour(KnightMotor enemyMotor, GameObject attack3act1GO, GameObject attack3act2GO, GameObject shieldCollider,
+            GameObject indicatora, GameObject indicatorb) : base(enemyMotor)
         {
             act1GO = attack3act1GO;
             act2GO = attack3act2GO;
             this.shieldCollider = shieldCollider;
+            this.indicatora = indicatora;
+            this.indicatorb = indicatorb;
+
         }
 
         public override void Init()
@@ -46,6 +55,9 @@ namespace LightBringer.Knight
             em.anim.Play("Attack3");
             act1 = act1GO.GetComponent<AbilityColliderTrigger>();
             act2 = act2GO.GetComponent<AbilityColliderTrigger>();
+
+            // Indicator A
+            indicatora.SetActive(true);
         }
 
         public override void Run()
@@ -60,6 +72,13 @@ namespace LightBringer.Knight
             if (act1GO.activeSelf && ellapsedTime >= SPEAR_DMG_STOP)
             {
                 EndPart1();
+            }
+
+            // Shield indicator
+            if (ellapsedTime >= INDICATOR_B_START && !shieldIndicator)
+            {
+                shieldIndicator = true;
+                indicatorb.SetActive(true);
             }
 
             // DMG 2
@@ -118,6 +137,9 @@ namespace LightBringer.Knight
         {
             if (!part1Initialized)
             {
+                // Indicator A
+                indicatora.SetActive(false);
+
                 act1GO.SetActive(true);
                 act1.SetAbility(this);
                 part1Initialized = true;
@@ -128,6 +150,9 @@ namespace LightBringer.Knight
         {
             if (!part2Initialized)
             {
+                // Indicator B
+                indicatorb.SetActive(false);
+
                 act2GO.SetActive(true);
                 act2.SetAbility(this);
                 shieldCollider.SetActive(false);

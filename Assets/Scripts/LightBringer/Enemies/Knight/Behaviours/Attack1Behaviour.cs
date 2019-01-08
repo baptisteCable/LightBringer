@@ -8,7 +8,7 @@ namespace LightBringer.Knight
     public class Attack1Behaviour : KnightBehaviour, CollisionAbility
     {
         private const float DURATION = 2.315f;
-        private const float CHARGE_RANGE = 12f;
+        private const float CHARGE_RANGE = 20f;
 
         private const float POS_CHECKPOINT_1_START = 38f / 60f;
         private const float POS_CHECKPOINT_1_END = 46f / 60f;
@@ -30,6 +30,9 @@ namespace LightBringer.Knight
         private AbilityColliderTrigger act2;
         private AbilityColliderTrigger act3;
 
+        // Indicators
+        private GameObject indicator1, indicator2, indicator3;
+
         // Collider list
         private List<Collider> cols;
 
@@ -44,12 +47,16 @@ namespace LightBringer.Knight
         float ellapsedTime = 0f;
 
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
-            GameObject attack1act2GO, GameObject attack1act3GO) : base(enemyMotor)
+            GameObject attack1act2GO, GameObject attack1act3GO,
+            GameObject indicator1, GameObject indicator2, GameObject indicator3) : base(enemyMotor)
         {
             this.target = target;
             act1GO = attack1act1GO;
             act2GO = attack1act2GO;
             act3GO = attack1act3GO;
+            this.indicator1 = indicator1;
+            this.indicator2 = indicator2;
+            this.indicator3 = indicator3;
         }
 
         public override void Init()
@@ -59,6 +66,9 @@ namespace LightBringer.Knight
             act1 = act1GO.GetComponent<AbilityColliderTrigger>();
             act2 = act2GO.GetComponent<AbilityColliderTrigger>();
             act3 = act3GO.GetComponent<AbilityColliderTrigger>();
+
+            // Indicator 1
+            indicator1.SetActive(true);
         }
 
         public override void Run()
@@ -74,6 +84,9 @@ namespace LightBringer.Knight
             {
                 act1GO.SetActive(false);
                 act1.UnsetAbility();
+
+                // Indicator 2
+                indicator2.SetActive(true);
             }
 
             // DMG 2
@@ -85,14 +98,17 @@ namespace LightBringer.Knight
             {
                 act2GO.SetActive(false);
                 act2.UnsetAbility();
+
+                // Indicator 3
+                indicator3.SetActive(true);
             }
 
             // DMG 3
             if (ellapsedTime >= DMG_CHECKPOINT_3_START && ellapsedTime <= DMG_CHECKPOINT_3_END)
             {
                 InitPart3();
-                
-                em.Move(em.transform.forward * 30);
+
+                em.Move(em.transform.forward * CHARGE_RANGE / (DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START));
             }
             if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
             {
@@ -176,6 +192,9 @@ namespace LightBringer.Knight
         {
             if (!part1Initialized)
             {
+                // Indicator 1
+                indicator1.SetActive(false);
+
                 act1GO.SetActive(true);
                 act1.SetAbility(this);
                 cols = new List<Collider>();
@@ -187,6 +206,9 @@ namespace LightBringer.Knight
         {
             if (!part2Initialized)
             {
+                // Indicator 2
+                indicator2.SetActive(false);
+
                 act2GO.SetActive(true);
                 act2.SetAbility(this);
                 cols = new List<Collider>();
@@ -198,6 +220,9 @@ namespace LightBringer.Knight
         {
             if (!part3Initialized)
             {
+                // Indicator 3
+                indicator3.SetActive(false);
+
                 em.SetOverrideAgent(true);
                 act3GO.SetActive(true);
                 act3.SetAbility(this);

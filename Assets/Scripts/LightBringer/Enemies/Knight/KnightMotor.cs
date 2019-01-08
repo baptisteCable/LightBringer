@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 
 namespace LightBringer.Knight
 {
@@ -19,6 +18,13 @@ namespace LightBringer.Knight
         public GameObject attack3act2GO;
         [HideInInspector]
         public GameObject shieldCollider;
+
+        // Indicators
+        public GameObject Attack1Indicator1;
+        public GameObject Attack1Indicator2;
+        public GameObject Attack1Indicator3;
+        public GameObject Attack3Indicator1;
+        public GameObject Attack3Indicator2;
 
         private void Start()
         {

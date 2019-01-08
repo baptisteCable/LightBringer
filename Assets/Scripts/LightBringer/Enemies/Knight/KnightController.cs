@@ -143,7 +143,8 @@ namespace LightBringer.Knight
                     weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
                 }
             }
-            list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
+            list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO,
+                motor.Attack1Indicator1, motor.Attack1Indicator2, motor.Attack1Indicator3), weight);
 
             // Attack 2 behaviour
             weight = 0f;
@@ -166,7 +167,9 @@ namespace LightBringer.Knight
                     weight = 10f * (20f - (target.position - motor.transform.position).magnitude) / (20f - 6f);
                 }
             }
-            list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider), weight);
+            weight = 1000000f; // Debug
+            list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider,
+                motor.Attack3Indicator1, motor.Attack3Indicator2), weight);
 
             // Determine next behaviour from list
             ActivateNextBehaviourFromDictionary(list);
