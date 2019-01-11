@@ -119,7 +119,7 @@ namespace LightBringer.Knight
             // POS init, 1 AND 2
             if (ellapsedTime <= DMG_CHECKPOINT_1_START || (ellapsedTime >= POS_CHECKPOINT_1_START && ellapsedTime <= POS_CHECKPOINT_1_END))
             {
-                em.RotateTowards(this.target.position - em.transform.position);
+                em.RotateTowards(target.position - em.transform.position);
             }
 
             if (ellapsedTime > DURATION)
@@ -141,50 +141,62 @@ namespace LightBringer.Knight
             {
                 if (abilityColliderTrigger == act1GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Part1(col);
+                    ApplyPart1Damage(col);
                 }
 
                 if (abilityColliderTrigger == act2GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Part2(col);
+                    ApplyPart2Damage(col);
                 }
 
                 if (abilityColliderTrigger == act3GO.GetComponent<AbilityColliderTrigger>())
                 {
-                    Part3(col);
+                    ApplyPart3Damage(col);
                 }
             }
         }
 
-        private void Part1(Collider col)
+        private void ApplyPart1Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
                 cols.Add(col);
                 PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                psm.TakeDamage(15f);
+                Damage dmg = new Damage(15f, DamageType.Melee, DamageElement.Physical);
+                if (psm.IsAffectedBy(dmg, em, em.transform.position))
+                {
+                    psm.TakeDamage(dmg, em, em.transform.position);
+                }
             }
         }
 
-        private void Part2(Collider col)
+        private void ApplyPart2Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
                 cols.Add(col);
                 PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                psm.TakeDamage(5f);
-                psm.Stun(1f);
+                Damage dmg = new Damage(5f, DamageType.AreaOfEffect, DamageElement.Physical);
+                if (psm.IsAffectedBy(dmg, em))
+                {
+                    psm.TakeDamage(dmg, em);
+                    psm.Stun(1f);
+                }
             }
         }
 
-        private void Part3(Collider col)
+        private void ApplyPart3Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
                 cols.Add(col);
                 PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                psm.TakeDamage(25f);
-                psm.Interrupt(1f);
+                Damage dmg = new Damage(25f, DamageType.Melee, DamageElement.Physical);
+                if (psm.IsAffectedBy(dmg, em))
+                {
+                    psm.TakeDamage(dmg, em);
+                    psm.Interrupt(1f);
+                }
             }
         }
 

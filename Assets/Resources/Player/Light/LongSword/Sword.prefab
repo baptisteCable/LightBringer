@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4605063005607582}
   - component: {fileID: 198521182986497534}
   - component: {fileID: 199565323270434038}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: FxLoadingSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4580337563368304}
   - component: {fileID: 198616135936740588}
   - component: {fileID: 199137499779648436}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FxParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ GameObject:
   - component: {fileID: 4068439855851654}
   - component: {fileID: 198904867729358890}
   - component: {fileID: 199108328573506032}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Branch2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 33316998255600884}
   - component: {fileID: 23274607721948490}
   - component: {fileID: 114030552907776644}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sword
   m_TagString: Weapon
   m_Icon: {fileID: 0}
@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 4353018860281598}
   - component: {fileID: 198171793754320726}
   - component: {fileID: 199067523150114210}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: FxTrail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 4986492329201854}
   - component: {fileID: 198449190847857964}
   - component: {fileID: 199877221790180514}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 4825786137621974}
   - component: {fileID: 198738254719520994}
   - component: {fileID: 199712080773547400}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Branch3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,7 +141,7 @@ GameObject:
   - component: {fileID: 4331409974840666}
   - component: {fileID: 198112336548790860}
   - component: {fileID: 199694841495256540}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Glow2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -158,7 +158,7 @@ GameObject:
   - component: {fileID: 4630696684568102}
   - component: {fileID: 198943438823589976}
   - component: {fileID: 199418543083516064}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Branch4
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -47,6 +47,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private bool vanished = false;
         private float forcedFadeInTime;
 
+        // Indicator
+        private GameObject indicatorPrefab;
+
         // Respawn point relatively to enemy center
         Transform spawnPoint;
 
@@ -59,6 +62,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             fadeOutEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeOutEffect") as GameObject;
             fadeInEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeInEffect") as GameObject;
             lightColumnPrefab = Resources.Load("Player/Light/LongSword/AbOff/LightColumn") as GameObject;
+            indicatorPrefab = Resources.Load("Player/Light/LongSword/AbOff/AbOffIndicator") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
@@ -90,8 +94,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 currentAttack = 2;
                 channelingDuration = CHANNELING_DURATION_B;
             }
-            
-            // TODO : indicator
+
+            // Indicator
+            DisplayIndicator();
+        }
+
+        private void DisplayIndicator()
+        {
+            GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
+            GameObject.Destroy(indicator, CHANNELING_DURATION_A);
         }
 
         public override void StartAbility()
@@ -144,6 +155,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // unlock other abilities
             SetLockedOtherAbilities(false);
+
+            // Special cancel
+            character.specialCancelAbility = null;
         }
 
         private void FadeOut(Collider col)
@@ -170,6 +184,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // Lock other abilities
             SetLockedOtherAbilities(true);
+
+            // Special cancel
+            character.specialCancelAbility = this;
         }
 
         private void CreateTrigger()
@@ -240,9 +257,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             return null;
         }
 
-        private void ApplyDamage(Collider col, Vector3 impactPoint, float dmg)
+        private void ApplyDamage(Collider col, Vector3 impactPoint, float damageAmount)
         {
-            col.GetComponent<DamageController>().TakeDamage(dmg);
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<StatusController>().TakeDamage(dmg, character);
+
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
             impactEffect.transform.position = impactPoint;
             impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
@@ -275,6 +294,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 StartChanneling();
             }
+        }
+
+        public override void SpecialCancel()
+        {
+            StartChanneling();
         }
     }
 }

@@ -39,6 +39,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private GameObject trigger;
         private Transform characterContainer;
 
+        // Indicator
+        private GameObject indicatorPrefab;
+
         // Status
         private bool interrupted = false;
 
@@ -49,6 +52,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             triggerPrefab = Resources.Load("Player/Light/LongSword/Ab2/Trigger") as GameObject;
             impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
             loadedImpactEffetPrefab = Resources.Load("Player/Light/LongSword/Ab2/LoadedImpactEffect") as GameObject;
+            indicatorPrefab = Resources.Load("Player/Light/LongSword/Ab2/Ab2Indicator") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
@@ -71,7 +75,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             encounteredCols = new List<Collider>();
 
-            // TODO : indicator
+            // Indicator
+            DisplayIndicator();
+        }
+
+        private void DisplayIndicator()
+        {
+            GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
+            GameObject.Destroy(indicator, channelingDuration);
         }
 
         private void LoadLight()
@@ -116,7 +127,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.SetMovementMode(MovementMode.Ability);
 
             newCols = new Dictionary<Collider, float>();
-
         }
 
         public override void Cast()
@@ -204,11 +214,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             Quaternion impactRotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
 
             // base damage
-            float damage = DAMAGE_UNLOADED;
+            float damageAmount = DAMAGE_UNLOADED;
             if (sword.isLoaded)
             {
                 // damage update
-                damage = DAMAGE_LOADED;
+                damageAmount = DAMAGE_LOADED;
 
                 // Effect
                 GameObject loadedImpactEffect = GameObject.Instantiate(loadedImpactEffetPrefab, null);
@@ -218,7 +228,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             // Apply damage
-            col.GetComponent<DamageController>().TakeDamage(damage);
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<StatusController>().TakeDamage(dmg, character);
 
             // Effect
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);

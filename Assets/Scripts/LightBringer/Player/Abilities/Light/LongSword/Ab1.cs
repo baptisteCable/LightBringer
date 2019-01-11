@@ -220,10 +220,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void ApplyDamageAB(Collider col, Vector3 impactPoint)
         {
-            col.GetComponent<DamageController>().TakeDamage(DAMAGE_AB);
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<StatusController>().TakeDamage(dmg, character);
+
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
             impactEffect.transform.position = impactPoint;
-            impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+            if ((character.transform.position + Vector3.up - impactPoint).magnitude > .05f)
+            {
+                impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+            }
             GameObject.Destroy(impactEffect, 1f);
         }
 
@@ -233,7 +238,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 if (col.tag == "Enemy")
                 {
-                    col.GetComponent<DamageController>().TakeDamage(DAMAGE_C);
+                    Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light));
+                    col.GetComponent<StatusController>().TakeDamage(dmg, character);
                 }
             }
         }

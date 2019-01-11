@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightBringer.Player
@@ -19,6 +20,9 @@ namespace LightBringer.Player
         public float rootDuration;
         public float stunDuration;
         public float interruptedDuration;
+
+        // Status
+        public List<State> states;
 
         // Special status
         public Transform anchor;
@@ -45,14 +49,97 @@ namespace LightBringer.Player
             anchor = null;
             isTargetable = true;
             abilitySuppress = false;
+
+            // States
+            states = new List<State>();
+
+            // test
+            AddAndStartState(new Immaterial(4f));
         }
 
-        public void TakeDamage(float amount)
+        private void Update()
         {
-            currentHP -= amount;
+            foreach (State s in states)
+            {
+                s.Update();
+            }
 
-            StopCoroutine("Flash");
-            StartCoroutine("Flash");
+            RemoveCompletedStates();
+        }
+
+        private void RemoveCompletedStates()
+        {
+            int i = 0;
+
+            while (i < states.Count)
+            {
+                if (states[i].complete)
+                {
+                    states.RemoveAt(i);
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+
+        // return false if the damage cannot target the player
+        public bool IsAffectedBy(Damage dmg, EnemyMotor dealer, Vector3 origin = default(Vector3))
+        {
+            foreach (State s in states)
+            {
+                if (!s.IsAffectedBy(dmg, dealer, origin))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        public void TakeDamage(Damage dmg, EnemyMotor dealer, Vector3 origin = default(Vector3))
+        {
+            foreach (State s in states)
+            {
+                dmg = s.AlterTakenDamage(dmg, dealer, origin);
+            }
+
+            if (dmg.amount > 0)
+            {
+                currentHP -= dmg.amount;
+
+                StopCoroutine("Flash");
+                StartCoroutine("Flash");
+            }
+        }
+
+        // compute damage depending on states
+        public Damage AlterDealtDamage(Damage dmg)
+        {
+            foreach (State s in states)
+            {
+                dmg = s.AlterDealtDamage(dmg);
+            }
+
+            return dmg;
+        }
+
+        public void AddAndStartState(State state)
+        {
+            states.Add(state);
+            state.Start(this);
+        }
+
+        public void StopState(State state)
+        {
+            state.Stop();
+        }
+
+        public void RemoveState(State state)
+        {
+            states.Remove(state);
         }
 
         public void Stun(float duration)
@@ -164,5 +251,7 @@ namespace LightBringer.Player
             }
         }
         #endregion
+
+        
     }
 }

@@ -34,7 +34,7 @@ namespace LightBringer.Player
         public float abilityMoveMultiplicator;
         [HideInInspector]
         public float abilityMaxRotation = 0f;
-        private bool visible = true;
+        public bool visible = true;
 
         // body parts
         public Transform weaponSlotR;
@@ -54,6 +54,7 @@ namespace LightBringer.Player
         public Ability currentAbility = null;
         public Ability currentChanneling = null;
         public Ability[] abilities;
+        public Ability specialCancelAbility = null;
 
         // Use this for initialization
         void Start()
@@ -79,8 +80,6 @@ namespace LightBringer.Player
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
-
-
         }
 
         // Update is called once per frame
@@ -131,6 +130,14 @@ namespace LightBringer.Player
             Move();
         }
 
+        private void ComputeAbilitiesSpecial()
+        {
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                abilities[i].ComputeSpecial();
+            }
+        }
+
         private void StartAbilities()
         {
             // jump
@@ -162,7 +169,7 @@ namespace LightBringer.Player
             }
 
             // AbDeff
-            if (Input.GetButtonDown("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
+            if (Input.GetButton("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
             {
                 abilities[4].StartChanneling();
             }
@@ -174,24 +181,23 @@ namespace LightBringer.Player
             }
         }
 
-        private void ComputeAbilitiesSpecial()
-        {
-            for (int i = 0; i < abilities.Length; i++)
-            {
-                abilities[i].ComputeSpecial();
-            }
-        }
-
         public void Cancel()
         {
             if (currentChanneling != null && currentChanneling.channelingCancellable)
             {
                 currentChanneling.CancelChanelling();
             }
+
             if (currentAbility != null && currentAbility.castingCancellable)
             {
                 Debug.Log("Cancel casting");
                 currentAbility.AbortCasting();
+            }
+
+            // Special effect of cancelling on some abilities
+            if (specialCancelAbility != null)
+            {
+                specialCancelAbility.SpecialCancel();
             }
         }
 
@@ -315,7 +321,6 @@ namespace LightBringer.Player
             MakeInvisible();
             rb.velocity = Vector3.zero;
             movementMode = MovementMode.Anchor;
-
         }
 
         private void MakeVisible()
@@ -329,31 +334,23 @@ namespace LightBringer.Player
             visible = false;
             characterContainer.gameObject.SetActive(false);
         }
-
+        /*
         private void OnGUI()
         {
             GUI.contentColor = Color.black;
             GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label(abilities[3].coolDownRemaining + " / " + abilities[3].coolDownDuration);
+            GUILayout.Label("States count: " + states.Count);
             GUILayout.EndArea();
-        }
+        }*/
     }
 
     /* 
      * 
      * La charge pousse le joueur et ne monte pas dessus.
      * 
-     * Indicators player
-     * 
-     * Indicators enemies
-     *
-     * Ressortir avec AbOff hors de tout collider (aller plus loin si besoin, sinon à droite ou à gauche)
-     * 
-     * Mort du monstre : désactiver les colliders
-     * 
      * Chercher autre méthode Slash
      * 
-     * Enlever tous les projecteurs
+     * Cumuler les dégâts par type puis les afficher tous les .5 secondes
      * 
      * */
 }

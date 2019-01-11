@@ -123,14 +123,22 @@ namespace LightBringer.Knight
         private void DamagePart1(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            psm.TakeDamage(SPEAR_DMG);
+            Damage dmg = new Damage(SPEAR_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
+            if (psm.IsAffectedBy(dmg, em))
+            {
+                psm.TakeDamage(dmg, em);
+            }
         }
 
         private void DamagePart2(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            psm.TakeDamage(SHIELD_DMG);
-            psm.Stun(SHIELD_STUN_DURATION);
+            Damage dmg = new Damage(SHIELD_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
+            if (psm.IsAffectedBy(dmg, em))
+            {
+                psm.TakeDamage(dmg, em);
+                psm.Stun(SHIELD_STUN_DURATION);
+            }
         }
 
         private void InitPart1()

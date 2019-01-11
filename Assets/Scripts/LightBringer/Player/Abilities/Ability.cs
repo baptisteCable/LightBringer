@@ -172,6 +172,11 @@ namespace LightBringer.Player.Abilities
 
             return character.currentAbility == null;
         }
+
+        public virtual void SpecialCancel()
+        {
+            Debug.LogError("No special cancel for this ability: " + this.GetType());
+        }
     }
 }
 

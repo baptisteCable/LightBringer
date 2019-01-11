@@ -18,7 +18,7 @@ namespace LightBringer.Player.Abilities
         {
             if (col.tag == "Enemy")
             {   
-                caller.AddEnemyDamageController(col.GetComponent("DamageController") as DamageController);
+                caller.AddEnemyDamageController(col.GetComponent("DamageController") as StatusController);
             }
             Debug.Log(col.name);
         }
@@ -27,7 +27,7 @@ namespace LightBringer.Player.Abilities
         {
             if (col.tag == "Enemy")
             {
-                caller.RemoveEnemyDamageController(col.GetComponent("DamageController") as DamageController);
+                caller.RemoveEnemyDamageController(col.GetComponent("DamageController") as StatusController);
             }
         }
     }

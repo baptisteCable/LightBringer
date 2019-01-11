@@ -76,7 +76,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 2.8
-  angle: 90
+  angle: 60
   top: 3
 --- !u!114 &114186183824054874
 MonoBehaviour:

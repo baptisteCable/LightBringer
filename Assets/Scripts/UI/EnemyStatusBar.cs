@@ -2,7 +2,7 @@
 
 public class EnemyStatusBar : BaseStatusBar {
 
-    public DamageController damageController;
+    public StatusController damageController;
 
     private void Awake()
     {

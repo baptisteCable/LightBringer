@@ -25,7 +25,7 @@ namespace LightBringer.Player.Abilities
         private GameObject cubePrefab;
         private GameObject cube;
 
-        private List<DamageController> dcs;
+        private List<StatusController> dcs;
 
         public CubeSkillShot(Character character) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -77,7 +77,8 @@ namespace LightBringer.Player.Abilities
 
             if (col.tag == "Enemy")
             {
-                col.GetComponent<DamageController>().TakeDamage(DAMAGE);
+                Damage dmg = new Damage(DAMAGE, DamageType.Projectile, DamageElement.Energy);
+                col.GetComponent<StatusController>().TakeDamage(dmg, character);
             }
             Object.Destroy(cube);
         }

@@ -79,8 +79,9 @@ namespace LightBringer.Player.Abilities
                 range = rch.distance - .7f;
                 if (rch.transform.tag == "Enemy")
                 {
-                    DamageController dc = rch.transform.GetComponent<DamageController>();
-                    dc.TakeDamage(DPS * Time.deltaTime);
+                    StatusController dc = rch.transform.GetComponent<StatusController>();
+                    Damage dmg = new Damage(DPS * Time.deltaTime, DamageType.RangeInstant, DamageElement.Energy);
+                    dc.TakeDamage(dmg, character);
                     rayBallDisplay.transform.position = rch.point;
                     rayBallDisplay.SetActive(true);
                 }

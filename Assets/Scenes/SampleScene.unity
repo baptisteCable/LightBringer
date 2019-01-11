@@ -24,7 +24,7 @@ RenderSettings:
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 4
+  m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
   m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
   m_HaloStrength: 0.5
@@ -171,7 +171,7 @@ GameObject:
   m_Component:
   - component: {fileID: 21572886}
   - component: {fileID: 21572887}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: KnightAttack3bIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,7 +255,7 @@ GameObject:
   - component: {fileID: 68087597}
   - component: {fileID: 68087598}
   - component: {fileID: 68087599}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Attack1Trigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,7 +324,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &93427592
 Transform:
@@ -717,7 +717,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!108 &170076734
 Light:
@@ -729,7 +729,7 @@ Light:
   serializedVersion: 8
   m_Type: 1
   m_Color: {r: 1, g: 0.9551241, b: 0.8537736, a: 1}
-  m_Intensity: 1
+  m_Intensity: 1.5
   m_Range: 10
   m_SpotAngle: 30
   m_CookieSize: 10
@@ -747,7 +747,7 @@ Light:
   m_RenderMode: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1847
+    m_Bits: 4294967295
   m_Lightmapping: 1
   m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
@@ -923,7 +923,7 @@ GameObject:
   m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!64 &188813859
 MeshCollider:
@@ -1086,6 +1086,10 @@ Prefab:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1459037150048556, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
   m_IsPrefabAsset: 0
@@ -1180,6 +1184,10 @@ Prefab:
         type: 2}
       propertyPath: m_WasSpriteAssigned
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459037150048556, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
@@ -1279,7 +1287,7 @@ GameObject:
   m_Component:
   - component: {fileID: 230282453}
   - component: {fileID: 230282454}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1346,7 +1354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 255096812}
   - component: {fileID: 255096813}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: KnightAttack3aIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1511,7 +1519,7 @@ GameObject:
   - component: {fileID: 318339150}
   - component: {fileID: 318339151}
   - component: {fileID: 318339152}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Attack3bTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1567,7 +1575,7 @@ GameObject:
   m_Component:
   - component: {fileID: 342542879}
   - component: {fileID: 342542880}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1883,7 +1891,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &512521008
 Transform:
@@ -2057,7 +2065,7 @@ GameObject:
   - component: {fileID: 534669904}
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: MainCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -2099,7 +2107,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 3863
+    m_Bits: 16151
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2206,6 +2214,161 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 545722920}
   m_CullTransparentMesh: 0
+--- !u!43 &568142074
+Mesh:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: S
+  serializedVersion: 9
+  m_SubMeshes:
+  - serializedVersion: 2
+    firstByte: 0
+    indexCount: 48
+    topology: 0
+    baseVertex: 0
+    firstVertex: 0
+    vertexCount: 10
+    localAABB:
+      m_Center: {x: -0.00000035762787, y: 4, z: 3.446827}
+      m_Extent: {x: 3.5, y: 4, z: 3.446827}
+  m_Shapes:
+    vertices: []
+    shapes: []
+    channels: []
+    fullWeights: []
+  m_BindPose: []
+  m_BoneNameHashes: 
+  m_RootBoneNameHash: 0
+  m_MeshCompression: 0
+  m_IsReadable: 1
+  m_KeepVertices: 1
+  m_KeepIndices: 1
+  m_IndexFormat: 0
+  m_IndexBuffer: 000001000200050006000700060001000200070006000200000002000300050007000800070002000300080007000300000003000400050008000900080003000400090008000400000001000500010006000500000009000400000005000900
+  m_VertexData:
+    serializedVersion: 2
+    m_VertexCount: 10
+    m_Channels:
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 3
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    - stream: 0
+      offset: 0
+      format: 0
+      dimension: 0
+    m_DataSize: 120
+    _typelessdata: 000000000000000000000000020060c0000000005cfdc140ba969bbf00000000d098dc40bc969b3f00000000d098dc40ffff5f40000000005dfdc140000000000000004100000000020060c0000000415cfdc140ba969bbf00000041d098dc40bc969b3f00000041d098dc40ffff5f40000000415dfdc140
+  m_CompressedMesh:
+    m_Vertices:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UV:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Normals:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Tangents:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Weights:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_NormalSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_TangentSigns:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_FloatColors:
+      m_NumItems: 0
+      m_Range: 0
+      m_Start: 0
+      m_Data: 
+      m_BitSize: 0
+    m_BoneIndices:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_Triangles:
+      m_NumItems: 0
+      m_Data: 
+      m_BitSize: 0
+    m_UVInfo: 0
+  m_LocalAABB:
+    m_Center: {x: -0.00000035762787, y: 4, z: 3.446827}
+    m_Extent: {x: 3.5, y: 4, z: 3.446827}
+  m_MeshUsageFlags: 0
+  m_BakedConvexCollisionMesh: 
+  m_BakedTriangleCollisionMesh: 
+  m_MeshMetrics[0]: 1
+  m_MeshMetrics[1]: 1
+  m_MeshOptimized: 0
 --- !u!1 &579259784
 GameObject:
   m_ObjectHideFlags: 0
@@ -2288,7 +2451,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &580293933
 Transform:
@@ -2321,7 +2484,7 @@ GameObject:
   - component: {fileID: 583882589}
   - component: {fileID: 583882588}
   - component: {fileID: 583882590}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ShieldAttackTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2461,7 +2624,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &618013085
 Transform:
@@ -2566,7 +2729,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 656631383}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: BackSpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2731,7 +2894,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!65 &739135037
 BoxCollider:
@@ -2809,7 +2972,7 @@ GameObject:
   m_Component:
   - component: {fileID: 740350414}
   - component: {fileID: 740350415}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2905,6 +3068,7 @@ MonoBehaviour:
   coll: {fileID: 0}
   abilityMoveMultiplicator: 0
   abilityMaxRotation: -1
+  visible: 1
   weaponSlotR: {fileID: 628752294}
   swordObject: {fileID: 0}
 --- !u!4 &741779592
@@ -2914,7 +3078,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 741779590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 6.68, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 14182431}
@@ -3051,6 +3215,10 @@ Prefab:
     - target: {fileID: 1459037150048556, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459037150048556, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
+      propertyPath: m_Layer
+      value: 13
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
@@ -3513,7 +3681,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &928618651
 Transform:
@@ -3738,7 +3906,7 @@ GameObject:
   - component: {fileID: 1008684802}
   - component: {fileID: 1008684801}
   - component: {fileID: 1008684800}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Attack3aTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3771,7 +3939,7 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 14
   m_SkinWidth: 0.01
-  m_Mesh: {fileID: 1838982961}
+  m_Mesh: {fileID: 568142074}
 --- !u!114 &1008684801
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3804,7 +3972,7 @@ MeshFilter:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1008684797}
-  m_Mesh: {fileID: 1838982961}
+  m_Mesh: {fileID: 568142074}
 --- !u!1 &1045735882
 GameObject:
   m_ObjectHideFlags: 0
@@ -3865,7 +4033,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1056775534
 Transform:
@@ -4465,6 +4633,134 @@ Prefab:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 100040, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100004, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100008, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100018, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100020, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100010, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100014, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100022, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100012, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100016, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100024, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100026, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100028, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100030, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100032, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100036, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100034, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100038, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100042, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100044, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100048, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100046, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100050, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100052, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100054, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100058, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100056, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100062, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 100060, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
   m_IsPrefabAsset: 0
@@ -4499,7 +4795,7 @@ GameObject:
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!4 &1133841212
 Transform:
@@ -4578,7 +4874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1206847344}
   - component: {fileID: 1206847345}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: KnightAttack1cIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4955,6 +5251,10 @@ Prefab:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1459037150048556, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68f2de83b79ef314f8a1fbbbdf8109d7, type: 2}
   m_IsPrefabAsset: 0
@@ -5082,7 +5382,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1349306699}
   - component: {fileID: 1349306700}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5371,7 +5671,7 @@ GameObject:
   - component: {fileID: 1417360617}
   - component: {fileID: 1417360616}
   - component: {fileID: 1417360618}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: SpearAttackTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5432,7 +5732,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1434835511}
   - component: {fileID: 1434835512}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: KnightAttack1bIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5855,7 +6155,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1578758555}
   - component: {fileID: 1578758556}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: KnightAttack1aIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6247,7 +6547,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4294967295
   m_IsActive: 1
 --- !u!114 &1790026408
 MonoBehaviour:
@@ -6292,161 +6592,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!43 &1838982961
-Mesh:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: S
-  serializedVersion: 9
-  m_SubMeshes:
-  - serializedVersion: 2
-    firstByte: 0
-    indexCount: 48
-    topology: 0
-    baseVertex: 0
-    firstVertex: 0
-    vertexCount: 10
-    localAABB:
-      m_Center: {x: -0.00000035762787, y: 4, z: 3.446827}
-      m_Extent: {x: 3.5, y: 4, z: 3.446827}
-  m_Shapes:
-    vertices: []
-    shapes: []
-    channels: []
-    fullWeights: []
-  m_BindPose: []
-  m_BoneNameHashes: 
-  m_RootBoneNameHash: 0
-  m_MeshCompression: 0
-  m_IsReadable: 1
-  m_KeepVertices: 1
-  m_KeepIndices: 1
-  m_IndexFormat: 0
-  m_IndexBuffer: 000001000200050006000700060001000200070006000200000002000300050007000800070002000300080007000300000003000400050008000900080003000400090008000400000001000500010006000500000009000400000005000900
-  m_VertexData:
-    serializedVersion: 2
-    m_VertexCount: 10
-    m_Channels:
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 3
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    - stream: 0
-      offset: 0
-      format: 0
-      dimension: 0
-    m_DataSize: 120
-    _typelessdata: 000000000000000000000000020060c0000000005cfdc140ba969bbf00000000d098dc40bc969b3f00000000d098dc40ffff5f40000000005dfdc140000000000000004100000000020060c0000000415cfdc140ba969bbf00000041d098dc40bc969b3f00000041d098dc40ffff5f40000000415dfdc140
-  m_CompressedMesh:
-    m_Vertices:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_UV:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Normals:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Tangents:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Weights:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_NormalSigns:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_TangentSigns:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_FloatColors:
-      m_NumItems: 0
-      m_Range: 0
-      m_Start: 0
-      m_Data: 
-      m_BitSize: 0
-    m_BoneIndices:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_Triangles:
-      m_NumItems: 0
-      m_Data: 
-      m_BitSize: 0
-    m_UVInfo: 0
-  m_LocalAABB:
-    m_Center: {x: -0.00000035762787, y: 4, z: 3.446827}
-    m_Extent: {x: 3.5, y: 4, z: 3.446827}
-  m_MeshUsageFlags: 0
-  m_BakedConvexCollisionMesh: 
-  m_BakedTriangleCollisionMesh: 
-  m_MeshMetrics[0]: 1
-  m_MeshMetrics[1]: 1
-  m_MeshOptimized: 0
 --- !u!1 &1874490408
 GameObject:
   m_ObjectHideFlags: 0
@@ -6505,7 +6650,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1878830995}
   - component: {fileID: 1878830996}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6572,7 +6717,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1896206440}
   - component: {fileID: 1896206441}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ShieldCollider
   m_TagString: Shield
   m_Icon: {fileID: 0}
@@ -6621,7 +6766,7 @@ GameObject:
   - component: {fileID: 1947837704}
   - component: {fileID: 1947837700}
   - component: {fileID: 1947837705}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: EnemyKnight
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -6719,12 +6864,9 @@ MonoBehaviour:
   AccelerationPassive: 4
   AccelerationFight: 40
   AccelerationRage: 80
-  RotationAccelerationPassive: 750
-  RotationAccelerationFight: 1500
-  RotationAccelerationRage: 3000
-  MaxRotationSpeedPassive: 180
-  MaxRotationSpeedFight: 520
-  MaxRotationSpeedRage: 800
+  MaxRotationSpeedPassive: 100
+  MaxRotationSpeedFight: 200
+  MaxRotationSpeedRage: 400
   agent: {fileID: 0}
   anim: {fileID: 0}
   cc: {fileID: 0}
@@ -6773,7 +6915,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1988259776}
   - component: {fileID: 1988259777}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Light1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7097,6 +7239,22 @@ Prefab:
       value: UI
       objectReference: {fileID: 0}
     - target: {fileID: 1634353337386288, guid: 28153ad17a92bec4f8a8bea1e4a26bd7, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1946019060028820, guid: 28153ad17a92bec4f8a8bea1e4a26bd7, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1910161056737900, guid: 28153ad17a92bec4f8a8bea1e4a26bd7, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1553176141957576, guid: 28153ad17a92bec4f8a8bea1e4a26bd7, type: 2}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1319214814242702, guid: 28153ad17a92bec4f8a8bea1e4a26bd7, type: 2}
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}

@@ -26,7 +26,7 @@ namespace LightBringer.Player.Abilities
         private GameObject abilityDisplayPrefab;
         private GameObject abilityDisplay;
 
-        private List<DamageController> dcs;
+        private List<StatusController> dcs;
 
         public MeleeAoE1(Character character) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -68,16 +68,17 @@ namespace LightBringer.Player.Abilities
             character.abilityMaxRotation = CASTING_MAX_ROTATION;
 
             // Enemy list
-            dcs = new List<DamageController>();
+            dcs = new List<StatusController>();
         }
 
         public override void Cast()
         {
             base.Cast();
 
-            foreach(DamageController dc in dcs)
+            foreach(StatusController dc in dcs)
             {
-                dc.TakeDamage(DPS * Time.deltaTime);
+                Damage dmg = new Damage(DPS * Time.deltaTime, DamageType.AreaOfEffect, DamageElement.Energy);
+                dc.TakeDamage(dmg, character);
             }
         }
 
@@ -96,12 +97,12 @@ namespace LightBringer.Player.Abilities
             DestroyTrigger();
         }
 
-        public void AddEnemyDamageController(DamageController enemyDC)
+        public void AddEnemyDamageController(StatusController enemyDC)
         {
             dcs.Add(enemyDC);
         }
 
-        public void RemoveEnemyDamageController(DamageController enemyDC)
+        public void RemoveEnemyDamageController(StatusController enemyDC)
         {
             dcs.Remove(enemyDC);
         }

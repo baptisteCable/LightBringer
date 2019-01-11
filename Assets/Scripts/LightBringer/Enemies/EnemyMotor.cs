@@ -14,10 +14,6 @@ namespace LightBringer
         public float AccelerationFight;
         public float AccelerationRage;
 
-        public float RotationAccelerationPassive;
-        public float RotationAccelerationFight;
-        public float RotationAccelerationRage;
-
         public float MaxRotationSpeedPassive;
         public float MaxRotationSpeedFight;
         public float MaxRotationSpeedRage;
@@ -33,8 +29,7 @@ namespace LightBringer
 
         // Rotation
         protected float currentRotationSpeed;
-        protected float rotationAcceleration;
-        protected float rotationSpeed = 0f;
+        protected float maxRotationSpeed = 0f;
 
         // Components
         [HideInInspector]
@@ -108,14 +103,14 @@ namespace LightBringer
 
         }
 
-        public void EnableAgentRoation()
+        public void EnableAgentRotation()
         {
-            agent.angularSpeed = 0;
+            agent.angularSpeed = maxRotationSpeed;
         }
 
         public void DisableAgentRotation()
         {
-            agent.angularSpeed = rotationSpeed;
+            agent.angularSpeed = 0;
         }
 
         public void SetOverrideAgent(bool oa)
@@ -154,15 +149,15 @@ namespace LightBringer
             {
                 case EnemyMode.Passive:
                     SetMovementParameters(MaxMoveSpeedPassive, AccelerationPassive);
-                    SetRotationParameters(MaxRotationSpeedPassive, RotationAccelerationPassive);
+                    SetRotationParameters(MaxRotationSpeedPassive);
                     break;
                 case EnemyMode.Fight:
                     SetMovementParameters(MaxMoveSpeedFight, AccelerationFight);
-                    SetRotationParameters(MaxRotationSpeedFight, RotationAccelerationFight);
+                    SetRotationParameters(MaxRotationSpeedFight);
                     break;
                 case EnemyMode.Rage:
                     SetMovementParameters(MaxMoveSpeedRage, AccelerationRage);
-                    SetRotationParameters(MaxRotationSpeedRage, RotationAccelerationRage);
+                    SetRotationParameters(MaxRotationSpeedRage);
                     break;
                 default: throw new System.Exception("Invalid Enemy Mode");
             }
@@ -176,10 +171,9 @@ namespace LightBringer
             SetProximityMovement(agent.autoBraking);
         }
 
-        private void SetRotationParameters(float rs, float acc)
+        private void SetRotationParameters(float rs)
         {
-            rotationSpeed = rs;
-            rotationAcceleration = acc;
+            maxRotationSpeed = rs;
             agent.angularSpeed = rs;
         }
 
@@ -200,36 +194,43 @@ namespace LightBringer
         public void RotateTowards(Vector3 direction)
         {
             float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
-            
-            // rotate if not to close to avoid shivering
-            if (Mathf.Abs(angle) >= 2f || (transform.position - direction).magnitude > 5)
+            float rotationSpeed;
+
+            rotationSpeed = Mathf.Min(
+                        Mathf.Abs(angle) / 10 / Time.deltaTime,
+                        maxRotationSpeed
+                    );
+            currentRotationSpeed = Mathf.Sign(angle) * rotationSpeed;
+
+            if (Mathf.Abs(currentRotationSpeed * Time.deltaTime) < .1f)
             {
-                float rotationSpeed;
-                if (currentRotationSpeed * angle < 0)
-                {
-                    rotationSpeed = rotationAcceleration * Time.fixedDeltaTime - Mathf.Abs(currentRotationSpeed);
-                }
-                else
-                {
-                    rotationSpeed = Mathf.Min(
-                    Mathf.Abs(currentRotationSpeed) + rotationAcceleration * Time.fixedDeltaTime,
-                    Mathf.Abs(angle) * rotationAcceleration / 40,
-                    this.rotationSpeed);
-                }
-
-                currentRotationSpeed = Mathf.Sign(angle) * rotationSpeed;
-
-                transform.Rotate(Vector3.up, currentRotationSpeed * Time.fixedDeltaTime);
+                currentRotationSpeed = 0;
             }
+
+            transform.Rotate(Vector3.up, currentRotationSpeed * Time.deltaTime);
         }
 
         public virtual void Die()
         {
             isDead = true;
-            GetComponent<CharacterController>().enabled = false;
+            disableColliders(transform);
             agent.enabled = false;
             Destroy(gameObject, 10f);
             anim.Play("Die");
+        }
+
+        private void disableColliders(Transform t)
+        {
+            Collider coll = t.GetComponent<CharacterController>();
+            if (coll != null)
+            {
+                coll.enabled = false;
+            }
+
+            foreach (Transform child in t)
+            {
+                disableColliders(child);
+            }
         }
     }
 }

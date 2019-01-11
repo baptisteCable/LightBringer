@@ -1,9 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
 using LightBringer;
+using LightBringer.Player;
 
 [RequireComponent(typeof(EnemyMotor))]
-public class DamageController : MonoBehaviour {
+public class StatusController : MonoBehaviour {
     // status
     public float maxHP;
     public float currentHP;
@@ -16,10 +17,10 @@ public class DamageController : MonoBehaviour {
         motor = GetComponent<EnemyMotor>();
         esb.damageController = this;
     }
-	
-	public void TakeDamage(float amount)
+
+    public void TakeDamage(Damage dmg, Character dealer,  Vector3 origin = default(Vector3))
     {
-        currentHP -= amount;
+        currentHP -= dmg.amount;
 
         if (currentHP <= 0)
         {

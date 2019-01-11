@@ -11,6 +11,8 @@ TagManager:
   - Spell
   - UI
   - Ground
+  - PlayerHitbox
+  - EnemyHitbox
   layers:
   - Default
   - TransparentFX
@@ -24,8 +26,8 @@ TagManager:
   - Ground
   - Player
   - Spell
-  - 
-  - 
+  - Immaterial
+  - Enemy
   - 
   - 
   - 

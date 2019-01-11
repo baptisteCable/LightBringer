@@ -162,7 +162,12 @@ namespace LightBringer.Knight
         {
             if (col.tag == "Player")
             {
-                col.GetComponent<PlayerStatusManager>().TakeDamage(10);
+                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
+                Damage dmg = new Damage(10f, DamageType.AreaOfEffect, DamageElement.Energy);
+                if (psm.IsAffectedBy(dmg, em))
+                {
+                    psm.TakeDamage(dmg, em);
+                }
             }
         }
     }

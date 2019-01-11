@@ -167,7 +167,6 @@ namespace LightBringer.Knight
                     weight = 10f * (20f - (target.position - motor.transform.position).magnitude) / (20f - 6f);
                 }
             }
-            weight = 1000000f; // Debug
             list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider,
                 motor.Attack3Indicator1, motor.Attack3Indicator2), weight);
 
