@@ -39,7 +39,7 @@ public class AbilityImage : MonoBehaviour
         if (character.currentChanneling == character.abilities[abilityIndex])
         {
             channelingImage.gameObject.SetActive(true);
-            channelingImage.fillAmount = character.abilities[abilityIndex].channelingTime / character.abilities[abilityIndex].channelingDuration;
+            channelingImage.fillAmount = (Time.time - character.abilities[abilityIndex].channelStartTime) / character.abilities[abilityIndex].channelDuration;
         }
         else
         {

@@ -64,7 +64,7 @@ namespace LightBringer.Player
             coll = GetComponent<Collider>();
 
             // TEST
-            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword") as GameObject;
+            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/LightLongSword") as GameObject;
             swordObject = Instantiate(swordPrefab, weaponSlotR);
             Abilities.Light.LongSword.LightSword sword = swordObject.GetComponent<Abilities.Light.LongSword.LightSword>();
 
@@ -72,11 +72,11 @@ namespace LightBringer.Player
             abilities = new Ability[5];
 
             // jump ability[0]
-            abilities[0] = new Jump0(this);
+            abilities[0] = new Abilities.Light.LongSword.AbEsc(this);
             abilities[1] = new Abilities.Light.LongSword.Ab1(this, sword);
             abilities[2] = new Abilities.Light.LongSword.Ab2(this, sword);
             abilities[3] = new Abilities.Light.LongSword.AbOff(this, sword);
-            abilities[4] = new CubeSkillShot(this);
+            abilities[4] = new Abilities.Light.LongSword.AbDef(this, sword);
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
@@ -140,16 +140,6 @@ namespace LightBringer.Player
 
         private void StartAbilities()
         {
-            // jump
-            if (Input.GetButton("Jump"))
-            {
-                Cancel();
-                if (currentAbility == null)
-                {
-                    abilities[0].StartChanneling();
-                }
-            }
-
             // Ab1
             if (Input.GetButton("Skill1"))
             {
@@ -168,16 +158,28 @@ namespace LightBringer.Player
                 abilities[3].StartChanneling();
             }
 
-            // AbDeff
-            if (Input.GetButton("SkillDeff") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
+            // AbDef
+            if (Input.GetButton("SkillDef") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
             {
                 abilities[4].StartChanneling();
+            }
+
+            // Escape
+            if (Input.GetButton("SkillEsc"))
+            {
+                abilities[0].StartChanneling();
             }
 
             // Cancel
             if (Input.GetButtonDown("CancelChanneling"))
             {
                 Cancel();
+            }
+
+            // Test
+            if (Input.GetButtonDown("testButton"))
+            {
+                psm.AddAndStartState(new Haste());
             }
         }
 
@@ -199,6 +201,9 @@ namespace LightBringer.Player
             {
                 specialCancelAbility.SpecialCancel();
             }
+
+            // Cancel states
+            psm.CancelStates();
         }
 
         private void Move()
@@ -254,10 +259,12 @@ namespace LightBringer.Player
             float h = Input.GetAxisRaw("Horizontal");
             if (movementMode == MovementMode.Player && !psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
             {
-                Vector3 direction = new Vector3(v + h, 0, v - h);
+                Vector3 direction = new Vector3(v + h, 0, v - h).normalized;
 
+                animator.SetFloat("zVel", Vector3.Dot(direction, characterContainer.forward));
+                animator.SetFloat("xVel", Vector3.Dot(direction, characterContainer.right));
                 animator.SetBool("isMoving", rb.velocity != Vector3.zero);
-                rb.velocity = (direction.normalized * moveSpeed * abilityMoveMultiplicator);
+                rb.velocity = (direction * MoveSpeed());
             }
             else
             {
@@ -271,6 +278,11 @@ namespace LightBringer.Player
                     rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
                 }
             }
+        }
+
+        private float MoveSpeed()
+        {
+            return moveSpeed * abilityMoveMultiplicator * psm.hasteMoveMultiplicator;
         }
 
         private void CCConsequences()
@@ -334,6 +346,17 @@ namespace LightBringer.Player
             visible = false;
             characterContainer.gameObject.SetActive(false);
         }
+        
+        public void LockAbilitiesExcept(bool locked, Ability ab = null)
+        {
+            for (int i = 0; i < abilities.Length; i++)
+            {
+                if (abilities[i] != ab)
+                {
+                    abilities[i].locked = locked;
+                }
+            }
+        }
         /*
         private void OnGUI()
         {
@@ -351,6 +374,20 @@ namespace LightBringer.Player
      * Chercher autre méthode Slash
      * 
      * Cumuler les dégâts par type puis les afficher tous les .5 secondes
+     * 
+     * Afficher les dégâts
+     * 
+     * Transparent pas comme ça. Shader
+     * Shader lumière (ou particules ?)
+     * 
+     * Trigger charge Knight
+     * Knight : ralentir rotation
+     * 
+     * Knight : mode rage impacte les CD et la vitesse de cast (?).
+     * 
+     * State Cancel animation (pas d'animator dans le psm ?)
+     * 
+     * Synchronisation des idle et run top et bot ?
      * 
      * */
 }

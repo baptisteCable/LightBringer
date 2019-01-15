@@ -9,10 +9,13 @@ namespace LightBringer.Player.Abilities
         public bool coolDownUp;
         public float coolDownRemaining;
         public float coolDownDuration;
-        public float castingDuration;
-        public float castingTime;
-        public float channelingDuration;
-        public float channelingTime;
+        public float castDuration;
+        //public float castingTime;
+        public float castStartTime;
+        public float castEndTime;
+        public float channelDuration;
+        public float channelStartTime;
+        public float channelEndTime;
         public bool channelingCancellable;
         public bool castingCancellable;
         public bool locked;
@@ -23,8 +26,8 @@ namespace LightBringer.Player.Abilities
             coolDownUp = true;
             locked = false;
             this.coolDownDuration = coolDownDuration;
-            this.channelingDuration = channelingDuration;
-            this.castingDuration = castingDuration;
+            this.channelDuration = channelingDuration;
+            this.castDuration = castingDuration;
             this.character = character;
             this.channelingCancellable = channelingCancellable;
             this.castingCancellable = castingCancellable;
@@ -42,12 +45,13 @@ namespace LightBringer.Player.Abilities
             coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
 
             // animation
-            character.animator.Play("NoAction");
+            character.animator.Play("TopIdle");
+            character.animator.Play("BotIdle");
         }
 
         public virtual void AbortChanelling()
         {
-            // Movement restrictions
+           // Movement restrictions
             resetMovementRestrictions();
 
             // current ability
@@ -57,7 +61,8 @@ namespace LightBringer.Player.Abilities
             coolDownRemaining = coolDownDuration;
 
             // animation
-            character.animator.Play("NoAction");
+            character.animator.Play("TopIdle");
+            character.animator.Play("BotIdle");
         }
 
         public virtual void AbortCasting()
@@ -74,7 +79,8 @@ namespace LightBringer.Player.Abilities
             // animation
             if (!character.psm.isInterrupted)
             {
-                character.animator.Play("NoAction");
+                character.animator.Play("TopIdle");
+                character.animator.Play("BotIdle");
             }
         }
 
@@ -92,9 +98,7 @@ namespace LightBringer.Player.Abilities
 
         public virtual void Channel()
         {
-            channelingTime += Time.deltaTime;
-
-            if (channelingTime > channelingDuration)
+            if (Time.time > channelEndTime)
             {
                 StartAbility();
             }
@@ -102,9 +106,7 @@ namespace LightBringer.Player.Abilities
 
         public virtual void Cast()
         {
-            castingTime += Time.deltaTime;
-
-            if (castingTime > castingDuration)
+            if (Time.time > castEndTime)
             {
                 End();
             }
@@ -112,15 +114,20 @@ namespace LightBringer.Player.Abilities
 
         public virtual void StartChanneling()
         {
-            channelingTime = 0;
+            channelStartTime = Time.time;
+            channelEndTime = Time.time + channelDuration;
+
             character.currentChanneling = this;
         }
 
         public virtual void StartAbility()
         {
+
+            castStartTime = Time.time;
+            castEndTime = Time.time + castDuration;
+
             character.currentAbility = this;
             character.currentChanneling = null;
-            castingTime = 0;
         }
 
         protected void resetMovementRestrictions()
@@ -131,17 +138,6 @@ namespace LightBringer.Player.Abilities
 
         public virtual void ComputeSpecial()
         {
-        }
-
-        protected void SetLockedOtherAbilities(bool locked)
-        {
-            for (int i = 0; i < character.abilities.Length; i++)
-            {
-                if (character.abilities[i] != this)
-                {
-                    character.abilities[i].locked = locked;
-                }
-            }
         }
 
         protected bool CannotStartStandard()
@@ -155,7 +151,7 @@ namespace LightBringer.Player.Abilities
                     locked;
         }
 
-        protected bool JumpIntialisation()
+        protected bool JumpIntialisationValid()
         {
             if (
                     !coolDownUp ||
@@ -170,7 +166,7 @@ namespace LightBringer.Player.Abilities
 
             character.Cancel();
 
-            return character.currentAbility == null;
+            return character.currentAbility == null && character.currentChanneling == null;
         }
 
         public virtual void SpecialCancel()

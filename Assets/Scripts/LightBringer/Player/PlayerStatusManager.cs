@@ -7,31 +7,47 @@ namespace LightBringer.Player
     [RequireComponent(typeof(Character))]
     public class PlayerStatusManager : MonoBehaviour
     {
+        private const float FLASH_DURATION = .1f;
+
         // HP MP
         public float maxHP;
         public float currentHP;
         public float maxMP;
         public float currentMP;
 
+        // Gradable
+        [HideInInspector]
+        public float hasteMoveMultiplicator;
+
         // Crowd control
+        [HideInInspector]
         public bool isRooted;
+        [HideInInspector]
         public bool isStunned;
+        [HideInInspector]
         public bool isInterrupted;
+        [HideInInspector]
         public float rootDuration;
+        [HideInInspector]
         public float stunDuration;
+        [HideInInspector]
         public float interruptedDuration;
 
         // Status
+        [HideInInspector]
         public List<State> states;
+        private List<State> queuedStates;
 
         // Special status
         public Transform anchor;
+        [HideInInspector]
         public bool isTargetable;
+        [HideInInspector]
         public bool abilitySuppress; // Can't do anything because an ability prevents it
 
         // Components
         public StatusBar statusBar;
-        private Character character;
+        public Character character;
 
         void Start()
         {
@@ -52,13 +68,16 @@ namespace LightBringer.Player
 
             // States
             states = new List<State>();
+            queuedStates = new List<State>();
 
-            // test
-            AddAndStartState(new Immaterial(4f));
+            // Gradables
+            hasteMoveMultiplicator = 1f;
         }
 
         private void Update()
         {
+            AddAndStartQueuedStates();
+
             foreach (State s in states)
             {
                 s.Update();
@@ -128,8 +147,18 @@ namespace LightBringer.Player
 
         public void AddAndStartState(State state)
         {
-            states.Add(state);
-            state.Start(this);
+            queuedStates.Add(state);
+        }
+
+        private void AddAndStartQueuedStates()
+        {
+            while (queuedStates.Count > 0)
+            {
+                State s = queuedStates[0];
+                states.Add(s);
+                s.Start(this);
+                queuedStates.RemoveAt(0);
+            }
         }
 
         public void StopState(State state)
@@ -202,11 +231,22 @@ namespace LightBringer.Player
             }
         }
 
+        public void CancelStates()
+        {
+            foreach (State s in states)
+            {
+                if (s.cancellable)
+                {
+                    s.Cancel();
+                }
+            }
+        }
+
         #region Flash
         private IEnumerator Flash()
         {
             RecFlashOn(transform);
-            yield return new WaitForSeconds(.25f);
+            yield return new WaitForSeconds(FLASH_DURATION);
             RecFlashOff(transform);
         }
 
@@ -221,7 +261,7 @@ namespace LightBringer.Player
                     Material mat = tr.GetComponent<Renderer>().material;
 
                     mat.EnableKeyword("_EMISSION");
-                    mat.SetColor("_EmissionColor", new Color(1f, 153f / 255, 153f / 255));
+                    mat.SetColor("_EmissionColor", new Color(.2f, .1f, .1f));
                 }
 
                 foreach (Transform child in tr)
@@ -252,6 +292,12 @@ namespace LightBringer.Player
         }
         #endregion
 
-        
+        private void OnGUI()
+        {
+            GUI.contentColor = Color.black;
+            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+            GUILayout.Label("States count: " + states.Count);
+            GUILayout.EndArea();
+        }
     }
 }

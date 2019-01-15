@@ -1,24 +1,37 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+
 
 namespace LightBringer.Player
 {
+    [RequireComponent(typeof(Text))]
     public class CCBar : MonoBehaviour {
-        private GameObject rooted;
-        private GameObject stunned;
-        private GameObject interrupted;
+        private Text ccText;
         public PlayerStatusManager psm;
 
         private void Start()
         {
-            rooted = transform.Find("Rooted").gameObject;
-            stunned = transform.Find("Stunned").gameObject;
-            interrupted = transform.Find("Interrupted").gameObject;
+            ccText = GetComponent<Text>();
         }
 
-        void Update() {
-            rooted.SetActive(psm.isRooted);
-            stunned.SetActive(psm.isStunned);
-            interrupted.SetActive(psm.isInterrupted);
+        void Update()
+        {
+            if (psm.isStunned)
+            {
+                ccText.text = "Stunned";
+            }
+            else if (psm.isRooted)
+            {
+                ccText.text = "Rooted";
+            }
+            else if (psm.isInterrupted)
+            {
+                ccText.text = "Interrupted";
+            }
+            else
+            {
+                ccText.text = "";
+            }
         }
     }
 }

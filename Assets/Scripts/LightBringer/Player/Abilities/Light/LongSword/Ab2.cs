@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LightBringer.Abilities;
+using LightBringer.Enemies;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -69,7 +70,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             interrupted = false;
 
-            character.animator.Play("Ab2");
+            character.animator.Play("BotAb2");
+            character.animator.Play("TopAb2");
 
             LoadLight();
 
@@ -82,7 +84,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void DisplayIndicator()
         {
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
-            GameObject.Destroy(indicator, channelingDuration);
+            GameObject.Destroy(indicator, channelDuration);
         }
 
         private void LoadLight()

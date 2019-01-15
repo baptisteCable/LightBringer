@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using LightBringer.Abilities;
+using LightBringer.Enemies;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -11,7 +12,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const bool CASTING_CANCELLABLE = false;
 
         // const
-        private const float COOLDOWN_DURATION_A = 1f; // TODO 10f
+        private const float COOLDOWN_DURATION_A = 10f;
         private const float COOLDOWN_DURATION_B = .1f;
         private const float CHANNELING_DURATION_A = 12f / 60f;
         private const float CHANNELING_DURATION_B = 12f / 60f;
@@ -82,8 +83,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (!vanished)
             {
                 currentAttack = 1;
-                character.animator.Play("AbOffa");
-                channelingDuration = CHANNELING_DURATION_A;
+                character.animator.Play("BotAbOffa");
+                character.animator.Play("TopAbOffa");
+                channelDuration = CHANNELING_DURATION_A;
 
             }
             else
@@ -92,7 +94,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 FadeInAnimation();
 
                 currentAttack = 2;
-                channelingDuration = CHANNELING_DURATION_B;
+                channelDuration = CHANNELING_DURATION_B;
             }
 
             // Indicator
@@ -115,7 +117,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (currentAttack == 2)
             {
                 FadeIn();
-                character.animator.Play("AbOffb");
+                character.animator.Play("BotAbOffb");
+                character.animator.Play("TopAbOffb");
             }
 
             // Trail effect
@@ -154,7 +157,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             coolDownDuration = COOLDOWN_DURATION_A;
 
             // unlock other abilities
-            SetLockedOtherAbilities(false);
+            character.LockAbilitiesExcept(false, this);
 
             // Special cancel
             character.specialCancelAbility = null;
@@ -183,7 +186,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             forcedFadeInTime = Time.time + VANISH_DURATION;
 
             // Lock other abilities
-            SetLockedOtherAbilities(true);
+            character.LockAbilitiesExcept(true, this);
 
             // Special cancel
             character.specialCancelAbility = this;

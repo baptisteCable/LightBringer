@@ -4,11 +4,13 @@ namespace LightBringer.Player
 {
     public abstract class State
     {
+        public float startTime;
         public float endTime = 0;
         public PlayerStatusManager psm;
         public bool complete = false;
+        public bool cancellable;
 
-        public State(float duration = 0)
+        public State(bool cancellable, float duration = 0)
         {
             if (duration > 0)
             {
@@ -18,6 +20,8 @@ namespace LightBringer.Player
             {
                 endTime = 0;
             }
+
+            this.cancellable = cancellable;
         }
 
         public virtual Damage AlterTakenDamage(Damage dmg, EnemyMotor dealer, Vector3 origin)
@@ -38,6 +42,7 @@ namespace LightBringer.Player
         public virtual void Start(PlayerStatusManager psm)
         {
             this.psm = psm;
+            startTime = Time.time;
         }
 
         public virtual void Stop()
@@ -50,6 +55,16 @@ namespace LightBringer.Player
             if (endTime > 0 && Time.time > endTime)
             {
                 Stop();
+            }
+        }
+
+        public virtual void Cancel()
+        {
+            if (cancellable)
+            {
+                //TODO cancel anim
+
+                complete = true;
             }
         }
     }

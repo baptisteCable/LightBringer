@@ -1,59 +1,149 @@
 ﻿using UnityEngine;
+using LightBringer.Tools;
 
 namespace LightBringer.Player
 {
     public class Immaterial : State
     {
-        private const int IMMATERIAL_LAYER = 12;
-        private const int PLAYER_LAYER = 10;
+        private const bool CANCELLABLE = true;
 
-        public Immaterial(float duration) : base(duration) { }
+        private const string IMMATERIAL_LAYER = "Immaterial";
+        private const string PLAYER_LAYER = "Player";
+
+        private GameObject cloudEffectPrefab;
+
+        public Immaterial(float duration) : base(CANCELLABLE, duration) {
+            cloudEffectPrefab = Resources.Load("States/Immaterial/CouldEffect") as GameObject;
+        }
 
         public override void Start(PlayerStatusManager psm)
         {
             base.Start(psm);
 
-            recSetLayer(psm.gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+            GameObject cloudEffect = GameObject.Instantiate(cloudEffectPrefab);
+            cloudEffect.transform.position = psm.transform.position;
+            GameObject.Destroy(cloudEffect, .5f);
 
-            Debug.Log("Début immaterial");
+            LayerTools.recSetLayer(psm.gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+
+            RecTransparentOn(psm.transform);
         }
 
         public override void Stop()
         {
             base.Stop();
 
-            recSetLayer(psm.gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+            GameObject cloudEffect = GameObject.Instantiate(cloudEffectPrefab);
+            cloudEffect.transform.position = psm.transform.position;
+            GameObject.Destroy(cloudEffect, .5f);
 
-            Debug.Log("Fin immaterial");
+            LayerTools.recSetLayer(psm.gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+
+            RecTransparentOff(psm.transform);
+        }
+
+        public override void Cancel()
+        {
+            Stop();
         }
 
         public override bool IsAffectedBy(Damage dmg, EnemyMotor dealer, Vector3 origin)
         {
-            return false;
+            if (!complete)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         public override Damage AlterTakenDamage(Damage dmg, EnemyMotor dealer, Vector3 origin)
         {
-            dmg.amount = 0;
+            if (!complete)
+            {
+                dmg.amount = 0;
+            }
             return dmg;
         }
 
         public override Damage AlterDealtDamage(Damage dmg)
         {
-            dmg.amount /= 2f;
+            if (!complete)
+            {
+                dmg.amount /= 2f;
+            }
             return dmg;
         }
 
-        private void recSetLayer(GameObject go, int from, int to)
+        private void RecTransparentOn(Transform tr)
         {
-            if (go.layer == from)
+            if (tr.tag != "Spell" && tr.tag != "UI")
             {
-                go.layer = to;
-            }
+                Renderer renderer = tr.GetComponent<Renderer>();
 
-            foreach (Transform child in go.transform)
+                if (renderer != null)
+                {
+                    Material mat = tr.GetComponent<Renderer>().material;
+
+                    if (mat.shader.name == "Standard")
+                    {
+                        Color color = mat.GetColor("_Color");
+
+                        color.a = .3f;
+                        mat.SetColor("_Color", color);
+                        mat.SetFloat("_Mode", 3);
+
+                        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                        mat.SetInt("_ZWrite", 0);
+                        mat.DisableKeyword("_ALPHATEST_ON");
+                        mat.DisableKeyword("_ALPHABLEND_ON");
+                        mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                        mat.renderQueue = 3000;
+                    }
+                }
+
+                foreach (Transform child in tr)
+                {
+                    RecTransparentOn(child);
+                }
+            }
+        }
+
+        private void RecTransparentOff(Transform tr)
+        {
+            if (tr.tag != "Spell" && tr.tag != "UI")
             {
-                recSetLayer(child.gameObject, from, to);
+                Renderer renderer = tr.GetComponent<Renderer>();
+
+                if (renderer != null)
+                {
+                    Material mat = tr.GetComponent<Renderer>().material;
+
+                    if (mat.shader.name == "Standard")
+                    {
+                        Color color = mat.GetColor("_Color");
+
+                        color.a = 1f;
+                        mat.SetColor("_Color", color);
+                        mat.SetFloat("_Mode", 0);
+
+                        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                        mat.SetInt("_ZWrite", 1);
+                        mat.DisableKeyword("_ALPHATEST_ON");
+                        mat.DisableKeyword("_ALPHABLEND_ON");
+                        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        mat.renderQueue = -1;
+                    }
+                }
+
+                foreach (Transform child in tr)
+                {
+                    RecTransparentOff(child);
+                }
             }
         }
     }

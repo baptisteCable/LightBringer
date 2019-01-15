@@ -9,8 +9,7 @@ namespace LightBringer.Player
         public PlayerStatusManager psm;
         public Character character;
         public Camera cam;
-
-        private Image mpContent;
+        
         private Image channelingContent;
         private GameObject channelingBar;
 
@@ -19,9 +18,6 @@ namespace LightBringer.Player
             Transform hpBG = transform.Find("BackGround").Find("HPBackGroung");
             hpImage = hpBG.Find("Content").GetComponent<Image>();
             deleteHPdImage = hpBG.Find("Deleted").GetComponent<UnityEngine.UI.Image>();
-
-            Transform mpBG = transform.Find("BackGround").Find("MPBackGroung");
-            mpContent = mpBG.Find("Content").GetComponent<Image>();
 
             Transform channelingBG = transform.Find("BackGround").Find("ChannelingBackGroung");
             channelingContent = channelingBG.Find("Content").GetComponent<Image>();
@@ -38,13 +34,11 @@ namespace LightBringer.Player
             LookAtCamera(cam);
 
             ComputeHPBar(psm.currentHP, psm.maxHP);
-
-            mpContent.fillAmount = psm.currentMP / psm.maxMP;
+            
             if (character.currentChanneling != null)
             {
                 channelingBar.SetActive(true);
-                channelingContent.fillAmount = character.currentChanneling.channelingTime / character.currentChanneling.channelingDuration;
-
+                channelingContent.fillAmount = (Time.time - character.currentChanneling.channelStartTime) / character.currentChanneling.channelDuration;
             }
             else
             {

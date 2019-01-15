@@ -3,81 +3,88 @@ using UnityEngine;
 using LightBringer;
 using LightBringer.Player;
 
-[RequireComponent(typeof(EnemyMotor))]
-public class StatusController : MonoBehaviour {
-    // status
-    public float maxHP;
-    public float currentHP;
-    public GameObject statusBarGO;
-    public float displayHeight;
-    private EnemyMotor motor;
-
-    void Start () {
-        EnemyStatusBar esb = (EnemyStatusBar)(statusBarGO.GetComponent("EnemyStatusBar"));
-        motor = GetComponent<EnemyMotor>();
-        esb.damageController = this;
-    }
-
-    public void TakeDamage(Damage dmg, Character dealer,  Vector3 origin = default(Vector3))
+namespace LightBringer.Enemies
+{
+    [RequireComponent(typeof(EnemyMotor))]
+    public class StatusController : MonoBehaviour
     {
-        currentHP -= dmg.amount;
+        private const float FLASH_DURATION = .1f;
 
-        if (currentHP <= 0)
+        // status
+        public float maxHP;
+        public float currentHP;
+        public GameObject statusBarGO;
+        public float displayHeight;
+        private EnemyMotor motor;
+
+        void Start()
         {
-            motor.Die();
-            Destroy(statusBarGO);
+            EnemyStatusBar esb = (EnemyStatusBar)(statusBarGO.GetComponent("EnemyStatusBar"));
+            motor = GetComponent<EnemyMotor>();
+            esb.damageController = this;
         }
 
-
-        StopCoroutine("Flash");
-        StartCoroutine("Flash");
-    }
-
-    private IEnumerator Flash()
-    {
-        RecFlashOn(transform);
-        yield return new WaitForSeconds(.25f);
-        RecFlashOff(transform);     
-    }
-
-    private void RecFlashOn(Transform tr)
-    {
-        if (tr.tag != "Shield" && tr.tag != "UI")
+        public void TakeDamage(Damage dmg, Character dealer, Vector3 origin = default(Vector3))
         {
-            Renderer renderer = tr.GetComponent<Renderer>();
+            currentHP -= dmg.amount;
 
-            if (renderer != null)
+            if (currentHP <= 0)
             {
-                Material mat = tr.GetComponent<Renderer>().material;
+                motor.Die();
+                Destroy(statusBarGO);
+            }
 
-                mat.EnableKeyword("_EMISSION");
-                mat.SetColor("_EmissionColor", new Color(1f, 153f / 255, 153f / 255));
+
+            StopCoroutine("Flash");
+            StartCoroutine("Flash");
+        }
+
+        private IEnumerator Flash()
+        {
+            RecFlashOn(transform);
+            yield return new WaitForSeconds(FLASH_DURATION);
+            RecFlashOff(transform);
+        }
+
+        private void RecFlashOn(Transform tr)
+        {
+            if (tr.tag != "Shield" && tr.tag != "UI")
+            {
+                Renderer renderer = tr.GetComponent<Renderer>();
+
+                if (renderer != null)
+                {
+                    Material mat = tr.GetComponent<Renderer>().material;
+
+                    mat.EnableKeyword("_EMISSION");
+                    mat.SetColor("_EmissionColor", new Color(.2f, .1f, .1f));
+                }
+            }
+
+            foreach (Transform child in tr)
+            {
+                RecFlashOn(child);
             }
         }
 
-        foreach (Transform child in tr)
+        private void RecFlashOff(Transform tr)
         {
-            RecFlashOn(child);
-        }
-    }
-
-    private void RecFlashOff(Transform tr)
-    {
-        if (tr.tag != "Shield" && tr.tag != "UI")
-        {
-            Renderer renderer = tr.GetComponent<Renderer>();
-
-            if (renderer != null)
+            if (tr.tag != "Shield" && tr.tag != "UI")
             {
-                Material mat = tr.GetComponent<Renderer>().material;
+                Renderer renderer = tr.GetComponent<Renderer>();
 
-                mat.DisableKeyword("_EMISSION");
+                if (renderer != null)
+                {
+                    Material mat = tr.GetComponent<Renderer>().material;
+
+                    mat.DisableKeyword("_EMISSION");
+                }
             }
-        }
 
-        foreach (Transform child in tr)
-        {
-            RecFlashOff(child);
+            foreach (Transform child in tr)
+            {
+                RecFlashOff(child);
+            }
         }
     }
 }

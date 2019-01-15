@@ -1,0 +1,88 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: BotMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Chest
+    m_Weight: 0
+  - m_Path: Greaves
+    m_Weight: 0
+  - m_Path: Hand_L
+    m_Weight: 0
+  - m_Path: Hand_R
+    m_Weight: 0
+  - m_Path: Helmet
+    m_Weight: 0
+  - m_Path: LongSword
+    m_Weight: 0
+  - m_Path: PJ_Armature
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/HelmetArmature
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/HelmetArmature/SphereHelmetArmature
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L/FingersArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L/ThumbArmature_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/FingersArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/SwordArmature
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/ThumbArmature_R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/SphereChestArmature
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L/FootArmature_L
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L/FootArmature_L/ToesArmature_L
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R/FootArmature_R
+    m_Weight: 1
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R/FootArmature_R/ToesArmature_R
+    m_Weight: 1
+  - m_Path: PJ_Armature/HandArmature_IK_L
+    m_Weight: 0
+  - m_Path: PJ_Armature/HandArmature_IK_R
+    m_Weight: 0
+  - m_Path: Shoulder_L
+    m_Weight: 0
+  - m_Path: Shoulder_R
+    m_Weight: 0
+  - m_Path: SphereChest
+    m_Weight: 0
+  - m_Path: SphereHelmet
+    m_Weight: 0

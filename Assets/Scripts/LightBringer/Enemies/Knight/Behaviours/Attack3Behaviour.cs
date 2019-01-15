@@ -137,7 +137,6 @@ namespace LightBringer.Knight
             if (psm.IsAffectedBy(dmg, em))
             {
                 psm.TakeDamage(dmg, em);
-                psm.Stun(SHIELD_STUN_DURATION);
             }
         }
 

@@ -23,12 +23,12 @@ TagManager:
   - 
   - 
   - PostProcessing
-  - Ground
+  - Environment
   - Player
   - Spell
   - Immaterial
   - Enemy
-  - 
+  - NoCollision
   - 
   - 
   - 

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using LightBringer.Abilities;
+using LightBringer.Enemies;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -13,7 +14,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // const
         private const float COOLDOWN_DURATION = 0f;
         private const float ABILITY_DURATION = 6f / 60f;
-        private const float CHANNELING_DURATION_AB = 21f / 60f;
+        private const float CHANNELING_DURATION_AB = 20f / 60f;
         private const float CHANNELING_DURATION_C = 30f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
@@ -78,25 +79,28 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // Channeling time
             if (currentAttack < 3)
             {
-                channelingDuration = CHANNELING_DURATION_AB;
+                channelDuration = CHANNELING_DURATION_AB;
             }
             else
             {
-                channelingDuration = CHANNELING_DURATION_C;
+                channelDuration = CHANNELING_DURATION_C;
             }
 
             // animation
             if (currentAttack == 1)
             {
-                character.animator.Play("Ab1a");
+                character.animator.Play("BotAb1a");
+                character.animator.Play("TopAb1a");
             }
             else if (currentAttack == 2)
             {
-                character.animator.Play("Ab1b");
+                character.animator.Play("BotAb1b");
+                character.animator.Play("TopAb1b");
             }
             else if (currentAttack == 3)
             {
-                character.animator.Play("Ab1c");
+                character.animator.Play("BotAb1c");
+                character.animator.Play("TopAb1c");
             }
         }
 
@@ -180,10 +184,29 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.AbortCasting();
 
+            //Cancel combo
+            comboTime = 0f;
+
             if (trigger != null)
             {
                 GameObject.Destroy(trigger);
             }
+        }
+
+        public override void AbortChanelling()
+        {
+            base.AbortChanelling();
+            
+            //Cancel combo
+            comboTime = 0f;
+        }
+
+        public override void CancelChanelling()
+        {
+            base.CancelChanelling();
+
+            //Cancel combo
+            comboTime = 0f;
         }
 
         private void ApplyAllDamageAB()
