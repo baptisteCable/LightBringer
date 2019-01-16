@@ -46,7 +46,7 @@ public class AbilityImage : MonoBehaviour
             channelingImage.gameObject.SetActive(false);
         }
 
-        // Current ability
+        // Current ability, available
         if (character.currentAbility == character.abilities[abilityIndex])
         {
             abilityImage.color = Color.red;
@@ -57,7 +57,7 @@ public class AbilityImage : MonoBehaviour
         }
 
         // Locked
-        lockedImage.SetActive(character.abilities[abilityIndex].locked);
+        lockedImage.SetActive(character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available);
     }
 }
 

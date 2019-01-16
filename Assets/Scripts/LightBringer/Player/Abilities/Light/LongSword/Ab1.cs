@@ -17,7 +17,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float ABILITY_DURATION_C = 6f / 60f;
         private const float CHANNELING_DURATION_AB = 20f / 60f;
         private const float CHANNELING_DURATION_C = 30f / 60f;
-        private const float LIGHT_TIME = 6f / 60f;
+        private const float LIGHT_TIME = 3f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR_AB = .7f;

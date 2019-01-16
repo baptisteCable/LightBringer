@@ -7,7 +7,7 @@ using LightBringer.Player.Class;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
-    public class Ab2 : CollisionPlayerAbility
+    public class AbUlt : CollisionPlayerAbility
     {
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = true;
@@ -47,7 +47,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Status
         private bool interrupted = false;
 
-        public Ab2(LightLongSwordCharacter character, LightSword sword) :
+        public AbUlt(LightLongSwordCharacter character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;

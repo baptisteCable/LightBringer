@@ -6,6 +6,7 @@ namespace LightBringer.Player.Abilities
     {
         public const float CANCELLING_CC_FACTOR = .3f;
 
+        public bool available = true;
         public bool coolDownUp;
         public float coolDownRemaining;
         public float coolDownDuration;
@@ -148,7 +149,8 @@ namespace LightBringer.Player.Abilities
                     character.currentChanneling != null ||
                     character.psm.isInterrupted ||
                     character.psm.isStunned ||
-                    locked;
+                    locked ||
+                    !available;
         }
 
         protected bool JumpIntialisationValid()
@@ -158,7 +160,8 @@ namespace LightBringer.Player.Abilities
                     character.psm.isRooted ||
                     character.psm.isInterrupted ||
                     character.psm.isStunned ||
-                    locked
+                    locked ||
+                    !available
                 )
             {
                 return false;

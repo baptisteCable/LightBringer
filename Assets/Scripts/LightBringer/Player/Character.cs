@@ -9,8 +9,9 @@ namespace LightBringer.Player
     {
         // constants
         private const float ROTATION_SPEED = 24f;
+        private const float MOVE_SPEED = 8f;
 
-        public float moveSpeed;
+        private float moveSpeed = MOVE_SPEED;
         private float rotationSpeed = ROTATION_SPEED;
 
         // game objects
@@ -56,26 +57,11 @@ namespace LightBringer.Player
         public Ability specialCancelAbility = null;
 
         // Use this for initialization
-        void Start()
+        public virtual void Start()
         {
             rb = GetComponent<Rigidbody>();
             psm = GetComponent<PlayerStatusManager>();
             coll = GetComponent<Collider>();
-
-            // TEST
-            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword/LightLongSword") as GameObject;
-            swordObject = Instantiate(swordPrefab, weaponSlotR);
-            Abilities.Light.LongSword.LightSword sword = swordObject.GetComponent<Abilities.Light.LongSword.LightSword>();
-
-            // Abilities
-            abilities = new Ability[5];
-
-            // jump ability[0]
-            abilities[0] = new Abilities.Light.LongSword.AbEsc(this, sword);
-            abilities[1] = new Abilities.Light.LongSword.Ab1(this, sword);
-            abilities[2] = new Abilities.Light.LongSword.Ab2(this, sword);
-            abilities[3] = new Abilities.Light.LongSword.AbOff(this, sword);
-            abilities[4] = new Abilities.Light.LongSword.AbDef(this, sword);
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
@@ -228,25 +214,28 @@ namespace LightBringer.Player
         // look at mouse and camera positionning procedure
         void lookAtMouse()
         {
-            // Smoothly rotate towards the target point.
-            var targetRotation = Quaternion.LookRotation(
-                    GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)
-                );
-            Quaternion rotation = Quaternion.Slerp(
-                    characterContainer.rotation,
-                    targetRotation,
-                    rotationSpeed * Time.deltaTime
-                );
-
-            currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
-
-            if (abilityMaxRotation >= 0 && Mathf.Abs(currentRotationSpeed) > abilityMaxRotation)
+            if ((GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)).magnitude > 0)
             {
-                characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * abilityMaxRotation * Time.deltaTime);
-            }
-            else
-            {
-                characterContainer.rotation = rotation;
+                // Smoothly rotate towards the target point.
+                var targetRotation = Quaternion.LookRotation(
+                        GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)
+                    );
+                Quaternion rotation = Quaternion.Slerp(
+                        characterContainer.rotation,
+                        targetRotation,
+                        rotationSpeed * Time.deltaTime
+                    );
+
+                currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
+
+                if (abilityMaxRotation >= 0 && Mathf.Abs(currentRotationSpeed) > abilityMaxRotation)
+                {
+                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * abilityMaxRotation * Time.deltaTime);
+                }
+                else
+                {
+                    characterContainer.rotation = rotation;
+                }
             }
         }
 
