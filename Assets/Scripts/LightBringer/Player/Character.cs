@@ -7,8 +7,6 @@ namespace LightBringer.Player
     [RequireComponent(typeof(Rigidbody))]
     public class Character : MonoBehaviour
     {
-        float currentRotationSpeed;
-
         // constants
         private const float ROTATION_SPEED = 24f;
 
@@ -35,6 +33,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public float abilityMaxRotation = 0f;
         public bool visible = true;
+        float currentRotationSpeed;
 
         // body parts
         public Transform weaponSlotR;
@@ -64,7 +63,7 @@ namespace LightBringer.Player
             coll = GetComponent<Collider>();
 
             // TEST
-            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/LightLongSword") as GameObject;
+            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword/LightLongSword") as GameObject;
             swordObject = Instantiate(swordPrefab, weaponSlotR);
             Abilities.Light.LongSword.LightSword sword = swordObject.GetComponent<Abilities.Light.LongSword.LightSword>();
 
@@ -72,7 +71,7 @@ namespace LightBringer.Player
             abilities = new Ability[5];
 
             // jump ability[0]
-            abilities[0] = new Abilities.Light.LongSword.AbEsc(this);
+            abilities[0] = new Abilities.Light.LongSword.AbEsc(this, sword);
             abilities[1] = new Abilities.Light.LongSword.Ab1(this, sword);
             abilities[2] = new Abilities.Light.LongSword.Ab2(this, sword);
             abilities[3] = new Abilities.Light.LongSword.AbOff(this, sword);

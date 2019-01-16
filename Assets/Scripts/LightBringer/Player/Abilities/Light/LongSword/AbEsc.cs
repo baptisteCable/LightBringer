@@ -26,24 +26,26 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float DAMAGE = 8f;
 
         private const float MAX_RANGE = 15f;
+        private const float HEIGHT = 5f;
 
         // Prefabs
         private GameObject lightSpawnEffetPrefab;
         private GameObject lightZonePrefab;
         private GameObject triggerPrefab;
+        private GameObject trailEffectPrefab;
 
         // GameObjects
         private GameObject trigger;
         private Transform characterContainer;
         GameObject landingIndicator;
+        private LightSword sword;
 
         // Indicators
         private GameObject landingIndicatorPrefab;
         private GameObject rangeIndicatorPrefab;
 
         // Move data
-        private float speed;
-        private Vector3 destination;
+        private Vector3 destination, origin;
         float landingTime;
         float damageTime;
         private bool landed;
@@ -52,14 +54,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Colliders
         private List<Collider> encounteredCols;
 
-        public AbEsc(Character character) :
+        public AbEsc(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
+            this.sword = sword;
             lightZonePrefab = Resources.Load("Player/Light/LightZone/LightZone") as GameObject;
             lightSpawnEffetPrefab = Resources.Load("Player/Light/LongSword/Ab1/LightSpawnEffect") as GameObject;
             landingIndicatorPrefab = Resources.Load("Player/Light/LongSword/AbEsc/AbEscLandingIndicator") as GameObject;
             rangeIndicatorPrefab = Resources.Load("Player/Light/LongSword/AbEsc/AbEscRangeIndicator") as GameObject;
             triggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1c") as GameObject;
+            trailEffectPrefab = Resources.Load("Player/Light/LongSword/Sword/JumpTrail") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
@@ -70,7 +74,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 return;
             }
-            Debug.Log("Channeling");
 
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
@@ -121,19 +124,27 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject.Destroy(landingIndicator);
 
+            GameObject trailEffect1 = GameObject.Instantiate(trailEffectPrefab, sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(-0.473f, 0.089f, 0f);
+            GameObject.Destroy(trailEffect1, ABILITY_DURATION);
+            GameObject trailEffect2 = GameObject.Instantiate(trailEffectPrefab, sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(0.177f, 0.094f, 0f);
+            GameObject.Destroy(trailEffect2, ABILITY_DURATION);
+
             // No movement
             character.abilityMoveMultiplicator = 0f;
             character.abilityMaxRotation = 0f;
 
             character.SetMovementMode(MovementMode.Ability);
 
-            ComputeDestination();
-
-            speed = ((character.transform.position - destination).magnitude - 1) / LANDING_TIME;
+            ComputeOriginAndDestination();
         }
 
-        private void ComputeDestination()
+        private void ComputeOriginAndDestination()
         {
+            origin = character.transform.position;
+
+            destination = destination - characterContainer.forward;
             // TODO environment collision detection.
         }
 
@@ -144,7 +155,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (Time.time < landingTime)
             {
                 // movement
-                character.rb.velocity = characterContainer.forward * speed;
+                character.transform.position = PositionOverTime(Time.time - castStartTime);
             }
             else if (!landed)
             {
@@ -156,6 +167,19 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 SpawnLight();
                 lightSpawned = true;
             }
+        }
+
+        private Vector3 PositionOverTime(float t)
+        {
+            float x = Mathf.Lerp(origin.x, destination.x, t / LANDING_TIME);
+            float z = Mathf.Lerp(origin.z, destination.z, t / LANDING_TIME);
+            float y = yFunction(t / LANDING_TIME);
+            return new Vector3(x, y, z);
+        }
+
+        private float yFunction(float t)
+        {
+            return t * (1 - t) * 4 * HEIGHT;
         }
 
         private void SpawnLight()

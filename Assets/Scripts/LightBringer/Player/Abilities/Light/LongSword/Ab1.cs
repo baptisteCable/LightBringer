@@ -13,9 +13,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // const
         private const float COOLDOWN_DURATION = 0f;
-        private const float ABILITY_DURATION = 6f / 60f;
+        private const float ABILITY_DURATION_AB = 6f / 60f;
+        private const float ABILITY_DURATION_C = 6f / 60f;
         private const float CHANNELING_DURATION_AB = 20f / 60f;
         private const float CHANNELING_DURATION_C = 30f / 60f;
+        private const float LIGHT_TIME = 6f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR_AB = .7f;
@@ -45,8 +47,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private LightSword sword;
         private GameObject trigger;
 
+        // Misc
+        private bool lightSpawned;
+
         public Ab1(Character character, LightSword sword) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;
             lightZonePrefab = Resources.Load("Player/Light/LightZone/LightZone") as GameObject;
@@ -64,9 +69,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 return;
             }
 
-            base.StartChanneling();
-            character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
-
             if (Time.time > comboTime)
             {
                 currentAttack = 1;
@@ -80,11 +82,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (currentAttack < 3)
             {
                 channelDuration = CHANNELING_DURATION_AB;
+                castDuration = ABILITY_DURATION_AB;
             }
             else
             {
                 channelDuration = CHANNELING_DURATION_C;
+                castDuration = ABILITY_DURATION_C;
+                lightSpawned = false;
             }
+
+            character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
+            base.StartChanneling();
+
 
             // animation
             if (currentAttack == 1)
@@ -125,6 +134,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else
             {
                 character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_C;
+            }
+        }
+
+        public override void Cast()
+        {
+            base.Cast();
+
+            if (currentAttack == 3 && Time.time > castStartTime + LIGHT_TIME && !lightSpawned)
+            {
+                lightSpawned = true;
                 SpawnLight();
             }
         }
