@@ -34,7 +34,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public float comboTime = Time.time;
         public int currentAttack = 1;
 
-        private List<Collider> encounteredCols;
+        // Colliders
+        private Dictionary<Collider, Vector3> encounteredCols;
 
         // Prefabs
         private GameObject lightZonePrefab;
@@ -98,8 +99,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // animation
             if (currentAttack == 1)
             {
-                character.animator.Play("BotAb1a");
-                character.animator.Play("TopAb1a");
+                character.animator.Play("BotAb1a", -1, 0);
+                character.animator.Play("TopAb1a", -1, 0);
             }
             else if (currentAttack == 2)
             {
@@ -124,7 +125,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.abilityMaxRotation = CASTING_ROTATION_SPEED;
 
             // collider list
-            encounteredCols = new List<Collider>();
+            encounteredCols = new Dictionary<Collider, Vector3>();
 
             if (currentAttack < 3)
             {
@@ -231,26 +232,37 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void ApplyAllDamageAB()
         {
             Collider closestCol = null;
-            float minDist = 10000f;
+            float minDist = float.PositiveInfinity;
             float dist;
-            Vector3 basePoint = character.transform.position + Vector3.up;
 
-            // find the closest collider
-            foreach (Collider col in encounteredCols)
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
+            // find the closest collider (and the extraDamage ones)
+            foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                dist = (col.ClosestPoint(basePoint) - basePoint).magnitude;
-                if (dist < minDist)
+                // Extra damage: deal damage
+                DamageTaker dt = pair.Key.GetComponent<DamageTaker>();
+                if (dt != null && dt.extraDmg)
                 {
-                    minDist = dist;
-                    closestCol = col;
+                    ApplyDamageAB(pair.Key, pair.Value, id);
                 }
+                else
+                {
+                    dist = (pair.Key.ClosestPoint(pair.Value) - pair.Value).magnitude;
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestCol = pair.Key;
+                    }
+                }
+
             }
 
             if (closestCol != null)
             {
                 if (closestCol.tag == "Enemy")
                 {
-                    ApplyDamageAB(closestCol, closestCol.ClosestPoint(basePoint));
+                    ApplyDamageAB(closestCol, encounteredCols[closestCol], id);
                 }
                 else if (closestCol.tag == "Shield")
                 {
@@ -258,12 +270,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     character.psm.Interrupt(INTERRUPT_DURATION);
                 }
             }
+
         }
 
-        private void ApplyDamageAB(Collider col, Vector3 impactPoint)
+        private void ApplyDamageAB(Collider col, Vector3 origin, int id)
         {
+            Vector3 impactPoint = col.ClosestPoint(origin);
+
             Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
-            col.GetComponent<StatusController>().TakeDamage(dmg, character);
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, character.transform.position, id);
 
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
             impactEffect.transform.position = impactPoint;
@@ -276,21 +291,30 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void ApplyDamageC()
         {
-            foreach (Collider col in encounteredCols)
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
+            foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                if (col.tag == "Enemy")
+                if (pair.Key.tag == "Enemy")
                 {
                     Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light));
-                    col.GetComponent<StatusController>().TakeDamage(dmg, character);
+                    pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, character, pair.Value, id);
                 }
             }
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.Contains(col))
+            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
             {
-                encounteredCols.Add(col);
+                if (currentAttack < 3)
+                {
+                    encounteredCols.Add(col, character.transform.position + Vector3.up);
+                }
+                else
+                {
+                    encounteredCols.Add(col, act.transform.position);
+                }
             }
         }
     }

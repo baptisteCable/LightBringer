@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     public class GoToPointBehaviour : KnightBehaviour
     {

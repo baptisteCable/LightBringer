@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-namespace LightBringer
+namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(CharacterController))]
-    public abstract class EnemyMotor : MonoBehaviour
+    public abstract class Motor : MonoBehaviour
     {
         public float MaxMoveSpeedPassive;
         public float MaxMoveSpeedFight;
@@ -147,15 +147,15 @@ namespace LightBringer
         {
             switch (mode)
             {
-                case EnemyMode.Passive:
+                case Mode.Passive:
                     SetMovementParameters(MaxMoveSpeedPassive, AccelerationPassive);
                     SetRotationParameters(MaxRotationSpeedPassive);
                     break;
-                case EnemyMode.Fight:
+                case Mode.Fight:
                     SetMovementParameters(MaxMoveSpeedFight, AccelerationFight);
                     SetRotationParameters(MaxRotationSpeedFight);
                     break;
-                case EnemyMode.Rage:
+                case Mode.Rage:
                     SetMovementParameters(MaxMoveSpeedRage, AccelerationRage);
                     SetRotationParameters(MaxRotationSpeedRage);
                     break;

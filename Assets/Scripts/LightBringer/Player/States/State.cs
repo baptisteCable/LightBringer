@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player
 {
@@ -24,12 +25,12 @@ namespace LightBringer.Player
             this.cancellable = cancellable;
         }
 
-        public virtual Damage AlterTakenDamage(Damage dmg, EnemyMotor dealer, Vector3 origin)
+        public virtual Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
         {
             return dmg;
         }
 
-        public virtual bool IsAffectedBy(Damage dmg, EnemyMotor dealer, Vector3 origin)
+        public virtual bool IsAffectedBy(Damage dmg, Motor dealer, Vector3 origin)
         {
             return true;
         }

@@ -52,7 +52,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private bool lightSpawned;
 
         // Colliders
-        private List<Collider> encounteredCols;
+        private Dictionary<Collider, Vector3> encounteredCols;
 
         public AbEsc(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -86,7 +86,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // Init
             landed = false;
             lightSpawned = false;
-            encounteredCols = new List<Collider>();
+            encounteredCols = new Dictionary<Collider, Vector3>();
 
             // Indicator
             DisplayIndicator();
@@ -234,18 +234,20 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void ApplyDamage()
         {
-            foreach (Collider col in encounteredCols)
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
+            foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
                 Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.AreaOfEffect, DamageElement.Light));
-                col.GetComponent<StatusController>().TakeDamage(dmg, character);
+                pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, character, pair.Value, id);
             }
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy") && !encounteredCols.Contains(col))
+            if ((col.tag == "Enemy") && !encounteredCols.ContainsKey(col))
             {
-                encounteredCols.Add(col);
+                encounteredCols.Add(col, act.transform.position);
             }
         }
     }

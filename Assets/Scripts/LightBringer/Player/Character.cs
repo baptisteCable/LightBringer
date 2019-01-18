@@ -149,6 +149,12 @@ namespace LightBringer.Player
                 abilities[4].StartChanneling();
             }
 
+            // AbUlt
+            if (Input.GetButtonDown("SkillUlt") && currentAbility == null && currentChanneling == null && abilities[5].coolDownUp)
+            {
+                abilities[5].StartChanneling();
+            }
+
             // Escape
             if (Input.GetButton("SkillEsc"))
             {
@@ -356,7 +362,6 @@ namespace LightBringer.Player
     }
 
     /* 
-     * 
      * La charge pousse le joueur et ne monte pas dessus.
      * 
      * Chercher autre méthode Slash
@@ -376,7 +381,21 @@ namespace LightBringer.Player
      * State Cancel animation (pas d'animator dans le psm ?)
      * 
      * Synchronisation des idle et run top et bot ?
+     * Ralentir l'animation de course en fonction du modificateur de vitesse
+     * 
+     * Events plutôt qu'update pour la mise à jour des images de compétences (et ailleurs ?)
+     * 
+     * Ulti : selon la direction de l'origine, casser le quadran (s'il est encore là).
+     * Script damage taker pour l'ulti qui ne stoppe pas les attaques et renvoie les dégâts au monstre. Animation d'explosion (petite et grosse)
+     * Tout les éléments pouvant prendre des dégâts implémentent l'interface DamageTaker. Ils stoppent ou non les attaques monocible.
+     * 
+     * Flasher uniquement le DmageTaker qui a finalement pris les dégâts
+     * Impact Effects only on hurt part?
+     * 
+     * Zoom caméra. Clamp pour les min et max. dépendra aussi de l'étage où l'on se trouve.
+     * 
+     * Dépop précédent
+     * Bool pour ne lancer qu'une fois
      * 
      * */
 }
-

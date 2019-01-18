@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -16,7 +17,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             this.sword = sword;
         }
 
-        public override Damage AlterTakenDamage(Damage dmg, EnemyMotor dealer, Vector3 origin)
+        public override Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete && (dmg.type == DamageType.Melee || dmg.type == DamageType.RangeInstant || dmg.type == DamageType.Projectile))
             {

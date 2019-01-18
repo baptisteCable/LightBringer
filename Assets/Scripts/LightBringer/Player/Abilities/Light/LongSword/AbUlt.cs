@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
@@ -14,51 +13,49 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const bool CASTING_CANCELLABLE = false;
 
         // const
-        private const float COOLDOWN_DURATION = 2f;
-        private const float CHANNELING_DURATION = 18f / 60f;
+        private const float COOLDOWN_DURATION = 0.5f;
         private const float ABILITY_DURATION = 6f / 60f;
+        private const float CHANNELING_DURATION = 30f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float CASTING_MOVE_MULTIPLICATOR = 0f;
-        private const float DAMAGE_UNLOADED = 10f;
-        private const float DAMAGE_LOADED = 25f;
-
-        private const float DASH_DISTANCE = 4f;
+        private const float CASTING_MOVE_MULTIPLICATOR = .7f;
 
         private const float INTERRUPT_DURATION = .6f;
+        private const float DAMAGE = 10f;
+        private const float EXTRA_DAMAGE_TAKER_DURATION = 10f;
+
+        // Trigger
+        private GameObject triggerPrefab;
+        private GameObject trigger;
 
         // Colliders
-        private List<Collider> encounteredCols;
-        private Dictionary<Collider, float> newCols;
-
-        // Prefabs
-        private GameObject triggerPrefab;
-        private GameObject impactEffetPrefab;
-        private GameObject loadedImpactEffetPrefab;
+        private Dictionary<Collider, Vector3> encounteredCols;
 
         // GameObjects
         private LightSword sword;
-        private GameObject trigger;
         private Transform characterContainer;
 
         // Indicator
         private GameObject indicatorPrefab;
 
-        // Status
-        private bool interrupted = false;
+        // Effects
+        private GameObject impactEffetPrefab;
 
-        public AbUlt(LightLongSwordCharacter character, LightSword sword) :
+        // ulti damage taker
+        private GameObject ultiDTprefab;
+
+        public AbUlt(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;
-            triggerPrefab = Resources.Load("Player/Light/LongSword/Ab2/Trigger") as GameObject;
+
+            indicatorPrefab = Resources.Load("Player/Light/LongSword/AbOff/AbOffIndicator") as GameObject;
+            triggerPrefab = Resources.Load("Player/Light/LongSword/AbOff/Trigger") as GameObject;
             impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
-            loadedImpactEffetPrefab = Resources.Load("Player/Light/LongSword/Ab2/LoadedImpactEffect") as GameObject;
-            indicatorPrefab = Resources.Load("Player/Light/LongSword/Ab2/Ab2Indicator") as GameObject;
+            ultiDTprefab = Resources.Load("Player/Light/LongSword/AbUlt/UltDamageTaker") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
         }
-
 
         public override void StartChanneling()
         {
@@ -69,14 +66,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
-            interrupted = false;
 
-            character.animator.Play("BotAb2");
-            character.animator.Play("TopAb2");
+            character.animator.Play("BotUlt");
+            character.animator.Play("TopUlt");
 
-            LoadLight();
-
-            encounteredCols = new List<Collider>();
+            encounteredCols = new Dictionary<Collider, Vector3>();
 
             // Indicator
             DisplayIndicator();
@@ -88,58 +82,22 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject.Destroy(indicator, channelDuration);
         }
 
-        private void LoadLight()
-        {
-            if (!sword.isLoaded)
-            {
-                Collider[] colliders = Physics.OverlapSphere(character.transform.position, .5f);
-                LightZone closestZone = null;
-                float shortestDistance = 10000f;
-
-                foreach (Collider col in colliders)
-                {
-                    LightZone zone = col.GetComponent<LightZone>();
-                    if (zone != null)
-                    {
-                        float distance = (character.transform.position - zone.transform.position).magnitude;
-                        if (distance < shortestDistance)
-                        {
-                            shortestDistance = distance;
-                            closestZone = zone;
-                        }
-                    }
-                }
-
-                if (closestZone != null)
-                {
-                    closestZone.Absorb();
-                    sword.Load();
-                }
-            }
-        }
-
         public override void StartAbility()
         {
             base.StartAbility();
 
             // No more rotation
             character.abilityMaxRotation = 0f;
+            
+            character.animator.Play("BotAbOffb");
+            character.animator.Play("TopAbOffb");
+            
+
+            // Trail effect
+            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
 
             CreateTrigger();
 
-            character.SetMovementMode(MovementMode.Ability);
-
-            newCols = new Dictionary<Collider, float>();
-        }
-
-        public override void Cast()
-        {
-            base.Cast();
-
-            // movement
-            character.rb.velocity = characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION;
-
-            ApplyEffectToNew();
         }
 
         private void CreateTrigger()
@@ -154,19 +112,79 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void End()
         {
-            base.End();
-
+            ApplyAllDamage();
+            
             if (trigger != null)
             {
                 GameObject.Destroy(trigger);
             }
 
-            if (sword.isLoaded)
+            base.End();
+        }
+
+        private void ApplyAllDamage()
+        {
+            Collider closestCol = null;
+            float minDist = float.PositiveInfinity;
+            float dist;
+
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
+            // find the closest collider (and the extraDamage ones)
+            foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                sword.Unload();
+                // Extra damage: ignore
+                DamageTaker dt = pair.Key.GetComponent<DamageTaker>();
+                if (dt == null || !dt.extraDmg)
+                {
+                    dist = (pair.Key.ClosestPoint(pair.Value) - pair.Value).magnitude;
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestCol = pair.Key;
+                    }
+                }
             }
 
-            character.SetMovementMode(MovementMode.Player);
+            if (closestCol != null)
+            {
+                if (closestCol.tag == "Enemy")
+                {
+                    ApplyDamage(closestCol, encounteredCols[closestCol], id);
+                }
+                else if (closestCol.tag == "Shield")
+                {
+                    // Interrupt character
+                    character.psm.Interrupt(INTERRUPT_DURATION);
+                }
+            }
+        }
+
+        private void ApplyDamage(Collider col, Vector3 origin, int id)
+        {
+            Vector3 impactPoint = col.ClosestPoint(origin);
+
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, origin, id);
+
+            // Spawn Ulti Extra damage taker
+            ApplyEffect(col);
+
+            GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
+            impactEffect.transform.position = impactPoint;
+            impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+            GameObject.Destroy(impactEffect, 1f);
+        }
+
+        private void ApplyEffect(Collider col)
+        {
+            // TODO See what happens when monster no capsule-shaped or multi-part
+            StatusManager sm =  col.GetComponent<DamageTaker>().statusManager;
+            Transform target = sm.transform;
+            GameObject ultiDT = GameObject.Instantiate(ultiDTprefab, target);
+            ultiDT.transform.localScale = Vector3.one * target.GetComponent<CharacterController>().radius;
+            ultiDT.transform.Find("DamageTaker").GetComponent<UltDamageTaker>().statusManager = sm;
+            GameObject.Destroy(ultiDT, EXTRA_DAMAGE_TAKER_DURATION);
         }
 
         public override void AbortCasting()
@@ -177,80 +195,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 GameObject.Destroy(trigger);
             }
-
-            character.SetMovementMode(MovementMode.Player);
-        }
-
-        private void ApplyEffectToNew()
-        {
-            while (newCols.Count > 0 && !interrupted)
-            {
-                Collider col = newCols.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
-                ApplyEffect(col);
-                newCols.Remove(col);
-            }
-        }
-
-        private void ApplyEffect(Collider col)
-        {
-            if (col.tag == "Enemy")
-            {
-                ApplyDamage(col);
-            }
-            else if (col.tag == "Shield")
-            {
-                // Interrupt character
-                character.psm.Interrupt(INTERRUPT_DURATION);
-
-                if (sword.isLoaded)
-                {
-                    sword.Unload();
-                }
-
-                interrupted = true;
-            }
-        }
-
-        private void ApplyDamage(Collider col)
-        {
-            Vector3 impactPoint = col.ClosestPoint(character.transform.position + Vector3.up);
-            Quaternion impactRotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
-
-            // base damage
-            float damageAmount = DAMAGE_UNLOADED;
-            if (sword.isLoaded)
-            {
-                // damage update
-                damageAmount = DAMAGE_LOADED;
-
-                // Effect
-                GameObject loadedImpactEffect = GameObject.Instantiate(loadedImpactEffetPrefab, null);
-                loadedImpactEffect.transform.position = impactPoint;
-                loadedImpactEffect.transform.rotation = impactRotation;
-                GameObject.Destroy(loadedImpactEffect, 1f);
-
-                // Load Ulti
-                ((LightLongSwordCharacter)character).AddUltiSphere();
-            }
-
-            // Apply damage
-            Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
-            col.GetComponent<StatusController>().TakeDamage(dmg, character);
-
-            // Effect
-            GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
-            impactEffect.transform.position = impactPoint;
-            impactEffect.transform.rotation = impactRotation;
-            GameObject.Destroy(impactEffect, 1f);
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.Contains(col))
+            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
             {
-                encounteredCols.Add(col);
-                float distance = (col.ClosestPoint(character.transform.position) - character.transform.position).magnitude;
-                newCols.Add(col, distance);
+                encounteredCols.Add(col, character.transform.position + Vector3.up);
             }
         }
     }

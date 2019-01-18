@@ -2,7 +2,7 @@
 using UnityEngine.AI;
 using System.Collections.Generic;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     [RequireComponent(typeof(KnightMotor))]
     public class KnightController : MonoBehaviour

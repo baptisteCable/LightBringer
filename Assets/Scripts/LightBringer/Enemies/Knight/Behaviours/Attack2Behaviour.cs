@@ -3,7 +3,7 @@ using LightBringer.Player;
 using System.Collections.Generic;
 using LightBringer.Abilities;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     public class Attack2Behaviour : KnightBehaviour, CollisionAbility
     {

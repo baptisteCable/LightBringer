@@ -43,9 +43,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // Indicator
         private GameObject indicatorPrefab;
-
-        // Status
-        private bool interrupted = false;
+        
 
         public Ab2(LightLongSwordCharacter character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -69,7 +67,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
-            interrupted = false;
 
             character.animator.Play("BotAb2");
             character.animator.Play("TopAb2");
@@ -181,9 +178,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.SetMovementMode(MovementMode.Player);
         }
 
+        // Every frame, apply dmg to colliders from closest to farthest
         private void ApplyEffectToNew()
         {
-            while (newCols.Count > 0 && !interrupted)
+            while (newCols.Count > 0 && !character.psm.isInterrupted)
             {
                 Collider col = newCols.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
                 ApplyEffect(col);
@@ -206,8 +204,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 {
                     sword.Unload();
                 }
-
-                interrupted = true;
             }
         }
 
@@ -234,8 +230,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             // Apply damage
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
             Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
-            col.GetComponent<StatusController>().TakeDamage(dmg, character);
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, character.transform.position, id);
 
             // Effect
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);

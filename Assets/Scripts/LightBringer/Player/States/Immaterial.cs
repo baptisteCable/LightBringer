@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using LightBringer.Tools;
+using LightBringer.Enemies;
 
 namespace LightBringer.Player
 {
@@ -47,7 +48,7 @@ namespace LightBringer.Player
             Stop();
         }
 
-        public override bool IsAffectedBy(Damage dmg, EnemyMotor dealer, Vector3 origin)
+        public override bool IsAffectedBy(Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete)
             {
@@ -59,7 +60,7 @@ namespace LightBringer.Player
             }
         }
 
-        public override Damage AlterTakenDamage(Damage dmg, EnemyMotor dealer, Vector3 origin)
+        public override Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete)
             {

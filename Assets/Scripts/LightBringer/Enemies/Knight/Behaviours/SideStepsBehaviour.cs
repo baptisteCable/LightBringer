@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     public class SideStepsBehaviour : KnightBehaviour
     {

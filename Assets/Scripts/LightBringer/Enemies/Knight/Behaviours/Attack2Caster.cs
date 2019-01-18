@@ -1,7 +1,7 @@
 ﻿using LightBringer.Abilities;
 using UnityEngine;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     public class Attack2Caster : MonoBehaviour
     {

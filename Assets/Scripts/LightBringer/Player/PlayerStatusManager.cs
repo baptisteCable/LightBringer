@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LightBringer.Enemies;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -104,7 +105,7 @@ namespace LightBringer.Player
         }
 
         // return false if the damage cannot target the player
-        public bool IsAffectedBy(Damage dmg, EnemyMotor dealer, Vector3 origin = default(Vector3))
+        public bool IsAffectedBy(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
         {
             foreach (State s in states)
             {
@@ -118,7 +119,7 @@ namespace LightBringer.Player
         }
 
 
-        public void TakeDamage(Damage dmg, EnemyMotor dealer, Vector3 origin = default(Vector3))
+        public void TakeDamage(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
         {
             foreach (State s in states)
             {

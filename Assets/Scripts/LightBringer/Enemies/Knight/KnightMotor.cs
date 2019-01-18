@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 
-namespace LightBringer.Knight
+namespace LightBringer.Enemies.Knight
 {
     [RequireComponent(typeof(CharacterController))]
-    public class KnightMotor : EnemyMotor
+    public class KnightMotor : Motor
     {
         // Colliders GO
         [HideInInspector]
@@ -45,7 +45,7 @@ namespace LightBringer.Knight
             shieldCollider = transform.Find("EnemyContainer/Armature/BoneControlerShield/ShieldCollider").gameObject;
 
             // Initial mode
-            SetMode(EnemyMode.Fight);
+            SetMode(Mode.Fight);
         }
 
         private void Update()

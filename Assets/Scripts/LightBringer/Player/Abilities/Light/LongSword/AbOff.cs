@@ -21,15 +21,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR = .3f;
-        private const float DAMAGE_A = 6f;
-        private const float DAMAGE_B = 6f;
+        private const float DAMAGE = 6f;
 
         private const float VANISH_DURATION = 1f;
 
         private const float INTERRUPT_DURATION = .6f;
 
         // Colliders
-        private List<Collider> encounteredCols;
+        private Dictionary<Collider, Vector3> encounteredCols;
 
         // Prefabs
         private GameObject triggerPrefab;
@@ -78,7 +77,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
-            encounteredCols = new List<Collider>();
+            encounteredCols = new Dictionary<Collider, Vector3>();
 
             if (!vanished)
             {
@@ -125,7 +124,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
 
             CreateTrigger();
-            
+
         }
 
         private void FadeInAnimation()
@@ -137,7 +136,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
             lightColumn.transform.position = spawnPoint.position;
             GameObject.Destroy(lightColumn, .5f);
-            
+
             // Anchor with column
             character.MergeWith(lightColumn.transform);
         }
@@ -206,7 +205,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                Collider col = ApplyAllDamage(DAMAGE_A);
+                Collider col = ApplyAllDamage();
                 if (col)
                 {
                     FadeOut(col);
@@ -214,7 +213,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
             else
             {
-                ApplyAllDamage(DAMAGE_B);
+                ApplyAllDamage();
             }
 
             if (trigger != null)
@@ -225,29 +224,40 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.End();
         }
 
-        private Collider ApplyAllDamage(float dmg)
+        private Collider ApplyAllDamage()
         {
             Collider closestCol = null;
-            float minDist = 10000f;
+            float minDist = float.PositiveInfinity;
             float dist;
-            Vector3 basePoint = character.transform.position + Vector3.up;
 
-            // find the closest collider
-            foreach (Collider col in encounteredCols)
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
+            // find the closest collider (and the extraDamage ones)
+            foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                dist = (col.ClosestPoint(basePoint) - basePoint).magnitude;
-                if (dist < minDist)
+                // Extra damage: deal damage
+                DamageTaker dt = pair.Key.GetComponent<DamageTaker>();
+                if (dt != null && dt.extraDmg)
                 {
-                    minDist = dist;
-                    closestCol = col;
+                    ApplyDamage(pair.Key, pair.Value, id);
                 }
+                else
+                {
+                    dist = (pair.Key.ClosestPoint(pair.Value) - pair.Value).magnitude;
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestCol = pair.Key;
+                    }
+                }
+
             }
 
             if (closestCol != null)
             {
                 if (closestCol.tag == "Enemy")
                 {
-                    ApplyDamage(closestCol, closestCol.ClosestPoint(basePoint), dmg);
+                    ApplyDamage(closestCol, encounteredCols[closestCol], id);
                     return closestCol;
                 }
                 else if (closestCol.tag == "Shield")
@@ -260,10 +270,12 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             return null;
         }
 
-        private void ApplyDamage(Collider col, Vector3 impactPoint, float damageAmount)
+        private void ApplyDamage(Collider col, Vector3 origin, int id)
         {
-            Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
-            col.GetComponent<StatusController>().TakeDamage(dmg, character);
+            Vector3 impactPoint = col.ClosestPoint(origin);
+
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, origin, id);
 
             GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
             impactEffect.transform.position = impactPoint;
@@ -285,9 +297,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.Contains(col))
+            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
             {
-                encounteredCols.Add(col);
+                encounteredCols.Add(col, character.transform.position + Vector3.up);
             }
         }
 

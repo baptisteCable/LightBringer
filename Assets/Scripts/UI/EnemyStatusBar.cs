@@ -4,7 +4,7 @@ namespace LightBringer.Enemies
     public class EnemyStatusBar : BaseStatusBar
     {
 
-        public StatusController damageController;
+        public StatusManager damageController;
 
         private void Awake()
         {
