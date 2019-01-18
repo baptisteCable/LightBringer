@@ -26,9 +26,9 @@ namespace LightBringer.Enemies.Knight
         public GameObject Attack3Indicator1;
         public GameObject Attack3Indicator2;
 
-        private void Start()
+        public override void Start()
         {
-            StartProcedure();
+            base.Start();
 
            // Colliders
             attack1act1GO = transform.Find("EnemyContainer/Attack1Trigger").gameObject;
@@ -46,11 +46,6 @@ namespace LightBringer.Enemies.Knight
 
             // Initial mode
             SetMode(Mode.Fight);
-        }
-
-        private void Update()
-        {
-            UpdateProcedure();
         }
     }
 }

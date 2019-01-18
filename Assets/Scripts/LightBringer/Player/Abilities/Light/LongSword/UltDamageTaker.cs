@@ -5,11 +5,19 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 {
     public class UltDamageTaker : DamageTaker
     {
-        private const float QUARTER_DAMAGE = 6f; // TODO 6f
-        private const float ALL_QUARTER_DAMAGE = 34f; // TODO 34f
+        private const float QUARTER_DAMAGE = 6f;
+        private const float ALL_QUARTER_DAMAGE = 34f;
 
         public GameObject[] quarters;
         private int qCount = 4;
+
+        private void Update()
+        {
+            if (statusManager.isDead)
+            {
+                Destroy(gameObject);
+            }
+        }
 
         protected override Damage modifyDamage(Damage dmg, Character dealer, Vector3 origin)
         {

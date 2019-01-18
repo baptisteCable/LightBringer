@@ -50,7 +50,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             psm.character.LockAbilitiesExcept(true);
 
             // TODO Effect
-            Debug.Log("Début counter");
         }
 
         public override void Stop()
@@ -63,11 +62,12 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             psm.character.LockAbilitiesExcept(false);
 
             // TODO Effect end
-            Debug.Log("Fin counter");
         }
 
         public override void Cancel()
         {
+            base.Cancel();
+
             Stop();
         }
     }

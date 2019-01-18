@@ -53,7 +53,7 @@ namespace LightBringer.Enemies.Knight
         // Update is called once per frame
         void Update()
         {
-            if (!motor.isDead)
+            if (!motor.statusManager.isDead)
             {
                 RefreshCD();
 

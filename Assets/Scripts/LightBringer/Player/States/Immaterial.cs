@@ -45,6 +45,7 @@ namespace LightBringer.Player
 
         public override void Cancel()
         {
+            base.Cancel();
             Stop();
         }
 

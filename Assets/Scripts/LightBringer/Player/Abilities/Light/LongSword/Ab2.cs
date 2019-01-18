@@ -43,6 +43,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // Indicator
         private GameObject indicatorPrefab;
+
+        // Misc
+        private bool sphereAdded = false;
         
 
         public Ab2(LightLongSwordCharacter character, LightSword sword) :
@@ -77,6 +80,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // Indicator
             DisplayIndicator();
+
+            sphereAdded = false;
         }
 
         private void DisplayIndicator()
@@ -181,19 +186,29 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Every frame, apply dmg to colliders from closest to farthest
         private void ApplyEffectToNew()
         {
+            int id = Random.Range(int.MinValue, int.MaxValue);
+
             while (newCols.Count > 0 && !character.psm.isInterrupted)
             {
                 Collider col = newCols.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
-                ApplyEffect(col);
+                ApplyEffect(col, id);
                 newCols.Remove(col);
             }
         }
 
-        private void ApplyEffect(Collider col)
+        private void ApplyEffect(Collider col, int id)
         {
             if (col.tag == "Enemy")
             {
-                ApplyDamage(col);
+                DamageTaker dt = col.GetComponent<DamageTaker>();
+                if (dt != null && dt.extraDmg)
+                {
+                    ApplyDamageToExtra(col, id);
+                }
+                else
+                {
+                    ApplyDamage(col, id);
+                }
             }
             else if (col.tag == "Shield")
             {
@@ -207,7 +222,20 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
-        private void ApplyDamage(Collider col)
+        private void ApplyDamageToExtra(Collider col, int id)
+        {
+            // base damage
+            float damageAmount = DAMAGE_UNLOADED;
+            if (sword.isLoaded)
+            {
+                // damage update
+                damageAmount = DAMAGE_LOADED;
+            }
+            Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, character.transform.position, id);
+        }
+
+        private void ApplyDamage(Collider col, int id)
         {
             Vector3 impactPoint = col.ClosestPoint(character.transform.position + Vector3.up);
             Quaternion impactRotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
@@ -226,12 +254,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 GameObject.Destroy(loadedImpactEffect, 1f);
 
                 // Load Ulti
-                ((LightLongSwordCharacter)character).AddUltiSphere();
+                LoadUlti();
             }
 
             // Apply damage
-            int id = Random.Range(int.MinValue, int.MaxValue);
-
             Damage dmg = character.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, character, character.transform.position, id);
 
@@ -240,6 +266,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             impactEffect.transform.position = impactPoint;
             impactEffect.transform.rotation = impactRotation;
             GameObject.Destroy(impactEffect, 1f);
+        }
+
+        private void LoadUlti()
+        {
+            if (!sphereAdded)
+            {
+                sphereAdded = true;
+                ((LightLongSwordCharacter)character).AddUltiSphere();
+            }
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)

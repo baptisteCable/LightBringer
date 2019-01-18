@@ -16,6 +16,7 @@ namespace LightBringer.Enemies
         public GameObject statusBarGO;
         public float displayHeight;
         private Motor motor;
+        public bool isDead = false;
 
         // Damage
         private Dictionary<int, Damage> frameDamage;
@@ -94,6 +95,7 @@ namespace LightBringer.Enemies
 
                 if (currentHP <= 0)
                 {
+                    isDead = true;
                     motor.Die();
                     Destroy(statusBarGO);
                 }

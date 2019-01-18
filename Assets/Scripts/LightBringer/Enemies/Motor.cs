@@ -36,22 +36,22 @@ namespace LightBringer.Enemies
         public Animator anim;
         [HideInInspector]
         public CharacterController cc;
+        [HideInInspector]
+        public StatusManager statusManager;
 
         //Animation acceleration smooth
         protected Vector3 animAcceleration;
         protected Vector3 newAcceleration;
         protected Vector2 smoothDeltaPosition = Vector2.zero;
 
-        // dead or not
-        public bool isDead = false;
-
-        protected void StartProcedure()
+        public virtual void Start()
         {
             // Animator
             anim = transform.Find("EnemyContainer").GetComponent<Animator>();
 
             // Character controller
             cc = GetComponent<CharacterController>();
+            statusManager = GetComponent<StatusManager>();
 
             // Agent
             agent = GetComponent<NavMeshAgent>();
@@ -62,9 +62,9 @@ namespace LightBringer.Enemies
             lastPosition = transform.position;
         }
 
-        protected void UpdateProcedure()
+        public virtual void Update()
         {
-            if (!isDead)
+            if (!statusManager.isDead)
             {
                 Vector3 worldDeltaPosition = transform.position - lastPosition;
                 lastPosition = transform.position;
@@ -212,7 +212,6 @@ namespace LightBringer.Enemies
 
         public virtual void Die()
         {
-            isDead = true;
             disableColliders(transform);
             agent.enabled = false;
             Destroy(gameObject, 10f);
@@ -221,8 +220,9 @@ namespace LightBringer.Enemies
 
         private void disableColliders(Transform t)
         {
-            Collider coll = t.GetComponent<CharacterController>();
-            if (coll != null)
+            Component[] colliders = t.GetComponents(typeof(Collider));
+
+            foreach (Collider coll in colliders)
             {
                 coll.enabled = false;
             }

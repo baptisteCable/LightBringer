@@ -24,6 +24,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float DAMAGE = 10f;
         private const float EXTRA_DAMAGE_TAKER_DURATION = 10f;
 
+        private const float SWORD_LOADED_TIME = 16f / 60f;
+        private const float SWORD_UNLOADED_TIME = 3f / 60f;
+
+        // Action time bool
+        private bool swordLoaded = false;
+        private bool swordUnloaded = false;
+
         // Trigger
         private GameObject triggerPrefab;
         private GameObject trigger;
@@ -74,12 +81,31 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // Indicator
             DisplayIndicator();
+
+            // Loading Sword animation
+            ((LightLongSwordCharacter)character).LoadSwordWithSpheres();
+
+            // Action Time bool
+            swordLoaded = false;
+            swordUnloaded = false;
         }
 
         private void DisplayIndicator()
         {
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
             GameObject.Destroy(indicator, channelDuration);
+        }
+
+        public override void Channel()
+        {
+            base.Channel();
+
+            if (Time.time > channelStartTime + SWORD_LOADED_TIME && !swordLoaded)
+            {
+                swordLoaded = true;
+                ((LightLongSwordCharacter)character).ConsumeAllSpheres();
+                sword.transform.Find("UltLoaded").gameObject.SetActive(true);
+            }
         }
 
         public override void StartAbility()
@@ -108,6 +134,17 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             trigger.transform.localRotation = Quaternion.identity;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();
             act.SetAbility(this);
+        }
+
+        public override void Cast()
+        {
+            base.Cast();
+
+            if (Time.time > castStartTime + SWORD_UNLOADED_TIME && !swordUnloaded)
+            {
+                swordUnloaded = true;
+                sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+            }
         }
 
         public override void End()
@@ -187,6 +224,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject.Destroy(ultiDT, EXTRA_DAMAGE_TAKER_DURATION);
         }
 
+        public override void AbortChanelling()
+        {
+            base.AbortChanelling();
+
+            ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
+            sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+        }
+
         public override void AbortCasting()
         {
             base.AbortCasting();
@@ -195,6 +240,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 GameObject.Destroy(trigger);
             }
+            sword.transform.Find("UltLoaded").gameObject.SetActive(false);
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)

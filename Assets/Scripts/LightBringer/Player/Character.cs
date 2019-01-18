@@ -170,7 +170,7 @@ namespace LightBringer.Player
             // Test
             if (Input.GetButtonDown("testButton"))
             {
-                psm.AddAndStartState(new Haste());
+                psm.AddAndStartState(new Immaterial(20f));
             }
         }
 

@@ -16,7 +16,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const bool CASTING_CANCELLABLE = false;
 
         // const
-        private const float COOLDOWN_DURATION = 1f; // TODO 12f
+        private const float COOLDOWN_DURATION = 12f;
         private const float CHANNELING_DURATION = 6f / 60f;
         private const float ABILITY_DURATION = 42f / 60f;
         private const float LANDING_TIME = 35f / 60f;

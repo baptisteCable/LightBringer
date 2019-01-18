@@ -63,7 +63,9 @@ namespace LightBringer.Player
         {
             if (cancellable)
             {
-                //TODO cancel anim
+                // cancel anim
+                psm.character.animator.Play("BotIdle");
+                psm.character.animator.Play("TopIdle");
 
                 complete = true;
             }

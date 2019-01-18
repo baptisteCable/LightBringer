@@ -10,7 +10,7 @@ namespace LightBringer.Player.Class
     {
         private const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
-
+        
         private int ultiSphereCount;
         private GameObject spherePrefab;
 
@@ -61,9 +61,21 @@ namespace LightBringer.Player.Class
             }
         }
 
-        public bool UltiReady()
+        public void LoadSwordWithSpheres()
         {
-            return ultiSphereCount == MAX_SPHERE_COUNT;
+            foreach (GameObject sphere in sphereObjects)
+            {
+                sphere.transform.parent = characterContainer;
+                sphere.GetComponent<Animator>().Play("UltSphereLoadingSword");
+            }
+        }
+
+        public void CancelLoadSwordWithSpheres()
+        {
+            foreach (GameObject sphere in sphereObjects)
+            {
+                sphere.GetComponent<Animator>().Play("UltSphereBasePosition");
+            }
         }
 
         public void ConsumeAllSpheres()
@@ -87,17 +99,14 @@ namespace LightBringer.Player.Class
         {
             yield return new WaitForSeconds(SPHERE_DURATION);
 
-            Debug.Log("Avant objet:" + sphere);
             if (sphere != null)
             {
-                Debug.Log("Avant :" + sphereObjects.Count);
                 sphereObjects.Remove(sphere);
                 Destroy(sphere);
             }
 
             ultiSphereCount = sphereObjects.Count;
             abilities[5].available = false;
-            Debug.Log("Après :" + sphereObjects.Count);
         }
     }
 }
