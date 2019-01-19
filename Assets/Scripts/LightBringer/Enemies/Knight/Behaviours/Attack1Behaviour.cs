@@ -240,6 +240,9 @@ namespace LightBringer.Enemies.Knight
                 act3.SetAbility(this);
                 cols = new List<Collider>();
                 part3Initialized = true;
+
+                // Effect
+                act3GO.transform.parent.Find("ChargeEffect").GetComponent<ParticleSystem>().Play();
             }
         }
     }

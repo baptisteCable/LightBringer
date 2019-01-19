@@ -143,7 +143,7 @@ namespace LightBringer.Enemies
             }
         }
 
-        public void SetMode(int mode)
+        public void SetMode(Mode mode)
         {
             switch (mode)
             {
