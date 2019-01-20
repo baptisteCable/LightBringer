@@ -3,30 +3,75 @@
 [RequireComponent(typeof(Camera))]
 public class PlayerCamera : MonoBehaviour
 {
+    private const float ZOOM_LENGTH = 10f;
+    private const float SCROLL_SPEED = 1f;
 
     private Camera cam;
     public Transform character;
+    public Vector3 camPositionFromPlayer;
+    private float currentPosition; // 0 for clostest, 1 for farthest
+    private float targetXRotation;
+    private float currentXRotation;
+    private float targetFieldOfView;
+
+    private AnimationCurve xPos, yPos, zPos, xRot, fieldOfView;
 
     private void Start()
     {
         cam = GetComponent<Camera>();
+        GameManager.gm.floorPlane = new Plane(new Vector3(0, 1, 0), new Vector3(0, GameManager.gm.currentAlt, 0));
+
+        ComputeCurves();
+
+        camPositionFromPlayer = transform.position;
+        currentPosition = 0f;
+        currentXRotation = 70f;
+        ChangeTargetFromCurrent();
     }
 
-    void Update()
+    private void ComputeCurves()
     {
-        GetLookedPoint();
-        MoveCamera();
+        xPos = new AnimationCurve();
+        yPos = new AnimationCurve();
+        zPos = new AnimationCurve();
+        xRot = new AnimationCurve();
+        fieldOfView = new AnimationCurve();
+
+        xPos.AddKey(new Keyframe(0f, -6.38f));
+        yPos.AddKey(new Keyframe(0f, 25.2f, 0f, -20f));
+        zPos.AddKey(new Keyframe(0f, -6.38f));
+        xRot.AddKey(new Keyframe(0f, 70f));
+        fieldOfView.AddKey(new Keyframe(0, 41f));
+
+        xPos.AddKey(new Keyframe(.5f, -2.26f));
+        yPos.AddKey(new Keyframe(.5f, 9.2f, 0f, 0f));
+        zPos.AddKey(new Keyframe(.5f, -2.26f));
+        xRot.AddKey(new Keyframe(.5f, 70f));
+        fieldOfView.AddKey(new Keyframe(0, 41f));
+
+        xPos.AddKey(new Keyframe(1f, -2.5f));
+        yPos.AddKey(new Keyframe(1f, 5f, 0f, 0f));
+        zPos.AddKey(new Keyframe(1f, -2.5f));
+        xRot.AddKey(new Keyframe(1f, 54f));
+        fieldOfView.AddKey(new Keyframe(1f, 55.5f));
     }
 
-    void GetLookedPoint()
+    private void Update()
+    {
+        SendWorldMousePointToGM();
+        MoveCamera();
+        Zoom();
+    }
+
+    private void SendWorldMousePointToGM()
     {
         Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
 
         float distance;
 
-        if (GameManager.gm.lookingPlane.Raycast(mouseRay, out distance))
+        if (GameManager.gm.floorPlane.Raycast(mouseRay, out distance))
         {
-            GameManager.gm.lookedPoint = mouseRay.GetPoint(distance);
+            GameManager.gm.worldMousePoint = mouseRay.GetPoint(distance);
         }
     }
 
@@ -35,18 +80,52 @@ public class PlayerCamera : MonoBehaviour
         if (GameManager.gm.staticCamera)
         {
             cam.transform.position = new Vector3(
-                    character.position.x + GameManager.gm.camPositionFromPlayer.x,
-                    GameManager.gm.camPositionFromPlayer.y,
-                    character.position.z + GameManager.gm.camPositionFromPlayer.z
+                    character.position.x + camPositionFromPlayer.x,
+                    camPositionFromPlayer.y,
+                    character.position.z + camPositionFromPlayer.z
                 );
         }
         else
         {
             cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
-                    character.position.x + GameManager.gm.camPositionFromPlayer.x + (GameManager.gm.lookedPoint.x - character.position.x) * .3f,
-                    GameManager.gm.camPositionFromPlayer.y,
-                    character.position.z + GameManager.gm.camPositionFromPlayer.z + (GameManager.gm.lookedPoint.z - character.position.z) * .3f
+                    character.position.x + camPositionFromPlayer.x + (GameManager.gm.worldMousePoint.x - character.position.x) * .3f,
+                    camPositionFromPlayer.y,
+                    character.position.z + camPositionFromPlayer.z + (GameManager.gm.worldMousePoint.z - character.position.z) * .3f
                 ), Time.deltaTime * 8f);
         }
+    }
+
+    private void Zoom()
+    {
+        float scrollValue = Input.GetAxisRaw("MouseScrollWheel");
+
+        if (scrollValue != 0f)
+        {
+            currentPosition = Mathf.Clamp(currentPosition + scrollValue * SCROLL_SPEED, 0, 1);
+            ChangeTargetFromCurrent();
+        }
+
+        if (Mathf.Abs(currentXRotation - targetXRotation) > 1e-5f)
+        {
+            SlipToCurrentRotationAndFov();
+        }
+    }
+
+    private void ChangeTargetFromCurrent()
+    {
+        camPositionFromPlayer = new Vector3(
+                xPos.Evaluate(currentPosition),
+                yPos.Evaluate(currentPosition),
+                zPos.Evaluate(currentPosition)
+            );
+        targetXRotation = xRot.Evaluate(currentPosition);
+        targetFieldOfView = fieldOfView.Evaluate(currentPosition);
+    }
+
+    private void SlipToCurrentRotationAndFov()
+    {
+        currentXRotation = Mathf.Lerp(currentXRotation, targetXRotation, Time.deltaTime * 8f);
+        cam.transform.rotation = Quaternion.Euler(currentXRotation, 45f, 0);
+        cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, targetFieldOfView, Time.deltaTime * 8f);
     }
 }

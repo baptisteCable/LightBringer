@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour {
-    public const float GRAVITY = 20f;
+    public const float FLOOR_HEIGHT = 5f;
 
-    public float lookingHeight = 0f;
-    public Plane lookingPlane;
-    public static float projectorHeight = 8f;
-    public Vector3 camPositionFromPlayer;
+    public const float GRAVITY = 10f;
     public bool staticCamera;
-    public Vector3 lookedPoint;
+    public Vector3 worldMousePoint;
+    
+    public int currentFloor = 0;
+    public Plane floorPlane;
+    public float currentAlt = 0f;
+
 
     public static GameManager gm;
 
@@ -21,7 +23,5 @@ public class GameManager : MonoBehaviour {
             throw new System.Exception("Multiple game managers");
         }
         gm = this;
-		lookingPlane = new Plane(new Vector3(0, 1, 0), new Vector3(0, lookingHeight, 0));
-        camPositionFromPlayer = Camera.main.transform.position;
     }
 }

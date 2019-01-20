@@ -292,13 +292,6 @@ namespace LightBringer.Player
             }
         }
         #endregion
-
-        private void OnGUI()
-        {
-            GUI.contentColor = Color.black;
-            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("States count: " + states.Count);
-            GUILayout.EndArea();
-        }
+        
     }
 }

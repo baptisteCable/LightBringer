@@ -103,7 +103,7 @@ namespace LightBringer.Enemies.Knight
             {
                 weight -= .5f;
             }
-            //weight = 1000000f; // Debug
+            weight = 1000000f; // Debug
             list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
 
             // Wait and rotate behaviour
@@ -143,7 +143,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
                 }
             }
-            weight = 1000000f; // Debug
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO,
                 motor.Attack1Indicator1, motor.Attack1Indicator2, motor.Attack1Indicator3), weight);
 

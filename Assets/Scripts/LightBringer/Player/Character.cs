@@ -220,11 +220,11 @@ namespace LightBringer.Player
         // look at mouse and camera positionning procedure
         void lookAtMouse()
         {
-            if ((GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)).magnitude > 0)
+            if ((GameManager.gm.worldMousePoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
             {
                 // Smoothly rotate towards the target point.
                 var targetRotation = Quaternion.LookRotation(
-                        GameManager.gm.lookedPoint - new Vector3(transform.position.x, GameManager.gm.lookingHeight, transform.position.z)
+                        GameManager.gm.worldMousePoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
                     );
                 Quaternion rotation = Quaternion.Slerp(
                         characterContainer.rotation,
@@ -362,40 +362,30 @@ namespace LightBringer.Player
     }
 
     /* 
-     * La charge pousse le joueur et ne monte pas dessus.
+     * La charge pousse le joueur sur le côté et ne monte pas dessus. Le Knight n'est pas bloqué par le joueur.
+     * Effets Knight (tenter les slashs nouveaux ?)
+     * Attaque 3 : zone en couronne (indicateur et collider)
      * 
      * Chercher autre méthode Slash
      * 
-     * Cumuler les dégâts par type puis les afficher tous les .5 secondes
+     * Cumuler les dégâts par type puis les afficher tous les .3 secondes
      * 
      * Afficher les dégâts
      * 
      * Transparent pas comme ça. Shader
      * Shader lumière (ou particules ?)
      * 
-     * Trigger charge Knight
-     * Knight : ralentir rotation
-     * 
      * Knight : mode rage impacte les CD et la vitesse de cast (?).
-     * 
-     * State Cancel animation (pas d'animator dans le psm ?)
      * 
      * Synchronisation des idle et run top et bot ?
      * Ralentir l'animation de course en fonction du modificateur de vitesse
      * 
      * Events plutôt qu'update pour la mise à jour des images de compétences (et ailleurs ?)
      * 
-     * Ulti : selon la direction de l'origine, casser le quadran (s'il est encore là).
-     * Script damage taker pour l'ulti qui ne stoppe pas les attaques et renvoie les dégâts au monstre. Animation d'explosion (petite et grosse)
-     * Tout les éléments pouvant prendre des dégâts implémentent l'interface DamageTaker. Ils stoppent ou non les attaques monocible.
-     * 
      * Flasher uniquement le DmageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
      * 
      * Zoom caméra. Clamp pour les min et max. dépendra aussi de l'étage où l'on se trouve.
-     * 
-     * Dépop précédent
-     * Bool pour ne lancer qu'une fois
      * 
      * */
 }
