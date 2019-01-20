@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LightBringer.Player;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LightBringer.Enemies
 {
@@ -9,6 +10,8 @@ namespace LightBringer.Enemies
     public class StatusManager : MonoBehaviour
     {
         private const float FLASH_DURATION = .1f;
+        private const float DISPLAY_GAP = .1f;
+        private const float DISPLAY_DURATION = 1f;
 
         // status
         public float maxHP;
@@ -22,6 +25,13 @@ namespace LightBringer.Enemies
         private Dictionary<int, Damage> frameDamage;
         private Dictionary<int, float> frameDamageDistance;
 
+        // Damage display
+        private Dictionary<DamageElement, float> damageToDisplay;
+        private bool dmgWaitingForDisplay = false;
+        public Transform lostHpPoint;
+
+        // UI object
+        private GameObject lostHPPrefab;
 
         void Start()
         {
@@ -31,6 +41,10 @@ namespace LightBringer.Enemies
 
             frameDamage = new Dictionary<int, Damage>();
             frameDamageDistance = new Dictionary<int, float>();
+
+            damageToDisplay = new Dictionary<DamageElement, float>();
+
+            lostHPPrefab = Resources.Load("Fight/LostHP") as GameObject;
         }
 
         private void Update()
@@ -81,8 +95,9 @@ namespace LightBringer.Enemies
                     if (pair.Value.amount > 0)
                     {
                         flash = true;
+                        currentHP -= pair.Value.amount;
+                        AddDamageToDisplay(pair.Value);
                     }
-                    currentHP -= pair.Value.amount;
                 }
 
                 frameDamage.Clear();
@@ -99,6 +114,63 @@ namespace LightBringer.Enemies
                     motor.Die();
                     Destroy(statusBarGO);
                 }
+            }
+        }
+
+        private void AddDamageToDisplay(Damage dmg)
+        {
+            if (!dmgWaitingForDisplay)
+            {
+                StartCoroutine(DisplayGapDamage());
+                dmgWaitingForDisplay = true;
+            }
+
+            if (!damageToDisplay.ContainsKey(dmg.element))
+            {
+                damageToDisplay.Add(dmg.element, 0f);
+            }
+
+            damageToDisplay[dmg.element] += dmg.amount;
+        }
+
+        private IEnumerator DisplayGapDamage()
+        {
+            yield return new WaitForSeconds(DISPLAY_GAP);
+
+            dmgWaitingForDisplay = false;
+
+            foreach (KeyValuePair<DamageElement, float> pair in damageToDisplay)
+            {
+                DisplayDamage(pair.Key, pair.Value);
+            }
+
+            damageToDisplay.Clear();
+        }
+
+        private void DisplayDamage(DamageElement element, float amount)
+        {
+            GameObject lostHP = Instantiate(lostHPPrefab, lostHpPoint);
+            Destroy(lostHP, DISPLAY_DURATION);
+            Text txt = lostHP.GetComponent<Text>();
+
+            // amount
+            txt.text = Mathf.Round(amount).ToString();
+
+            // Color
+            switch (element)
+            {
+                case DamageElement.Energy:
+                    txt.material = Resources.Load("Fight/EnergyDmg") as Material; break;
+                case DamageElement.Fire:
+                    txt.material = Resources.Load("Fight/FireDmg") as Material; break;
+                case DamageElement.Ice:
+                    txt.material = Resources.Load("Fight/IceDmg") as Material; break;
+                case DamageElement.Light:
+                    txt.material = Resources.Load("Fight/LightDmg") as Material; break;
+                case DamageElement.Pure:
+                    txt.material = Resources.Load("Fight/PureDmg") as Material; break;
+                default:
+                    txt.material = Resources.Load("Fight/PhysicalDmg") as Material; break;
             }
         }
 

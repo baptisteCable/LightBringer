@@ -51,6 +51,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Misc
         private bool lightSpawned;
 
+        // Effects
+        private ParticleSystem slashAEffect;
+
         public Ab1(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
@@ -60,6 +63,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             cTriggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1c") as GameObject;
             lightSpawnEffetPrefab = Resources.Load("Player/Light/LongSword/Ab1/LightSpawnEffect") as GameObject;
             impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
+
+            // Create slash objects
+            GameObject slashAGO = GameObject.Instantiate(
+                Resources.Load("Player/Light/LongSword/Ab1/Ab1aSlash") as GameObject,
+                character.characterContainer);
+            slashAEffect = slashAGO.GetComponent<ParticleSystem>();
+
         }
 
 
@@ -119,7 +129,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartAbility();
 
             // Trail effect
-            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
+            //sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
+            SlashEffect();
+
 
             // No more rotation
             character.abilityMaxRotation = CASTING_ROTATION_SPEED;
@@ -135,6 +147,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else
             {
                 character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_C;
+            }
+        }
+
+        private void SlashEffect()
+        {
+            if (currentAttack == 1)
+            {
+                slashAEffect.Play();
             }
         }
 

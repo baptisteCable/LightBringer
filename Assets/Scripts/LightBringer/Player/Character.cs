@@ -364,13 +364,8 @@ namespace LightBringer.Player
     /* 
      * La charge pousse le joueur sur le côté et ne monte pas dessus. Le Knight n'est pas bloqué par le joueur.
      * Effets Knight (tenter les slashs nouveaux ?)
-     * Attaque 3 : zone en couronne (indicateur et collider)
      * 
      * Chercher autre méthode Slash
-     * 
-     * Cumuler les dégâts par type puis les afficher tous les .3 secondes
-     * 
-     * Afficher les dégâts
      * 
      * Transparent pas comme ça. Shader
      * Shader lumière (ou particules ?)
@@ -382,12 +377,8 @@ namespace LightBringer.Player
      * 
      * Events plutôt qu'update pour la mise à jour des images de compétences (et ailleurs ?)
      * 
-     * Flasher uniquement le DmageTaker qui a finalement pris les dégâts
+     * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
-     * 
-     * Zoom caméra. Clamp pour les min et max. dépendra aussi de l'étage où l'on se trouve.
-     * 
-     * Indicators avec loading dessus : Knight 1
      * 
      * */
 }
