@@ -50,3 +50,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Enemy1
+    uniqueID: 1136511699
+    locked: 0
+  - name: Enemy2
+    uniqueID: 1163341545
+    locked: 0
+  - name: Enemy3
+    uniqueID: 3130055365
+    locked: 0

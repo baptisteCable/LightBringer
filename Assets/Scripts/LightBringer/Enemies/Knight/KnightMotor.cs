@@ -35,7 +35,7 @@ namespace LightBringer.Enemies.Knight
             attack1act2GO = transform.Find("EnemyContainer/Armature/BoneControlerShield/ShieldAttackTrigger").gameObject;
             attack1act3GO = transform.Find("EnemyContainer/Armature/BoneControlerSpear/SpearAttackTrigger").gameObject;
             attack3act1GO = transform.Find("EnemyContainer/Armature/BoneControlerSpear/Attack3aTrigger").gameObject;
-            attack3act2GO = transform.Find("EnemyContainer/Armature/BoneControlerShield/Attack3bTrigger").gameObject;
+            attack3act2GO = transform.Find("EnemyContainer/Armature/BoneDress/Attack3bTrigger").gameObject;
             attack1act1GO.SetActive(false);
             attack1act2GO.SetActive(false);
             attack1act3GO.SetActive(false);

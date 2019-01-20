@@ -13,10 +13,10 @@ namespace LightBringer.Enemies.Knight
         private const float SHIELD_STUN_DURATION = 1f;
 
         private const float SPEAR_DMG_START = 25f / 60f;
-        private const float SHIELD_DMG_START = 57f / 60f;
-        private const float SPEAR_DMG_STOP = 59f / 60f;
-        private const float SHIELD_DMG_STOP = 85f / 60f;
-        private const float INDICATOR_B_START = 32f / 60f;
+        private const float SHIELD_DMG_START = 62f / 60f;
+        private const float SPEAR_DMG_STOP = 55f / 60f;
+        private const float SHIELD_DMG_STOP = 81f / 60f;
+        private const float INDICATOR_B_START = 37f / 60f;
 
         // Colliders GO
         private GameObject act1GO;
@@ -58,6 +58,7 @@ namespace LightBringer.Enemies.Knight
 
             // Indicator A
             indicatora.SetActive(true);
+            indicatora.GetComponent<IndicatorLoader>().Load(SPEAR_DMG_START);
         }
 
         public override void Run()
@@ -79,6 +80,7 @@ namespace LightBringer.Enemies.Knight
             {
                 shieldIndicator = true;
                 indicatorb.SetActive(true);
+                indicatorb.GetComponent<IndicatorLoader>().Load(SHIELD_DMG_START - INDICATOR_B_START);
             }
 
             // DMG 2

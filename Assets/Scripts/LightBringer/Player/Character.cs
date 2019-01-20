@@ -168,10 +168,10 @@ namespace LightBringer.Player
             }
 
             // Test
-            if (Input.GetButtonDown("testButton"))
+            /*if (Input.GetButtonDown("testButton"))
             {
                 psm.AddAndStartState(new Immaterial(20f));
-            }
+            }*/
         }
 
         public void Cancel()
@@ -386,6 +386,8 @@ namespace LightBringer.Player
      * Impact Effects only on hurt part?
      * 
      * Zoom caméra. Clamp pour les min et max. dépendra aussi de l'étage où l'on se trouve.
+     * 
+     * Indicators avec loading dessus : Knight 1
      * 
      * */
 }

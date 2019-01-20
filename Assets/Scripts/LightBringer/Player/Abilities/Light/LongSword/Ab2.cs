@@ -87,6 +87,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void DisplayIndicator()
         {
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
+            indicator.GetComponent<IndicatorLoader>().Load(channelDuration);
             GameObject.Destroy(indicator, channelDuration);
         }
 

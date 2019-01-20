@@ -38,7 +38,14 @@ namespace LightBringer.Player
             if (character.currentChanneling != null)
             {
                 channelingBar.SetActive(true);
+                channelingContent.color = Color.yellow;
                 channelingContent.fillAmount = (Time.time - character.currentChanneling.channelStartTime) / character.currentChanneling.channelDuration;
+            }
+            else if (character.currentAbility != null)
+            {
+                channelingBar.SetActive(true);
+                channelingContent.color = Color.green;
+                channelingContent.fillAmount = 1;
             }
             else
             {

@@ -69,6 +69,7 @@ namespace LightBringer.Enemies.Knight
 
             // Indicator 1
             indicator1.SetActive(true);
+            indicator1.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_1_START);
         }
 
         public override void Run()
@@ -87,6 +88,8 @@ namespace LightBringer.Enemies.Knight
 
                 // Indicator 2
                 indicator2.SetActive(true);
+                indicator2.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_2_START - DMG_CHECKPOINT_1_END);
+
             }
 
             // DMG 2
@@ -101,6 +104,7 @@ namespace LightBringer.Enemies.Knight
 
                 // Indicator 3
                 indicator3.SetActive(true);
+                indicator3.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_3_START - DMG_CHECKPOINT_2_END);
             }
 
             // DMG 3
