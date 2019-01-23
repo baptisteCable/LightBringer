@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -38,7 +38,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private GameObject lightColumnPrefab;
 
         // GameObjects
-        private LightSword sword;
+        //private LightSword sword;
         private GameObject trigger;
         private Transform characterContainer;
 
@@ -53,10 +53,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Respawn point relatively to enemy center
         Transform spawnPoint;
 
+        // Effects
+        private ParticleSystem slashEffect;
+
         public AbOff(Character character, LightSword sword) :
             base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
-            this.sword = sword;
+            //this.sword = sword;
             triggerPrefab = Resources.Load("Player/Light/LongSword/AbOff/Trigger") as GameObject;
             impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
             fadeOutEffetPrefab = Resources.Load("Player/Light/LongSword/AbOff/FadeOutEffect") as GameObject;
@@ -65,6 +68,12 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             indicatorPrefab = Resources.Load("Player/Light/LongSword/AbOff/AbOffIndicator") as GameObject;
 
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
+
+            // Create slash objects
+            GameObject slashAGO = GameObject.Instantiate(
+                Resources.Load("Player/Light/LongSword/AbOff/AbOffSlash") as GameObject,
+                character.characterContainer);
+            slashEffect = slashAGO.GetComponent<ParticleSystem>();
         }
 
 
@@ -121,10 +130,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             // Trail effect
-            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
+            SlashEffect();
 
             CreateTrigger();
 
+        }
+
+        private void SlashEffect()
+        {
+            if (currentAttack == 1)
+            {
+                slashEffect.Play();
+            }
         }
 
         private void FadeInAnimation()
@@ -263,7 +280,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 else if (closestCol.tag == "Shield")
                 {
                     // Interrupt character
-                    character.psm.Interrupt(INTERRUPT_DURATION);
+                    character.psm.ApplyCrowdControl(
+                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
+                        INTERRUPT_DURATION
+                    );
                 }
             }
 

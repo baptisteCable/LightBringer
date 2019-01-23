@@ -133,6 +133,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             character.SetMovementMode(MovementMode.Ability);
 
             newCols = new Dictionary<Collider, float>();
+
+            // Trail effect
+            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
         }
 
         public override void Cast()
@@ -214,7 +217,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else if (col.tag == "Shield")
             {
                 // Interrupt character
-                character.psm.Interrupt(INTERRUPT_DURATION);
+                character.psm.ApplyCrowdControl(
+                    new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
+                    INTERRUPT_DURATION
+                );
 
                 if (sword.isLoaded)
                 {

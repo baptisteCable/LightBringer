@@ -148,6 +148,18 @@ namespace LightBringer.Player
                 }
             }
         }
+
+        public override bool isAffectedByCC(CrowdControl cc)
+        {
+            if (cc.damageType == DamageType.Self)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
 

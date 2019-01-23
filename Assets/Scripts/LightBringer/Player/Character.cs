@@ -380,5 +380,15 @@ namespace LightBringer.Player
      * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
      * 
+     * AbOff ajouter channeling et slashEffect (type Ab1b)
+     * 
+     * Mort du joueur
+     * 
+     * Scène de dev, scène de test (arène) avec boutons, reset...
+     * 
+     * Blocage et charge du monstre --> interrupt
+     * 
+     * Ulti rotates with Knight
+     * 
      * */
 }

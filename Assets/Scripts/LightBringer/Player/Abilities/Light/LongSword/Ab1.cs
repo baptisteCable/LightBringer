@@ -52,7 +52,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private bool lightSpawned;
 
         // Effects
-        private ParticleSystem slashAEffect;
+        private ParticleSystem slashAEffect, slashBEffect;
 
         public Ab1(Character character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -69,6 +69,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 Resources.Load("Player/Light/LongSword/Ab1/Ab1aSlash") as GameObject,
                 character.characterContainer);
             slashAEffect = slashAGO.GetComponent<ParticleSystem>();
+            GameObject slashBGO = GameObject.Instantiate(
+                Resources.Load("Player/Light/LongSword/Ab1/Ab1bSlash") as GameObject,
+                character.characterContainer);
+            slashBEffect = slashBGO.GetComponent<ParticleSystem>();
 
         }
 
@@ -129,7 +133,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartAbility();
 
             // Trail effect
-            //sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
             SlashEffect();
 
 
@@ -155,6 +158,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (currentAttack == 1)
             {
                 slashAEffect.Play();
+            }
+            if (currentAttack == 2)
+            {
+                slashBEffect.Play();
             }
         }
 
@@ -260,22 +267,25 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // find the closest collider (and the extraDamage ones)
             foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                // Extra damage: deal damage
-                DamageTaker dt = pair.Key.GetComponent<DamageTaker>();
-                if (dt != null && dt.extraDmg)
+                if (pair.Key != null)
                 {
-                    ApplyDamageAB(pair.Key, pair.Value, id);
-                }
-                else
-                {
-                    dist = (pair.Key.ClosestPoint(pair.Value) - pair.Value).magnitude;
-                    if (dist < minDist)
+
+                    // Extra damage: deal damage
+                    DamageTaker dt = pair.Key.GetComponent<DamageTaker>();
+                    if (dt != null && dt.extraDmg)
                     {
-                        minDist = dist;
-                        closestCol = pair.Key;
+                        ApplyDamageAB(pair.Key, pair.Value, id);
+                    }
+                    else
+                    {
+                        dist = (pair.Key.ClosestPoint(pair.Value) - pair.Value).magnitude;
+                        if (dist < minDist)
+                        {
+                            minDist = dist;
+                            closestCol = pair.Key;
+                        }
                     }
                 }
-
             }
 
             if (closestCol != null)
@@ -287,7 +297,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 else if (closestCol.tag == "Shield")
                 {
                     // Interrupt character
-                    character.psm.Interrupt(INTERRUPT_DURATION);
+                    character.psm.ApplyCrowdControl(
+                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
+                        INTERRUPT_DURATION
+                    );
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using LightBringer.Enemies;
+﻿using System.Collections.Generic;
+using LightBringer.Enemies;
 using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
@@ -21,7 +22,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (!complete && (dmg.type == DamageType.Melee || dmg.type == DamageType.RangeInstant || dmg.type == DamageType.Projectile))
             {
-                psm.AddAndStartState(new Immaterial(IMMATERIAL_DURATION + 20f));
+                psm.AddAndStartState(new Immaterial(IMMATERIAL_DURATION));
                 psm.AddAndStartState(new Haste(HASTE_DURATION));
 
                 if (!sword.isLoaded)
@@ -69,6 +70,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.Cancel();
 
             Stop();
+        }
+
+        public override bool isAffectedByCC(CrowdControl cc)
+        {
+            if (cc.damageType == DamageType.Melee || cc.damageType == DamageType.RangeInstant || cc.damageType == DamageType.Projectile)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

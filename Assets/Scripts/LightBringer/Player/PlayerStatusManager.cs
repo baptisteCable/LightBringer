@@ -172,7 +172,30 @@ namespace LightBringer.Player
             states.Remove(state);
         }
 
-        public void Stun(float duration)
+        public void ApplyCrowdControl(CrowdControl cc, float duration)
+        {
+            bool affected = true;
+            foreach (State s in states)
+            {
+                if(!s.isAffectedByCC(cc))
+                {
+                    affected = false;
+                }
+                Debug.Log(s + " : " + affected);
+            }
+
+            if (affected)
+            {
+                switch(cc.ccType)
+                {
+                    case CrowdControlType.Interrupt: Interrupt(duration); break;
+                    case CrowdControlType.Root: Root(duration); break;
+                    case CrowdControlType.Stun: Stun(duration); break;
+                }
+            }
+        }
+
+        private void Stun(float duration)
         {
             isStunned = true;
             if (stunDuration < duration)
@@ -181,7 +204,7 @@ namespace LightBringer.Player
             }
         }
 
-        public void Root(float duration)
+        private void Root(float duration)
         {
             isRooted = true;
             if (rootDuration < duration)
@@ -190,7 +213,7 @@ namespace LightBringer.Player
             }
         }
 
-        public void Interrupt(float duration)
+        private void Interrupt(float duration)
         {
             isInterrupted = true;
             if (interruptedDuration < duration)

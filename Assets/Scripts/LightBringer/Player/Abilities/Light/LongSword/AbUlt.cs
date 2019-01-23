@@ -66,10 +66,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void StartChanneling()
         {
-            if (CannotStartStandard())
+            /*if (CannotStartStandard())
             {
                 return;
-            }
+            }*/
 
             base.StartChanneling();
             character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
@@ -192,7 +192,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 else if (closestCol.tag == "Shield")
                 {
                     // Interrupt character
-                    character.psm.Interrupt(INTERRUPT_DURATION);
+                    character.psm.ApplyCrowdControl(
+                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
+                        INTERRUPT_DURATION
+                    );
                 }
             }
         }
@@ -218,7 +221,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // TODO See what happens when monster no capsule-shaped or multi-part
             StatusManager sm =  col.GetComponent<DamageTaker>().statusManager;
             Transform target = sm.transform;
-            GameObject ultiDT = GameObject.Instantiate(ultiDTprefab, target);
+            GameObject ultiDT = GameObject.Instantiate(ultiDTprefab);
             ultiDT.transform.localScale = Vector3.one * target.GetComponent<CharacterController>().radius;
             ultiDT.transform.Find("DamageTaker").GetComponent<UltDamageTaker>().statusManager = sm;
             GameObject.Destroy(ultiDT, EXTRA_DAMAGE_TAKER_DURATION);

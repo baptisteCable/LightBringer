@@ -1,6 +1,7 @@
 ﻿using LightBringer.Enemies;
 using UnityEngine;
 
+
 namespace LightBringer.Player
 {
     public abstract class State
@@ -69,6 +70,11 @@ namespace LightBringer.Player
 
                 complete = true;
             }
+        }
+
+        public virtual bool isAffectedByCC(CrowdControl cc)
+        {
+            return true;
         }
     }
 }

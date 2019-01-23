@@ -205,7 +205,6 @@ GameObject:
   - component: {fileID: 4044836291015234}
   - component: {fileID: 136161977807414560}
   - component: {fileID: 114295742935754048}
-  - component: {fileID: 95591153632821262}
   m_Layer: 13
   m_Name: DamageTaker
   m_TagString: Enemy
@@ -648,24 +647,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!95 &95591153632821262
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1717763240695796}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7c5e38640fcbcf443a8fa0f0633c2db6, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!95 &95640984336679174
 Animator:
   serializedVersion: 3
@@ -1064,7 +1045,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   extraDmg: 1
-  sc: {fileID: 0}
+  statusManager: {fileID: 0}
   quarters:
   - {fileID: 1256854476780350}
   - {fileID: 1323571212866170}
