@@ -15,7 +15,6 @@ namespace LightBringer.Player
         private float rotationSpeed = ROTATION_SPEED;
 
         // game objects
-        public Camera cam;
         public Transform characterContainer;
 
         // Components
@@ -385,10 +384,6 @@ namespace LightBringer.Player
      * Mort du joueur
      * 
      * Scène de dev, scène de test (arène) avec boutons, reset...
-     * 
-     * Blocage et charge du monstre --> interrupt
-     * 
-     * Ulti rotates with Knight
      * 
      * */
 }

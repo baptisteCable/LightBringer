@@ -48,6 +48,7 @@ namespace LightBringer.Player
 
         // Components
         public StatusBar statusBar;
+        [HideInInspector]
         public Character character;
 
         void Start()
