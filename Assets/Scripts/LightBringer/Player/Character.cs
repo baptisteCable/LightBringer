@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using LightBringer.Player.Abilities;
+﻿using LightBringer.Player.Abilities;
+using UnityEngine;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerStatusManager))]
-    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CharacterController))]
     public class Character : MonoBehaviour
     {
         // constants
@@ -25,9 +25,9 @@ namespace LightBringer.Player
         public PlayerStatusManager psm;
         [HideInInspector]
         public Collider coll;
+        private CharacterController charController;
 
         // misc
-        private MovementMode movementMode;
         [HideInInspector]
         public float abilityMoveMultiplicator;
         [HideInInspector]
@@ -40,6 +40,10 @@ namespace LightBringer.Player
         [HideInInspector]
         public GameObject swordObject;
 
+        // Movement
+        private Vector3 movementDirection;
+        private MovementMode movementMode;
+        public float stickToGroundForce;
 
         /* Abilities :
          *      0: None
@@ -58,17 +62,22 @@ namespace LightBringer.Player
         // Use this for initialization
         public virtual void Start()
         {
-            rb = GetComponent<Rigidbody>();
+            charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
             coll = GetComponent<Collider>();
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
+
+            movementDirection = Vector3.zero;
         }
 
         // Update is called once per frame
         void Update()
         {
+            // Move
+            Move();
+
             // CC progression
             psm.CCComputation();
 
@@ -109,9 +118,6 @@ namespace LightBringer.Player
 
             // Special computations on abilities
             ComputeAbilitiesSpecial();
-
-            // Anchor move (no action, most of the time)
-            Move();
         }
 
         private void ComputeAbilitiesSpecial()
@@ -209,11 +215,61 @@ namespace LightBringer.Player
                     Debug.LogError("No anchor object");
                 }
             }
+            else if (movementMode == MovementMode.Player)
+            {
+                // Moving
+                float v = Input.GetAxisRaw("Vertical");
+                float h = Input.GetAxisRaw("Horizontal");
+                Vector3 desiredMove;
+
+                if (movementMode == MovementMode.Player && !psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
+                {
+                    desiredMove = new Vector3(v + h, 0, v - h).normalized;
+
+                    animator.SetFloat("zVel", Vector3.Dot(desiredMove, characterContainer.forward));
+                    animator.SetFloat("xVel", Vector3.Dot(desiredMove, characterContainer.right));
+                    animator.SetBool("isMoving", true); // test if really moving
+
+                    // get a normal for the surface that is being touched to move along it
+                    RaycastHit hitInfo;
+                    LayerMask mask = LayerMask.GetMask("Environment");
+                    
+                    Physics.SphereCast(transform.position, charController.radius, Vector3.down, out hitInfo,
+                                       charController.height / 2f, mask, QueryTriggerInteraction.Ignore);
+                    desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
+                }
+                else
+                {
+                    desiredMove = Vector3.zero;
+
+                    animator.SetBool("isMoving", false);
+
+                    if (!charController.isGrounded)
+                    {
+                        // go to the ground
+                        charController.SimpleMove(Vector3.zero);
+                    }
+
+                }
+
+                movementDirection.x = desiredMove.x * MoveSpeed();
+                movementDirection.z = desiredMove.z * MoveSpeed();
+
+                if (charController.isGrounded)
+                {
+                    movementDirection.y = -stickToGroundForce;
+                }
+                else
+                {
+                    movementDirection += Physics.gravity * Time.deltaTime;
+                }
+                charController.Move(movementDirection * Time.deltaTime);
+            }
         }
 
-        private void FixedUpdate()
+        public void AbilityMove(Vector3 speed)
         {
-            MoveFixed();
+            charController.Move(speed * Time.deltaTime);
         }
 
         // look at mouse and camera positionning procedure
@@ -240,35 +296,6 @@ namespace LightBringer.Player
                 else
                 {
                     characterContainer.rotation = rotation;
-                }
-            }
-        }
-
-        // move procedure
-        void MoveFixed()
-        {
-            // Moving
-            float v = Input.GetAxisRaw("Vertical");
-            float h = Input.GetAxisRaw("Horizontal");
-            if (movementMode == MovementMode.Player && !psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
-            {
-                Vector3 direction = new Vector3(v + h, 0, v - h).normalized;
-
-                animator.SetFloat("zVel", Vector3.Dot(direction, characterContainer.forward));
-                animator.SetFloat("xVel", Vector3.Dot(direction, characterContainer.right));
-                animator.SetBool("isMoving", rb.velocity != Vector3.zero);
-                rb.velocity = (direction * MoveSpeed());
-            }
-            else
-            {
-                if (movementMode != MovementMode.Anchor)
-                {
-                    animator.SetBool("isMoving", false);
-                }
-
-                if (movementMode == MovementMode.Player)
-                {
-                    rb.velocity = new Vector3(0f, rb.velocity.y, 0f);
                 }
             }
         }
@@ -339,7 +366,7 @@ namespace LightBringer.Player
             visible = false;
             characterContainer.gameObject.SetActive(false);
         }
-        
+
         public void LockAbilitiesExcept(bool locked, Ability ab = null)
         {
             for (int i = 0; i < abilities.Length; i++)

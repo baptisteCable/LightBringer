@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -46,7 +46,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // Misc
         private bool sphereAdded = false;
-        
+
 
         public Ab2(LightLongSwordCharacter character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -143,7 +143,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.Cast();
 
             // movement
-            character.rb.velocity = characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION;
+            character.AbilityMove(characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION);
 
             ApplyEffectToNew();
         }
