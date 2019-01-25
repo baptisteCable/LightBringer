@@ -128,12 +128,13 @@ GameObject:
   - component: {fileID: 324036840}
   - component: {fileID: 324036839}
   - component: {fileID: 324036838}
+  - component: {fileID: 324036841}
   m_Layer: 9
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 4294967294
   m_IsActive: 1
 --- !u!154 &324036838
 TerrainCollider:
@@ -158,10 +159,10 @@ Terrain:
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
   m_TreeMaximumFullLODCount: 50
-  m_DetailObjectDistance: 50
+  m_DetailObjectDistance: 52
   m_DetailObjectDensity: 1
   m_HeightmapPixelError: 5
-  m_SplatMapDistance: 206
+  m_SplatMapDistance: 89
   m_HeightmapMaximumLOD: 0
   m_CastShadows: 1
   m_DrawHeightmap: 1
@@ -184,12 +185,34 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 324036837}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -250, y: 0, z: -250}
+  m_LocalPosition: {x: -128, y: 0, z: -128}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &324036841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 324036837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f0a7723336f6754190238df6e2aaa11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textures:
+  - minHeight: -0.01
+    maxHeight: 0.01
+    groundTexIndex: 0
+  - minHeight: 0.01
+    maxHeight: 0.49
+    groundTexIndex: 1
+  - minHeight: 0.49
+    maxHeight: 0.51
+    groundTexIndex: 0
+  generated: 1
 --- !u!1 &763179048
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,7 +292,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4465847920421198, guid: 38cfcb25aab306944a88a9047ed32cc8, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 12.24
       objectReference: {fileID: 0}
     - target: {fileID: 4465847920421198, guid: 38cfcb25aab306944a88a9047ed32cc8, type: 2}
       propertyPath: m_LocalPosition.z
@@ -300,6 +323,11 @@ Prefab:
       propertyPath: cam
       value: 
       objectReference: {fileID: 316937902}
+    - target: {fileID: 114740454197429764, guid: 38cfcb25aab306944a88a9047ed32cc8,
+        type: 2}
+      propertyPath: stickToGroundForce
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38cfcb25aab306944a88a9047ed32cc8, type: 2}
   m_IsPrefabAsset: 0
