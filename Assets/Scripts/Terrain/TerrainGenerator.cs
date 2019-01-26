@@ -25,9 +25,14 @@ namespace LightBringer.TerrainGeneration
             if (!generated)
             {
                 generated = true;
-                Terrain terrain = GetComponent<Terrain>();
-                terrain.terrainData = GenerateData(terrain.terrainData);
+                GenerateTerrain();
             }
+        }
+
+        public void GenerateTerrain()
+        {
+            Terrain terrain = GetComponent<Terrain>();
+            terrain.terrainData = GenerateData(terrain.terrainData);
         }
 
         private TerrainData GenerateData(TerrainData terrainData)

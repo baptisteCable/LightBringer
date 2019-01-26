@@ -20,11 +20,7 @@ namespace LightBringer.Player
         // Components
         public Animator animator;
         [HideInInspector]
-        public Rigidbody rb;
-        [HideInInspector]
         public PlayerStatusManager psm;
-        [HideInInspector]
-        public Collider coll;
         private CharacterController charController;
 
         // misc
@@ -64,7 +60,6 @@ namespace LightBringer.Player
         {
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
-            coll = GetComponent<Collider>();
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
@@ -75,6 +70,11 @@ namespace LightBringer.Player
         // Update is called once per frame
         void Update()
         {
+            if (psm.isDead)
+            {
+                return;
+            }
+
             // Move
             Move();
 
@@ -337,7 +337,7 @@ namespace LightBringer.Player
             {
                 psm.anchor = null;
                 MakeVisible();
-                coll.enabled = true;
+                charController.enabled = true;
             }
 
             movementMode = mode;
@@ -349,9 +349,8 @@ namespace LightBringer.Player
         public void MergeWith(Transform anchor, bool hide = true)
         {
             psm.anchor = anchor;
-            coll.enabled = false;
+            charController.enabled = false;
             MakeInvisible();
-            rb.velocity = Vector3.zero;
             movementMode = MovementMode.Anchor;
         }
 
@@ -377,6 +376,19 @@ namespace LightBringer.Player
                 }
             }
         }
+
+        public void Die()
+        {
+            if (currentChanneling != null)
+            {
+                currentChanneling.AbortChanelling();
+            }
+            if(currentAbility != null)
+            {
+                currentAbility.AbortCasting();
+            }
+            charController.enabled = false;
+        }
         /*
         private void OnGUI()
         {
@@ -391,8 +403,6 @@ namespace LightBringer.Player
      * La charge pousse le joueur sur le côté et ne monte pas dessus. Le Knight n'est pas bloqué par le joueur.
      * Effets Knight (tenter les slashs nouveaux ?)
      * 
-     * Chercher autre méthode Slash
-     * 
      * Transparent pas comme ça. Shader
      * Shader lumière (ou particules ?)
      * 
@@ -406,11 +416,13 @@ namespace LightBringer.Player
      * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
      * 
-     * AbOff ajouter channeling et slashEffect (type Ab1b)
+     * AbOff (seconde partie) ajouter channeling et slashEffect (type Ab1b)
      * 
-     * Mort du joueur
+     * Camera quand on monte. Gestion du 1er étage en général (chute, compétences qui partent du niveau 0, etc.)
+     * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
+     * par dessus un ilot ?
      * 
-     * Scène de dev, scène de test (arène) avec boutons, reset...
+     * Multijoueur
      * 
      * */
 }

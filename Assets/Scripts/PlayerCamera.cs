@@ -8,7 +8,7 @@ public class PlayerCamera : MonoBehaviour
 
     private Camera cam;
     public Transform character;
-    public Vector3 camPositionFromPlayer;
+    private Vector3 camPositionFromPlayer;
     private float currentPosition; // 0 for clostest, 1 for farthest
     private float targetXRotation;
     private float currentXRotation;

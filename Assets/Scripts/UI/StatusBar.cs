@@ -8,7 +8,6 @@ namespace LightBringer.Player
 
         public PlayerStatusManager psm;
         public Character character;
-        public Camera cam;
         
         private Image channelingContent;
         private GameObject channelingBar;
@@ -31,7 +30,7 @@ namespace LightBringer.Player
 
         void Update()
         {
-            LookAtCamera(cam);
+            LookAtCamera(Camera.main);
 
             ComputeHPBar(psm.currentHP, psm.maxHP);
             

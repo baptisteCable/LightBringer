@@ -101,6 +101,7 @@ namespace LightBringer.Enemies.Knight
 
         public void End()
         {
+            shieldCollider.SetActive(true);
             em.anim.SetBool("castingAttack3", false);
             complete = true;
             em.SetOverrideAgent(false);
@@ -151,6 +152,7 @@ namespace LightBringer.Enemies.Knight
 
                 act1GO.SetActive(true);
                 act1.SetAbility(this);
+                shieldCollider.SetActive(false);
                 part1Initialized = true;
             }
         }
@@ -164,7 +166,6 @@ namespace LightBringer.Enemies.Knight
 
                 act2GO.SetActive(true);
                 act2.SetAbility(this);
-                shieldCollider.SetActive(false);
                 part2Initialized = true;
             }
         }
@@ -179,7 +180,6 @@ namespace LightBringer.Enemies.Knight
         {
             act2GO.SetActive(false);
             act2.UnsetAbility();
-            shieldCollider.SetActive(true);
         }
     }
 }

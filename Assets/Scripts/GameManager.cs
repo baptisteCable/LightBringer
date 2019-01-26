@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour {
     public Plane floorPlane;
     public float currentAlt = 0f;
 
-
     public static GameManager gm;
 
     // Use this for initialization

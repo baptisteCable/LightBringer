@@ -38,6 +38,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public List<State> states;
         private List<State> queuedStates;
+        public bool isDead;
 
         // Special status
         public Transform anchor;
@@ -71,6 +72,7 @@ namespace LightBringer.Player
             // States
             states = new List<State>();
             queuedStates = new List<State>();
+            isDead = false;
 
             // Gradables
             hasteMoveMultiplicator = 1f;
@@ -133,6 +135,11 @@ namespace LightBringer.Player
 
                 StopCoroutine("Flash");
                 StartCoroutine("Flash");
+            }
+
+            if (currentHP <= 0)
+            {
+                Die();
             }
         }
 
@@ -264,6 +271,19 @@ namespace LightBringer.Player
                 {
                     s.Cancel();
                 }
+            }
+        }
+
+        private void Die()
+        {
+            if (!isDead)
+            {
+                isDead = true;
+
+                // TODO animation
+
+                character.Die();
+
             }
         }
 

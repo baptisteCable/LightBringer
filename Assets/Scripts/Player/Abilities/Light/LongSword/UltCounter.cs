@@ -2,24 +2,32 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UltCounter : MonoBehaviour {
+namespace LightBringer.UI
+{
+    public class UltCounter : MonoBehaviour
+    {
 
-    public LightLongSwordCharacter character;
-    private Text text;
+        public LightLongSwordCharacter character;
+        private Text text;
 
-	void Start () {
-        text = GetComponent<Text>();
-	}
-	
-	void Update () {
-		if (character.GetUltiShpereCount() > 0)
+        void Start()
         {
-            text.enabled = true;
-            text.text = character.GetUltiShpereCount().ToString();
+            text = GetComponent<Text>();
+            character = (LightLongSwordCharacter)(transform.parent.GetComponent<AbilityImage>().character);
         }
-        else
+
+        void Update()
         {
-            text.enabled = false;
+            if (character.GetUltiShpereCount() > 0)
+            {
+                text.enabled = true;
+                text.text = character.GetUltiShpereCount().ToString();
+            }
+            else
+            {
+                text.enabled = false;
+            }
         }
-	}
+    }
 }
+

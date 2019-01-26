@@ -21,6 +21,7 @@ namespace LightBringer.Enemies.Knight
         // Behaviours
         private KnightBehaviour currentBehaviour;
         private bool readyForNext = true;
+        public bool passive = false;
 
         // CD
         private float[] remainingCD;
@@ -97,13 +98,19 @@ namespace LightBringer.Enemies.Knight
             Dictionary<KnightBehaviour, float> list = new Dictionary<KnightBehaviour, float>();
             float weight = 0;
 
+            // Passive case
+            if (passive)
+            {
+                list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
+                return;
+            }
+
             // Wait behaviour
             weight = 1f;
             if (currentBehaviour.GetType() == typeof(WaitBehaviour))
             {
                 weight -= .5f;
             }
-            weight = 1000000f; // Debug
             list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
 
             // Wait and rotate behaviour
