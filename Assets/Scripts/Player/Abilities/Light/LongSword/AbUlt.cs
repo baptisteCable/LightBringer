@@ -13,23 +13,21 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const bool CASTING_CANCELLABLE = false;
 
         // const
-        private const float COOLDOWN_DURATION = 0.5f;
+        private const float COOLDOWN_DURATION = 4f;
         private const float ABILITY_DURATION = 6f / 60f;
         private const float CHANNELING_DURATION = 30f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR = .7f;
 
-        private const float INTERRUPT_DURATION = .6f;
+        private const float STUN_DURATION = .2f;
         private const float DAMAGE = 10f;
         private const float EXTRA_DAMAGE_TAKER_DURATION = 10f;
 
         private const float SWORD_LOADED_TIME = 16f / 60f;
-        private const float SWORD_UNLOADED_TIME = 3f / 60f;
 
         // Action time bool
         private bool swordLoaded = false;
-        private bool swordUnloaded = false;
 
         // Trigger
         private GameObject triggerPrefab;
@@ -87,13 +85,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // Action Time bool
             swordLoaded = false;
-            swordUnloaded = false;
         }
 
         private void DisplayIndicator()
         {
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
             GameObject.Destroy(indicator, channelDuration);
+            indicators.Add(indicator);
         }
 
         public override void Channel()
@@ -103,7 +101,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (Time.time > channelStartTime + SWORD_LOADED_TIME && !swordLoaded)
             {
                 swordLoaded = true;
-                ((LightLongSwordCharacter)character).ConsumeAllSpheres();
                 sword.transform.Find("UltLoaded").gameObject.SetActive(true);
             }
         }
@@ -135,21 +132,17 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();
             act.SetAbility(this);
         }
-
-        public override void Cast()
-        {
-            base.Cast();
-
-            if (Time.time > castStartTime + SWORD_UNLOADED_TIME && !swordUnloaded)
-            {
-                swordUnloaded = true;
-                sword.transform.Find("UltLoaded").gameObject.SetActive(false);
-            }
-        }
-
+        
         public override void End()
         {
-            ApplyAllDamage();
+            bool spheresConsumed = ApplyAllDamage();
+
+            sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+
+            if (!spheresConsumed)
+            {
+                ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
+            }
             
             if (trigger != null)
             {
@@ -159,7 +152,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.End();
         }
 
-        private void ApplyAllDamage()
+        private bool ApplyAllDamage()
         {
             Collider closestCol = null;
             float minDist = float.PositiveInfinity;
@@ -185,19 +178,23 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             if (closestCol != null)
             {
-                if (closestCol.tag == "Enemy")
+                DamageTaker dt = closestCol.GetComponent<DamageTaker>();
+                if (dt.bouncing)
                 {
-                    ApplyDamage(closestCol, encounteredCols[closestCol], id);
-                }
-                else if (closestCol.tag == "Shield")
-                {
-                    // Interrupt character
+                    // Stun character
                     character.psm.ApplyCrowdControl(
-                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
-                        INTERRUPT_DURATION
+                        new CrowdControl(CrowdControlType.Stun, DamageType.Self, DamageElement.None),
+                        STUN_DURATION
                     );
                 }
+                else
+                {
+                    ApplyDamage(closestCol, encounteredCols[closestCol], id);
+                    return true;
+                }
             }
+
+            return false;
         }
 
         private void ApplyDamage(Collider col, Vector3 origin, int id)
@@ -214,6 +211,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             impactEffect.transform.position = impactPoint;
             impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
             GameObject.Destroy(impactEffect, 1f);
+
+            ((LightLongSwordCharacter)character).ConsumeAllSpheres();
         }
 
         private void ApplyEffect(Collider col)
@@ -243,12 +242,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 GameObject.Destroy(trigger);
             }
+
+            ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
             sword.transform.Find("UltLoaded").gameObject.SetActive(false);
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
+            if (col.tag == "Enemy" && col.GetComponent<DamageTaker>() != null && !encounteredCols.ContainsKey(col))
             {
                 encounteredCols.Add(col, character.transform.position + Vector3.up);
             }

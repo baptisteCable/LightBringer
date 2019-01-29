@@ -30,8 +30,8 @@ namespace LightBringer.Player.Class
             abilities[0] = new AbEsc(this, sword);
             abilities[1] = new Ab1(this, sword);
             abilities[2] = new Ab2(this, sword);
-            abilities[3] = new AbOff(this, sword);
-            abilities[4] = new AbDef(this, sword);
+            abilities[3] = new AbDef(this, sword);
+            abilities[4] = new AbOff(this, sword);
             abilities[5] = new AbUlt(this, sword);
 
             // Spheres
@@ -74,7 +74,8 @@ namespace LightBringer.Player.Class
         {
             foreach (GameObject sphere in sphereObjects)
             {
-                sphere.GetComponent<Animator>().Play("UltSphereBasePosition");
+                sphere.transform.parent = transform;
+                sphere.GetComponent<Animator>().Play("UltSphereCancelLoadingSword");
             }
         }
 
@@ -103,10 +104,9 @@ namespace LightBringer.Player.Class
             {
                 sphereObjects.Remove(sphere);
                 Destroy(sphere);
+                ultiSphereCount = sphereObjects.Count;
+                abilities[5].available = false;
             }
-
-            ultiSphereCount = sphereObjects.Count;
-            abilities[5].available = false;
         }
     }
 }

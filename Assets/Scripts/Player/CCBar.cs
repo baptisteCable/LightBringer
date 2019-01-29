@@ -24,10 +24,6 @@ namespace LightBringer.Player
             {
                 ccText.text = "Rooted";
             }
-            else if (psm.isInterrupted)
-            {
-                ccText.text = "Interrupted";
-            }
             else
             {
                 ccText.text = "";

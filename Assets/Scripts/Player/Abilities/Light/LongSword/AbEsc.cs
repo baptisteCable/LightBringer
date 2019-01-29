@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Tools;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -245,7 +245,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy") && !encounteredCols.ContainsKey(col))
+            if ((col.tag == "Enemy") && col.GetComponent<DamageTaker>() != null && !encounteredCols.ContainsKey(col))
             {
                 encounteredCols.Add(col, act.transform.position);
             }

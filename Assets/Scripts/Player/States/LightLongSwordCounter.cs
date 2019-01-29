@@ -45,10 +45,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.Start(psm);
 
-            psm.hasteMoveMultiplicator = 0f;
+            psm.moveMultiplicators.Add(this, 0);
+            psm.maxRotation.Add(this, 0);
 
             // Lock all abilities
-            psm.character.LockAbilitiesExcept(true);
+            psm.character.LockAbilitiesExcept(true, psm.character.abilities[0]);
 
             // TODO Effect
         }
@@ -57,7 +58,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.Stop();
 
-            psm.hasteMoveMultiplicator = 1f;
+            psm.moveMultiplicators.Remove(this);
+            psm.maxRotation.Remove(this);
 
             // Unlock all abilities
             psm.character.LockAbilitiesExcept(false);

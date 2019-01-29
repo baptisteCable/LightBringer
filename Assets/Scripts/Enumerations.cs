@@ -24,7 +24,6 @@
     {
         Stun,
         Root,
-        Sleep,
-        Interrupt
+        Sleep
     }
 }

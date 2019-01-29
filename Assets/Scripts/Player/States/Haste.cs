@@ -30,12 +30,14 @@ namespace LightBringer.Player
             psMain = hasteTrailsEffect.GetComponent<ParticleSystem>().main;
 
             ComputeCurve();
+
+            psm.moveMultiplicators.Add(this, 1f);
         }
 
         public override void Update()
         {
             float currentSpeed = speedCurve.Evaluate(Time.time - startTime);
-            psm.hasteMoveMultiplicator = 1 + currentSpeed;
+            psm.moveMultiplicators[this] = 1 + currentSpeed;
             psMain.startLifetime = .2f + .5f * currentSpeed / ADDITIONNAL_SPEED;
 
             base.Update();
@@ -46,7 +48,7 @@ namespace LightBringer.Player
             base.Stop();
 
             GameObject.Destroy(hasteTrailsEffect);
-            psm.hasteMoveMultiplicator = 1f;
+            psm.moveMultiplicators.Remove(this);
         }
 
         private void ComputeCurve()

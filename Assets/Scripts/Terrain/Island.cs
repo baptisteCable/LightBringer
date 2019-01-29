@@ -139,7 +139,6 @@ namespace LightBringer.TerrainGeneration
                     {
                         if (heights[i, j] < 0)
                         {
-                            Debug.Log("Spot not free");
                             return false;
                         }
                     }

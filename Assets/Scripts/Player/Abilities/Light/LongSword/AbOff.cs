@@ -15,7 +15,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float COOLDOWN_DURATION_A = 10f;
         private const float COOLDOWN_DURATION_B = .1f;
         private const float CHANNELING_DURATION_A = 12f / 60f;
-        private const float CHANNELING_DURATION_B = 12f / 60f;
+        private const float CHANNELING_DURATION_B = 10f / 60f;
         private const float ABILITY_DURATION_A = 6f / 60f;
         private const float ABILITY_DURATION_B = 6f / 60f;
 
@@ -25,7 +25,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private const float VANISH_DURATION = 1f;
 
-        private const float INTERRUPT_DURATION = .6f;
+        private const float STUN_DURATION = .6f;
 
         // Colliders
         private Dictionary<Collider, Vector3> encounteredCols;
@@ -95,6 +95,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 character.animator.Play("TopAbOffa");
                 channelDuration = CHANNELING_DURATION_A;
 
+                // Indicator
+                DisplayIndicator();
+
             }
             else
             {
@@ -104,15 +107,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 currentAttack = 2;
                 channelDuration = CHANNELING_DURATION_B;
             }
-
-            // Indicator
-            DisplayIndicator();
         }
 
         private void DisplayIndicator()
         {
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
             GameObject.Destroy(indicator, CHANNELING_DURATION_A);
+            indicators.Add(indicator);
         }
 
         public override void StartAbility()
@@ -190,10 +191,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject.Destroy(lightColumn, .5f);
 
             // Fade in position and rotation
-            spawnPoint = col.GetComponent<BackSpawn>().backSpawPoint;
+            Transform enemyTransform = col.GetComponent<DamageTaker>().statusManager.transform;
+            spawnPoint = enemyTransform.GetComponent<BackSpawn>().backSpawPoint;
 
             // Anchor character
-            character.MergeWith(col.transform);
+            character.MergeWith(enemyTransform);
             character.psm.isTargetable = false;
             vanished = true;
 
@@ -272,19 +274,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             if (closestCol != null)
             {
-                if (closestCol.tag == "Enemy")
-                {
-                    ApplyDamage(closestCol, encounteredCols[closestCol], id);
-                    return closestCol;
-                }
-                else if (closestCol.tag == "Shield")
-                {
-                    // Interrupt character
-                    character.psm.ApplyCrowdControl(
-                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
-                        INTERRUPT_DURATION
-                    );
-                }
+                ApplyDamage(closestCol, encounteredCols[closestCol], id);
+                return closestCol;
             }
 
             return null;
@@ -317,7 +308,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
+            if ((col.tag == "Enemy") && col.GetComponent<DamageTaker>() != null && !encounteredCols.ContainsKey(col))
             {
                 encounteredCols.Add(col, character.transform.position + Vector3.up);
             }

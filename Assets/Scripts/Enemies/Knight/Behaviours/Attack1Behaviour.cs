@@ -199,7 +199,7 @@ namespace LightBringer.Enemies.Knight
                 if (psm.IsAffectedBy(dmg, em))
                 {
                     psm.TakeDamage(dmg, em);
-                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Interrupt, DamageType.Melee, DamageElement.Physical), 1f);
+                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), 1f);
                 }
             }
         }

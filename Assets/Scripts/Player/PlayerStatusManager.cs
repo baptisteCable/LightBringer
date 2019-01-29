@@ -18,7 +18,9 @@ namespace LightBringer.Player
 
         // Gradable
         [HideInInspector]
-        public float hasteMoveMultiplicator;
+        public Dictionary<State, float> moveMultiplicators;
+        [HideInInspector]
+        public Dictionary<State, float> maxRotation;
 
         // Crowd control
         [HideInInspector]
@@ -26,13 +28,9 @@ namespace LightBringer.Player
         [HideInInspector]
         public bool isStunned;
         [HideInInspector]
-        public bool isInterrupted;
-        [HideInInspector]
         public float rootDuration;
         [HideInInspector]
         public float stunDuration;
-        [HideInInspector]
-        public float interruptedDuration;
 
         // Status
         [HideInInspector]
@@ -52,6 +50,9 @@ namespace LightBringer.Player
         [HideInInspector]
         public Character character;
 
+        // Training
+        public bool canDie = true;
+
         void Start()
         {
             character = GetComponent<Character>();
@@ -61,10 +62,8 @@ namespace LightBringer.Player
             // Crowd control
             isRooted = false;
             isStunned = false;
-            isInterrupted = false;
             rootDuration = 0f;
             stunDuration = 0f;
-            interruptedDuration = 0f;
             anchor = null;
             isTargetable = true;
             abilitySuppress = false;
@@ -75,7 +74,8 @@ namespace LightBringer.Player
             isDead = false;
 
             // Gradables
-            hasteMoveMultiplicator = 1f;
+            moveMultiplicators = new Dictionary<State, float>();
+            maxRotation = new Dictionary<State, float>();
         }
 
         private void Update()
@@ -137,7 +137,7 @@ namespace LightBringer.Player
                 StartCoroutine("Flash");
             }
 
-            if (currentHP <= 0)
+            if (currentHP <= 0 && canDie)
             {
                 Die();
             }
@@ -189,14 +189,12 @@ namespace LightBringer.Player
                 {
                     affected = false;
                 }
-                Debug.Log(s + " : " + affected);
             }
 
             if (affected)
             {
                 switch(cc.ccType)
                 {
-                    case CrowdControlType.Interrupt: Interrupt(duration); break;
                     case CrowdControlType.Root: Root(duration); break;
                     case CrowdControlType.Stun: Stun(duration); break;
                 }
@@ -209,6 +207,7 @@ namespace LightBringer.Player
             if (stunDuration < duration)
             {
                 stunDuration = duration;
+                character.animator.SetBool("isStunned", true);
             }
         }
 
@@ -221,29 +220,8 @@ namespace LightBringer.Player
             }
         }
 
-        private void Interrupt(float duration)
-        {
-            isInterrupted = true;
-            if (interruptedDuration < duration)
-            {
-                interruptedDuration = duration;
-            }
-            character.animator.SetBool("isInterrupted", true);
-            character.animator.Play("Interrupt");
-        }
-
         public void CCComputation()
         {
-            if (isInterrupted)
-            {
-                interruptedDuration -= Time.deltaTime;
-                if (interruptedDuration <= 0f)
-                {
-                    isInterrupted = false;
-                    character.animator.SetBool("isInterrupted", false);
-                }
-            }
-
             if (isRooted)
             {
                 rootDuration -= Time.deltaTime;
@@ -259,6 +237,7 @@ namespace LightBringer.Player
                 if (stunDuration <= 0f)
                 {
                     isStunned = false;
+                    character.animator.SetBool("isStunned", false);
                 }
             }
         }
@@ -285,6 +264,33 @@ namespace LightBringer.Player
                 character.Die();
 
             }
+        }
+
+        public float GetStateMoveSpeedMultiplicator()
+        {
+            float mult = 1f;
+
+            foreach (KeyValuePair<State, float> pair in moveMultiplicators)
+            {
+                mult *= pair.Value;
+            }
+
+            return mult;
+        }
+
+        public float GetMaxRotationSpeed()
+        {
+            float mrs = Mathf.Infinity;
+
+            foreach (KeyValuePair<State, float> pair in maxRotation)
+            {
+                if (pair.Value < mrs)
+                {
+                    mrs = pair.Value;
+                }
+            }
+
+            return mrs;
         }
 
         #region Flash

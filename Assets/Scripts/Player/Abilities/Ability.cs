@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities
 {
@@ -11,7 +12,6 @@ namespace LightBringer.Player.Abilities
         public float coolDownRemaining;
         public float coolDownDuration;
         public float castDuration;
-        //public float castingTime;
         public float castStartTime;
         public float castEndTime;
         public float channelDuration;
@@ -21,6 +21,8 @@ namespace LightBringer.Player.Abilities
         public bool castingCancellable;
         public bool locked;
         protected Character character;
+
+        protected List<GameObject> indicators;
 
         public Ability(float coolDownDuration, float channelingDuration, float castingDuration, Character character, bool channelingCancellable, bool castingCancellable)
         {
@@ -32,6 +34,8 @@ namespace LightBringer.Player.Abilities
             this.character = character;
             this.channelingCancellable = channelingCancellable;
             this.castingCancellable = castingCancellable;
+
+            indicators = new List<GameObject>();
         }
 
         public virtual void CancelChanelling()
@@ -48,6 +52,9 @@ namespace LightBringer.Player.Abilities
             // animation
             character.animator.Play("TopIdle");
             character.animator.Play("BotIdle");
+
+            // indicators
+            DestroyIndicators();
         }
 
         public virtual void AbortChanelling()
@@ -64,6 +71,9 @@ namespace LightBringer.Player.Abilities
             // animation
             character.animator.Play("TopIdle");
             character.animator.Play("BotIdle");
+
+            // indicators
+            DestroyIndicators();
         }
 
         public virtual void AbortCasting()
@@ -78,11 +88,14 @@ namespace LightBringer.Player.Abilities
             coolDownRemaining = coolDownDuration;
 
             // animation
-            if (!character.psm.isInterrupted)
+            if (!character.psm.isStunned)
             {
                 character.animator.Play("TopIdle");
                 character.animator.Play("BotIdle");
             }
+
+            // indicators
+            DestroyIndicators();
         }
 
         public virtual void End()
@@ -147,7 +160,6 @@ namespace LightBringer.Player.Abilities
                     !coolDownUp ||
                     character.currentAbility != null ||
                     character.currentChanneling != null ||
-                    character.psm.isInterrupted ||
                     character.psm.isStunned ||
                     locked ||
                     !available;
@@ -158,7 +170,6 @@ namespace LightBringer.Player.Abilities
             if (
                     !coolDownUp ||
                     character.psm.isRooted ||
-                    character.psm.isInterrupted ||
                     character.psm.isStunned ||
                     locked ||
                     !available
@@ -175,6 +186,15 @@ namespace LightBringer.Player.Abilities
         public virtual void SpecialCancel()
         {
             Debug.LogError("No special cancel for this ability: " + this.GetType());
+        }
+
+        private void DestroyIndicators()
+        {
+            foreach(GameObject go in indicators)
+            {
+                GameObject.Destroy(go);
+            }
+            indicators.Clear();
         }
     }
 }

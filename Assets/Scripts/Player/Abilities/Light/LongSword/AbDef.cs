@@ -14,8 +14,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float CHANNELING_DURATION = 6f / 60f;
         private const float ABILITY_DURATION = 0f / 60f;
 
-        private const float CHANNELING_MOVE_MULTIPLICATOR = 0f;
-
         private const float COUNTER_DURATION = 1.2f;
 
         //Game objects 
@@ -35,7 +33,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             base.StartChanneling();
-            character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
+            character.abilityMoveMultiplicator = 0;
+            character.abilityMaxRotation = 0;
 
             character.animator.Play("BotAbDef");
             character.animator.Play("TopAbDef");

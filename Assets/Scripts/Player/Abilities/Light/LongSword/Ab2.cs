@@ -25,7 +25,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private const float DASH_DISTANCE = 4f;
 
-        private const float INTERRUPT_DURATION = .6f;
+        private const float STUN_DURATION = .2f;
 
         // Colliders
         private List<Collider> encounteredCols;
@@ -89,6 +89,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject indicator = GameObject.Instantiate(indicatorPrefab, characterContainer);
             indicator.GetComponent<IndicatorLoader>().Load(channelDuration);
             GameObject.Destroy(indicator, channelDuration);
+            indicators.Add(indicator);
         }
 
         private void LoadLight()
@@ -192,7 +193,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             int id = Random.Range(int.MinValue, int.MaxValue);
 
-            while (newCols.Count > 0 && !character.psm.isInterrupted)
+            while (newCols.Count > 0 && !character.psm.isStunned)
             {
                 Collider col = newCols.Aggregate((x, y) => x.Value < y.Value ? x : y).Key;
                 ApplyEffect(col, id);
@@ -202,29 +203,29 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void ApplyEffect(Collider col, int id)
         {
-            if (col.tag == "Enemy")
+            DamageTaker dt = col.GetComponent<DamageTaker>();
+            if (dt.bouncing)
             {
-                DamageTaker dt = col.GetComponent<DamageTaker>();
-                if (dt != null && dt.extraDmg)
+                // Stun character
+                character.psm.ApplyCrowdControl(
+                    new CrowdControl(CrowdControlType.Stun, DamageType.Self, DamageElement.None),
+                    STUN_DURATION
+                );
+
+                if (sword.isLoaded)
+                {
+                    sword.Unload();
+                }
+            }
+            else
+            {
+                if (dt.extraDmg)
                 {
                     ApplyDamageToExtra(col, id);
                 }
                 else
                 {
                     ApplyDamage(col, id);
-                }
-            }
-            else if (col.tag == "Shield")
-            {
-                // Interrupt character
-                character.psm.ApplyCrowdControl(
-                    new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
-                    INTERRUPT_DURATION
-                );
-
-                if (sword.isLoaded)
-                {
-                    sword.Unload();
                 }
             }
         }
@@ -286,7 +287,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.Contains(col))
+            if ((col.tag == "Enemy") && col.GetComponent<DamageTaker>() != null && !encounteredCols.Contains(col))
             {
                 encounteredCols.Add(col);
                 float distance = (col.ClosestPoint(character.transform.position) - character.transform.position).magnitude;

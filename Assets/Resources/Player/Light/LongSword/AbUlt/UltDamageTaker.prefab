@@ -253,6 +253,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4277960845112188}
+  - component: {fileID: 54033555495343270}
   m_Layer: 13
   m_Name: UltDamageTaker
   m_TagString: Untagged
@@ -593,6 +594,21 @@ Transform:
   m_Father: {fileID: 4069828060022756}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &54033555495343270
+Rigidbody:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1904506915001948}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!95 &95134073616898200
 Animator:
   serializedVersion: 3
@@ -1045,6 +1061,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   extraDmg: 1
+  bouncing: 0
   statusManager: {fileID: 0}
   quarters:
   - {fileID: 1256854476780350}

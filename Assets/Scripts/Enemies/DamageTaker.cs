@@ -6,11 +6,14 @@ namespace LightBringer.Enemies
     public class DamageTaker : MonoBehaviour
     {
         // False if this deals extra damage that should not stop a single target attack
-        public bool extraDmg;
+        public bool extraDmg = false;
+
+        // True if some attacks can bounce on it and stun the player
+        public bool bouncing = false;
 
         public StatusManager statusManager;
 
-        public void TakeDamage(Damage dmg, Character dealer, Vector3 origin, int id)
+        public virtual void TakeDamage(Damage dmg, Character dealer, Vector3 origin, int id)
         {
             dmg = modifyDamage(dmg, dealer, origin);
 

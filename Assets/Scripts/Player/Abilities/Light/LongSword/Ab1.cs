@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -26,7 +26,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float DAMAGE_AB = 10f;
         private const float DAMAGE_C = 12f;
 
-        private const float INTERRUPT_DURATION = .6f;
+        private const float STUN_DURATION = .2f;
         private const float COMBO_DURATION = .5f;
 
 
@@ -243,7 +243,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public override void AbortChanelling()
         {
             base.AbortChanelling();
-            
+
             //Cancel combo
             comboTime = 0f;
         }
@@ -290,17 +290,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             if (closestCol != null)
             {
-                if (closestCol.tag == "Enemy")
+                DamageTaker dt = closestCol.GetComponent<DamageTaker>();
+                if (dt.bouncing)
+                {
+                    // Stun character
+                    character.psm.ApplyCrowdControl(
+                        new CrowdControl(CrowdControlType.Stun, DamageType.Self, DamageElement.None),
+                        STUN_DURATION
+                    );
+                }
+                else
                 {
                     ApplyDamageAB(closestCol, encounteredCols[closestCol], id);
-                }
-                else if (closestCol.tag == "Shield")
-                {
-                    // Interrupt character
-                    character.psm.ApplyCrowdControl(
-                        new CrowdControl(CrowdControlType.Interrupt, DamageType.Self, DamageElement.None),
-                        INTERRUPT_DURATION
-                    );
                 }
             }
 
@@ -338,7 +339,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)
         {
-            if ((col.tag == "Enemy" || col.tag == "Shield") && !encounteredCols.ContainsKey(col))
+            if ((col.tag == "Enemy") && col.GetComponent<DamageTaker>() != null && !encounteredCols.ContainsKey(col))
             {
                 if (currentAttack < 3)
                 {

@@ -23,8 +23,10 @@ public class TestManager : MonoBehaviour
     private TerrainGenerator tg;
     private NavMeshSurface nms;
     private KnightController kc;
-    private bool knightPassive = true;
     private PlayerStatusManager psm;
+    private bool knightPassive = true;
+    private bool canDie = true;
+    private bool noCD = false;
 
     private void Start()
     {
@@ -34,19 +36,15 @@ public class TestManager : MonoBehaviour
 
     private void Update()
     {
-        if (kc != null)
-        {
-            kc.passive = knightPassive;
-        }
         if (psm != null && psm.isDead)
         {
-            StartCoroutine(StopInXSec(.5f));
+            StartCoroutine(StopAfterFrame());
         }
     }
 
-    private IEnumerator StopInXSec(float duration)
+    private IEnumerator StopAfterFrame()
     {
-        yield return new WaitForSeconds(duration);
+        yield return new WaitForEndOfFrame();
         StopFight();
     }
 
@@ -59,6 +57,12 @@ public class TestManager : MonoBehaviour
     public void RestartFight()
     {
         StopFight();
+        StartCoroutine(StartAtNextFrame());
+    }
+
+    private IEnumerator StartAtNextFrame()
+    {
+        yield return new WaitForEndOfFrame();
         StartFight();
     }
 
@@ -66,19 +70,25 @@ public class TestManager : MonoBehaviour
     {
         overViewCamera.enabled = false;
 
+        // Player
         player = Instantiate(playerPrefab);
         player.transform.position = new Vector3(0, 0, 0);
         psm = player.GetComponent<PlayerStatusManager>();
         ui.SetCharacter(player.GetComponent<Character>());
+        player.GetComponent<Character>().ignoreCD = noCD;
+        psm.canDie = canDie;
 
+        // Camera
         playerCamera = Instantiate(playerCameraPrefab);
         playerCamera.GetComponent<PlayerCamera>().character = player.transform;
 
+        // Knight
         knight = Instantiate(knightPrefab);
         knight.transform.position = new Vector3(0, 0, 20);
         knight.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
         kc = knight.GetComponent<KnightController>();
         kc.target = player.transform;
+        kc.passive = knightPassive;
     }
 
     public void StopFight()
@@ -104,5 +114,32 @@ public class TestManager : MonoBehaviour
     public void SetKnightPassive(bool isPassive)
     {
         knightPassive = isPassive;
+        if (kc!= null)
+        {
+            kc.passive = knightPassive;
+        }
+    }
+
+    public void SetCanDie(bool canDie)
+    {
+        this.canDie = canDie;
+        if (psm != null)
+        {
+            psm.canDie = canDie;
+        }
+    }
+
+    public void SetNoCD(bool noCD)
+    {
+        this.noCD = noCD;
+        if (player != null)
+        {
+            player.GetComponent<Character>().ignoreCD = noCD;
+        }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

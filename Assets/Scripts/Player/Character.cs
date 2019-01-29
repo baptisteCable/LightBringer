@@ -40,6 +40,10 @@ namespace LightBringer.Player
         private Vector3 movementDirection;
         private MovementMode movementMode;
         public float stickToGroundForce;
+        private Vector3 previousPosition;
+
+        // Training
+        public bool ignoreCD = false;
 
         /* Abilities :
          *      0: None
@@ -65,6 +69,7 @@ namespace LightBringer.Player
             abilityMaxRotation = -1f;
 
             movementDirection = Vector3.zero;
+            previousPosition = Vector3.zero;
         }
 
         // Update is called once per frame
@@ -110,7 +115,14 @@ namespace LightBringer.Player
             {
                 if (abilities[i].coolDownRemaining > 0)
                 {
-                    abilities[i].coolDownRemaining -= Time.deltaTime;
+                    if (ignoreCD)
+                    {
+                        abilities[i].coolDownRemaining = -.01f;
+                    }
+                    else
+                    {
+                        abilities[i].coolDownRemaining -= Time.deltaTime;
+                    }
                     abilities[i].coolDownUp = (abilities[i].coolDownRemaining < 0);
                 }
 
@@ -142,20 +154,20 @@ namespace LightBringer.Player
                 abilities[2].StartChanneling();
             }
 
-            // AbOff
-            if (Input.GetButton("SkillOff"))
+            // AbDef
+            if (Input.GetButton("SkillDef"))
             {
                 abilities[3].StartChanneling();
             }
 
-            // AbDef
-            if (Input.GetButton("SkillDef") && currentAbility == null && currentChanneling == null && abilities[4].coolDownUp)
+            // AbOff
+            if (Input.GetButton("SkillOff"))
             {
                 abilities[4].StartChanneling();
             }
 
             // AbUlt
-            if (Input.GetButtonDown("SkillUlt") && currentAbility == null && currentChanneling == null && abilities[5].coolDownUp)
+            if (Input.GetButtonDown("SkillUlt"))
             {
                 abilities[5].StartChanneling();
             }
@@ -188,7 +200,6 @@ namespace LightBringer.Player
 
             if (currentAbility != null && currentAbility.castingCancellable)
             {
-                Debug.Log("Cancel casting");
                 currentAbility.AbortCasting();
             }
 
@@ -222,13 +233,16 @@ namespace LightBringer.Player
                 float h = Input.GetAxisRaw("Horizontal");
                 Vector3 desiredMove;
 
-                if (movementMode == MovementMode.Player && !psm.isInterrupted && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
+                if (movementMode == MovementMode.Player && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
                 {
                     desiredMove = new Vector3(v + h, 0, v - h).normalized;
 
                     animator.SetFloat("zVel", Vector3.Dot(desiredMove, characterContainer.forward));
                     animator.SetFloat("xVel", Vector3.Dot(desiredMove, characterContainer.right));
-                    animator.SetBool("isMoving", true); // test if really moving
+
+                    bool reallyMoving = ((previousPosition - transform.position).magnitude / Time.deltaTime > moveSpeed / 6f);
+
+                    animator.SetBool("isMoving", reallyMoving); 
 
                     // get a normal for the surface that is being touched to move along it
                     RaycastHit hitInfo;
@@ -243,15 +257,12 @@ namespace LightBringer.Player
                     desiredMove = Vector3.zero;
 
                     animator.SetBool("isMoving", false);
-
-                    if (!charController.isGrounded)
-                    {
-                        // go to the ground
-                        charController.SimpleMove(Vector3.zero);
-                    }
-
                 }
 
+                // Store position before moving
+                previousPosition = transform.position;
+
+                // add moveSpeed
                 movementDirection.x = desiredMove.x * MoveSpeed();
                 movementDirection.z = desiredMove.z * MoveSpeed();
 
@@ -289,9 +300,11 @@ namespace LightBringer.Player
 
                 currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
 
-                if (abilityMaxRotation >= 0 && Mathf.Abs(currentRotationSpeed) > abilityMaxRotation)
+                float mrs = MaxRotationSpeed();
+
+                if (Mathf.Abs(currentRotationSpeed) > mrs)
                 {
-                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * abilityMaxRotation * Time.deltaTime);
+                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
                 }
                 else
                 {
@@ -300,9 +313,28 @@ namespace LightBringer.Player
             }
         }
 
+        private float MaxRotationSpeed()
+        {
+            float mrs = Mathf.Infinity;
+
+            if (abilityMaxRotation >= 0)
+            {
+                mrs = abilityMaxRotation;
+            }
+
+            float stateMaxRS = psm.GetMaxRotationSpeed();
+
+            if (stateMaxRS < mrs)
+            {
+                mrs = stateMaxRS;
+            }
+
+            return mrs;
+        }
+
         private float MoveSpeed()
         {
-            return moveSpeed * abilityMoveMultiplicator * psm.hasteMoveMultiplicator;
+            return moveSpeed * abilityMoveMultiplicator * psm.GetStateMoveSpeedMultiplicator();
         }
 
         private void CCConsequences()
@@ -313,18 +345,10 @@ namespace LightBringer.Player
                 {
                     currentChanneling.AbortChanelling();
                 }
-                if (psm.isInterrupted)
-                {
-                    currentChanneling.AbortChanelling();
-                }
             }
             if (currentAbility != null)
             {
                 if (psm.isStunned)
-                {
-                    currentAbility.AbortCasting();
-                }
-                if (psm.isInterrupted)
                 {
                     currentAbility.AbortCasting();
                 }
@@ -411,8 +435,6 @@ namespace LightBringer.Player
      * Synchronisation des idle et run top et bot ?
      * Ralentir l'animation de course en fonction du modificateur de vitesse
      * 
-     * Events plutôt qu'update pour la mise à jour des images de compétences (et ailleurs ?)
-     * 
      * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
      * 
@@ -424,5 +446,21 @@ namespace LightBringer.Player
      * 
      * Multijoueur
      * 
+     * Pentes des ilots : bords progressifs pour la texture du chemin
+     * 
+     * Icones de compétence
+     * Ulti visible au loin (Fiora)
+     * Counter : on peut bouger et tourner. Il ne faut pas.
+     * Attaque chargée qui ne met pas toujours les dégâts chargés (Bob qui part de loin)
+     * Ulti : animation : pas toujours
+     * Désactiver tous les indicateurs à la mort du monstre
+     * 
+     * Enemy not always focusing player. Laser indiquant la direction du regard. Se teinte avant une action offensive ?
+     * 
+     * mise en file des compétences :
+     *  - pendant le cast, mais pas pendant le channeling
+     *  - buttondown pour tout sauf clic gauche (pourrait dépendre de la compétence, faire ce test au chargement et laisser
+     *      les variables dans cette classe)
+     *  - test de la disponibilité à ce moment. Si pas dispo, file non remplacée et bruit d'erreur (et visible sur l'image)
      * */
 }
