@@ -41,7 +41,6 @@ namespace LightBringer.UI
             }
 
             abIms[5].transform.Find("Counter").GetComponent<UltCounter>().character = (LightLongSwordCharacter)character;
-            
         }
     }
 }

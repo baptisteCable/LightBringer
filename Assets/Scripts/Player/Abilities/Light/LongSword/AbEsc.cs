@@ -150,8 +150,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void Cast()
         {
-            base.Cast();
-
             if (Time.time < landingTime)
             {
                 // movement
@@ -167,6 +165,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 SpawnLight();
                 lightSpawned = true;
             }
+
+            base.Cast();
         }
 
         private Vector3 PositionOverTime(float t)

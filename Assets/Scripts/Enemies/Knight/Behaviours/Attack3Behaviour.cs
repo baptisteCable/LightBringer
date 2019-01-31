@@ -181,5 +181,13 @@ namespace LightBringer.Enemies.Knight
             act2GO.SetActive(false);
             act2.UnsetAbility();
         }
+
+        public override void Abort()
+        {
+            indicatora.SetActive(false);
+            indicatorb.SetActive(false);
+
+            base.Abort();
+        }
     }
 }

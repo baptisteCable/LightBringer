@@ -837,7 +837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 4
+  abilityIndex: SkillOff
   character: {fileID: 0}
 --- !u!114 &114297686687472394
 MonoBehaviour:
@@ -1000,7 +1000,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1086,7 +1086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 2
+  abilityIndex: Skill2
   character: {fileID: 0}
 --- !u!114 &114484813375235048
 MonoBehaviour:
@@ -1111,7 +1111,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1268,7 +1268,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1301,7 +1301,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1334,7 +1334,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1355,7 +1355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 0
+  abilityIndex: SkillEsc
   character: {fileID: 0}
 --- !u!114 &114725588874370330
 MonoBehaviour:
@@ -1395,7 +1395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 3
+  abilityIndex: SkillDef
   character: {fileID: 0}
 --- !u!114 &114737419632464422
 MonoBehaviour:
@@ -1453,7 +1453,7 @@ MonoBehaviour:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 28
     m_FontStyle: 1
-    m_BestFit: 0
+    m_BestFit: 1
     m_MinSize: 0
     m_MaxSize: 40
     m_Alignment: 4
@@ -1462,9 +1462,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'RB
-
-'
+  m_Text: RB
 --- !u!114 &114754530824162916
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1569,7 +1567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 1
+  abilityIndex: Skill1
   character: {fileID: 0}
 --- !u!114 &114836789176213688
 MonoBehaviour:
@@ -1793,7 +1791,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: 5
+  abilityIndex: SkillUlt
   character: {fileID: 0}
 --- !u!222 &222005730383409324
 CanvasRenderer:
@@ -2220,7 +2218,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 11.9001465, y: -5}
+  m_AnchoredPosition: {x: 11.9001465, y: -4.999878}
   m_SizeDelta: {x: 454.6, y: 82.1}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!224 &224260691789393088

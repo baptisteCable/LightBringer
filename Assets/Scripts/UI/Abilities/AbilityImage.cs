@@ -7,7 +7,7 @@ namespace LightBringer.UI
     public class AbilityImage : MonoBehaviour
     {
 
-        public int abilityIndex;
+        public string abilityIndex;
         public Character character;
 
         private Image cdImage;

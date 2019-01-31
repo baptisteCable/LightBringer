@@ -249,5 +249,14 @@ namespace LightBringer.Enemies.Knight
                 act3GO.transform.parent.Find("ChargeEffect").GetComponent<ParticleSystem>().Play();
             }
         }
+
+        public override void Abort()
+        {
+            indicator1.SetActive(false);
+            indicator2.SetActive(false);
+            indicator3.SetActive(false);
+
+            base.Abort();
+        }
     }
 }

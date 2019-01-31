@@ -141,12 +141,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void Cast()
         {
-            base.Cast();
 
             // movement
             character.AbilityMove(characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION);
 
             ApplyEffectToNew();
+
+            base.Cast();
         }
 
         private void CreateTrigger()

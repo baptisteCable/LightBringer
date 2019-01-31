@@ -1,7 +1,4 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
-
-namespace LightBringer.Enemies.Knight
+﻿namespace LightBringer.Enemies.Knight
 {
     public abstract class KnightBehaviour
     {
@@ -15,8 +12,11 @@ namespace LightBringer.Enemies.Knight
 
         public abstract void Run();
 
-        public virtual void Init()
+        public virtual void Init() { }
+
+        public virtual void Abort()
         {
+            complete = true;
         }
     }
 }

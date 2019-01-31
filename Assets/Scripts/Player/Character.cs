@@ -1,4 +1,5 @@
-﻿using LightBringer.Player.Abilities;
+﻿using System.Collections.Generic;
+using LightBringer.Player.Abilities;
 using UnityEngine;
 
 namespace LightBringer.Player
@@ -56,8 +57,10 @@ namespace LightBringer.Player
          */
         public Ability currentAbility = null;
         public Ability currentChanneling = null;
-        public Ability[] abilities;
         public Ability specialCancelAbility = null;
+
+        // Inputs and abilities
+        public Dictionary<string, Ability> abilities;
 
         // Use this for initialization
         public virtual void Start()
@@ -70,6 +73,8 @@ namespace LightBringer.Player
 
             movementDirection = Vector3.zero;
             previousPosition = Vector3.zero;
+
+            abilities = new Dictionary<string, Ability>();
         }
 
         // Update is called once per frame
@@ -86,10 +91,10 @@ namespace LightBringer.Player
             // CC progression
             psm.CCComputation();
 
-            // look at mouse point and move camera
+            // look at mouse point
             if (!psm.isStunned)
             {
-                lookAtMouse();
+                LookAtMouse();
             }
 
             // Check buttons and start abilities
@@ -111,71 +116,47 @@ namespace LightBringer.Player
             }
 
             // cooldowns
-            for (int i = 0; i < abilities.Length; i++)
-            {
-                if (abilities[i].coolDownRemaining > 0)
-                {
-                    if (ignoreCD)
-                    {
-                        abilities[i].coolDownRemaining = -.01f;
-                    }
-                    else
-                    {
-                        abilities[i].coolDownRemaining -= Time.deltaTime;
-                    }
-                    abilities[i].coolDownUp = (abilities[i].coolDownRemaining < 0);
-                }
-
-            }
-
+            RefreshCooldowns();
+            
             // Special computations on abilities
             ComputeAbilitiesSpecial();
         }
 
+        private void RefreshCooldowns()
+        {
+            foreach (Ability ab in abilities.Values)
+            {
+                if (ab.coolDownRemaining > 0)
+                {
+                    if (ignoreCD)
+                    {
+                        ab.coolDownRemaining = -.01f;
+                    }
+                    else
+                    {
+                        ab.coolDownRemaining -= Time.deltaTime;
+                    }
+                    ab.coolDownUp = ab.coolDownRemaining < 0;
+                }
+            }
+        }
+
         private void ComputeAbilitiesSpecial()
         {
-            for (int i = 0; i < abilities.Length; i++)
+            foreach (Ability ab in abilities.Values)
             {
-                abilities[i].ComputeSpecial();
+                ab.ComputeSpecial();
             }
         }
 
         private void StartAbilities()
         {
-            // Ab1
-            if (Input.GetButton("Skill1"))
+            foreach (KeyValuePair<string, Ability> abPair in abilities)
             {
-                abilities[1].StartChanneling();
-            }
-
-            // Ab2
-            if (Input.GetButton("Skill2"))
-            {
-                abilities[2].StartChanneling();
-            }
-
-            // AbDef
-            if (Input.GetButton("SkillDef"))
-            {
-                abilities[3].StartChanneling();
-            }
-
-            // AbOff
-            if (Input.GetButton("SkillOff"))
-            {
-                abilities[4].StartChanneling();
-            }
-
-            // AbUlt
-            if (Input.GetButtonDown("SkillUlt"))
-            {
-                abilities[5].StartChanneling();
-            }
-
-            // Escape
-            if (Input.GetButton("SkillEsc"))
-            {
-                abilities[0].StartChanneling();
+                if (Input.GetButton(abPair.Key))
+                {
+                    abPair.Value.StartChanneling();
+                }
             }
 
             // Cancel
@@ -283,8 +264,7 @@ namespace LightBringer.Player
             charController.Move(speed * Time.deltaTime);
         }
 
-        // look at mouse and camera positionning procedure
-        void lookAtMouse()
+        void LookAtMouse()
         {
             if ((GameManager.gm.worldMousePoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
             {
@@ -365,9 +345,6 @@ namespace LightBringer.Player
             }
 
             movementMode = mode;
-
-            // Set Physics material
-            // TODO if needed
         }
 
         public void MergeWith(Transform anchor, bool hide = true)
@@ -390,13 +367,13 @@ namespace LightBringer.Player
             characterContainer.gameObject.SetActive(false);
         }
 
-        public void LockAbilitiesExcept(bool locked, Ability ab = null)
+        public void LockAbilitiesExcept(bool locked, Ability ability = null)
         {
-            for (int i = 0; i < abilities.Length; i++)
+            foreach (Ability ab in abilities.Values)
             {
-                if (abilities[i] != ab)
+                if (ab != ability)
                 {
-                    abilities[i].locked = locked;
+                    ab.locked = locked;
                 }
             }
         }
@@ -448,12 +425,8 @@ namespace LightBringer.Player
      * 
      * Pentes des ilots : bords progressifs pour la texture du chemin
      * 
-     * Icones de compétence
      * Ulti visible au loin (Fiora)
-     * Counter : on peut bouger et tourner. Il ne faut pas.
-     * Attaque chargée qui ne met pas toujours les dégâts chargés (Bob qui part de loin)
-     * Ulti : animation : pas toujours
-     * Désactiver tous les indicateurs à la mort du monstre
+     * Quartiers qui se chargent pour préparer l'ulti (en fonction d'une constante qui est le nombre de boules requises)
      * 
      * Enemy not always focusing player. Laser indiquant la direction du regard. Se teinte avant une action offensive ?
      * 

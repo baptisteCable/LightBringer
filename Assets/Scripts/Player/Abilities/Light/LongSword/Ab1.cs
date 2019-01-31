@@ -167,13 +167,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void Cast()
         {
-            base.Cast();
-
             if (currentAttack == 3 && Time.time > castStartTime + LIGHT_TIME && !lightSpawned)
             {
                 lightSpawned = true;
                 SpawnLight();
             }
+
+            base.Cast();
         }
 
         private void CreateTriggerAB()

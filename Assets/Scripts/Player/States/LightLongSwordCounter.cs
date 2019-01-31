@@ -49,7 +49,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             psm.maxRotation.Add(this, 0);
 
             // Lock all abilities
-            psm.character.LockAbilitiesExcept(true, psm.character.abilities[0]);
+            psm.character.LockAbilitiesExcept(true, psm.character.abilities["SkillEsc"]);
 
             // TODO Effect
         }

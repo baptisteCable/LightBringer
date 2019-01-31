@@ -1,8 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Collections;
-using LightBringer.Player.Abilities;
 using LightBringer.Player.Abilities.Light.LongSword;
+using UnityEngine;
 
 namespace LightBringer.Player.Class
 {
@@ -10,7 +9,7 @@ namespace LightBringer.Player.Class
     {
         private const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
-        
+
         private int ultiSphereCount;
         private GameObject spherePrefab;
 
@@ -26,19 +25,18 @@ namespace LightBringer.Player.Class
             LightSword sword = swordObject.GetComponent<LightSword>();
 
             // Abilities
-            abilities = new Ability[6];
-            abilities[0] = new AbEsc(this, sword);
-            abilities[1] = new Ab1(this, sword);
-            abilities[2] = new Ab2(this, sword);
-            abilities[3] = new AbDef(this, sword);
-            abilities[4] = new AbOff(this, sword);
-            abilities[5] = new AbUlt(this, sword);
+            abilities.Add("SkillEsc", new AbEsc(this, sword));
+            abilities.Add("Skill1", new Ab1(this, sword));
+            abilities.Add("Skill2", new Ab2(this, sword));
+            abilities.Add("SkillDef", new AbDef(this, sword));
+            abilities.Add("SkillOff", new AbOff(this, sword));
+            abilities.Add("SkillUlt", new AbUlt(this, sword));
 
             // Spheres
             sphereObjects = new List<GameObject>();
             ultiSphereCount = 0;
             spherePrefab = Resources.Load("Player/Light/LongSword/AbUlt/UltSphere") as GameObject;
-            abilities[5].available = false;
+            abilities["SkillUlt"].available = false;
         }
 
         public void AddUltiSphere()
@@ -57,7 +55,7 @@ namespace LightBringer.Player.Class
 
             if (ultiSphereCount == MAX_SPHERE_COUNT)
             {
-                abilities[5].available = true;
+                abilities["SkillUlt"].available = true;
             }
         }
 
@@ -88,7 +86,7 @@ namespace LightBringer.Player.Class
 
             sphereObjects = new List<GameObject>();
             ultiSphereCount = 0;
-            abilities[5].available = false;
+            abilities["SkillUlt"].available = false;
         }
 
         public int GetUltiShpereCount()
@@ -105,7 +103,7 @@ namespace LightBringer.Player.Class
                 sphereObjects.Remove(sphere);
                 Destroy(sphere);
                 ultiSphereCount = sphereObjects.Count;
-                abilities[5].available = false;
+                abilities["SkillUlt"].available = false;
             }
         }
     }
