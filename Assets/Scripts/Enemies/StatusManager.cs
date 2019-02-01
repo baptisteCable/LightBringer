@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using LightBringer.Enemies.Knight;
 using LightBringer.Player;
 using UnityEngine;
 using UnityEngine.UI;

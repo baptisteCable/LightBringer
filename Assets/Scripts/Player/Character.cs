@@ -422,6 +422,7 @@ namespace LightBringer.Player
      * par dessus un ilot ?
      * 
      * Multijoueur
+     * Compress textures
      * 
      * Pentes des ilots : bords progressifs pour la texture du chemin
      * 

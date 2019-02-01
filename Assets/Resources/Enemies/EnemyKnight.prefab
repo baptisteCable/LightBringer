@@ -308,7 +308,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4643654296144354}
-  - component: {fileID: 64359725090346104}
   - component: {fileID: 65720104777796480}
   m_Layer: 13
   m_Name: ShieldCollider
@@ -902,8 +901,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4461393071240286}
-  - component: {fileID: 64508543679810080}
   - component: {fileID: 114849199048061962}
+  - component: {fileID: 65626493643957248}
   m_Layer: 13
   m_Name: ShieldColliderDamageTaker
   m_TagString: Enemy
@@ -1576,8 +1575,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1781911938304298}
   m_LocalRotation: {x: -0.7071069, y: -0.70710665, z: -0.00000004479792, w: 0.00000031210334}
-  m_LocalPosition: {x: 0.01, y: -0, z: 0.19}
-  m_LocalScale: {x: 0.43852916, y: 0.9999999, z: 0.95675117}
+  m_LocalPosition: {x: 0.01, y: 0, z: 0.06}
+  m_LocalScale: {x: 1.4307014, y: 5.4166994, z: 0.66972584}
   m_Children: []
   m_Father: {fileID: 4279990806341696}
   m_RootOrder: 2
@@ -1734,8 +1733,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1292009277677860}
   m_LocalRotation: {x: -0.70710695, y: -0.7071067, z: -0.000000044797947, w: 0.0000003121034}
-  m_LocalPosition: {x: 0.01, y: -0, z: 0.15}
-  m_LocalScale: {x: 1, y: 1, z: 0.963264}
+  m_LocalPosition: {x: 0.17, y: -0.07, z: 0.63}
+  m_LocalScale: {x: 1.464375, y: 1.1625, z: 1.2281616}
   m_Children: []
   m_Father: {fileID: 4279990806341696}
   m_RootOrder: 0
@@ -2073,34 +2072,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &64359725090346104
-MeshCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1292009277677860}
-  m_Material: {fileID: 13400000, guid: dca7b5ba2bb6e4240a87cd0514150efb, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 4300026, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
---- !u!64 &64508543679810080
-MeshCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1781911938304298}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 4300026, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
 --- !u!64 &64566197632917342
 MeshCollider:
   m_ObjectHideFlags: 1
@@ -2161,6 +2132,18 @@ BoxCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1334760529029182}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!65 &65626493643957248
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1781911938304298}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
@@ -2751,7 +2734,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb32213e2f813a446852a7f1e91c6dbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passive: 1
+  passive: 0
   target: {fileID: 0}
 --- !u!114 &114918061961514880
 MonoBehaviour:
