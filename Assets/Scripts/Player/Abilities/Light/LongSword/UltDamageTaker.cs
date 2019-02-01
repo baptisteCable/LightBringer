@@ -10,19 +10,23 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float ROTATION_SPEED = 12f;
 
         public GameObject[] quarters;
+        public GameObject[] bigQuarters;
         private int qCount = 4;
 
         private Transform anchor;
 
+        private Transform containertransform;
+
         private void Start()
         {
+            containertransform = transform.parent;
             anchor = statusManager.transform;
         }
 
         private void Update()
         {
-            transform.position = anchor.position;
-            transform.Rotate(Vector3.up, Time.deltaTime * ROTATION_SPEED);
+            containertransform.position = anchor.position;
+            containertransform.Rotate(Vector3.up, Time.deltaTime * ROTATION_SPEED);
 
             if (statusManager.isDead)
             {
@@ -41,6 +45,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 Destroy(quarters[quarterId], .12f);
                 quarters[quarterId] = null;
+                Destroy(bigQuarters[quarterId]);
+                bigQuarters[quarterId] = null;
                 qCount -= 1;
                 
                 if (qCount == 0)

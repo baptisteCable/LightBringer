@@ -178,8 +178,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void CreateTriggerAB()
         {
-            trigger = GameObject.Instantiate(abTriggerPrefab);
-            trigger.transform.SetParent(character.gameObject.transform.Find("CharacterContainer"));
+            trigger = GameObject.Instantiate(abTriggerPrefab, character.characterContainer);
             trigger.transform.localPosition = new Vector3(0f, .1f, 0f);
             trigger.transform.localRotation = Quaternion.identity;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();

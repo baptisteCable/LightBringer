@@ -54,7 +54,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         Transform spawnPoint;
 
         // Effects
-        private ParticleSystem slashEffect;
+        private ParticleSystem slashEffectA, slashEffectB;
 
         public AbOff(Character character, LightSword sword) :
             base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
@@ -70,10 +70,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             characterContainer = character.gameObject.transform.Find("CharacterContainer");
 
             // Create slash objects
-            GameObject slashAGO = GameObject.Instantiate(
-                Resources.Load("Player/Light/LongSword/AbOff/AbOffSlash") as GameObject,
+            GameObject slashGO = GameObject.Instantiate(
+                Resources.Load("Player/Light/LongSword/AbOff/AbOffSlash1") as GameObject,
                 character.characterContainer);
-            slashEffect = slashAGO.GetComponent<ParticleSystem>();
+            slashEffectA = slashGO.GetComponent<ParticleSystem>();
+
+            slashGO = GameObject.Instantiate(
+                Resources.Load("Player/Light/LongSword/AbOff/AbOffSlash2") as GameObject,
+                character.characterContainer);
+            slashEffectB = slashGO.GetComponent<ParticleSystem>();
         }
 
 
@@ -101,11 +106,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
             else
             {
-
-                FadeInAnimation();
-
                 currentAttack = 2;
+
+                // No more rotation
+                character.abilityMaxRotation = 0f;
+
                 channelDuration = CHANNELING_DURATION_B;
+                FadeIn();
+                character.animator.Play("BotAbOffb");
+                character.animator.Play("TopAbOffb");
             }
         }
 
@@ -123,13 +132,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // No more rotation
             character.abilityMaxRotation = 0f;
 
-            if (currentAttack == 2)
-            {
-                FadeIn();
-                character.animator.Play("BotAbOffb");
-                character.animator.Play("TopAbOffb");
-            }
-
             // Trail effect
             SlashEffect();
 
@@ -141,11 +143,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                slashEffect.Play();
+                slashEffectA.Play();
+            }
+            else
+            {
+                slashEffectB.Play();
             }
         }
 
-        private void FadeInAnimation()
+        private void FadeIn()
         {
             // Effect
             GameObject effect = GameObject.Instantiate(fadeInEffetPrefab);
@@ -157,10 +163,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // Anchor with column
             character.MergeWith(lightColumn.transform);
-        }
 
-        private void FadeIn()
-        {
             // Positionning character
             character.SetMovementMode(MovementMode.Player);
             character.transform.position = spawnPoint.position;
@@ -212,8 +215,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void CreateTrigger()
         {
-            trigger = GameObject.Instantiate(triggerPrefab);
-            trigger.transform.SetParent(characterContainer);
+            trigger = GameObject.Instantiate(triggerPrefab, characterContainer);
             trigger.transform.localPosition = new Vector3(0f, .1f, 0f);
             trigger.transform.localRotation = Quaternion.identity;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();

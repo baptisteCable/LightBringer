@@ -7,7 +7,7 @@ namespace LightBringer.Player.Class
 {
     public class LightLongSwordCharacter : Character
     {
-        private const int MAX_SPHERE_COUNT = 4;
+        public const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
 
         private int ultiSphereCount;

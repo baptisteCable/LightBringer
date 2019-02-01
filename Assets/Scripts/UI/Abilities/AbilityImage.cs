@@ -16,7 +16,7 @@ namespace LightBringer.UI
         private GameObject lockedImage;
 
 
-        void Start()
+        protected virtual void Start()
         {
             cdImage = transform.Find("CDImage").GetComponent<Image>();
             channelingImage = transform.Find("ChannelingImage").GetComponent<Image>();
@@ -24,7 +24,7 @@ namespace LightBringer.UI
             abilityImage = transform.GetComponent<Image>();
         }
 
-        void Update()
+        protected virtual void Update()
         {
             // CD running
             if (!character.abilities[abilityIndex].coolDownUp)

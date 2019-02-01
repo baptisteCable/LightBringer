@@ -415,19 +415,15 @@ namespace LightBringer.Player
      * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
      * 
-     * AbOff (seconde partie) ajouter channeling et slashEffect (type Ab1b)
-     * 
      * Camera quand on monte. Gestion du 1er étage en général (chute, compétences qui partent du niveau 0, etc.)
      * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
      * par dessus un ilot ?
      * 
      * Multijoueur
+     * 
      * Compress textures
      * 
      * Pentes des ilots : bords progressifs pour la texture du chemin
-     * 
-     * Ulti visible au loin (Fiora)
-     * Quartiers qui se chargent pour préparer l'ulti (en fonction d'une constante qui est le nombre de boules requises)
      * 
      * Enemy not always focusing player. Laser indiquant la direction du regard. Se teinte avant une action offensive ?
      * 

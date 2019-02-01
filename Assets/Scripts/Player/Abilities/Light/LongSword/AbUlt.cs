@@ -1,8 +1,8 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -111,10 +111,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // No more rotation
             character.abilityMaxRotation = 0f;
-            
+
             character.animator.Play("BotAbOffb");
             character.animator.Play("TopAbOffb");
-            
+
 
             // Trail effect
             sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
@@ -125,14 +125,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void CreateTrigger()
         {
-            trigger = GameObject.Instantiate(triggerPrefab);
-            trigger.transform.SetParent(characterContainer);
+            trigger = GameObject.Instantiate(triggerPrefab, characterContainer);
             trigger.transform.localPosition = new Vector3(0f, .1f, 0f);
             trigger.transform.localRotation = Quaternion.identity;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();
             act.SetAbility(this);
         }
-        
+
         public override void End()
         {
             bool spheresConsumed = ApplyAllDamage();
@@ -143,7 +142,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
             }
-            
+
             if (trigger != null)
             {
                 GameObject.Destroy(trigger);
@@ -218,12 +217,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void ApplyEffect(Collider col)
         {
             // TODO See what happens when monster no capsule-shaped or multi-part
-            StatusManager sm =  col.GetComponent<DamageTaker>().statusManager;
+            StatusManager sm = col.GetComponent<DamageTaker>().statusManager;
             Transform target = sm.transform;
-            GameObject ultiDT = GameObject.Instantiate(ultiDTprefab);
-            ultiDT.transform.localScale = Vector3.one * target.GetComponent<CharacterController>().radius;
-            ultiDT.transform.Find("DamageTaker").GetComponent<UltDamageTaker>().statusManager = sm;
-            GameObject.Destroy(ultiDT, EXTRA_DAMAGE_TAKER_DURATION);
+            GameObject ultiDTContainer = GameObject.Instantiate(ultiDTprefab);
+            Transform ultiDT = ultiDTContainer.transform.Find("DamageTaker");
+            ultiDT.localScale = Vector3.one * target.GetComponent<CharacterController>().radius;
+            ultiDT.GetComponent<UltDamageTaker>().statusManager = sm;
+            GameObject.Destroy(ultiDTContainer, EXTRA_DAMAGE_TAKER_DURATION);
         }
 
         public override void AbortChanelling()

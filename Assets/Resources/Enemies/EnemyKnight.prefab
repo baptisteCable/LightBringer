@@ -740,8 +740,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4670074419504122}
-  - component: {fileID: 64719758757503894}
   - component: {fileID: 114063792088765234}
+  - component: {fileID: 65163067544577986}
   m_Layer: 13
   m_Name: Attack3bTrigger
   m_TagString: Untagged
@@ -2086,20 +2086,6 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 0}
---- !u!64 &64719758757503894
-MeshCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1624381478546884}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 1
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
-  m_Mesh: {fileID: 4300026, guid: 6608c8bfe50a98647af8d1b6bb5f0225, type: 3}
 --- !u!64 &64974497139844452
 MeshCollider:
   m_ObjectHideFlags: 1
@@ -2126,6 +2112,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.5278752}
   m_Center: {x: -0.000000006190493, y: 6.0785876e-10, z: -0.026229197}
+--- !u!65 &65163067544577986
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1624381478546884}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.5518794, y: 4.7080007, z: 1.2080119}
+  m_Center: {x: -0.03979587, y: 0.30076542, z: 0.104006015}
 --- !u!65 &65624828871285632
 BoxCollider:
   m_ObjectHideFlags: 1
