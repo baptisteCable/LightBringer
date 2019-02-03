@@ -22,7 +22,7 @@ namespace LightBringer.UI.Light.LongSword
         {
             base.Update();
 
-            int sphereCount = ((LightLongSwordCharacter)character).GetUltiShpereCount();
+            int sphereCount = ((LightLongSwordMotor)character).GetUltiShpereCount();
 
             if (sphereCount > 0)
             {
@@ -34,14 +34,14 @@ namespace LightBringer.UI.Light.LongSword
                 text.enabled = false;
             }
 
-            if (sphereCount == 0 || sphereCount >= LightLongSwordCharacter.MAX_SPHERE_COUNT)
+            if (sphereCount == 0 || sphereCount >= LightLongSwordMotor.MAX_SPHERE_COUNT)
             {
                 loadingImage.gameObject.SetActive(false);
             }
             else
             {
                 loadingImage.gameObject.SetActive(true);
-                loadingImage.fillAmount = 1f * sphereCount / LightLongSwordCharacter.MAX_SPHERE_COUNT;
+                loadingImage.fillAmount = 1f * sphereCount / LightLongSwordMotor.MAX_SPHERE_COUNT;
             }
         }
     }

@@ -56,7 +56,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Effects
         private ParticleSystem slashEffectA, slashEffectB;
 
-        public AbOff(Character character, LightSword sword) :
+        public AbOff(PlayerMotor character, LightSword sword) :
             base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             //this.sword = sword;

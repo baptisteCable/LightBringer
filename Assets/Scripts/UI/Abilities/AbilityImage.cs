@@ -8,7 +8,7 @@ namespace LightBringer.UI
     {
 
         public string abilityIndex;
-        public Character character;
+        public PlayerMotor character;
 
         private Image cdImage;
         private Image channelingImage;

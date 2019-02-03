@@ -1,51 +1,43 @@
-﻿using System.Collections;
-using LightBringer.Enemies.Knight;
+﻿using LightBringer.Enemies.Knight;
 using LightBringer.Player;
-using LightBringer.Player.Class;
 using LightBringer.TerrainGeneration;
-using LightBringer.UI;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Networking;
 
-public class TestManager : MonoBehaviour
+public class TestManager : NetworkBehaviour
 {
-    public Terrain terrain;
-    public GameObject playerPrefab;
+    public static TestManager singleton;
+    
     public GameObject knightPrefab;
-    public GameObject playerCameraPrefab;
-    public Camera overViewCamera;
-    public UserInterface ui;
-
-
-    private GameObject playerCamera;
-    private GameObject player;
-    private GameObject knight;
+    
     private TerrainGenerator tg;
+    public Terrain terrain;
     private NavMeshSurface nms;
+
+    private GameObject knight;
     private KnightController kc;
+
     private PlayerStatusManager psm;
+    private PlayerMotor playerMotor;
+
     private bool knightPassive = true;
     private bool canDie = true;
     private bool noCD = false;
 
+    public GameObject newTerrainButton;
+
     private void Start()
     {
+        Debug.Log("Démarrage du test");
+
+        singleton = this;
+
         tg = terrain.GetComponent<TerrainGenerator>();
         nms = terrain.GetComponent<NavMeshSurface>();
-    }
 
-    private void Update()
-    {
-        if (psm != null && psm.isDead)
-        {
-            StartCoroutine(StopAfterFrame());
-        }
-    }
+        newTerrainButton.SetActive(isServer);
 
-    private IEnumerator StopAfterFrame()
-    {
-        yield return new WaitForEndOfFrame();
-        StopFight();
     }
 
     public void GenerateNewTerrain()
@@ -54,61 +46,49 @@ public class TestManager : MonoBehaviour
         nms.BuildNavMesh();
     }
 
+    public void SetPlayer(PlayerMotor pm)
+    {
+        playerMotor = pm;
+        psm = pm.GetComponent<PlayerStatusManager>();
+
+        psm.canDie = canDie;
+        playerMotor.ignoreCD = noCD;
+    }
+
+    public void RemovePlayer()
+    {
+        playerMotor = null;
+        psm = null;
+    }
+
     public void RestartFight()
     {
-        StopFight();
-        StartCoroutine(StartAtNextFrame());
-    }
-
-    private IEnumerator StartAtNextFrame()
-    {
-        yield return new WaitForEndOfFrame();
-        StartFight();
-    }
-
-    public void StartFight()
-    {
-        overViewCamera.enabled = false;
+        KillKnight();
 
         // Player
-        player = Instantiate(playerPrefab);
-        player.transform.position = new Vector3(0, 0, 0);
-        psm = player.GetComponent<PlayerStatusManager>();
-        ui.SetCharacter(player.GetComponent<Character>());
-        player.GetComponent<Character>().ignoreCD = noCD;
-        psm.canDie = canDie;
+        playerMotor.transform.position = Vector3.zero;
+        playerMotor.Init();
 
-        // Camera
-        playerCamera = Instantiate(playerCameraPrefab);
-        playerCamera.GetComponent<PlayerCamera>().character = player.transform;
+        if (!isServer)
+        {
+            return;
+        }
 
         // Knight
         knight = Instantiate(knightPrefab);
         knight.transform.position = new Vector3(0, 0, 20);
         knight.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
         kc = knight.GetComponent<KnightController>();
-        kc.target = player.transform;
+        kc.target = playerMotor.transform;
         kc.passive = knightPassive;
     }
 
-    public void StopFight()
+    public void KillKnight()
     {
-        ui.SetCharacter(null);
-
-        if (player != null)
-        {
-            Destroy(player);
-        }
         if (knight != null)
         {
             Destroy(knight);
         }
-        if (playerCamera != null)
-        {
-            Destroy(playerCamera);
-        }
-
-        overViewCamera.enabled = true;
     }
 
     public void SetKnightPassive(bool isPassive)
@@ -132,9 +112,9 @@ public class TestManager : MonoBehaviour
     public void SetNoCD(bool noCD)
     {
         this.noCD = noCD;
-        if (player != null)
+        if (playerMotor != null)
         {
-            player.GetComponent<Character>().ignoreCD = noCD;
+            playerMotor.ignoreCD = noCD;
         }
     }
 

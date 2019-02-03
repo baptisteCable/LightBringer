@@ -49,7 +49,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // ulti damage taker
         private GameObject ultiDTprefab;
 
-        public AbUlt(Character character, LightSword sword) :
+        public AbUlt(PlayerMotor character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;
@@ -81,7 +81,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             DisplayIndicator();
 
             // Loading Sword animation
-            ((LightLongSwordCharacter)character).LoadSwordWithSpheres();
+            ((LightLongSwordMotor)character).LoadSwordWithSpheres();
 
             // Action Time bool
             swordLoaded = false;
@@ -140,7 +140,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             if (!spheresConsumed)
             {
-                ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
+                ((LightLongSwordMotor)character).CancelLoadSwordWithSpheres();
             }
 
             if (trigger != null)
@@ -211,7 +211,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
             GameObject.Destroy(impactEffect, 1f);
 
-            ((LightLongSwordCharacter)character).ConsumeAllSpheres();
+            ((LightLongSwordMotor)character).ConsumeAllSpheres();
         }
 
         private void ApplyEffect(Collider col)
@@ -230,7 +230,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.AbortChanelling();
 
-            ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
+            ((LightLongSwordMotor)character).CancelLoadSwordWithSpheres();
             sword.transform.Find("UltLoaded").gameObject.SetActive(false);
         }
 
@@ -243,7 +243,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 GameObject.Destroy(trigger);
             }
 
-            ((LightLongSwordCharacter)character).CancelLoadSwordWithSpheres();
+            ((LightLongSwordMotor)character).CancelLoadSwordWithSpheres();
             sword.transform.Find("UltLoaded").gameObject.SetActive(false);
         }
 

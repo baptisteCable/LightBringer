@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 33050692336703374}
   - component: {fileID: 64566197632917342}
   - component: {fileID: 114522744209857544}
+  - component: {fileID: 114452691546374592}
   m_Layer: 13
   m_Name: Attack1Trigger
   m_TagString: Untagged
@@ -2581,6 +2582,20 @@ MonoBehaviour:
   distance: 7
   angle: 60
   top: 8
+--- !u!114 &114452691546374592
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1439703032614126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9859925904d584749821b62304c705ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  distance: 2
+  angle: 120
+  top: 5
 --- !u!114 &114497226814517108
 MonoBehaviour:
   m_ObjectHideFlags: 1

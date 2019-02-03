@@ -34,7 +34,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
-        protected override Damage modifyDamage(Damage dmg, Character dealer, Vector3 origin)
+        protected override Damage modifyDamage(Damage dmg, PlayerMotor dealer, Vector3 origin)
         {
             int quarterId = QuarterFromDamageOrigin(origin);
             if (dmg.element == DamageElement.Light && quarters[quarterId] != null)

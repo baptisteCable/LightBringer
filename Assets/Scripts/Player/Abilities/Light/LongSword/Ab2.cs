@@ -48,7 +48,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private bool sphereAdded = false;
 
 
-        public Ab2(LightLongSwordCharacter character, LightSword sword) :
+        public Ab2(LightLongSwordMotor character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;
@@ -281,7 +281,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (!sphereAdded)
             {
                 sphereAdded = true;
-                ((LightLongSwordCharacter)character).AddUltiSphere();
+                ((LightLongSwordMotor)character).AddUltiSphere();
             }
         }
 

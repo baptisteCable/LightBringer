@@ -20,11 +20,11 @@ namespace LightBringer.Player.Abilities
         public bool channelingCancellable;
         public bool castingCancellable;
         public bool locked;
-        protected Character character;
+        protected PlayerMotor character;
 
         protected List<GameObject> indicators;
 
-        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, Character character, bool channelingCancellable, bool castingCancellable)
+        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor character, bool channelingCancellable, bool castingCancellable)
         {
             coolDownUp = true;
             locked = false;

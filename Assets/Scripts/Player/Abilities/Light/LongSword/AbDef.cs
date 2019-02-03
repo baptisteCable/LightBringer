@@ -19,7 +19,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         //Game objects 
         private LightSword sword;
 
-        public AbDef(Character character, LightSword sword) :
+        public AbDef(PlayerMotor character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;

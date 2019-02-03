@@ -5,38 +5,28 @@ using UnityEngine;
 
 namespace LightBringer.Player.Class
 {
-    public class LightLongSwordCharacter : Character
+    public class LightLongSwordMotor : PlayerMotor
     {
         public const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
 
         private int ultiSphereCount;
-        private GameObject spherePrefab;
+
+        // Prefabs
+        public GameObject spherePrefab;
+        public GameObject swordPrefab;
 
         private List<GameObject> sphereObjects;
 
+        private LightSword sword;
+
         public override void Start()
         {
-            base.Start();
-
             // Sword
-            GameObject swordPrefab = Resources.Load("Player/Light/LongSword/Sword/LightLongSword") as GameObject;
             swordObject = Instantiate(swordPrefab, weaponSlotR);
-            LightSword sword = swordObject.GetComponent<LightSword>();
+            sword = swordObject.GetComponent<LightSword>();
 
-            // Abilities
-            abilities.Add("SkillEsc", new AbEsc(this, sword));
-            abilities.Add("Skill1", new Ab1(this, sword));
-            abilities.Add("Skill2", new Ab2(this, sword));
-            abilities.Add("SkillDef", new AbDef(this, sword));
-            abilities.Add("SkillOff", new AbOff(this, sword));
-            abilities.Add("SkillUlt", new AbUlt(this, sword));
-
-            // Spheres
-            sphereObjects = new List<GameObject>();
-            ultiSphereCount = 0;
-            spherePrefab = Resources.Load("Player/Light/LongSword/AbUlt/UltSphere") as GameObject;
-            abilities["SkillUlt"].available = false;
+            base.Start();
         }
 
         public void AddUltiSphere()
@@ -104,6 +94,30 @@ namespace LightBringer.Player.Class
                 Destroy(sphere);
                 ultiSphereCount = sphereObjects.Count;
                 abilities["SkillUlt"].available = false;
+            }
+        }
+
+        public override void Init()
+        {
+            base.Init();
+
+            // Abilities
+            abilities.Add("SkillEsc", new AbEsc(this, sword));
+            abilities.Add("Skill1", new Ab1(this, sword));
+            abilities.Add("Skill2", new Ab2(this, sword));
+            abilities.Add("SkillDef", new AbDef(this, sword));
+            abilities.Add("SkillOff", new AbOff(this, sword));
+            abilities.Add("SkillUlt", new AbUlt(this, sword));
+
+            if (sphereObjects == null)
+            {
+                sphereObjects = new List<GameObject>();
+                ultiSphereCount = 0;
+                abilities["SkillUlt"].available = false;
+            }
+            else
+            {
+                ConsumeAllSpheres();
             }
         }
     }

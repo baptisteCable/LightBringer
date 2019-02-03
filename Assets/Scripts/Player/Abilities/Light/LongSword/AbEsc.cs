@@ -54,7 +54,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Colliders
         private Dictionary<Collider, Vector3> encounteredCols;
 
-        public AbEsc(Character character, LightSword sword) :
+        public AbEsc(PlayerMotor character, LightSword sword) :
             base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             this.sword = sword;

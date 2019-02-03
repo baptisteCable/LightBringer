@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using LightBringer.Player.Abilities;
+using LightBringer.UI;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerStatusManager))]
     [RequireComponent(typeof(CharacterController))]
-    public class Character : MonoBehaviour
+    [RequireComponent(typeof(PlayerController))]
+    public class PlayerMotor : NetworkBehaviour
     {
         // constants
         private const float ROTATION_SPEED = 24f;
@@ -23,6 +26,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public PlayerStatusManager psm;
         private CharacterController charController;
+        PlayerController pc;
 
         // misc
         [HideInInspector]
@@ -46,6 +50,14 @@ namespace LightBringer.Player
         // Training
         public bool ignoreCD = false;
 
+        // Camera
+        public GameObject cameraPrefab;
+        private GameObject playerCamera;
+
+        // User Interface
+        public GameObject userInterfacePrefab;
+        private GameObject userInterface;
+
         /* Abilities :
          *      0: None
          *      1: Jump
@@ -68,13 +80,34 @@ namespace LightBringer.Player
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
 
-            abilityMoveMultiplicator = 1f;
-            abilityMaxRotation = -1f;
+            // Test Manager
+            if (TestManager.singleton != null)
+            {
+                TestManager.singleton.SetPlayer(this);
+            }
 
-            movementDirection = Vector3.zero;
-            previousPosition = Vector3.zero;
+            Init();
 
-            abilities = new Dictionary<string, Ability>();
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
+            // Camera
+            playerCamera = Instantiate(cameraPrefab);
+            playerCamera.GetComponent<PlayerCamera>().player = transform;
+
+            if (CameraManager.singleton != null)
+            {
+                CameraManager.singleton.ActivatePlayerCamera();
+            }
+
+            // UI
+            userInterface = Instantiate(userInterfacePrefab);
+            userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
+
+            // Components
+            pc = GetComponent<PlayerController>();
         }
 
         // Update is called once per frame
@@ -117,7 +150,7 @@ namespace LightBringer.Player
 
             // cooldowns
             RefreshCooldowns();
-            
+
             // Special computations on abilities
             ComputeAbilitiesSpecial();
         }
@@ -209,34 +242,29 @@ namespace LightBringer.Player
             }
             else if (movementMode == MovementMode.Player)
             {
-                // Moving
-                float v = Input.GetAxisRaw("Vertical");
-                float h = Input.GetAxisRaw("Horizontal");
-                Vector3 desiredMove;
+                Vector3 desiredMove = Vector3.zero;
 
-                if (movementMode == MovementMode.Player && !psm.isRooted && !psm.isStunned && (v * v + h * h) > .01f)
+                if (!psm.isRooted && !psm.isStunned && pc.desiredMove.magnitude > .01f) // TODO : remove last condition if we know if really moving
                 {
-                    desiredMove = new Vector3(v + h, 0, v - h).normalized;
+                    desiredMove = new Vector3(pc.desiredMove.x, 0, pc.desiredMove.y);
 
                     animator.SetFloat("zVel", Vector3.Dot(desiredMove, characterContainer.forward));
                     animator.SetFloat("xVel", Vector3.Dot(desiredMove, characterContainer.right));
 
                     bool reallyMoving = ((previousPosition - transform.position).magnitude / Time.deltaTime > moveSpeed / 6f);
 
-                    animator.SetBool("isMoving", reallyMoving); 
+                    animator.SetBool("isMoving", reallyMoving);
 
                     // get a normal for the surface that is being touched to move along it
                     RaycastHit hitInfo;
                     LayerMask mask = LayerMask.GetMask("Environment");
-                    
+
                     Physics.SphereCast(transform.position, charController.radius, Vector3.down, out hitInfo,
                                        charController.height / 2f, mask, QueryTriggerInteraction.Ignore);
                     desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
                 }
                 else
                 {
-                    desiredMove = Vector3.zero;
-
                     animator.SetBool("isMoving", false);
                 }
 
@@ -384,11 +412,43 @@ namespace LightBringer.Player
             {
                 currentChanneling.AbortChanelling();
             }
-            if(currentAbility != null)
+            if (currentAbility != null)
             {
                 currentAbility.AbortCasting();
             }
             charController.enabled = false;
+        }
+
+        public virtual void Init()
+        {
+            charController.enabled = true;
+
+            psm.Init();
+
+            abilityMoveMultiplicator = 1f;
+            abilityMaxRotation = -1f;
+
+            movementDirection = Vector3.zero;
+            previousPosition = Vector3.zero;
+
+            abilities = new Dictionary<string, Ability>();
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(playerCamera);
+            Destroy(userInterface);
+
+            if (isLocalPlayer && CameraManager.singleton != null)
+            {
+                CameraManager.singleton.DisactivatePlayerCamera();
+            }
+
+            // Test Manager
+            if (TestManager.singleton != null)
+            {
+                TestManager.singleton.RemovePlayer();
+            }
         }
         /*
         private void OnGUI()
@@ -432,5 +492,7 @@ namespace LightBringer.Player
      *  - buttondown pour tout sauf clic gauche (pourrait dépendre de la compétence, faire ce test au chargement et laisser
      *      les variables dans cette classe)
      *  - test de la disponibilité à ce moment. Si pas dispo, file non remplacée et bruit d'erreur (et visible sur l'image)
+     *  
+     *  Base.Start à remplacer. ne pas override ces méthodes.
      * */
 }

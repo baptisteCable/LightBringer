@@ -5,16 +5,15 @@ using UnityEngine;
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(Character))]
+    [RequireComponent(typeof(PlayerMotor))]
     public class PlayerStatusManager : MonoBehaviour
     {
         private const float FLASH_DURATION = .1f;
 
         // HP MP
         public float maxHP;
+        [HideInInspector]
         public float currentHP;
-        public float maxMP;
-        public float currentMP;
 
         // Gradable
         [HideInInspector]
@@ -48,34 +47,18 @@ namespace LightBringer.Player
         // Components
         public StatusBar statusBar;
         [HideInInspector]
-        public Character character;
+        public PlayerMotor character;
 
         // Training
         public bool canDie = true;
 
         void Start()
         {
-            character = GetComponent<Character>();
+            character = GetComponent<PlayerMotor>();
 
             statusBar.psm = this;
 
-            // Crowd control
-            isRooted = false;
-            isStunned = false;
-            rootDuration = 0f;
-            stunDuration = 0f;
-            anchor = null;
-            isTargetable = true;
-            abilitySuppress = false;
-
-            // States
-            states = new List<State>();
-            queuedStates = new List<State>();
-            isDead = false;
-
-            // Gradables
-            moveMultiplicators = new Dictionary<State, float>();
-            maxRotation = new Dictionary<State, float>();
+            // Init is called by playerMotor
         }
 
         private void Update()
@@ -291,6 +274,30 @@ namespace LightBringer.Player
             }
 
             return mrs;
+        }
+
+        public void Init()
+        {
+            //HP
+            currentHP = maxHP;
+
+            // Crowd control
+            isRooted = false;
+            isStunned = false;
+            rootDuration = 0f;
+            stunDuration = 0f;
+            anchor = null;
+            isTargetable = true;
+            abilitySuppress = false;
+
+            // States
+            states = new List<State>();
+            queuedStates = new List<State>();
+            isDead = false;
+
+            // Gradables
+            moveMultiplicators = new Dictionary<State, float>();
+            maxRotation = new Dictionary<State, float>();
         }
 
         #region Flash

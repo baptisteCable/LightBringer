@@ -7,7 +7,7 @@ public class PlayerCamera : MonoBehaviour
     private const float SCROLL_SPEED = 1f;
 
     private Camera cam;
-    public Transform character;
+    public Transform player;
     private Vector3 camPositionFromPlayer;
     private float currentPosition; // 0 for clostest, 1 for farthest
     private float targetXRotation;
@@ -80,17 +80,17 @@ public class PlayerCamera : MonoBehaviour
         if (GameManager.gm.staticCamera)
         {
             cam.transform.position = new Vector3(
-                    character.position.x + camPositionFromPlayer.x,
+                    player.position.x + camPositionFromPlayer.x,
                     camPositionFromPlayer.y,
-                    character.position.z + camPositionFromPlayer.z
+                    player.position.z + camPositionFromPlayer.z
                 );
         }
         else
         {
             cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
-                    character.position.x + camPositionFromPlayer.x + (GameManager.gm.worldMousePoint.x - character.position.x) * .3f,
+                    player.position.x + camPositionFromPlayer.x + (GameManager.gm.worldMousePoint.x - player.position.x) * .3f,
                     camPositionFromPlayer.y,
-                    character.position.z + camPositionFromPlayer.z + (GameManager.gm.worldMousePoint.z - character.position.z) * .3f
+                    player.position.z + camPositionFromPlayer.z + (GameManager.gm.worldMousePoint.z - player.position.z) * .3f
                 ), Time.deltaTime * 8f);
         }
     }

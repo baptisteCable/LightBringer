@@ -6,7 +6,7 @@ namespace LightBringer.UI
 {
     public class UserInterface : MonoBehaviour
     {
-        public Character character;
+        public PlayerMotor character;
         public GameObject abilityBar;
         public AbilityImage[] abIms;
 
@@ -26,7 +26,7 @@ namespace LightBringer.UI
             }
         }
 
-        public void SetCharacter(Character character)
+        public void SetPlayerMotor(PlayerMotor character)
         {
             this.character = character;
             SetCharacterToImages();

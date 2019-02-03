@@ -53,7 +53,7 @@ namespace LightBringer.Enemies
             ApplyAllDamages();
         }
 
-        public void TakeDamage(Damage dmg, Character dealer, int id, float distance)
+        public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
         {
             // If this damage id is already registered
             if (frameDamage.ContainsKey(id))

@@ -13,7 +13,7 @@ namespace LightBringer.Enemies
 
         public StatusManager statusManager;
 
-        public virtual void TakeDamage(Damage dmg, Character dealer, Vector3 origin, int id)
+        public virtual void TakeDamage(Damage dmg, PlayerMotor dealer, Vector3 origin, int id)
         {
             dmg = modifyDamage(dmg, dealer, origin);
 
@@ -25,7 +25,7 @@ namespace LightBringer.Enemies
             statusManager.TakeDamage(dmg, dealer, id, (transform.position - origin).magnitude);
         }
 
-        protected virtual Damage modifyDamage(Damage dmg, Character dealer, Vector3 origin)
+        protected virtual Damage modifyDamage(Damage dmg, PlayerMotor dealer, Vector3 origin)
         {
             return dmg;
         }

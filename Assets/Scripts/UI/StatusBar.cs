@@ -7,7 +7,7 @@ namespace LightBringer.Player
     {
 
         public PlayerStatusManager psm;
-        public Character character;
+        public PlayerMotor character;
         
         private Image channelingContent;
         private GameObject channelingBar;
