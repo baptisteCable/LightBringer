@@ -32,6 +32,7 @@ namespace LightBringer.Enemies
         public Transform lostHpPoint;
 
         // UI object
+        [SerializeField]
         private GameObject lostHPPrefab;
 
         void Start()
@@ -44,8 +45,6 @@ namespace LightBringer.Enemies
             frameDamageDistance = new Dictionary<int, float>();
 
             damageToDisplay = new Dictionary<DamageElement, float>();
-
-            lostHPPrefab = Resources.Load("Fight/LostHP") as GameObject;
         }
 
         private void Update()
@@ -158,21 +157,7 @@ namespace LightBringer.Enemies
             txt.text = Mathf.Round(amount).ToString();
 
             // Color
-            switch (element)
-            {
-                case DamageElement.Energy:
-                    txt.material = Resources.Load("Fight/EnergyDmg") as Material; break;
-                case DamageElement.Fire:
-                    txt.material = Resources.Load("Fight/FireDmg") as Material; break;
-                case DamageElement.Ice:
-                    txt.material = Resources.Load("Fight/IceDmg") as Material; break;
-                case DamageElement.Light:
-                    txt.material = Resources.Load("Fight/LightDmg") as Material; break;
-                case DamageElement.Pure:
-                    txt.material = Resources.Load("Fight/PureDmg") as Material; break;
-                default:
-                    txt.material = Resources.Load("Fight/PhysicalDmg") as Material; break;
-            }
+            txt.material = DamageManager.dm.ElementMaterial(element);
         }
 
         private IEnumerator Flash()

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LightBringer.Abilities;
 using LightBringer.Enemies;
+using LightBringer.Player.Class;
 using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
@@ -29,7 +30,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float STUN_DURATION = .2f;
         private const float COMBO_DURATION = .5f;
 
-
         // Combo
         public float comboTime = Time.time;
         public int currentAttack = 1;
@@ -37,15 +37,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Colliders
         private Dictionary<Collider, Vector3> encounteredCols;
 
-        // Prefabs
-        private GameObject lightZonePrefab;
-        private GameObject abTriggerPrefab;
-        private GameObject cTriggerPrefab;
-        private GameObject lightSpawnEffetPrefab;
-        private GameObject impactEffetPrefab;
-
         // GameObjects
-        private LightSword sword;
         private GameObject trigger;
 
         // Misc
@@ -54,26 +46,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Effects
         private ParticleSystem slashAEffect, slashBEffect;
 
-        public Ab1(PlayerMotor character, LightSword sword) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        // Inherited motor
+        LightLongSwordMotor lightMotor;
+
+        public Ab1(LightLongSwordMotor playerMotor) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
-            this.sword = sword;
-            lightZonePrefab = Resources.Load("Player/Light/LightZone/LightZone") as GameObject;
-            abTriggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1ab") as GameObject;
-            cTriggerPrefab = Resources.Load("Player/Light/LongSword/Ab1/Ab1c") as GameObject;
-            lightSpawnEffetPrefab = Resources.Load("Player/Light/LongSword/Ab1/LightSpawnEffect") as GameObject;
-            impactEffetPrefab = Resources.Load("Player/Light/LongSword/ImpactEffect") as GameObject;
+            lightMotor = playerMotor;
 
-            // Create slash objects
-            GameObject slashAGO = GameObject.Instantiate(
-                Resources.Load("Player/Light/LongSword/Ab1/Ab1aSlash") as GameObject,
-                character.characterContainer);
-            slashAEffect = slashAGO.GetComponent<ParticleSystem>();
-            GameObject slashBGO = GameObject.Instantiate(
-                Resources.Load("Player/Light/LongSword/Ab1/Ab1bSlash") as GameObject,
-                character.characterContainer);
-            slashBEffect = slashBGO.GetComponent<ParticleSystem>();
-
+            slashAEffect = lightMotor.ab1aSlash.GetComponent<ParticleSystem>();
+            slashBEffect = lightMotor.ab1bSlash.GetComponent<ParticleSystem>();
         }
 
 
@@ -106,25 +88,25 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 lightSpawned = false;
             }
 
-            character.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
+            playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
             base.StartChanneling();
 
 
             // animation
             if (currentAttack == 1)
             {
-                character.animator.Play("BotAb1a", -1, 0);
-                character.animator.Play("TopAb1a", -1, 0);
+                playerMotor.animator.Play("BotAb1a", -1, 0);
+                playerMotor.animator.Play("TopAb1a", -1, 0);
             }
             else if (currentAttack == 2)
             {
-                character.animator.Play("BotAb1b");
-                character.animator.Play("TopAb1b");
+                playerMotor.animator.Play("BotAb1b");
+                playerMotor.animator.Play("TopAb1b");
             }
             else if (currentAttack == 3)
             {
-                character.animator.Play("BotAb1c");
-                character.animator.Play("TopAb1c");
+                playerMotor.animator.Play("BotAb1c");
+                playerMotor.animator.Play("TopAb1c");
             }
         }
 
@@ -137,19 +119,19 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
 
             // No more rotation
-            character.abilityMaxRotation = CASTING_ROTATION_SPEED;
+            playerMotor.abilityMaxRotation = CASTING_ROTATION_SPEED;
 
             // collider list
             encounteredCols = new Dictionary<Collider, Vector3>();
 
             if (currentAttack < 3)
             {
-                character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_AB;
+                playerMotor.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_AB;
                 CreateTriggerAB();
             }
             else
             {
-                character.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_C;
+                playerMotor.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR_C;
             }
         }
 
@@ -178,7 +160,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void CreateTriggerAB()
         {
-            trigger = GameObject.Instantiate(abTriggerPrefab, character.characterContainer);
+            trigger = GameObject.Instantiate(lightMotor.ab1abTriggerPrefab, playerMotor.characterContainer);
             trigger.transform.localPosition = new Vector3(0f, .1f, 0f);
             trigger.transform.localRotation = Quaternion.identity;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();
@@ -187,18 +169,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void SpawnLight()
         {
-            Vector3 pos = new Vector3(sword.transform.position.x, .2f, sword.transform.position.z);
+            Vector3 pos = new Vector3(lightMotor.sword.transform.position.x, .2f, lightMotor.sword.transform.position.z);
 
-            GameObject lightZone = GameObject.Instantiate(lightZonePrefab, null);
+            GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
 
             // Particle effect
-            GameObject lightSpawn = GameObject.Instantiate(lightSpawnEffetPrefab, null);
+            GameObject lightSpawn = GameObject.Instantiate(lightMotor.lightSpawnEffetPrefab, null);
             lightSpawn.transform.position = pos;
             GameObject.Destroy(lightSpawn, 1f);
 
             // Damage zone (trigger)
-            trigger = GameObject.Instantiate(cTriggerPrefab, null);
+            trigger = GameObject.Instantiate(lightMotor.lightSpawnTriggerPrefab, null);
             trigger.transform.position = pos;
             AbilityColliderTrigger act = trigger.GetComponent<AbilityColliderTrigger>();
             act.SetAbility(this);
@@ -293,7 +275,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 if (dt.bouncing)
                 {
                     // Stun character
-                    character.psm.ApplyCrowdControl(
+                    playerMotor.psm.ApplyCrowdControl(
                         new CrowdControl(CrowdControlType.Stun, DamageType.Self, DamageElement.None),
                         STUN_DURATION
                     );
@@ -310,14 +292,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             Vector3 impactPoint = col.ClosestPoint(origin);
 
-            Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
-            col.GetComponent<DamageTaker>().TakeDamage(dmg, character, character.transform.position, id);
+            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
+            col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
-            GameObject impactEffect = GameObject.Instantiate(impactEffetPrefab, null);
+            GameObject impactEffect = GameObject.Instantiate(lightMotor.impactEffetPrefab, null);
             impactEffect.transform.position = impactPoint;
-            if ((character.transform.position + Vector3.up - impactPoint).magnitude > .05f)
+            if ((playerMotor.transform.position + Vector3.up - impactPoint).magnitude > .05f)
             {
-                impactEffect.transform.rotation = Quaternion.LookRotation(character.transform.position + Vector3.up - impactPoint, Vector3.up);
+                impactEffect.transform.rotation = Quaternion.LookRotation(playerMotor.transform.position + Vector3.up - impactPoint, Vector3.up);
             }
             GameObject.Destroy(impactEffect, 1f);
         }
@@ -330,8 +312,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 if (pair.Key.tag == "Enemy")
                 {
-                    Damage dmg = character.psm.AlterDealtDamage(new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light));
-                    pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, character, pair.Value, id);
+                    Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light));
+                    pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, pair.Value, id);
                 }
             }
         }
@@ -342,7 +324,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 if (currentAttack < 3)
                 {
-                    encounteredCols.Add(col, character.transform.position + Vector3.up);
+                    encounteredCols.Add(col, playerMotor.transform.position + Vector3.up);
                 }
                 else
                 {

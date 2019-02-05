@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using LightBringer.Enemies;
+﻿using LightBringer.Player.Class;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -16,13 +15,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private const float COUNTER_DURATION = 1.2f;
 
-        //Game objects 
-        private LightSword sword;
+        // Inherited motor
+        LightLongSwordMotor lightMotor;
 
-        public AbDef(PlayerMotor character, LightSword sword) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, character, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        public AbDef(LightLongSwordMotor playerMotor) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
-            this.sword = sword;
+            lightMotor = playerMotor;
         }
 
         public override void StartChanneling()
@@ -33,18 +32,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             base.StartChanneling();
-            character.abilityMoveMultiplicator = 0;
-            character.abilityMaxRotation = 0;
+            playerMotor.abilityMoveMultiplicator = 0;
+            playerMotor.abilityMaxRotation = 0;
 
-            character.animator.Play("BotAbDef");
-            character.animator.Play("TopAbDef");
+            playerMotor.animator.Play("BotAbDef");
+            playerMotor.animator.Play("TopAbDef");
         }
 
         public override void StartAbility()
         {
             base.StartAbility();
 
-            character.psm.AddAndStartState(new LightLongSwordCounter(COUNTER_DURATION, sword));
+            playerMotor.psm.AddAndStartState(new LightLongSwordCounter(COUNTER_DURATION, lightMotor.sword));
         }
 
     }

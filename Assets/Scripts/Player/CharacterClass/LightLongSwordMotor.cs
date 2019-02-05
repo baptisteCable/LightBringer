@@ -11,20 +11,55 @@ namespace LightBringer.Player.Class
         public const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
 
-        private int ultiSphereCount;
-
         // Prefabs
+        [Header("Abilities Prefabs")]
+        public GameObject lightColumnPrefab;
+        public GameObject ultiDTprefab;
+
+        [Header("Trigger Prefabs")]
+        public GameObject ab1abTriggerPrefab;
+        public GameObject lightSpawnTriggerPrefab;
+        public GameObject ab2TriggerPrefab;
+        public GameObject abOffTriggerPrefab;
+
+        [Header("Indicator Prefabs")]
+        public GameObject ab2IndicatorPrefab;
+        public GameObject abOffIndicatorPrefab;
+        public GameObject abEscLandingIndicatorPrefab;
+        public GameObject abEscRangeIndicatorPrefab;
+
+        [Header("Effect Prefabs")]
+        public GameObject lightSpawnEffetPrefab;
+        public GameObject impactEffetPrefab;
+        public GameObject loadedImpactEffetPrefab;
+        public GameObject escTrailEffectPrefab;
+        public GameObject fadeOutEffetPrefab;
+        public GameObject fadeInEffetPrefab;
+
+        [Header("Misc Prefabs")]
         public GameObject spherePrefab;
-        public GameObject swordPrefab;
+        public GameObject lightZonePrefab;
+
+
+        [Header("Effects")]
+        public GameObject ab1aSlash;
+        public GameObject ab1bSlash;
+        public GameObject abOffSlash1;
+        public GameObject abOffSlash2;
+
+        [Header("Game Objects")]
+        public GameObject swordObject;
+
+        private int ultiSphereCount;
 
         private List<GameObject> sphereObjects;
 
-        private LightSword sword;
+        [HideInInspector]
+        public LightSword sword;
 
         public override void Start()
         {
             // Sword
-            swordObject = Instantiate(swordPrefab, weaponSlotR);
             sword = swordObject.GetComponent<LightSword>();
 
             base.Start();
@@ -104,12 +139,12 @@ namespace LightBringer.Player.Class
             ClientInit();
             
             // Abilities
-            abilities.Add("SkillEsc", new AbEsc(this, sword));
-            abilities.Add("Skill1", new Ab1(this, sword));
-            abilities.Add("Skill2", new Ab2(this, sword));
-            abilities.Add("SkillDef", new AbDef(this, sword));
-            abilities.Add("SkillOff", new AbOff(this, sword));
-            abilities.Add("SkillUlt", new AbUlt(this, sword));
+            abilities.Add("SkillEsc", new AbEsc(this));
+            abilities.Add("Skill1", new Ab1(this));
+            abilities.Add("Skill2", new Ab2(this));
+            abilities.Add("SkillDef", new AbDef(this));
+            abilities.Add("SkillOff", new AbOff(this));
+            abilities.Add("SkillUlt", new AbUlt(this));
 
             if (sphereObjects == null)
             {

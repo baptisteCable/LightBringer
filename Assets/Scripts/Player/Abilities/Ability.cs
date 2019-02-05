@@ -20,18 +20,19 @@ namespace LightBringer.Player.Abilities
         public bool channelingCancellable;
         public bool castingCancellable;
         public bool locked;
-        protected PlayerMotor character;
+
+        protected PlayerMotor playerMotor;
 
         protected List<GameObject> indicators;
 
-        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor character, bool channelingCancellable, bool castingCancellable)
+        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor, bool channelingCancellable, bool castingCancellable)
         {
             coolDownUp = true;
             locked = false;
             this.coolDownDuration = coolDownDuration;
-            this.channelDuration = channelingDuration;
-            this.castDuration = castingDuration;
-            this.character = character;
+            channelDuration = channelingDuration;
+            castDuration = castingDuration;
+            playerMotor = motor;
             this.channelingCancellable = channelingCancellable;
             this.castingCancellable = castingCancellable;
 
@@ -44,14 +45,14 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            character.currentChanneling = null;
+            playerMotor.currentChanneling = null;
 
             // Cooldown
             coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
 
             // animation
-            character.animator.Play("TopIdle");
-            character.animator.Play("BotIdle");
+            playerMotor.animator.Play("TopIdle");
+            playerMotor.animator.Play("BotIdle");
 
             // indicators
             DestroyIndicators();
@@ -59,18 +60,18 @@ namespace LightBringer.Player.Abilities
 
         public virtual void AbortChanelling()
         {
-           // Movement restrictions
+            // Movement restrictions
             resetMovementRestrictions();
 
             // current ability
-            character.currentChanneling = null;
+            playerMotor.currentChanneling = null;
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
 
             // animation
-            character.animator.Play("TopIdle");
-            character.animator.Play("BotIdle");
+            playerMotor.animator.Play("TopIdle");
+            playerMotor.animator.Play("BotIdle");
 
             // indicators
             DestroyIndicators();
@@ -82,16 +83,16 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            character.currentAbility = null;
+            playerMotor.currentAbility = null;
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
 
             // animation
-            if (!character.psm.isStunned)
+            if (!playerMotor.psm.isStunned)
             {
-                character.animator.Play("TopIdle");
-                character.animator.Play("BotIdle");
+                playerMotor.animator.Play("TopIdle");
+                playerMotor.animator.Play("BotIdle");
             }
 
             // indicators
@@ -104,7 +105,7 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            character.currentAbility = null;
+            playerMotor.currentAbility = null;
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
@@ -131,7 +132,7 @@ namespace LightBringer.Player.Abilities
             channelStartTime = Time.time;
             channelEndTime = Time.time + channelDuration;
 
-            character.currentChanneling = this;
+            playerMotor.currentChanneling = this;
         }
 
         public virtual void StartAbility()
@@ -140,14 +141,14 @@ namespace LightBringer.Player.Abilities
             castStartTime = Time.time;
             castEndTime = Time.time + castDuration;
 
-            character.currentAbility = this;
-            character.currentChanneling = null;
+            playerMotor.currentAbility = this;
+            playerMotor.currentChanneling = null;
         }
 
         protected void resetMovementRestrictions()
         {
-            character.abilityMoveMultiplicator = 1f;
-            character.abilityMaxRotation = -1f;
+            playerMotor.abilityMoveMultiplicator = 1f;
+            playerMotor.abilityMaxRotation = -1f;
         }
 
         public virtual void ComputeSpecial()
@@ -158,9 +159,9 @@ namespace LightBringer.Player.Abilities
         {
             return
                     !coolDownUp ||
-                    character.currentAbility != null ||
-                    character.currentChanneling != null ||
-                    character.psm.isStunned ||
+                    playerMotor.currentAbility != null ||
+                    playerMotor.currentChanneling != null ||
+                    playerMotor.psm.isStunned ||
                     locked ||
                     !available;
         }
@@ -169,8 +170,8 @@ namespace LightBringer.Player.Abilities
         {
             if (
                     !coolDownUp ||
-                    character.psm.isRooted ||
-                    character.psm.isStunned ||
+                    playerMotor.psm.isRooted ||
+                    playerMotor.psm.isStunned ||
                     locked ||
                     !available
                 )
@@ -178,9 +179,9 @@ namespace LightBringer.Player.Abilities
                 return false;
             }
 
-            character.Cancel();
+            playerMotor.Cancel();
 
-            return character.currentAbility == null && character.currentChanneling == null;
+            return playerMotor.currentAbility == null && playerMotor.currentChanneling == null;
         }
 
         public virtual void SpecialCancel()
@@ -190,7 +191,7 @@ namespace LightBringer.Player.Abilities
 
         private void DestroyIndicators()
         {
-            foreach(GameObject go in indicators)
+            foreach (GameObject go in indicators)
             {
                 GameObject.Destroy(go);
             }

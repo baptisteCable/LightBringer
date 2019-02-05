@@ -26,9 +26,7 @@ namespace LightBringer.Enemies.Knight
         private const float FIRE_3 = 139f / 60f;
 
         // Colliders GO
-        private GameObject bulletPrefab;
         private GameObject bullet1, bullet2, bullet3, previousBullet;
-        private GameObject casterPrefab;
 
         // Collider list
         private List<Collider> cols;
@@ -54,8 +52,6 @@ namespace LightBringer.Enemies.Knight
         {
             em.anim.SetBool("castingAttack2", true);
             em.anim.Play("Attack2");
-            bulletPrefab = Resources.Load("EnemyAbilities/Knight/LightningBullet") as GameObject;
-            casterPrefab = Resources.Load("EnemyAbilities/Knight/Attack2CastPoint") as GameObject;
             em.SetOverrideAgent(true);
         }
 
@@ -132,7 +128,7 @@ namespace LightBringer.Enemies.Knight
 
         private GameObject InitBullet()
         {
-            GameObject bullet = GameObject.Instantiate(bulletPrefab, em.transform, false);
+            GameObject bullet = GameObject.Instantiate(em.bulletPrefab, em.transform, false);
             bullet.transform.localPosition = new Vector3(1.68f, 14.4f, .34f);
             bullet.transform.SetParent(null, true);
             return bullet;
@@ -150,7 +146,7 @@ namespace LightBringer.Enemies.Knight
 
         private void InstanciateCaster(Transform parentTransform, float range, float radius)
         {
-            GameObject caster = GameObject.Instantiate(casterPrefab, parentTransform);
+            GameObject caster = GameObject.Instantiate(em.casterPrefab, parentTransform);
             caster.transform.localPosition = Vector3.zero;
             Attack2Caster a2c = caster.GetComponent<Attack2Caster>();
             a2c.ability = this;

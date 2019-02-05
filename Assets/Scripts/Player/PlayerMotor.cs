@@ -38,8 +38,6 @@ namespace LightBringer.Player
 
         // body parts
         public Transform weaponSlotR;
-        [HideInInspector]
-        public GameObject swordObject;
 
         // Movement
         private Vector3 movementDirection;
@@ -492,6 +490,7 @@ namespace LightBringer.Player
      * 
      * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
      * Impact Effects only on hurt part?
+     *  Shield qui clignotte quand on le tape
      * 
      * Camera quand on monte. Gestion du 1er étage en général (chute, compétences qui partent du niveau 0, etc.)
      * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
@@ -517,6 +516,8 @@ namespace LightBringer.Player
      *  
      *  Trouver comment compenser le ping avec les temps de canalisation.
      *  
-     *  Networking : tout est sur le serveur (comme LoL).
+     *  Ajouter un NetworkTimer qui calcule le ping qui stocke le delay. Il les affiche. Le delay est prélevé dans le transform sync (lié par l'inspector)
+     *  Il calcule le delay en prennant le min des 10 dernières valeurs et des 10 derniers mins (donc 100 valeurs)
+     *  
      * */
 }
