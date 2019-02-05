@@ -67,7 +67,7 @@ public class TestManager : NetworkBehaviour
 
         // Player
         playerMotor.transform.position = Vector3.zero;
-        playerMotor.Init();
+        playerMotor.CmdServerInit();
 
         if (!isServer)
         {

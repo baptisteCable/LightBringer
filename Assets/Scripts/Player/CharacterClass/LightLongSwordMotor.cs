@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LightBringer.Player.Abilities.Light.LongSword;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player.Class
 {
@@ -97,10 +98,12 @@ namespace LightBringer.Player.Class
             }
         }
 
-        public override void Init()
+        [ClientRpc]
+        public override void RpcClientInit()
         {
-            base.Init();
-
+            Debug.Log("RpcClientInitLLS");
+            ClientInit();
+            
             // Abilities
             abilities.Add("SkillEsc", new AbEsc(this, sword));
             abilities.Add("Skill1", new Ab1(this, sword));
@@ -108,6 +111,8 @@ namespace LightBringer.Player.Class
             abilities.Add("SkillDef", new AbDef(this, sword));
             abilities.Add("SkillOff", new AbOff(this, sword));
             abilities.Add("SkillUlt", new AbUlt(this, sword));
+
+            Debug.Log(abilities.Keys);
 
             if (sphereObjects == null)
             {

@@ -9,7 +9,7 @@ namespace LightBringer.Player
     [RequireComponent(typeof(PlayerStatusManager))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerController))]
-    public class PlayerMotor : NetworkBehaviour
+    public abstract class PlayerMotor : NetworkBehaviour
     {
         // constants
         private const float ROTATION_SPEED = 24f;
@@ -77,43 +77,52 @@ namespace LightBringer.Player
         // Use this for initialization
         public virtual void Start()
         {
+            /* ********* Everyone ********** */
+
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
-
-            // Test Manager
-            if (TestManager.singleton != null)
-            {
-                TestManager.singleton.SetPlayer(this);
-            }
-
-            Init();
-
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-
-            // Camera
-            playerCamera = Instantiate(cameraPrefab);
-            playerCamera.GetComponent<PlayerCamera>().player = transform;
-
-            if (CameraManager.singleton != null)
-            {
-                CameraManager.singleton.ActivatePlayerCamera();
-            }
-
-            // UI
-            userInterface = Instantiate(userInterfacePrefab);
-            userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
-
-            // Components
             pc = GetComponent<PlayerController>();
+
+
+            /* ********* Server ********** */
+            if (isServer)
+            {
+                CmdServerInit();
+            }
+
+            /* ********* Local player ********** */
+            if (isLocalPlayer)
+            {
+                // Test Manager
+                if (TestManager.singleton != null)
+                {
+                    TestManager.singleton.SetPlayer(this);
+                }
+
+                // Camera
+                playerCamera = Instantiate(cameraPrefab);
+                playerCamera.GetComponent<PlayerCamera>().player = transform;
+
+                if (CameraManager.singleton != null)
+                {
+                    CameraManager.singleton.ActivatePlayerCamera();
+                }
+
+                // UI
+                userInterface = Instantiate(userInterfacePrefab);
+                userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
+            }
         }
 
         // Update is called once per frame
         void Update()
         {
             if (psm.isDead)
+            {
+                return;
+            }
+
+            if (!isServer)
             {
                 return;
             }
@@ -419,10 +428,10 @@ namespace LightBringer.Player
             charController.enabled = false;
         }
 
-        public virtual void Init()
+        [Command]
+        public virtual void CmdServerInit()
         {
-            charController.enabled = true;
-
+            Debug.Log("CmdServerInit");
             psm.Init();
 
             abilityMoveMultiplicator = 1f;
@@ -431,8 +440,19 @@ namespace LightBringer.Player
             movementDirection = Vector3.zero;
             previousPosition = Vector3.zero;
 
+            RpcClientInit();
+        }
+        
+        protected void ClientInit()
+        {
+            Debug.Log("ClientInitPlayer");
+            charController.enabled = true;
+
+            // useless if server
             abilities = new Dictionary<string, Ability>();
         }
+
+        public abstract void RpcClientInit();
 
         private void OnDestroy()
         {
@@ -479,8 +499,6 @@ namespace LightBringer.Player
      * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
      * par dessus un ilot ?
      * 
-     * Multijoueur
-     * 
      * Compress textures
      * 
      * Pentes des ilots : bords progressifs pour la texture du chemin
@@ -494,5 +512,13 @@ namespace LightBringer.Player
      *  - test de la disponibilité à ce moment. Si pas dispo, file non remplacée et bruit d'erreur (et visible sur l'image)
      *  
      *  Base.Start à remplacer. ne pas override ces méthodes.
+     *  
+     *  Init() : voir ce qui est serveur, ce qui est local et ce qui est tout le monde
+     *  
+     *  Gêner le mostre : cancel de son attaque si on time bien un truc.
+     *  
+     *  Trouver comment compenser le ping avec les temps de canalisation.
+     *  
+     *  Networking : tout est sur le serveur (comme LoL).
      * */
 }
