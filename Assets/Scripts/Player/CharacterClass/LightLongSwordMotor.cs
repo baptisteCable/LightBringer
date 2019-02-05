@@ -101,7 +101,6 @@ namespace LightBringer.Player.Class
         [ClientRpc]
         public override void RpcClientInit()
         {
-            Debug.Log("RpcClientInitLLS");
             ClientInit();
             
             // Abilities
@@ -111,8 +110,6 @@ namespace LightBringer.Player.Class
             abilities.Add("SkillDef", new AbDef(this, sword));
             abilities.Add("SkillOff", new AbOff(this, sword));
             abilities.Add("SkillUlt", new AbUlt(this, sword));
-
-            Debug.Log(abilities.Keys);
 
             if (sphereObjects == null)
             {

@@ -62,7 +62,7 @@ namespace LightBringer.Player
         }
 
         private void Update()
-        {
+        {/*
             AddAndStartQueuedStates();
 
             foreach (State s in states)
@@ -70,7 +70,7 @@ namespace LightBringer.Player
                 s.Update();
             }
 
-            RemoveCompletedStates();
+            RemoveCompletedStates();*/
         }
 
         private void RemoveCompletedStates()
@@ -143,14 +143,14 @@ namespace LightBringer.Player
         }
 
         private void AddAndStartQueuedStates()
-        {
+        {/*
             while (queuedStates.Count > 0)
             {
                 State s = queuedStates[0];
                 states.Add(s);
                 s.Start(this);
                 queuedStates.RemoveAt(0);
-            }
+            }*/
         }
 
         public void StopState(State state)

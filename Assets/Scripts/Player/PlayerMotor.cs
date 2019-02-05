@@ -431,7 +431,6 @@ namespace LightBringer.Player
         [Command]
         public virtual void CmdServerInit()
         {
-            Debug.Log("CmdServerInit");
             psm.Init();
 
             abilityMoveMultiplicator = 1f;
@@ -445,7 +444,6 @@ namespace LightBringer.Player
         
         protected void ClientInit()
         {
-            Debug.Log("ClientInitPlayer");
             charController.enabled = true;
 
             // useless if server

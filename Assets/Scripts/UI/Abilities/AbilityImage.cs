@@ -25,7 +25,7 @@ namespace LightBringer.UI
         }
 
         protected virtual void Update()
-        {
+        {/*
             // CD running
             if (!character.abilities[abilityIndex].coolDownUp)
             {
@@ -59,7 +59,7 @@ namespace LightBringer.UI
             }
 
             // Locked
-            lockedImage.SetActive(character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available);
+            lockedImage.SetActive(character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available); */
         }
     }
 }

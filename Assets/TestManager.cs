@@ -29,8 +29,6 @@ public class TestManager : NetworkBehaviour
 
     private void Start()
     {
-        Debug.Log("Démarrage du test");
-
         singleton = this;
 
         tg = terrain.GetComponent<TerrainGenerator>();

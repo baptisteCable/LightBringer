@@ -5,6 +5,7 @@ namespace LightBringer.Player
 {
     public class PlayerController : NetworkBehaviour
     {
+        // Set by the client, send to the server when changed
         [HideInInspector]
         public Vector2 desiredMove;
 
@@ -15,24 +16,45 @@ namespace LightBringer.Player
 
         private void Update()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             Move();
         }
 
+        // Get desired move from local player input
         private void Move()
         {
             // Move input
             float v = Input.GetAxisRaw("Vertical");
             float h = Input.GetAxisRaw("Horizontal");
-            desiredMove = new Vector2(v + h, v - h);
+            Vector2 move = new Vector2(v + h, v - h);
 
-            if (desiredMove.magnitude < .01f)
+            if (move.magnitude < .01f)
             {
-                desiredMove = Vector2.zero;
+                move = Vector2.zero;
             }
             else
             {
-                desiredMove.Normalize();
+                move.Normalize();
             }
+
+            if (move != desiredMove)
+            {
+                desiredMove = move;
+                if (!isServer)
+                {
+                    CmdSetDesiredMove(move);
+                }
+            }
+        }
+
+        [Command]
+        private void CmdSetDesiredMove(Vector2 move)
+        {
+            desiredMove = move;
         }
     }
 }
