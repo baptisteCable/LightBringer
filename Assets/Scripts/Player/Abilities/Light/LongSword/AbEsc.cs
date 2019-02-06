@@ -80,13 +80,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.Channel();
 
-            if ((GameManager.gm.worldMousePoint - playerMotor.transform.position).magnitude < MAX_RANGE)
+            if ((playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).magnitude < MAX_RANGE)
             {
-                destination = GameManager.gm.worldMousePoint;
+                destination = playerMotor.pc.pointedWorldPoint;
             }
             else
             {
-                destination = playerMotor.transform.position + (GameManager.gm.worldMousePoint - playerMotor.transform.position).normalized * MAX_RANGE;
+                destination = playerMotor.transform.position + (playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).normalized * MAX_RANGE;
             }
 
             landingIndicator.transform.position = new Vector3(destination.x, .2f, destination.z);

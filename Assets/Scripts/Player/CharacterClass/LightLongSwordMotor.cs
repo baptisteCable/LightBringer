@@ -133,10 +133,9 @@ namespace LightBringer.Player.Class
             }
         }
 
-        [ClientRpc]
-        public override void RpcClientInit()
+        protected override void Init()
         {
-            ClientInit();
+            base.Init();
             
             // Abilities
             abilities.Add("SkillEsc", new AbEsc(this));

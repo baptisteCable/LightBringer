@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightBringer.Player;
+using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
 public class PlayerCamera : MonoBehaviour
@@ -14,10 +15,14 @@ public class PlayerCamera : MonoBehaviour
     private float currentXRotation;
     private float targetFieldOfView;
 
+    private PlayerController pc;
+
     private AnimationCurve xPos, yPos, zPos, xRot, fieldOfView;
 
     private void Start()
     {
+        pc = player.GetComponent<PlayerController>();
+
         cam = GetComponent<Camera>();
         GameManager.gm.floorPlane = new Plane(new Vector3(0, 1, 0), new Vector3(0, GameManager.gm.currentAlt, 0));
 
@@ -58,21 +63,8 @@ public class PlayerCamera : MonoBehaviour
 
     private void Update()
     {
-        SendWorldMousePointToGM();
         MoveCamera();
         Zoom();
-    }
-
-    private void SendWorldMousePointToGM()
-    {
-        Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
-
-        float distance;
-
-        if (GameManager.gm.floorPlane.Raycast(mouseRay, out distance))
-        {
-            GameManager.gm.worldMousePoint = mouseRay.GetPoint(distance);
-        }
     }
 
     void MoveCamera()
@@ -88,9 +80,9 @@ public class PlayerCamera : MonoBehaviour
         else
         {
             cam.transform.position = Vector3.Lerp(cam.transform.position, new Vector3(
-                    player.position.x + camPositionFromPlayer.x + (GameManager.gm.worldMousePoint.x - player.position.x) * .3f,
+                    player.position.x + camPositionFromPlayer.x + (pc.pointedWorldPoint.x - player.position.x) * .3f,
                     camPositionFromPlayer.y,
-                    player.position.z + camPositionFromPlayer.z + (GameManager.gm.worldMousePoint.z - player.position.z) * .3f
+                    player.position.z + camPositionFromPlayer.z + (pc.pointedWorldPoint.z - player.position.z) * .3f
                 ), Time.deltaTime * 8f);
         }
     }

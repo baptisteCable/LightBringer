@@ -19,6 +19,9 @@ namespace LightBringer.Networking
         }
 
         [SerializeField]
+        private Transform syncedTransform;
+
+        [SerializeField]
         private NetworkSynchronization ns;
 
         private List<PosAtTime> incomingPositions;
@@ -30,7 +33,7 @@ namespace LightBringer.Networking
         private void Start()
         {
             incomingPositions = new List<PosAtTime>();
-            incomingPositions.Add(new PosAtTime(Time.time, transform.position));
+            incomingPositions.Add(new PosAtTime(Time.time, syncedTransform.position));
         }
 
         private void FixedUpdate()
@@ -64,7 +67,7 @@ namespace LightBringer.Networking
 
                 float alpha = (Time.time - incomingPositions[0].time) / (incomingPositions[1].time - incomingPositions[0].time);
 
-                transform.position = Vector3.Lerp(incomingPositions[0].position, incomingPositions[1].position, alpha);
+                syncedTransform.position = Vector3.Lerp(incomingPositions[0].position, incomingPositions[1].position, alpha);
             }
         }
 
@@ -94,7 +97,7 @@ namespace LightBringer.Networking
         {
             if (isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
             {
-                RpcSynchronizePosition(transform.position, Time.time);
+                RpcSynchronizePosition(syncedTransform.position, Time.time);
                 lastSyncTime = Time.time;
             }
         }

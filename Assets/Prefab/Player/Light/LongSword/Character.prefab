@@ -973,6 +973,7 @@ GameObject:
   - component: {fileID: 114609658970633654}
   - component: {fileID: 95003245199498780}
   - component: {fileID: 114102573534543964}
+  - component: {fileID: 114850675944989254}
   m_Layer: 10
   m_Name: Character
   m_TagString: Player
@@ -2454,6 +2455,7 @@ MonoBehaviour:
   networkPing: 0
   simulatedPing: 0
   syncInterval: 0.06
+  safetyInterval: 0.01
 --- !u!114 &114162904725990442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2539,6 +2541,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   desiredMove: {x: 0, y: 0}
+  pointedWorldPoint: {x: 0, y: 0, z: 0}
+  cam: {fileID: 0}
 --- !u!114 &114416538187133508
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2643,6 +2647,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 999fe288db2e79b409abff7bb13cdf48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncedTransform: {fileID: 4465847920421198}
   ns: {fileID: 114102573534543964}
 --- !u!114 &114649589420226890
 MonoBehaviour:
@@ -2722,6 +2727,7 @@ MonoBehaviour:
   characterContainer: {fileID: 4471192447646390}
   animator: {fileID: 95003245199498780}
   psm: {fileID: 114649589420226890}
+  pc: {fileID: 0}
   abilityMoveMultiplicator: 1
   abilityMaxRotation: -1
   visible: 1
@@ -2730,6 +2736,7 @@ MonoBehaviour:
   ignoreCD: 0
   cameraPrefab: {fileID: 1500073616758322, guid: f03a65279bedbf643b4b9db5cfa3a748,
     type: 2}
+  playerCamera: {fileID: 0}
   userInterfacePrefab: {fileID: 1741126108384878, guid: 22b057e15cf15154c978b0819757ac48,
     type: 2}
   lightColumnPrefab: {fileID: 1878124655510310, guid: 4c818e1e52198c64582499168d517a73,
@@ -2813,6 +2820,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isLoaded: 0
+--- !u!114 &114850675944989254
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1768039230338972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 95003245199498780}
+  m_ParameterSendBits: 15
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!114 &114984258286303416
 MonoBehaviour:
   m_ObjectHideFlags: 1

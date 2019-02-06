@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerMotor))]
-    public class PlayerStatusManager : MonoBehaviour
+    public class PlayerStatusManager : NetworkBehaviour
     {
         private const float FLASH_DURATION = .1f;
 
@@ -63,14 +64,19 @@ namespace LightBringer.Player
 
         private void Update()
         {
-            AddAndStartQueuedStates();
-
-            foreach (State s in states)
+            // get state information from server on connection
+            if (isServer)
             {
-                s.Update();
-            }
+                AddAndStartQueuedStates();
 
-            RemoveCompletedStates();
+                foreach (State s in states)
+                {
+                    s.Update();
+                }
+
+                RemoveCompletedStates();
+            }
+            
         }
 
         private void RemoveCompletedStates()

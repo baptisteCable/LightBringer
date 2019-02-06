@@ -26,7 +26,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public PlayerStatusManager psm;
         private CharacterController charController;
-        PlayerController pc;
+        public PlayerController pc;
 
         // misc
         [HideInInspector]
@@ -50,7 +50,7 @@ namespace LightBringer.Player
 
         // Camera
         public GameObject cameraPrefab;
-        private GameObject playerCamera;
+        public GameObject playerCamera;
 
         // User Interface
         public GameObject userInterfacePrefab;
@@ -81,12 +81,8 @@ namespace LightBringer.Player
             psm = GetComponent<PlayerStatusManager>();
             pc = GetComponent<PlayerController>();
 
-
-            /* ********* Server ********** */
-            if (isServer)
-            {
-                CmdServerInit();
-            }
+            Init();
+            
 
             /* ********* Local player ********** */
             if (isLocalPlayer)
@@ -100,6 +96,7 @@ namespace LightBringer.Player
                 // Camera
                 playerCamera = Instantiate(cameraPrefab);
                 playerCamera.GetComponent<PlayerCamera>().player = transform;
+                pc.cam = playerCamera.GetComponent<Camera>();
 
                 if (CameraManager.singleton != null)
                 {
@@ -120,6 +117,12 @@ namespace LightBringer.Player
                 return;
             }
 
+            // look at mouse point
+            if (!psm.isStunned)
+            {
+                LookAtMouse();
+            }
+
             if (!isServer)
             {
                 return;
@@ -130,12 +133,6 @@ namespace LightBringer.Player
 
             // CC progression
             psm.CCComputation();
-
-            // look at mouse point
-            if (!psm.isStunned)
-            {
-                LookAtMouse();
-            }
 
             // Check buttons and start abilities
             StartAbilities();
@@ -301,29 +298,32 @@ namespace LightBringer.Player
 
         void LookAtMouse()
         {
-            if ((GameManager.gm.worldMousePoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
+            if (isLocalPlayer)
             {
-                // Smoothly rotate towards the target point.
-                var targetRotation = Quaternion.LookRotation(
-                        GameManager.gm.worldMousePoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
-                    );
-                Quaternion rotation = Quaternion.Slerp(
-                        characterContainer.rotation,
-                        targetRotation,
-                        rotationSpeed * Time.deltaTime
-                    );
-
-                currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
-
-                float mrs = MaxRotationSpeed();
-
-                if (Mathf.Abs(currentRotationSpeed) > mrs)
+                if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
                 {
-                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
-                }
-                else
-                {
-                    characterContainer.rotation = rotation;
+                    // Smoothly rotate towards the target point.
+                    var targetRotation = Quaternion.LookRotation(
+                            pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
+                        );
+                    Quaternion rotation = Quaternion.Slerp(
+                            characterContainer.rotation,
+                            targetRotation,
+                            rotationSpeed * Time.deltaTime
+                        );
+
+                    currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
+
+                    float mrs = MaxRotationSpeed();
+
+                    if (Mathf.Abs(currentRotationSpeed) > mrs)
+                    {
+                        characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
+                    }
+                    else
+                    {
+                        characterContainer.rotation = rotation;
+                    }
                 }
             }
         }
@@ -430,25 +430,35 @@ namespace LightBringer.Player
         public virtual void CmdServerInit()
         {
             psm.Init();
+            Init();
 
-            abilityMoveMultiplicator = 1f;
-            abilityMaxRotation = -1f;
+            charController.enabled = true;
 
             movementDirection = Vector3.zero;
             previousPosition = Vector3.zero;
 
+            // call on clients too
             RpcClientInit();
         }
-        
-        protected void ClientInit()
-        {
-            charController.enabled = true;
 
-            // useless if server
-            abilities = new Dictionary<string, Ability>();
+        [ClientRpc]
+        public void RpcClientInit()
+        {
+            if (!isServer)
+            {
+                Init();
+            }
         }
 
-        public abstract void RpcClientInit();
+        protected virtual void Init()
+        {
+            psm.Init();
+
+            abilityMoveMultiplicator = 1f;
+            abilityMaxRotation = -1f;
+
+            abilities = new Dictionary<string, Ability>();
+        }
 
         private void OnDestroy()
         {

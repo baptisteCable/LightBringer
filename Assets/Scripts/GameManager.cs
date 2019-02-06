@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour {
 
     public const float GRAVITY = 10f;
     public bool staticCamera;
-    public Vector3 worldMousePoint;
     
     public int currentFloor = 0;
     public Plane floorPlane;
