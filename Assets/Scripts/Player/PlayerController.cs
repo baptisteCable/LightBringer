@@ -14,7 +14,7 @@ namespace LightBringer.Player
             desiredMove = Vector2.zero;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (!isLocalPlayer)
             {

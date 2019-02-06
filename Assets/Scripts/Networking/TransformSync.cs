@@ -18,10 +18,11 @@ namespace LightBringer.Networking
             }
         }
 
-        private List<PosAtTime> incomingPositions;
-        private float averageTimeDelta = Mathf.Infinity;
+        [SerializeField]
+        private NetworkSynchronization ns;
 
-        private float syncInterval = .06f; // time between two sync
+        private List<PosAtTime> incomingPositions;
+        // private float averageTimeDelta = Mathf.Infinity;
 
         private float lastSyncTime = 0;
 
@@ -72,17 +73,18 @@ namespace LightBringer.Networking
         {
             if (!isServer && incomingPositions != null)
             {
+                /*
                 float delta = time - Time.time;
 
                 if (delta < averageTimeDelta)
                 {
                     averageTimeDelta = delta;
                 }
-
+                */
                 // (time - averageTimeDelta) is the local time corresponding to the server time, including network latency.
                 // The local time for this position is (time - averageTimeDelta) + syncInterval
                 // We add a little safe time to avoid waiting for next positions
-                float localTime = time - averageTimeDelta + syncInterval + .01f;
+                float localTime = time - ns.serverLocalTimeDiff + ns.syncInterval + ns.safetyInterval;
 
                 incomingPositions.Add(new PosAtTime(localTime, syncPosition));
             }
@@ -90,7 +92,7 @@ namespace LightBringer.Networking
 
         void UpdateSyncPosition()
         {
-            if (isServer && Time.time > lastSyncTime + syncInterval - .0001)
+            if (isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
             {
                 RpcSynchronizePosition(transform.position, Time.time);
                 lastSyncTime = Time.time;
@@ -98,9 +100,3 @@ namespace LightBringer.Networking
         }
     }
 }
-
-
-/*
- * ping
- * 
- * */
