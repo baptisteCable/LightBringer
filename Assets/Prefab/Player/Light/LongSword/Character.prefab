@@ -970,9 +970,10 @@ GameObject:
   - component: {fileID: 143568221814471098}
   - component: {fileID: 54450692436544408}
   - component: {fileID: 114162904725990442}
-  - component: {fileID: 114609658970633654}
   - component: {fileID: 95003245199498780}
   - component: {fileID: 114102573534543964}
+  - component: {fileID: 114609658970633654}
+  - component: {fileID: 114047714306766294}
   - component: {fileID: 114850675944989254}
   m_Layer: 10
   m_Name: Character
@@ -2440,6 +2441,19 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114047714306766294
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1768039230338972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d669575b07ab0644a88eec2a45f671f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncedTransform: {fileID: 4471192447646390}
+  ns: {fileID: 114102573534543964}
 --- !u!114 &114102573534543964
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2543,6 +2557,7 @@ MonoBehaviour:
   desiredMove: {x: 0, y: 0}
   pointedWorldPoint: {x: 0, y: 0, z: 0}
   cam: {fileID: 0}
+  ns: {fileID: 114102573534543964}
 --- !u!114 &114416538187133508
 MonoBehaviour:
   m_ObjectHideFlags: 1

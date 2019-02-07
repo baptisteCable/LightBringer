@@ -298,7 +298,7 @@ namespace LightBringer.Player
 
         void LookAtMouse()
         {
-            if (isLocalPlayer)
+            if (isServer || isLocalPlayer)
             {
                 if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
                 {

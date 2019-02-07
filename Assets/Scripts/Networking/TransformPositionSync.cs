@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 namespace LightBringer.Networking
 {
-    public class TransformSync : NetworkBehaviour
+    public class TransformPositionSync : NetworkBehaviour
     {
         private struct PosAtTime
         {
@@ -76,17 +76,6 @@ namespace LightBringer.Networking
         {
             if (!isServer && incomingPositions != null)
             {
-                /*
-                float delta = time - Time.time;
-
-                if (delta < averageTimeDelta)
-                {
-                    averageTimeDelta = delta;
-                }
-                */
-                // (time - averageTimeDelta) is the local time corresponding to the server time, including network latency.
-                // The local time for this position is (time - averageTimeDelta) + syncInterval
-                // We add a little safe time to avoid waiting for next positions
                 float localTime = time - ns.serverLocalTimeDiff + ns.syncInterval + ns.safetyInterval;
 
                 incomingPositions.Add(new PosAtTime(localTime, syncPosition));

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LightBringer.Networking;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace LightBringer.Player
@@ -13,6 +14,11 @@ namespace LightBringer.Player
         private Vector2 localMove;
 
         public Camera cam;
+
+        [SerializeField]
+        private NetworkSynchronization ns;
+
+        private float lastSyncTime = 0;
 
         private void Start()
         {
@@ -32,7 +38,8 @@ namespace LightBringer.Player
 
         private void Update()
         {
-            ComputeAndSendPointedWorldPoint();
+            ComputePointedWorldPoint();
+            SendPointedWorldPointToServer();
         }
 
         // Get desired move from local player input
@@ -62,7 +69,7 @@ namespace LightBringer.Player
             }
         }
 
-        private void ComputeAndSendPointedWorldPoint()
+        private void ComputePointedWorldPoint()
         {
             if (cam != null)
             {
@@ -85,6 +92,24 @@ namespace LightBringer.Player
         private void CmdSetDesiredMove(Vector2 move)
         {
             desiredMove = move;
+        }
+
+        void SendPointedWorldPointToServer()
+        {
+            if (isLocalPlayer && !isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
+            {
+                CmdSendPointedWorldPointToServer(pointedWorldPoint);
+                lastSyncTime = Time.time;
+            }
+        }
+
+        [Command]
+        void CmdSendPointedWorldPointToServer(Vector3 point)
+        {
+            if (!isLocalPlayer)
+            {
+                pointedWorldPoint = point;
+            }
         }
     }
 }
