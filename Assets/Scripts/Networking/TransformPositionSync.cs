@@ -21,9 +21,6 @@ namespace LightBringer.Networking
         [SerializeField]
         private Transform syncedTransform;
 
-        [SerializeField]
-        private NetworkSynchronization ns;
-
         private List<PosAtTime> incomingPositions;
         // private float averageTimeDelta = Mathf.Infinity;
 
@@ -74,17 +71,20 @@ namespace LightBringer.Networking
         [ClientRpc]
         private void RpcSynchronizePosition(Vector3 syncPosition, float time)
         {
-            if (!isServer && incomingPositions != null)
+            if (!isServer && NetworkSynchronization.singleton != null && incomingPositions != null)
             {
-                float localTime = time - ns.serverLocalTimeDiff + ns.syncInterval + ns.safetyInterval;
+                float localTime = NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time);
 
-                incomingPositions.Add(new PosAtTime(localTime, syncPosition));
+                if (localTime > 0)
+                {
+                    incomingPositions.Add(new PosAtTime(localTime, syncPosition));
+                }
             }
         }
 
         void UpdateSyncPosition()
         {
-            if (isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
+            if (isServer && NetworkSynchronization.singleton != null && Time.time > lastSyncTime + NetworkSynchronization.singleton.syncInterval - .0001f)
             {
                 RpcSynchronizePosition(syncedTransform.position, Time.time);
                 lastSyncTime = Time.time;

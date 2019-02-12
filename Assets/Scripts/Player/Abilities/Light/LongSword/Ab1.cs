@@ -3,6 +3,7 @@ using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -43,9 +44,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Misc
         private bool lightSpawned;
 
-        // Effects
-        private ParticleSystem slashAEffect, slashBEffect;
-
         // Inherited motor
         LightLongSwordMotor lightMotor;
 
@@ -53,9 +51,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
         {
             lightMotor = playerMotor;
-
-            slashAEffect = lightMotor.ab1aSlash.GetComponent<ParticleSystem>();
-            slashBEffect = lightMotor.ab1bSlash.GetComponent<ParticleSystem>();
         }
 
 
@@ -90,18 +85,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // animation
             if (currentAttack == 1)
             {
-                playerMotor.animator.Play("BotAb1a", -1, 0);
-                playerMotor.animator.Play("TopAb1a", -1, 0);
+                lightMotor.CallByName("PlayAnimAb1a");
             }
             else if (currentAttack == 2)
             {
-                playerMotor.animator.Play("BotAb1b");
-                playerMotor.animator.Play("TopAb1b");
+                lightMotor.CallByName("PlayAnimAb1b");
             }
             else if (currentAttack == 3)
             {
-                playerMotor.animator.Play("BotAb1c");
-                playerMotor.animator.Play("TopAb1c");
+                lightMotor.CallByName("PlayAnimAb1c");
             }
         }
 
@@ -134,11 +126,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                slashAEffect.Play();
+                lightMotor.CallByName("Ab1aSlash");
             }
             if (currentAttack == 2)
             {
-                slashBEffect.Play();
+                lightMotor.CallByName("Ab1bSlash");
             }
         }
 
@@ -168,6 +160,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
+            NetworkServer.Spawn(lightZone);
 
             // Particle effect
             GameObject lightSpawn = GameObject.Instantiate(lightMotor.lightSpawnEffetPrefab, null);

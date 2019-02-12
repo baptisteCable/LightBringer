@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using LightBringer.Networking;
 using LightBringer.Player.Abilities;
 using LightBringer.UI;
 using UnityEngine;
@@ -23,18 +25,15 @@ namespace LightBringer.Player
 
         // Components
         public Animator animator;
-        [HideInInspector]
-        public PlayerStatusManager psm;
+        [HideInInspector] public PlayerStatusManager psm;
         private CharacterController charController;
-        public PlayerController pc;
+        [HideInInspector] public PlayerController pc;
 
         // misc
-        [HideInInspector]
-        public float abilityMoveMultiplicator;
-        [HideInInspector]
-        public float abilityMaxRotation = 0f;
-        public bool visible = true;
-        float currentRotationSpeed;
+        [HideInInspector] public float abilityMoveMultiplicator;
+        [HideInInspector] public float abilityMaxRotation = 0f;
+        [HideInInspector] public bool visible = true;
+        private float currentRotationSpeed;
 
         // body parts
         public Transform weaponSlotR;
@@ -46,15 +45,18 @@ namespace LightBringer.Player
         private Vector3 previousPosition;
 
         // Training
-        public bool ignoreCD = false;
+        [HideInInspector] public bool ignoreCD = false;
 
         // Camera
-        public GameObject cameraPrefab;
-        public GameObject playerCamera;
+        [SerializeField] private GameObject cameraPrefab;
+        [HideInInspector] public GameObject playerCamera;
 
         // User Interface
         public GameObject userInterfacePrefab;
         private GameObject userInterface;
+
+        // Networking
+        [SerializeField] private GameObject networkSynchronizerPrefab;
 
         /* Abilities :
          *      0: None
@@ -65,25 +67,31 @@ namespace LightBringer.Player
          *      Step 2: Channeling. Can be cancelled. Target can be modified. Channeling animation.
          *      Step 3: Casting. When channeling ends, cast the ability. Can't be cancelled manually. 
          */
-        public Ability currentAbility = null;
-        public Ability currentChanneling = null;
-        public Ability specialCancelAbility = null;
+        [HideInInspector] public Ability currentAbility = null;
+        [HideInInspector] public Ability currentChanneling = null;
+        [HideInInspector] public Ability specialCancelAbility = null;
 
         // Inputs and abilities
-        public Ability[] abilities;
+        [HideInInspector] public Ability[] abilities;
 
         // Use this for initialization
         public virtual void Start()
         {
             /* ********* Everyone ********** */
-
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
             pc = GetComponent<PlayerController>();
 
             Init();
-            
 
+            /* ********* Server ********** */
+            if (isServer)
+            {
+                // NetworkSynchronizer
+                GameObject ns = Instantiate(networkSynchronizerPrefab);
+                NetworkServer.Spawn(ns);
+            }
+            
             /* ********* Local player ********** */
             if (isLocalPlayer)
             {

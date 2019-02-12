@@ -56,6 +56,7 @@ GameObject:
   - component: {fileID: 136293240267343274}
   - component: {fileID: 114528001232034266}
   - component: {fileID: 54399785563685122}
+  - component: {fileID: 114043862983031174}
   m_Layer: 0
   m_Name: LightZone
   m_TagString: Spell
@@ -205,6 +206,38 @@ Light:
   m_UseColorTemperature: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
+--- !u!114 &114043862983031174
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1665082928817364}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 30
+    i1: 229
+    i2: 60
+    i3: 231
+    i4: 240
+    i5: 248
+    i6: 89
+    i7: 36
+    i8: 186
+    i9: 150
+    i10: 30
+    i11: 77
+    i12: 195
+    i13: 240
+    i14: 123
+    i15: 18
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!114 &114528001232034266
 MonoBehaviour:
   m_ObjectHideFlags: 1

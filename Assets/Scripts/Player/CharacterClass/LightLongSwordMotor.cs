@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using LightBringer.Networking;
 using LightBringer.Player.Abilities;
 using LightBringer.Player.Abilities.Light.LongSword;
 using UnityEngine;
@@ -43,8 +45,8 @@ namespace LightBringer.Player.Class
 
 
         [Header("Effects")]
-        public GameObject ab1aSlash;
-        public GameObject ab1bSlash;
+        [SerializeField] private ParticleSystem ab1aSlash;
+        [SerializeField] private ParticleSystem ab1bSlash;
         public GameObject abOffSlash1;
         public GameObject abOffSlash2;
 
@@ -157,6 +159,62 @@ namespace LightBringer.Player.Class
             {
                 ConsumeAllSpheres();
             }
+        }
+
+        public void CallByName(string methodName)
+        {
+            if (isServer)
+            {
+                RpcCallByName(methodName, Time.time);
+
+                MethodInfo mi = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+                mi.Invoke(this, null);
+            }
+        }
+
+        [ClientRpc]
+        private void RpcCallByName(string methodName, float time)
+        {
+            if (!isServer)
+            {
+                StartCoroutine(CallByNameWithDelay(methodName, NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time) - Time.time));
+            }
+        }
+
+        private IEnumerator CallByNameWithDelay(string methodName, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+
+            MethodInfo mi = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+            mi.Invoke(this, null);
+        }
+
+        private void PlayAnimAb1a()
+        {
+            animator.Play("BotAb1a", -1, 0);
+            animator.Play("TopAb1a", -1, 0);
+        }
+
+        private void PlayAnimAb1b()
+        {
+            animator.Play("BotAb1b");
+            animator.Play("TopAb1b");
+        }
+
+        private void PlayAnimAb1c()
+        {
+            animator.Play("BotAb1c");
+            animator.Play("TopAb1c");
+        }
+
+        private void Ab1aSlash()
+        {
+            ab1aSlash.Play();
+        }
+
+        private void Ab1bSlash()
+        {
+            ab1bSlash.Play();
         }
     }
 }

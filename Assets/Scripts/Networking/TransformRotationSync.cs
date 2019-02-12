@@ -21,9 +21,6 @@ namespace LightBringer.Networking
         [SerializeField]
         private Transform syncedTransform;
 
-        [SerializeField]
-        private NetworkSynchronization ns;
-
         private List<RotAtTime> incomingRotations;
         // private float averageTimeDelta = Mathf.Infinity;
 
@@ -89,7 +86,7 @@ namespace LightBringer.Networking
 
         void UpdateSyncRotation()
         {
-            if (isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
+            if (isServer && NetworkSynchronization.singleton != null && Time.time > lastSyncTime + NetworkSynchronization.singleton.syncInterval - .0001f)
             {
                 RpcSynchronizeRotation(syncedTransform.rotation.eulerAngles.y, Time.time);
                 lastSyncTime = Time.time;
@@ -99,11 +96,14 @@ namespace LightBringer.Networking
         [ClientRpc]
         private void RpcSynchronizeRotation(float syncRotation, float time)
         {
-            if (!isServer && incomingRotations != null)
+            if (!isServer && NetworkSynchronization.singleton != null && incomingRotations != null)
             {
-                float localTime = time - ns.serverLocalTimeDiff + ns.syncInterval + ns.safetyInterval;
+                float localTime = NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time);
 
-                incomingRotations.Add(new RotAtTime(localTime, syncRotation));
+                if (localTime > 0)
+                {
+                    incomingRotations.Add(new RotAtTime(localTime, syncRotation));
+                }
             }
         }
     }

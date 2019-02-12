@@ -971,7 +971,6 @@ GameObject:
   - component: {fileID: 54450692436544408}
   - component: {fileID: 114162904725990442}
   - component: {fileID: 95003245199498780}
-  - component: {fileID: 114102573534543964}
   - component: {fileID: 114609658970633654}
   - component: {fileID: 114047714306766294}
   - component: {fileID: 114850675944989254}
@@ -2453,23 +2452,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncedTransform: {fileID: 4471192447646390}
-  ns: {fileID: 114102573534543964}
---- !u!114 &114102573534543964
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1768039230338972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3aea7008e890db24ca62b6185f0722e3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  serverLocalTimeDiff: 0
-  networkPing: 0
-  simulatedPing: 0
-  syncInterval: 0.06
-  safetyInterval: 0.01
 --- !u!114 &114162904725990442
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2554,10 +2536,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfc3b34c0a1f8d9449df536f509c469b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  queue: 6
+  pressedButton: 6
   desiredMove: {x: 0, y: 0}
   pointedWorldPoint: {x: 0, y: 0, z: 0}
   cam: {fileID: 0}
-  ns: {fileID: 114102573534543964}
+  ns: {fileID: 0}
 --- !u!114 &114416538187133508
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2663,7 +2647,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncedTransform: {fileID: 4465847920421198}
-  ns: {fileID: 114102573534543964}
 --- !u!114 &114649589420226890
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2754,6 +2737,8 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   userInterfacePrefab: {fileID: 1741126108384878, guid: 22b057e15cf15154c978b0819757ac48,
     type: 2}
+  networkSynchronizerPrefab: {fileID: 1675133185955540, guid: 3630a2e516832bb408ff18a409e46c53,
+    type: 2}
   lightColumnPrefab: {fileID: 1878124655510310, guid: 4c818e1e52198c64582499168d517a73,
     type: 2}
   ultiDTprefab: {fileID: 1904506915001948, guid: 16a81096b01331647b4fffedee465b12,
@@ -2790,8 +2775,8 @@ MonoBehaviour:
     type: 2}
   lightZonePrefab: {fileID: 1665082928817364, guid: 1ee53ce7f0f85924ba961e4dc3f07b12,
     type: 2}
-  ab1aSlash: {fileID: 1360016435248540}
-  ab1bSlash: {fileID: 1907691341246958}
+  ab1aSlash: {fileID: 198054159184500540}
+  ab1bSlash: {fileID: 198739112422973496}
   abOffSlash1: {fileID: 1625354501396676}
   abOffSlash2: {fileID: 1847807193455796}
   swordObject: {fileID: 1354130265165816}

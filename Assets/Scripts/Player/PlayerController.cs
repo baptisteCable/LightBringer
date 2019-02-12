@@ -33,9 +33,6 @@ namespace LightBringer.Player
 
         public Camera cam;
 
-        [SerializeField]
-        private NetworkSynchronization ns;
-
         private float lastSyncTime = 0;
 
         // Components
@@ -182,7 +179,8 @@ namespace LightBringer.Player
 
         void SendPointedWorldPointToServer()
         {
-            if (isLocalPlayer && !isServer && Time.time > lastSyncTime + ns.syncInterval - .0001f)
+            if (isLocalPlayer && !isServer && NetworkSynchronization.singleton != null
+                && Time.time > lastSyncTime + NetworkSynchronization.singleton.syncInterval - .0001f)
             {
                 CmdSendPointedWorldPointToServer(pointedWorldPoint);
                 lastSyncTime = Time.time;

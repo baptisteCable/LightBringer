@@ -5,17 +5,22 @@ namespace LightBringer.Networking
 {
     public class NetworkSynchronization : NetworkBehaviour
     {
+        public const int MESSAGE_PING = 41;
+        public const int MESSAGE_PONG = 42;
+
+        [HideInInspector] public static NetworkSynchronization singleton;
+
         private const float LERP_RATE = .07f;
 
         // ServerTime - LocalTime
-        public float serverLocalTimeDiff;
+        [HideInInspector] public float serverLocalTimeDiff;
 
-        public float networkPing;
+        [HideInInspector] public float networkPing;
 
         // Time between control and backCommand, including syncInterval
         // reduce it implies lag, but allows network latency
         // hard reduce, smooth increase
-        public float simulatedPing;
+        [HideInInspector] public float simulatedPing;
 
         // Movement sync interval
         public float syncInterval = .06f;
@@ -27,10 +32,33 @@ namespace LightBringer.Networking
 
         private float lastPingTime;
 
+        public NetworkClient client;
+
+        private class FloatMessage : MessageBase
+        {
+            public float value;
+        }
+
         void Start()
         {
-            // start high. It will be reduced.
+            // start high. It will be hard reduced.
             serverLocalTimeDiff = Mathf.Infinity;
+
+            singleton = this;
+
+            // Handler on server: register on NetworkServer
+            if (isServer)
+            {
+                NetworkServer.RegisterHandler(MESSAGE_PING, OnServerPing);
+            }
+
+            // Handler on the client: register on client
+            if (!isServer)
+            {
+                NetworkServer.RegisterHandler(MESSAGE_PONG, OnClientPong);
+            }
+
+            client = NetworkManager.singleton.client;
         }
 
         // Update is called once per frame
@@ -38,7 +66,6 @@ namespace LightBringer.Networking
         {
             SyncTime();
             Ping();
-
         }
 
         [ClientRpc]
@@ -70,32 +97,33 @@ namespace LightBringer.Networking
 
         private void Ping()
         {
-            if (!isServer && isLocalPlayer && Time.time > lastPingTime + pingInterval)
+            if (!isServer && Time.time > lastPingTime + pingInterval)
             {
                 lastPingTime = Time.time;
-                CmdPing();
+
+                // send message to the server
+                FloatMessage message = new FloatMessage();
+                message.value = Time.time;
+                client.Send(MESSAGE_PING, message);
             }
         }
 
-        [Command]
-        private void CmdPing()
+        private void OnServerPing(NetworkMessage netMsg)
         {
-            RpcPong();
+            FloatMessage message = netMsg.ReadMessage<FloatMessage>();
+            NetworkServer.SendToClient(netMsg.conn.connectionId, MESSAGE_PONG, message);
         }
 
-        [ClientRpc]
-        private void RpcPong()
+        private void OnClientPong(NetworkMessage netMsg)
         {
-            if (isLocalPlayer)
-            {
-                networkPing = (int)((Time.time - lastPingTime) * 1000);
-                simulatedPing = networkPing + (int)((syncInterval + safetyInterval) * 1000);
-            }
+            FloatMessage message = netMsg.ReadMessage<FloatMessage>();
+            networkPing = (int)((Time.time - message.value) * 1000);
+            simulatedPing = networkPing + (int)((syncInterval + safetyInterval) * 1000);
         }
 
         private void OnGUI()
         {
-            if (!isServer && isLocalPlayer)
+            if (!isServer)
             {
                 GUI.contentColor = Color.black;
                 GUILayout.BeginArea(new Rect(500, 20, 250, 120));
@@ -104,6 +132,11 @@ namespace LightBringer.Networking
                 GUILayout.Label("Simulated ping: " + simulatedPing);
                 GUILayout.EndArea();
             }
+        }
+
+        public float GetLocalTimeFromServerTime(float serverTime)
+        {
+            return serverTime - serverLocalTimeDiff + syncInterval + safetyInterval;
         }
     }
 }
