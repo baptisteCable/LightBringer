@@ -49,7 +49,7 @@ namespace LightBringer.Networking
 
         void InterpolateRotation()
         {
-            if (!isServer && !isLocalPlayer)
+            if (!isServer)
             {
                 if (incomingRotations.Count <= 1)
                 {
@@ -99,7 +99,7 @@ namespace LightBringer.Networking
         [ClientRpc]
         private void RpcSynchronizeRotation(float syncRotation, float time)
         {
-            if (!isServer && !isLocalPlayer && incomingRotations != null)
+            if (!isServer && incomingRotations != null)
             {
                 float localTime = time - ns.serverLocalTimeDiff + ns.syncInterval + ns.safetyInterval;
 

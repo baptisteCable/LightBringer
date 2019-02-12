@@ -70,7 +70,7 @@ namespace LightBringer.Player
         public Ability specialCancelAbility = null;
 
         // Inputs and abilities
-        public Dictionary<string, Ability> abilities;
+        public Ability[] abilities;
 
         // Use this for initialization
         public virtual void Start()
@@ -161,7 +161,7 @@ namespace LightBringer.Player
 
         private void RefreshCooldowns()
         {
-            foreach (Ability ab in abilities.Values)
+            foreach (Ability ab in abilities)
             {
                 if (ab.coolDownRemaining > 0)
                 {
@@ -180,7 +180,7 @@ namespace LightBringer.Player
 
         private void ComputeAbilitiesSpecial()
         {
-            foreach (Ability ab in abilities.Values)
+            foreach (Ability ab in abilities)
             {
                 ab.ComputeSpecial();
             }
@@ -188,25 +188,30 @@ namespace LightBringer.Player
 
         private void StartAbilities()
         {
-            foreach (KeyValuePair<string, Ability> abPair in abilities)
+            // Check queue first
+            if (pc.queue >= 0 && pc.queue < abilities.Length && abilities[pc.queue].CanStart())
             {
-                if (Input.GetButton(abPair.Key))
-                {
-                    abPair.Value.StartChanneling();
-                }
+                abilities[pc.queue].StartChanneling();
+                pc.queue = PlayerController.IN_NONE;
+            }
+
+            // Check pressed button in a second time
+            if (pc.pressedButton >= 0 && pc.pressedButton < abilities.Length && abilities[pc.pressedButton].CanStart())
+            {
+                abilities[pc.pressedButton].StartChanneling();
             }
 
             // Cancel
-            if (Input.GetButtonDown("CancelChanneling"))
+            if (pc.queue == PlayerController.IN_CANCEL)
             {
                 Cancel();
             }
 
-            // Test
-            /*if (Input.GetButtonDown("testButton"))
+            // Clear queue if nothing happening
+            if (currentAbility == null && currentChanneling == null && pc.queue != PlayerController.IN_NONE)
             {
-                psm.AddAndStartState(new Immaterial(20f));
-            }*/
+                pc.queue = PlayerController.IN_NONE;
+            }
         }
 
         public void Cancel()
@@ -298,7 +303,7 @@ namespace LightBringer.Player
 
         void LookAtMouse()
         {
-            if (isServer || isLocalPlayer)
+            if (isServer)
             {
                 if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
                 {
@@ -404,7 +409,7 @@ namespace LightBringer.Player
 
         public void LockAbilitiesExcept(bool locked, Ability ability = null)
         {
-            foreach (Ability ab in abilities.Values)
+            foreach (Ability ab in abilities)
             {
                 if (ab != ability)
                 {
@@ -456,8 +461,6 @@ namespace LightBringer.Player
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
-
-            abilities = new Dictionary<string, Ability>();
         }
 
         private void OnDestroy()

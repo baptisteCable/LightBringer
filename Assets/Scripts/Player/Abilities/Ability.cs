@@ -155,18 +155,19 @@ namespace LightBringer.Player.Abilities
         {
         }
 
-        protected bool CannotStartStandard()
+        public virtual bool CanStart()
         {
             return
-                    !coolDownUp ||
-                    playerMotor.currentAbility != null ||
-                    playerMotor.currentChanneling != null ||
-                    playerMotor.psm.isStunned ||
-                    locked ||
-                    !available;
+                    coolDownUp &&
+                    playerMotor.currentAbility == null &&
+                    playerMotor.currentChanneling == null &&
+                    !playerMotor.psm.isStunned &&
+                    !locked &&
+                    available;
         }
 
-        protected bool JumpIntialisationValid()
+        // Not just a test: can cancel other abilities
+        protected bool CanStartEsc()
         {
             if (
                     !coolDownUp ||

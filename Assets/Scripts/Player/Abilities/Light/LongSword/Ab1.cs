@@ -61,11 +61,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void StartChanneling()
         {
-            if (CannotStartStandard())
-            {
-                return;
-            }
-
             if (Time.time > comboTime)
             {
                 currentAttack = 1;

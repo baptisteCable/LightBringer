@@ -868,7 +868,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: SkillOff
+  abilityIndex: 4
   character: {fileID: 0}
 --- !u!114 &114297686687472394
 MonoBehaviour:
@@ -1117,7 +1117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: Skill2
+  abilityIndex: 2
   character: {fileID: 0}
 --- !u!114 &114484813375235048
 MonoBehaviour:
@@ -1386,7 +1386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: SkillEsc
+  abilityIndex: 0
   character: {fileID: 0}
 --- !u!114 &114725588874370330
 MonoBehaviour:
@@ -1426,7 +1426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: SkillDef
+  abilityIndex: 3
   character: {fileID: 0}
 --- !u!114 &114737419632464422
 MonoBehaviour:
@@ -1598,7 +1598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3471ee60c2637479dc478c710e790a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: Skill1
+  abilityIndex: 1
   character: {fileID: 0}
 --- !u!114 &114836789176213688
 MonoBehaviour:
@@ -1741,7 +1741,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c782b6653fea71848b2da8a8ac346e56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityIndex: SkillUlt
+  abilityIndex: 5
   character: {fileID: 0}
 --- !u!114 &114972036689562848
 MonoBehaviour:

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using LightBringer.Player.Abilities;
 using LightBringer.Player.Abilities.Light.LongSword;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -81,7 +82,7 @@ namespace LightBringer.Player.Class
 
             if (ultiSphereCount == MAX_SPHERE_COUNT)
             {
-                abilities["SkillUlt"].available = true;
+                abilities[PlayerController.IN_AB_ULT].available = true;
             }
         }
 
@@ -112,7 +113,7 @@ namespace LightBringer.Player.Class
 
             sphereObjects = new List<GameObject>();
             ultiSphereCount = 0;
-            abilities["SkillUlt"].available = false;
+            abilities[PlayerController.IN_AB_ULT].available = false;
         }
 
         public int GetUltiShpereCount()
@@ -129,27 +130,28 @@ namespace LightBringer.Player.Class
                 sphereObjects.Remove(sphere);
                 Destroy(sphere);
                 ultiSphereCount = sphereObjects.Count;
-                abilities["SkillUlt"].available = false;
+                abilities[PlayerController.IN_AB_ULT].available = false;
             }
         }
 
         protected override void Init()
         {
             base.Init();
-            
+
             // Abilities
-            abilities.Add("SkillEsc", new AbEsc(this));
-            abilities.Add("Skill1", new Ab1(this));
-            abilities.Add("Skill2", new Ab2(this));
-            abilities.Add("SkillDef", new AbDef(this));
-            abilities.Add("SkillOff", new AbOff(this));
-            abilities.Add("SkillUlt", new AbUlt(this));
+            abilities = new Ability[6];
+            abilities[PlayerController.IN_AB_ESC] = new AbEsc(this);
+            abilities[PlayerController.IN_AB_1] = new Ab1(this);
+            abilities[PlayerController.IN_AB_2] = new Ab2(this);
+            abilities[PlayerController.IN_AB_DEF] = new AbDef(this);
+            abilities[PlayerController.IN_AB_OFF] = new AbOff(this);
+            abilities[PlayerController.IN_AB_ULT] = new AbUlt(this);
 
             if (sphereObjects == null)
             {
                 sphereObjects = new List<GameObject>();
                 ultiSphereCount = 0;
-                abilities["SkillUlt"].available = false;
+                abilities[PlayerController.IN_AB_ULT].available = false;
             }
             else
             {

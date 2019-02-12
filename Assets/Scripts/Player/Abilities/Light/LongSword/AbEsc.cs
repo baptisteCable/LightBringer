@@ -51,14 +51,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             lightMotor = playerMotor;
         }
-        
+
+        public override bool CanStart()
+        {
+            return CanStartEsc();
+        }
+
         public override void StartChanneling()
         {
-            if (!JumpIntialisationValid())
-            {
-                return;
-            }
-
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 

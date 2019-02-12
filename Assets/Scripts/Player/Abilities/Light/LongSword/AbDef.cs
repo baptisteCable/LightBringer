@@ -26,11 +26,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override void StartChanneling()
         {
-            if (CannotStartStandard())
-            {
-                return;
-            }
-
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = 0;
             playerMotor.abilityMaxRotation = 0;
