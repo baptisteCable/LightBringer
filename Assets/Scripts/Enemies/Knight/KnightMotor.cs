@@ -27,9 +27,9 @@ namespace LightBringer.Enemies.Knight
         public GameObject attack3act2GO;
         public GameObject shieldCollider;
 
-        public override void Start()
+        private void Start()
         {
-            base.Start();
+            BaseStart();
 
             // Colliders
             attack1act1GO.SetActive(false);
@@ -40,6 +40,11 @@ namespace LightBringer.Enemies.Knight
 
             // Initial mode
             SetMode(Mode.Fight);
+        }
+
+        private void Update()
+        {
+            BaseUpdate();
         }
     }
 }

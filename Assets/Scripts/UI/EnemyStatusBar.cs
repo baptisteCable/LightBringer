@@ -3,13 +3,7 @@ namespace LightBringer.Enemies
 {
     public class EnemyStatusBar : BaseStatusBar
     {
-
-        public StatusManager damageController;
-
-        private void Awake()
-        {
-
-        }
+        [SerializeField] private StatusManager statusManager;
 
         void Start()
         {
@@ -17,8 +11,8 @@ namespace LightBringer.Enemies
             hpImage = hpBG.Find("HPContent").GetComponent<UnityEngine.UI.Image>();
             deleteHPdImage = hpBG.Find("Deleted").GetComponent<UnityEngine.UI.Image>();
 
-            deleteHPdImage.fillAmount = damageController.currentHP / damageController.maxHP;
-            lastHP = damageController.currentHP;
+            deleteHPdImage.fillAmount = statusManager.currentHP / statusManager.maxHP;
+            lastHP = statusManager.currentHP;
             timeSinceDmg = 10f;
         }
 
@@ -27,7 +21,7 @@ namespace LightBringer.Enemies
 
             LookAtCamera(Camera.main);
 
-            ComputeHPBar(damageController.currentHP, damageController.maxHP);
+            ComputeHPBar(statusManager.currentHP, statusManager.maxHP);
         }
     }
 }

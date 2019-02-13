@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Networking;
 
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(CharacterController))]
-    public abstract class Motor : MonoBehaviour
+    public abstract class Motor : NetworkBehaviour
     {
         public float MaxMoveSpeedPassive;
         public float MaxMoveSpeedFight;
@@ -44,8 +45,13 @@ namespace LightBringer.Enemies
         protected Vector3 newAcceleration;
         protected Vector2 smoothDeltaPosition = Vector2.zero;
 
-        public virtual void Start()
+        protected void BaseStart()
         {
+            if (isServer)
+            {
+                GetComponent<Controller>().enabled = true;
+            }
+
             // Animator
             anim = transform.Find("EnemyContainer").GetComponent<Animator>();
 
@@ -62,7 +68,7 @@ namespace LightBringer.Enemies
             lastPosition = transform.position;
         }
 
-        public virtual void Update()
+        protected void BaseUpdate()
         {
             if (!statusManager.isDead)
             {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace LightBringer.Enemies.Knight
 {
     [RequireComponent(typeof(KnightMotor))]
-    public class KnightController : MonoBehaviour
+    public class KnightController : Controller
     {
         private const int ATTACK1 = 0;
         private const int ATTACK2 = 1;

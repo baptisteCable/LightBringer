@@ -7,6 +7,7 @@ namespace LightBringer.Networking
     {
         public const int MESSAGE_PING = 41;
         public const int MESSAGE_PONG = 42;
+        public const int MESSAGE_DAMAGE_DISPLAY = 50;
 
         [HideInInspector] public static NetworkSynchronization singleton;
 
@@ -46,6 +47,8 @@ namespace LightBringer.Networking
 
             singleton = this;
 
+            client = NetworkManager.singleton.client;
+
             // Handler on server: register on NetworkServer
             if (isServer)
             {
@@ -55,10 +58,8 @@ namespace LightBringer.Networking
             // Handler on the client: register on client
             if (!isServer)
             {
-                NetworkServer.RegisterHandler(MESSAGE_PONG, OnClientPong);
+                client.RegisterHandler(MESSAGE_PONG, OnClientPong);
             }
-
-            client = NetworkManager.singleton.client;
         }
 
         // Update is called once per frame

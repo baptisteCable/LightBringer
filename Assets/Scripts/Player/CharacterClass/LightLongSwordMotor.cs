@@ -161,57 +161,34 @@ namespace LightBringer.Player.Class
             }
         }
 
-        public void CallByName(string methodName)
-        {
-            if (isServer)
-            {
-                RpcCallByName(methodName, Time.time);
-
-                MethodInfo mi = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-                mi.Invoke(this, null);
-            }
-        }
-
-        [ClientRpc]
-        private void RpcCallByName(string methodName, float time)
-        {
-            if (!isServer)
-            {
-                StartCoroutine(CallByNameWithDelay(methodName, NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time) - Time.time));
-            }
-        }
-
-        private IEnumerator CallByNameWithDelay(string methodName, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-
-            MethodInfo mi = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-            mi.Invoke(this, null);
-        }
-
+        // Called by name
         private void PlayAnimAb1a()
         {
             animator.Play("BotAb1a", -1, 0);
             animator.Play("TopAb1a", -1, 0);
         }
 
+        // Called by name
         private void PlayAnimAb1b()
         {
             animator.Play("BotAb1b");
             animator.Play("TopAb1b");
         }
 
+        // Called by name
         private void PlayAnimAb1c()
         {
             animator.Play("BotAb1c");
             animator.Play("TopAb1c");
         }
 
+        // Called by name
         private void Ab1aSlash()
         {
             ab1aSlash.Play();
         }
 
+        // Called by name
         private void Ab1bSlash()
         {
             ab1bSlash.Play();

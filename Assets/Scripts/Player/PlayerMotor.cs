@@ -11,7 +11,7 @@ namespace LightBringer.Player
     [RequireComponent(typeof(PlayerStatusManager))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerController))]
-    public abstract class PlayerMotor : NetworkBehaviour
+    public abstract class PlayerMotor : DelayedNetworkBehaviour
     {
         // constants
         private const float ROTATION_SPEED = 24f;
@@ -85,7 +85,7 @@ namespace LightBringer.Player
             Init();
 
             /* ********* Server ********** */
-            if (isServer)
+            if (isServer && isLocalPlayer)
             {
                 // NetworkSynchronizer
                 GameObject ns = Instantiate(networkSynchronizerPrefab);
@@ -540,5 +540,6 @@ namespace LightBringer.Player
      *  Ajouter un NetworkTimer qui calcule le ping qui stocke le delay. Il les affiche. Le delay est prélevé dans le transform sync (lié par l'inspector)
      *  Il calcule le delay en prennant le min des 10 dernières valeurs et des 10 derniers mins (donc 100 valeurs)
      *  
+     *  Meilleur moyen de passer les RPC que par le nom de la méthode. Un int pour chaque méthode ?
      * */
 }

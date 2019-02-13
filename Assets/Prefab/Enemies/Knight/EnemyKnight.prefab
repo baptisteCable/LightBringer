@@ -599,6 +599,7 @@ GameObject:
   - component: {fileID: 114256802597071230}
   - component: {fileID: 114769719883115334}
   - component: {fileID: 54716600286076442}
+  - component: {fileID: 114946009707131008}
   m_Layer: 13
   m_Name: EnemyKnight
   m_TagString: Enemy
@@ -2632,7 +2633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9d9b53af789a54aa55c6b0b45e8d05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageController: {fileID: 114939520590619224}
+  statusManager: {fileID: 114939520590619224}
 --- !u!114 &114560408014881406
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2742,7 +2743,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1470060151669946}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eb32213e2f813a446852a7f1e91c6dbc, type: 3}
   m_Name: 
@@ -2807,6 +2808,38 @@ MonoBehaviour:
   lostHpPoint: {fileID: 4143420326256134}
   lostHPPrefab: {fileID: 1604896443957886, guid: fa83ed5728e6fe44e9e8b7497deebc55,
     type: 2}
+--- !u!114 &114946009707131008
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1470060151669946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 219
+    i1: 139
+    i2: 115
+    i3: 186
+    i4: 94
+    i5: 180
+    i6: 18
+    i7: 100
+    i8: 186
+    i9: 223
+    i10: 100
+    i11: 167
+    i12: 168
+    i13: 6
+    i14: 9
+    i15: 187
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
 --- !u!137 &137110992339436758
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

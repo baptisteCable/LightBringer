@@ -84,7 +84,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 foreach (Collider col in colliders)
                 {
                     LightZone zone = col.GetComponent<LightZone>();
-                    if (zone != null)
+                    if (zone != null && zone.canBeAbsorbed)
                     {
                         float distance = (playerMotor.transform.position - zone.transform.position).magnitude;
                         if (distance < shortestDistance)
@@ -97,7 +97,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 if (closestZone != null)
                 {
-                    closestZone.Absorb();
+                    closestZone.CallByName("Absorb");
                     lightMotor.sword.Load();
                 }
             }

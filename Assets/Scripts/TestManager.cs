@@ -17,6 +17,8 @@ public class TestManager : NetworkBehaviour
 
     private GameObject knight;
     private KnightController kc;
+    private GameObject knight2;
+    private KnightController kc2;
 
     private PlayerStatusManager psm;
     private PlayerMotor playerMotor;
@@ -76,9 +78,23 @@ public class TestManager : NetworkBehaviour
         knight = Instantiate(knightPrefab);
         knight.transform.position = new Vector3(0, 0, 20);
         knight.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
+
         kc = knight.GetComponent<KnightController>();
         kc.target = playerMotor.transform;
         kc.passive = knightPassive;
+
+        NetworkServer.Spawn(knight);
+
+        // Knight 2
+        knight2 = Instantiate(knightPrefab);
+        knight2.transform.position = new Vector3(10, 0, 20);
+        knight2.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
+
+        kc2 = knight2.GetComponent<KnightController>();
+        kc2.target = playerMotor.transform;
+        kc2.passive = knightPassive;
+
+        NetworkServer.Spawn(knight2);
     }
 
     public void KillKnight()
@@ -87,12 +103,20 @@ public class TestManager : NetworkBehaviour
         {
             Destroy(knight);
         }
+        if (knight2 != null)
+        {
+            Destroy(knight2);
+        }
     }
 
     public void SetKnightPassive(bool isPassive)
     {
         knightPassive = isPassive;
-        if (kc!= null)
+        if (kc != null)
+        {
+            kc.passive = knightPassive;
+        }
+        if (kc2 != null)
         {
             kc.passive = knightPassive;
         }
