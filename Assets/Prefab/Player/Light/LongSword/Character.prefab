@@ -2541,7 +2541,6 @@ MonoBehaviour:
   desiredMove: {x: 0, y: 0}
   pointedWorldPoint: {x: 0, y: 0, z: 0}
   cam: {fileID: 0}
-  ns: {fileID: 0}
 --- !u!114 &114416538187133508
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2777,8 +2776,8 @@ MonoBehaviour:
     type: 2}
   ab1aSlash: {fileID: 198054159184500540}
   ab1bSlash: {fileID: 198739112422973496}
-  abOffSlash1: {fileID: 1625354501396676}
-  abOffSlash2: {fileID: 1847807193455796}
+  abOffaSlash: {fileID: 198882083571792150}
+  abOffbSlash: {fileID: 198313055423004236}
   swordObject: {fileID: 1354130265165816}
   sword: {fileID: 0}
 --- !u!114 &114784644779848440

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using LightBringer.Networking;
+﻿using LightBringer.Networking;
 using LightBringer.Player.Abilities;
 using LightBringer.UI;
 using UnityEngine;
@@ -91,7 +89,7 @@ namespace LightBringer.Player
                 GameObject ns = Instantiate(networkSynchronizerPrefab);
                 NetworkServer.Spawn(ns);
             }
-            
+
             /* ********* Local player ********** */
             if (isLocalPlayer)
             {
@@ -131,6 +129,9 @@ namespace LightBringer.Player
                 LookAtMouse();
             }
 
+            // cooldowns
+            RefreshCooldowns();
+
             if (!isServer)
             {
                 return;
@@ -159,9 +160,6 @@ namespace LightBringer.Player
             {
                 currentAbility.Cast();
             }
-
-            // cooldowns
-            RefreshCooldowns();
 
             // Special computations on abilities
             ComputeAbilitiesSpecial();
@@ -387,9 +385,9 @@ namespace LightBringer.Player
         {
             if (movementMode == MovementMode.Anchor && mode != MovementMode.Anchor)
             {
-                psm.anchor = null;
-                MakeVisible();
                 charController.enabled = true;
+                psm.anchor = null;
+                CallForAll(M_MakeVisible);
             }
 
             movementMode = mode;
@@ -397,22 +395,10 @@ namespace LightBringer.Player
 
         public void MergeWith(Transform anchor, bool hide = true)
         {
-            psm.anchor = anchor;
             charController.enabled = false;
-            MakeInvisible();
             movementMode = MovementMode.Anchor;
-        }
-
-        private void MakeVisible()
-        {
-            visible = true;
-            characterContainer.gameObject.SetActive(true);
-        }
-
-        private void MakeInvisible()
-        {
-            visible = false;
-            characterContainer.gameObject.SetActive(false);
+            psm.anchor = anchor;
+            CallForAll(M_MakeInvisible);
         }
 
         public void LockAbilitiesExcept(bool locked, Ability ability = null)
@@ -487,6 +473,71 @@ namespace LightBringer.Player
                 TestManager.singleton.RemovePlayer();
             }
         }
+
+        protected override bool CallById(int methdodId)
+        {
+            if (base.CallById(methdodId))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_MakeVisible: MakeVisible(); return true;
+                case M_MakeInvisible: MakeInvisible(); return true;
+            }
+
+            return false;
+        }
+
+        // Called by id
+        public const int M_MakeVisible = 1000;
+        private void MakeVisible()
+        {
+            visible = true;
+            characterContainer.gameObject.SetActive(true);
+        }
+
+        // Called by id
+        public const int M_MakeInvisible = 1001;
+        private void MakeInvisible()
+        {
+            visible = false;
+            characterContainer.gameObject.SetActive(false);
+        }
+
+        protected override bool CallById(int methdodId, int i, float f)
+        {
+            if (base.CallById(methdodId))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_SetCdDuration: SetCdDuration(i, f); return true;
+                case M_SetCdRemaining: SetCdRemaining(i, f); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_SetCdDuration = 1400;
+        private void SetCdDuration(int id, float cd)
+        {
+            abilities[id].coolDownDuration = cd;
+        }
+
+        // Called by id
+        public const int M_SetCdRemaining = 1401;
+        private void SetCdRemaining(int id, float cd)
+        {
+            abilities[id].coolDownRemaining = cd;
+        }
+
+
         /*
         private void OnGUI()
         {

@@ -18,8 +18,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Inherited motor
         LightLongSwordMotor lightMotor;
 
-        public AbDef(LightLongSwordMotor playerMotor) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        public AbDef(LightLongSwordMotor playerMotor, int id) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
         {
             lightMotor = playerMotor;
         }
@@ -30,8 +30,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.abilityMoveMultiplicator = 0;
             playerMotor.abilityMaxRotation = 0;
 
-            playerMotor.animator.Play("BotAbDef");
-            playerMotor.animator.Play("TopAbDef");
+            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbDef);
         }
 
         public override void StartAbility()

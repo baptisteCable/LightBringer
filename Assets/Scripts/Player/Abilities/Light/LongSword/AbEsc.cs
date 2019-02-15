@@ -4,6 +4,7 @@ using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using LightBringer.Tools;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -19,7 +20,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // const
         private const float COOLDOWN_DURATION = 12f;
         private const float CHANNELING_DURATION = 6f / 60f;
-        private const float ABILITY_DURATION = 42f / 60f;
+        public const float ABILITY_DURATION = 42f / 60f;
         private const float LANDING_TIME = 35f / 60f;
         private const float DAMAGE_TIME = 39f / 60f;
 
@@ -46,8 +47,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Colliders
         private Dictionary<Collider, Vector3> encounteredCols;
 
-        public AbEsc(LightLongSwordMotor playerMotor) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        public AbEsc(LightLongSwordMotor playerMotor, int id) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
         {
             lightMotor = playerMotor;
         }
@@ -62,8 +63,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 
-            playerMotor.animator.Play("BotAbEsc");
-            playerMotor.animator.Play("TopAbEsc");
+            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbEsc);
 
             LayerTools.recSetLayer(playerMotor.gameObject, PLAYER_LAYER, NO_COLLISION_LAYER);
 
@@ -108,12 +108,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject.Destroy(landingIndicator);
 
-            GameObject trailEffect1 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
-            trailEffect1.transform.localPosition = new Vector3(-0.473f, 0.089f, 0f);
-            GameObject.Destroy(trailEffect1, ABILITY_DURATION);
-            GameObject trailEffect2 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
-            trailEffect1.transform.localPosition = new Vector3(0.177f, 0.094f, 0f);
-            GameObject.Destroy(trailEffect2, ABILITY_DURATION);
+            lightMotor.CallForAll(LightLongSwordMotor.M_EscTrails);
 
             // No movement
             playerMotor.abilityMoveMultiplicator = 0f;
@@ -163,7 +158,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private float yFunction(float t)
         {
-            return t * (1 - t) * 4 * HEIGHT;
+            float y = t * (1 - t) * 4 * HEIGHT;
+            if (y < 0)
+            {
+                return 0;
+            }
+            else
+            {
+                return y;
+            }
         }
 
         private void SpawnLight()
@@ -173,11 +176,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
+            NetworkServer.Spawn(lightZone);
 
             // Particle effect
-            GameObject lightSpawn = GameObject.Instantiate(lightMotor.lightSpawnEffetPrefab, null);
-            lightSpawn.transform.position = pos;
-            GameObject.Destroy(lightSpawn, 1f);
+            lightMotor.CallForAll(LightLongSwordMotor.M_LightSpawnPE, pos);
 
             // Damage zone (trigger)
             trigger = GameObject.Instantiate(lightMotor.lightSpawnTriggerPrefab, null);

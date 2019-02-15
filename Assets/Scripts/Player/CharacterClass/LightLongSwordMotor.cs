@@ -1,16 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
-using LightBringer.Networking;
 using LightBringer.Player.Abilities;
 using LightBringer.Player.Abilities.Light.LongSword;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player.Class
 {
+
+    public delegate void Fonc();
+
     public class LightLongSwordMotor : PlayerMotor
     {
+        private const int AB_ESC = 0;
+        private const int AB_1 = 1;
+        private const int AB_2 = 2;
+        private const int AB_DEF = 3;
+        private const int AB_OFF = 4;
+        private const int AB_ULT = 5;
+
         public const int MAX_SPHERE_COUNT = 4;
         private const float SPHERE_DURATION = 30f;
 
@@ -47,8 +54,8 @@ namespace LightBringer.Player.Class
         [Header("Effects")]
         [SerializeField] private ParticleSystem ab1aSlash;
         [SerializeField] private ParticleSystem ab1bSlash;
-        public GameObject abOffSlash1;
-        public GameObject abOffSlash2;
+        [SerializeField] private ParticleSystem abOffaSlash;
+        [SerializeField] private ParticleSystem abOffbSlash;
 
         [Header("Game Objects")]
         public GameObject swordObject;
@@ -68,7 +75,130 @@ namespace LightBringer.Player.Class
             base.Start();
         }
 
-        public void AddUltiSphere()
+        public int GetUltiShpereCount()
+        {
+            return ultiSphereCount;
+        }
+
+        private IEnumerator DestroySphere(GameObject sphere)
+        {
+            yield return new WaitForSeconds(SPHERE_DURATION);
+
+            if (sphere != null)
+            {
+                sphereObjects.Remove(sphere);
+                Destroy(sphere);
+                ultiSphereCount = sphereObjects.Count;
+                abilities[AB_ULT].available = false;
+            }
+        }
+
+        protected override void Init()
+        {
+            base.Init();
+
+            // Abilities
+            abilities = new Ability[6];
+            abilities[AB_ESC] = new AbEsc(this, AB_ESC);
+            abilities[AB_1] = new Ab1(this, AB_1);
+            abilities[AB_2] = new Ab2(this, AB_2);
+            abilities[AB_DEF] = new AbDef(this, AB_DEF);
+            abilities[AB_OFF] = new AbOff(this, AB_OFF);
+            abilities[AB_ULT] = new AbUlt(this, AB_ULT);
+
+            if (sphereObjects == null)
+            {
+                sphereObjects = new List<GameObject>();
+                ultiSphereCount = 0;
+                abilities[AB_ULT].available = false;
+            }
+            else
+            {
+                ConsumeAllSpheres();
+            }
+        }
+
+        protected override bool CallById(int methdodId)
+        {
+            if (base.CallById(methdodId))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_PlayAnimAb1a: PlayAnimAb1a(); return true;
+                case M_PlayAnimAb1b: PlayAnimAb1b(); return true;
+                case M_PlayAnimAb1c: PlayAnimAb1c(); return true;
+                case M_Ab1aSlash: Ab1aSlash(); return true;
+                case M_Ab1bSlash: Ab1bSlash(); return true;
+                case M_AddUltiSphere: AddUltiSphere(); return true;
+                case M_LoadSwordWithSpheres: LoadSwordWithSpheres(); return true;
+                case M_CancelLoadSwordWithSpheres: CancelLoadSwordWithSpheres(); return true;
+                case M_ConsumeAllSpheres: ConsumeAllSpheres(); return true;
+                case M_PlayAnimAb2: PlayAnimAb2(); return true;
+                case M_LoadSword: LoadSword(); return true;
+                case M_UnloadSword: UnloadSword(); return true;
+                case M_TrailEffect: TrailEffect(); return true;
+                case M_PlayAbDef: PlayAbDef(); return true;
+                case M_PlayAbEsc: PlayAbEsc(); return true;
+                case M_EscTrails: EscTrails(); return true;
+                case M_PlayAbOffaAndChangeChannelDuration: PlayAbOffaAndChangeChannelDuration(); return true;
+                case M_PlayAbOffbAndChangeChannelDuration: PlayAbOffbAndChangeChannelDuration(); return true;
+                case M_AbOffaSlash: AbOffaSlash(); return true;
+                case M_AbOffbSlash: AbOffbSlash(); return true;
+                case M_FadeOut: FadeOut(); return true;
+                case M_FadeIn: FadeIn(); return true;
+                case M_PlayAbUlt: PlayAbUlt(); return true;
+                case M_UltLoadedEffectOn: UltLoadedEffectOn(); return true;
+                case M_UltLoadedEffectOff: UltLoadedEffectOff(); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_PlayAnimAb1a = 0;
+        public void PlayAnimAb1a()
+        {
+            animator.Play("BotAb1a", -1, 0);
+            animator.Play("TopAb1a", -1, 0);
+        }
+
+        // Called by id
+        public const int M_PlayAnimAb1b = 1;
+        private void PlayAnimAb1b()
+        {
+            animator.Play("BotAb1b");
+            animator.Play("TopAb1b");
+        }
+
+        // Called by id
+        public const int M_PlayAnimAb1c = 2;
+        private void PlayAnimAb1c()
+        {
+            animator.Play("BotAb1c");
+            animator.Play("TopAb1c");
+        }
+
+        // Called by id
+        public const int M_Ab1aSlash = 3;
+        private void Ab1aSlash()
+        {
+            ab1aSlash.Play();
+        }
+
+        // Called by id
+        public const int M_Ab1bSlash = 4;
+        private void Ab1bSlash()
+        {
+            ab1bSlash.Play();
+        }
+
+        // Called by id
+        public const int M_AddUltiSphere = 5;
+        private void AddUltiSphere()
         {
             if (sphereObjects.Count == MAX_SPHERE_COUNT)
             {
@@ -84,11 +214,13 @@ namespace LightBringer.Player.Class
 
             if (ultiSphereCount == MAX_SPHERE_COUNT)
             {
-                abilities[PlayerController.IN_AB_ULT].available = true;
+                abilities[AB_ULT].available = true;
             }
         }
 
-        public void LoadSwordWithSpheres()
+        // Called by id
+        public const int M_LoadSwordWithSpheres = 6;
+        private void LoadSwordWithSpheres()
         {
             foreach (GameObject sphere in sphereObjects)
             {
@@ -97,7 +229,9 @@ namespace LightBringer.Player.Class
             }
         }
 
-        public void CancelLoadSwordWithSpheres()
+        // Called by id
+        public const int M_CancelLoadSwordWithSpheres = 7;
+        private void CancelLoadSwordWithSpheres()
         {
             foreach (GameObject sphere in sphereObjects)
             {
@@ -106,7 +240,9 @@ namespace LightBringer.Player.Class
             }
         }
 
-        public void ConsumeAllSpheres()
+        // Called by id
+        public const int M_ConsumeAllSpheres = 8;
+        private void ConsumeAllSpheres()
         {
             foreach (GameObject sphere in sphereObjects)
             {
@@ -115,83 +251,211 @@ namespace LightBringer.Player.Class
 
             sphereObjects = new List<GameObject>();
             ultiSphereCount = 0;
-            abilities[PlayerController.IN_AB_ULT].available = false;
+            abilities[AB_ULT].available = false;
         }
 
-        public int GetUltiShpereCount()
+        // Called by id
+        public const int M_PlayAnimAb2 = 9;
+        private void PlayAnimAb2()
         {
-            return ultiSphereCount;
+            animator.Play("BotAb2");
+            animator.Play("TopAb2");
         }
 
-        private IEnumerator DestroySphere(GameObject sphere)
+        // Called by id
+        public const int M_LoadSword = 10;
+        private void LoadSword()
         {
-            yield return new WaitForSeconds(SPHERE_DURATION);
+            sword.Load();
+        }
 
-            if (sphere != null)
+        // Called by id
+        public const int M_UnloadSword = 11;
+        private void UnloadSword()
+        {
+            sword.Unload();
+        }
+
+        // Called by id
+        public const int M_TrailEffect = 12;
+        private void TrailEffect()
+        {
+            sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
+        }
+
+        // Called by id
+        public const int M_PlayAbDef = 13;
+        private void PlayAbDef()
+        {
+            animator.Play("BotAbDef");
+            animator.Play("TopAbDef");
+        }
+
+        // Called by id
+        public const int M_PlayAbEsc = 14;
+        private void PlayAbEsc()
+        {
+            animator.Play("BotAbEsc");
+            animator.Play("TopAbEsc");
+        }
+        
+        // Called by id
+        public const int M_EscTrails = 15;
+        private void EscTrails()
+        {
+            GameObject trailEffect1 = Instantiate(escTrailEffectPrefab, sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(-0.473f, 0.089f, 0f);
+            Destroy(trailEffect1, abilities[AB_ESC].castDuration);
+            GameObject trailEffect2 = Instantiate(escTrailEffectPrefab, sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(0.177f, 0.094f, 0f);
+            Destroy(trailEffect2, abilities[AB_ESC].castDuration);
+        }
+
+        // Called by id
+        public const int M_PlayAbOffaAndChangeChannelDuration = 16;
+        private void PlayAbOffaAndChangeChannelDuration()
+        {
+            animator.Play("BotAbOffa");
+            animator.Play("TopAbOffa");
+            abilities[AB_OFF].channelDuration = AbOff.CHANNELING_DURATION_A;
+        }
+
+        // Called by id
+        public const int M_PlayAbOffbAndChangeChannelDuration = 17;
+        private void PlayAbOffbAndChangeChannelDuration()
+        {
+            animator.Play("BotAbOffb");
+            animator.Play("TopAbOffb");
+            abilities[AB_OFF].channelDuration = AbOff.CHANNELING_DURATION_B;
+        }
+
+        // Called by id
+        public const int M_AbOffaSlash = 18;
+        private void AbOffaSlash()
+        {
+            abOffaSlash.Play();
+        }
+
+        // Called by id
+        public const int M_AbOffbSlash = 19;
+        private void AbOffbSlash()
+        {
+            abOffbSlash.Play();
+        }
+
+        // Called by id
+        public const int M_FadeOut = 20;
+        private void FadeOut()
+        {
+            // effect
+            GameObject effect = Instantiate(fadeOutEffetPrefab);
+            effect.transform.position = transform.position;
+            Destroy(effect, .2f);
+            GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = transform.position;
+            GameObject.Destroy(lightColumn, .5f);
+
+            // Lock other abilities
+            LockAbilitiesExcept(true, abilities[AB_OFF]);
+
+            // short CD and set fadeIn time
+            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_B;
+        }
+
+        // Called by id
+        public const int M_FadeIn = 21;
+        private void FadeIn()
+        {
+            // Effect
+            GameObject effect = Instantiate(fadeInEffetPrefab);
+            effect.transform.position = transform.position;
+            Destroy(effect, .3f);
+            GameObject lightColumn = Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = transform.position;
+            Destroy(lightColumn, .5f);
+
+            // Long cooldown
+            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_A;
+
+            // unlock other abilities
+            LockAbilitiesExcept(false, abilities[AB_OFF]);
+        }
+
+        // Called by id
+        public const int M_PlayAbUlt = 22;
+        private void PlayAbUlt()
+        {
+            animator.Play("BotUlt");
+            animator.Play("TopUlt");
+        }
+
+        // Called by id
+        public const int M_UltLoadedEffectOn = 23;
+        private void UltLoadedEffectOn()
+        {
+            sword.transform.Find("UltLoaded").gameObject.SetActive(true);
+        }
+
+        // Called by id
+        public const int M_UltLoadedEffectOff= 24;
+        private void UltLoadedEffectOff()
+        {
+            sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+        }
+
+
+
+        protected override bool CallById(int methdodId, Vector3 vec)
+        {
+            if (base.CallById(methdodId, vec))
             {
-                sphereObjects.Remove(sphere);
-                Destroy(sphere);
-                ultiSphereCount = sphereObjects.Count;
-                abilities[PlayerController.IN_AB_ULT].available = false;
+                return true;
             }
-        }
 
-        protected override void Init()
-        {
-            base.Init();
-
-            // Abilities
-            abilities = new Ability[6];
-            abilities[PlayerController.IN_AB_ESC] = new AbEsc(this);
-            abilities[PlayerController.IN_AB_1] = new Ab1(this);
-            abilities[PlayerController.IN_AB_2] = new Ab2(this);
-            abilities[PlayerController.IN_AB_DEF] = new AbDef(this);
-            abilities[PlayerController.IN_AB_OFF] = new AbOff(this);
-            abilities[PlayerController.IN_AB_ULT] = new AbUlt(this);
-
-            if (sphereObjects == null)
+            switch (methdodId)
             {
-                sphereObjects = new List<GameObject>();
-                ultiSphereCount = 0;
-                abilities[PlayerController.IN_AB_ULT].available = false;
+                case M_LightSpawnPE: LightSpawnPE(vec); return true;
+                case M_ImpactPE: ImpactPE(vec); return true;
+                case M_LoadedImpactPE: LoadedImpactPE(vec); return true;
             }
-            else
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_LightSpawnPE = 100;
+        private void LightSpawnPE(Vector3 pos)
+        {
+            GameObject lightSpawn = Instantiate(lightSpawnEffetPrefab, null);
+            lightSpawn.transform.position = pos;
+            Destroy(lightSpawn, 1f);
+        }
+
+        // Called by id
+        public const int M_ImpactPE = 101;
+        private void ImpactPE(Vector3 impactPoint)
+        {
+            GameObject impactEffect = Instantiate(impactEffetPrefab, null);
+            impactEffect.transform.position = impactPoint;
+            if ((transform.position + Vector3.up - impactPoint).magnitude > .05f)
             {
-                ConsumeAllSpheres();
+                impactEffect.transform.rotation = Quaternion.LookRotation(transform.position + Vector3.up - impactPoint, Vector3.up);
             }
+            Destroy(impactEffect, 1f);
         }
 
-        // Called by name
-        private void PlayAnimAb1a()
+        // Called by id
+        public const int M_LoadedImpactPE = 102;
+        private void LoadedImpactPE(Vector3 impactPoint)
         {
-            animator.Play("BotAb1a", -1, 0);
-            animator.Play("TopAb1a", -1, 0);
-        }
-
-        // Called by name
-        private void PlayAnimAb1b()
-        {
-            animator.Play("BotAb1b");
-            animator.Play("TopAb1b");
-        }
-
-        // Called by name
-        private void PlayAnimAb1c()
-        {
-            animator.Play("BotAb1c");
-            animator.Play("TopAb1c");
-        }
-
-        // Called by name
-        private void Ab1aSlash()
-        {
-            ab1aSlash.Play();
-        }
-
-        // Called by name
-        private void Ab1bSlash()
-        {
-            ab1bSlash.Play();
+            GameObject impactEffect = Instantiate(loadedImpactEffetPrefab, null);
+            impactEffect.transform.position = impactPoint;
+            if ((transform.position + Vector3.up - impactPoint).magnitude > .05f)
+            {
+                impactEffect.transform.rotation = Quaternion.LookRotation(transform.position + Vector3.up - impactPoint, Vector3.up);
+            }
+            Destroy(impactEffect, 1f);
         }
     }
 }

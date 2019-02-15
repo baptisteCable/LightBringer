@@ -3,6 +3,7 @@ using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -22,7 +23,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private const float STUN_DURATION = .2f;
         private const float DAMAGE = 10f;
-        private const float EXTRA_DAMAGE_TAKER_DURATION = 10f;
 
         private const float SWORD_LOADED_TIME = 16f / 60f;
 
@@ -38,8 +38,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Inherited motor
         LightLongSwordMotor lightMotor;
 
-        public AbUlt(LightLongSwordMotor motor) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        public AbUlt(LightLongSwordMotor motor, int id) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
         {
             lightMotor = motor;
         }
@@ -49,8 +49,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 
-            playerMotor.animator.Play("BotUlt");
-            playerMotor.animator.Play("TopUlt");
+            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbUlt);
 
             encounteredCols = new Dictionary<Collider, Vector3>();
 
@@ -58,7 +57,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             DisplayIndicator();
 
             // Loading Sword animation
-            ((LightLongSwordMotor)playerMotor).LoadSwordWithSpheres();
+            lightMotor.CallForAll(LightLongSwordMotor.M_LoadSwordWithSpheres);
 
             // Action Time bool
             swordLoaded = false;
@@ -78,7 +77,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (Time.time > channelStartTime + SWORD_LOADED_TIME && !swordLoaded)
             {
                 swordLoaded = true;
-                lightMotor.sword.transform.Find("UltLoaded").gameObject.SetActive(true);
+                lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOn);
             }
         }
 
@@ -88,10 +87,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // No more rotation
             playerMotor.abilityMaxRotation = 0f;
-
-            playerMotor.animator.Play("BotAbOffb");
-            playerMotor.animator.Play("TopAbOffb");
-
 
             // Trail effect
             lightMotor.sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
@@ -113,11 +108,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             bool spheresConsumed = ApplyAllDamage();
 
-            lightMotor.sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
 
             if (!spheresConsumed)
             {
-                ((LightLongSwordMotor)playerMotor).CancelLoadSwordWithSpheres();
+                lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
             }
 
             if (trigger != null)
@@ -183,32 +178,28 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // Spawn Ulti Extra damage taker
             ApplyEffect(col);
 
-            GameObject impactEffect = GameObject.Instantiate(lightMotor.impactEffetPrefab, null);
-            impactEffect.transform.position = impactPoint;
-            impactEffect.transform.rotation = Quaternion.LookRotation(playerMotor.transform.position + Vector3.up - impactPoint, Vector3.up);
-            GameObject.Destroy(impactEffect, 1f);
+            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
 
-            ((LightLongSwordMotor)playerMotor).ConsumeAllSpheres();
+            lightMotor.CallForAll(LightLongSwordMotor.M_ConsumeAllSpheres);
         }
 
         private void ApplyEffect(Collider col)
         {
             // TODO See what happens when monster no capsule-shaped or multi-part
-            StatusManager sm = col.GetComponent<DamageTaker>().statusManager;
-            Transform target = sm.transform;
             GameObject ultiDTContainer = GameObject.Instantiate(lightMotor.ultiDTprefab);
-            Transform ultiDT = ultiDTContainer.transform.Find("DamageTaker");
-            ultiDT.localScale = Vector3.one * target.GetComponent<CharacterController>().radius;
-            ultiDT.GetComponent<UltDamageTaker>().statusManager = sm;
-            GameObject.Destroy(ultiDTContainer, EXTRA_DAMAGE_TAKER_DURATION);
+            NetworkServer.Spawn(ultiDTContainer);
+
+            ultiDTContainer.GetComponent<UltMotor>().anchor = col.transform;
+            ultiDTContainer.GetComponent<UltDamageTaker>().enabled = true;
+            ultiDTContainer.GetComponent<UltDamageTaker>().statusManager = col.GetComponent<DamageTaker>().statusManager;
         }
 
         public override void AbortChanelling()
         {
             base.AbortChanelling();
-
-            ((LightLongSwordMotor)playerMotor).CancelLoadSwordWithSpheres();
-            lightMotor.sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+            
+            lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
+            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
         }
 
         public override void AbortCasting()
@@ -220,8 +211,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 GameObject.Destroy(trigger);
             }
 
-            ((LightLongSwordMotor)playerMotor).CancelLoadSwordWithSpheres();
-            lightMotor.sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+            lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
+            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)

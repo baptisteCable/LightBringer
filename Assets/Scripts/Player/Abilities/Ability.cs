@@ -20,12 +20,14 @@ namespace LightBringer.Player.Abilities
         public bool channelingCancellable;
         public bool castingCancellable;
         public bool locked;
+        public int id;
 
         protected PlayerMotor playerMotor;
 
         protected List<GameObject> indicators;
 
-        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor, bool channelingCancellable, bool castingCancellable)
+        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor,
+            bool channelingCancellable, bool castingCancellable, int id)
         {
             coolDownUp = true;
             locked = false;
@@ -35,6 +37,7 @@ namespace LightBringer.Player.Abilities
             playerMotor = motor;
             this.channelingCancellable = channelingCancellable;
             this.castingCancellable = castingCancellable;
+            this.id = id;
 
             indicators = new List<GameObject>();
         }
@@ -48,7 +51,7 @@ namespace LightBringer.Player.Abilities
             playerMotor.currentChanneling = null;
 
             // Cooldown
-            coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
+            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration * CANCELLING_CC_FACTOR);
 
             // animation
             playerMotor.animator.Play("TopIdle");
@@ -67,7 +70,7 @@ namespace LightBringer.Player.Abilities
             playerMotor.currentChanneling = null;
 
             // Cooldown
-            coolDownRemaining = coolDownDuration;
+            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
 
             // animation
             playerMotor.animator.Play("TopIdle");
@@ -86,7 +89,7 @@ namespace LightBringer.Player.Abilities
             playerMotor.currentAbility = null;
 
             // Cooldown
-            coolDownRemaining = coolDownDuration;
+            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
 
             // animation
             if (!playerMotor.psm.isStunned)
@@ -108,7 +111,7 @@ namespace LightBringer.Player.Abilities
             playerMotor.currentAbility = null;
 
             // Cooldown
-            coolDownRemaining = coolDownDuration;
+            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
         }
 
         public virtual void Channel()

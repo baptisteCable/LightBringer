@@ -3,31 +3,21 @@ using LightBringer.Enemies;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
+    [RequireComponent(typeof(UltMotor))]
     public class UltDamageTaker : DamageTaker
     {
         private const float QUARTER_DAMAGE = 6f;
         private const float ALL_QUARTER_DAMAGE = 34f;
-        private const float ROTATION_SPEED = 12f;
 
-        public GameObject[] quarters;
-        public GameObject[] bigQuarters;
-        private int qCount = 4;
-
-        private Transform anchor;
-
-        private Transform containertransform;
+        private UltMotor um;
 
         private void Start()
         {
-            containertransform = transform.parent;
-            anchor = statusManager.transform;
+            um = GetComponent<UltMotor>();
         }
 
         private void Update()
         {
-            containertransform.position = anchor.position;
-            containertransform.Rotate(Vector3.up, Time.deltaTime * ROTATION_SPEED);
-
             if (statusManager.isDead)
             {
                 Destroy(gameObject);
@@ -37,24 +27,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         protected override Damage modifyDamage(Damage dmg, PlayerMotor dealer, Vector3 origin)
         {
             int quarterId = QuarterFromDamageOrigin(origin);
-            if (dmg.element == DamageElement.Light && quarters[quarterId] != null)
+            if (dmg.element == DamageElement.Light && um.quarters[quarterId] != null)
             {
                 dmg.amount = QUARTER_DAMAGE;
 
-                quarters[quarterId].transform.Find("Flash").gameObject.SetActive(true);
-
-                Destroy(quarters[quarterId], .12f);
-                quarters[quarterId] = null;
-                Destroy(bigQuarters[quarterId]);
-                bigQuarters[quarterId] = null;
-                qCount -= 1;
+                um.CallForAll(UltMotor.M_DestroyQuarter, quarterId);
                 
-                if (qCount == 0)
+                if (um.qCount == 0)
                 {
                     dmg.amount += ALL_QUARTER_DAMAGE;
-                    Destroy(transform.parent.gameObject, .7f);
-
-                    transform.Find("AllBrokenEffect").GetComponent<ParticleSystem>().Play();
+                    um.CallForAll(UltMotor.M_DestroyObject);
                 }
             }
             else

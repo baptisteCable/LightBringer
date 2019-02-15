@@ -47,12 +47,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Inherited motor
         LightLongSwordMotor lightMotor;
 
-        public Ab1(LightLongSwordMotor playerMotor) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE)
+        public Ab1(LightLongSwordMotor playerMotor, int id) :
+            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
         {
             lightMotor = playerMotor;
         }
-
 
         public override void StartChanneling()
         {
@@ -85,15 +84,15 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // animation
             if (currentAttack == 1)
             {
-                lightMotor.CallByName("PlayAnimAb1a");
+                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1a);
             }
             else if (currentAttack == 2)
             {
-                lightMotor.CallByName("PlayAnimAb1b");
+                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1b);
             }
             else if (currentAttack == 3)
             {
-                lightMotor.CallByName("PlayAnimAb1c");
+                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1c);
             }
         }
 
@@ -126,11 +125,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                lightMotor.CallByName("Ab1aSlash");
+                lightMotor.CallForAll(LightLongSwordMotor.M_Ab1aSlash);
             }
             if (currentAttack == 2)
             {
-                lightMotor.CallByName("Ab1bSlash");
+                lightMotor.CallForAll(LightLongSwordMotor.M_Ab1bSlash);
             }
         }
 
@@ -163,9 +162,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             NetworkServer.Spawn(lightZone);
 
             // Particle effect
-            GameObject lightSpawn = GameObject.Instantiate(lightMotor.lightSpawnEffetPrefab, null);
-            lightSpawn.transform.position = pos;
-            GameObject.Destroy(lightSpawn, 1f);
+            lightMotor.CallForAll(LightLongSwordMotor.M_LightSpawnPE, pos);
 
             // Damage zone (trigger)
             trigger = GameObject.Instantiate(lightMotor.lightSpawnTriggerPrefab, null);
@@ -283,13 +280,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
-            GameObject impactEffect = GameObject.Instantiate(lightMotor.impactEffetPrefab, null);
-            impactEffect.transform.position = impactPoint;
-            if ((playerMotor.transform.position + Vector3.up - impactPoint).magnitude > .05f)
-            {
-                impactEffect.transform.rotation = Quaternion.LookRotation(playerMotor.transform.position + Vector3.up - impactPoint, Vector3.up);
-            }
-            GameObject.Destroy(impactEffect, 1f);
+            // Particle effect
+            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
         }
 
         private void ApplyDamageC()

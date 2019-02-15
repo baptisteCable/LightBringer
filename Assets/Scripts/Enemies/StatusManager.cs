@@ -105,16 +105,15 @@ namespace LightBringer.Enemies
 
         private void ApplyAllDamages()
         {
+            float newHP = currentHP;
+
             if (frameDamage.Count > 0)
             {
-                bool flash = false;
-
                 foreach (KeyValuePair<int, DamageDealer> pair in frameDamage)
                 {
                     if (pair.Value.dmg.amount > 0)
                     {
-                        flash = true;
-                        currentHP -= pair.Value.dmg.amount;
+                        newHP -= pair.Value.dmg.amount;
 
                         // add display only if local player, else send by message to client
                         if (pair.Value.dealer.isLocalPlayer)
@@ -125,17 +124,16 @@ namespace LightBringer.Enemies
                         {
                             TargetAddDamageToDisplay(pair.Value.dealer.connectionToClient, pair.Value.dmg.ToMessage());
                         }
-
                     }
                 }
 
                 frameDamage.Clear();
 
-                if (flash)
+                if (newHP < currentHP)
                 {
-                    CallByName("Flash");
+                    CallForAll(M_SetHP, newHP);
                 }
-
+                
                 if (currentHP <= 0)
                 {
                     isDead = true;
@@ -143,13 +141,6 @@ namespace LightBringer.Enemies
                     Destroy(statusBarGO);
                 }
             }
-        }
-
-        // Called by name
-        private void Flash()
-        {
-            StopCoroutine(FlashCoroutine());
-            StartCoroutine(FlashCoroutine());
         }
 
         [TargetRpc]
@@ -247,6 +238,39 @@ namespace LightBringer.Enemies
             {
                 RecFlashOff(child);
             }
+        }
+
+        private void Flash()
+        {
+            StopCoroutine(FlashCoroutine());
+            StartCoroutine(FlashCoroutine());
+        }
+
+        protected override bool CallById(int methdodId, float value)
+        {
+            if (base.CallById(methdodId, value))
+            {
+                return true;
+            }
+            switch (methdodId)
+            {
+                case M_SetHP: SetHP(value); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_SetHP = 200;
+        private void SetHP(float hp)
+        {
+            if (hp < currentHP)
+            {
+                Flash();
+            }
+
+            currentHP = hp;
         }
     }
 }
