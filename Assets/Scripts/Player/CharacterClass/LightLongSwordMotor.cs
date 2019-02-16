@@ -147,8 +147,6 @@ namespace LightBringer.Player.Class
                 case M_PlayAbOffbAndChangeChannelDuration: PlayAbOffbAndChangeChannelDuration(); return true;
                 case M_AbOffaSlash: AbOffaSlash(); return true;
                 case M_AbOffbSlash: AbOffbSlash(); return true;
-                case M_FadeOut: FadeOut(); return true;
-                case M_FadeIn: FadeIn(); return true;
                 case M_PlayAbUlt: PlayAbUlt(); return true;
                 case M_UltLoadedEffectOn: UltLoadedEffectOn(); return true;
                 case M_UltLoadedEffectOff: UltLoadedEffectOff(); return true;
@@ -344,44 +342,6 @@ namespace LightBringer.Player.Class
         }
 
         // Called by id
-        public const int M_FadeOut = 20;
-        private void FadeOut()
-        {
-            // effect
-            GameObject effect = Instantiate(fadeOutEffetPrefab);
-            effect.transform.position = transform.position;
-            Destroy(effect, .2f);
-            GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
-            lightColumn.transform.position = transform.position;
-            GameObject.Destroy(lightColumn, .5f);
-
-            // Lock other abilities
-            LockAbilitiesExcept(true, abilities[AB_OFF]);
-
-            // short CD and set fadeIn time
-            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_B;
-        }
-
-        // Called by id
-        public const int M_FadeIn = 21;
-        private void FadeIn()
-        {
-            // Effect
-            GameObject effect = Instantiate(fadeInEffetPrefab);
-            effect.transform.position = transform.position;
-            Destroy(effect, .3f);
-            GameObject lightColumn = Instantiate(lightColumnPrefab);
-            lightColumn.transform.position = transform.position;
-            Destroy(lightColumn, .5f);
-
-            // Long cooldown
-            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_A;
-
-            // unlock other abilities
-            LockAbilitiesExcept(false, abilities[AB_OFF]);
-        }
-
-        // Called by id
         public const int M_PlayAbUlt = 22;
         private void PlayAbUlt()
         {
@@ -417,6 +377,8 @@ namespace LightBringer.Player.Class
                 case M_LightSpawnPE: LightSpawnPE(vec); return true;
                 case M_ImpactPE: ImpactPE(vec); return true;
                 case M_LoadedImpactPE: LoadedImpactPE(vec); return true;
+                case M_FadeOut: FadeOut(vec); return true;
+                case M_FadeIn: FadeIn(vec); return true;
             }
 
             Debug.LogError("No such method Id: " + methdodId);
@@ -456,6 +418,44 @@ namespace LightBringer.Player.Class
                 impactEffect.transform.rotation = Quaternion.LookRotation(transform.position + Vector3.up - impactPoint, Vector3.up);
             }
             Destroy(impactEffect, 1f);
+        }
+
+        // Called by id
+        public const int M_FadeOut = 103;
+        private void FadeOut(Vector3 pos)
+        {
+            // effect
+            GameObject effect = Instantiate(fadeOutEffetPrefab);
+            effect.transform.position = pos;
+            Destroy(effect, .2f);
+            GameObject lightColumn = GameObject.Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = pos;
+            GameObject.Destroy(lightColumn, .5f);
+
+            // Lock other abilities
+            LockAbilitiesExcept(true, abilities[AB_OFF]);
+
+            // short CD and set fadeIn time
+            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_B;
+        }
+
+        // Called by id
+        public const int M_FadeIn = 104;
+        private void FadeIn(Vector3 pos)
+        {
+            // Effect
+            GameObject effect = Instantiate(fadeInEffetPrefab);
+            effect.transform.position = pos;
+            Destroy(effect, .3f);
+            GameObject lightColumn = Instantiate(lightColumnPrefab);
+            lightColumn.transform.position = pos;
+            Destroy(lightColumn, .5f);
+
+            // Long cooldown
+            abilities[AB_OFF].coolDownDuration = AbOff.COOLDOWN_DURATION_A;
+
+            // unlock other abilities
+            LockAbilitiesExcept(false, abilities[AB_OFF]);
         }
     }
 }

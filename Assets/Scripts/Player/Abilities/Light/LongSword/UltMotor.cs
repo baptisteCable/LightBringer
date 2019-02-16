@@ -15,12 +15,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public Transform anchor;
 
-        private UltDamageTaker udt;
-
         private void Start()
         {
-            udt = GetComponent<UltDamageTaker>();
-
             if (isServer)
             {
                 CallForAll(M_Begin);

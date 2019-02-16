@@ -13,32 +13,35 @@ namespace LightBringer.Player
         private const float MAX_SPEED_DURATION = .25f; // in proportion of the total duration
         private const float ADDITIONNAL_SPEED = 1f; // Additionnal coeff to base apply to speed. 1 = +100% = x2. 0 = +0% = x1
         
-        private GameObject hasteEffectPrefab;
-        private GameObject hasteTrailsEffect;
-        private ParticleSystem.MainModule psMain;
         private AnimationCurve speedCurve;
 
+        private float lastLength = 0;
+
         public Haste(float duration = HASTE_DURATION) : base(CANCELLABLE, duration) {
-            hasteEffectPrefab = Resources.Load("States/Haste/HasteTrailParticles") as GameObject;
         }
 
         public override void Start(PlayerStatusManager psm)
         {
             base.Start(psm);
 
-            hasteTrailsEffect = GameObject.Instantiate(hasteEffectPrefab, psm.transform);
-            psMain = hasteTrailsEffect.GetComponent<ParticleSystem>().main;
-
             ComputeCurve();
 
             psm.moveMultiplicators.Add(this, 1f);
+            psm.playerMotor.CallForAll(PlayerMotor.M_PlayHasteTrails);
+            lastLength = 0f;
         }
 
         public override void Update()
         {
             float currentSpeed = speedCurve.Evaluate(Time.time - startTime);
             psm.moveMultiplicators[this] = 1 + currentSpeed;
-            psMain.startLifetime = .2f + .5f * currentSpeed / ADDITIONNAL_SPEED;
+            float length = .2f + .5f * currentSpeed / ADDITIONNAL_SPEED;
+
+            if (Mathf.Abs(lastLength - length) >= .1f)
+            {
+                lastLength = length;
+                psm.playerMotor.CallForAll(PlayerMotor.M_HasteTrailsLength, length);
+            }
 
             base.Update();
         }
@@ -47,7 +50,7 @@ namespace LightBringer.Player
         {
             base.Stop();
 
-            GameObject.Destroy(hasteTrailsEffect);
+            psm.playerMotor.CallForAll(PlayerMotor.M_StopHasteTrails);
             psm.moveMultiplicators.Remove(this);
         }
 

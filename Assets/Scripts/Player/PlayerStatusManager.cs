@@ -1,6 +1,6 @@
-﻿using LightBringer.Enemies;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
+using LightBringer.Enemies;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -39,6 +39,7 @@ namespace LightBringer.Player
         public bool isDead;
 
         // Special status
+        [HideInInspector]
         public Transform anchor;
         [HideInInspector]
         public bool isTargetable;
@@ -48,24 +49,22 @@ namespace LightBringer.Player
         // Components
         public StatusBar statusBar;
         [HideInInspector]
-        public PlayerMotor character;
+        public PlayerMotor playerMotor;
 
         // Training
         public bool canDie = true;
 
         void Start()
         {
-            character = GetComponent<PlayerMotor>();
+            playerMotor = GetComponent<PlayerMotor>();
 
             statusBar.psm = this;
-
-            // Init is called by playerMotor
         }
 
         private void Update()
         {
             // get state information from server on connection
-            if (isServer)
+            if (queuedStates != null && isServer)
             {
                 AddAndStartQueuedStates();
 
@@ -76,7 +75,7 @@ namespace LightBringer.Player
 
                 RemoveCompletedStates();
             }
-            
+
         }
 
         private void RemoveCompletedStates()
@@ -174,7 +173,7 @@ namespace LightBringer.Player
             bool affected = true;
             foreach (State s in states)
             {
-                if(!s.isAffectedByCC(cc))
+                if (!s.isAffectedByCC(cc))
                 {
                     affected = false;
                 }
@@ -182,7 +181,7 @@ namespace LightBringer.Player
 
             if (affected)
             {
-                switch(cc.ccType)
+                switch (cc.ccType)
                 {
                     case CrowdControlType.Root: Root(duration); break;
                     case CrowdControlType.Stun: Stun(duration); break;
@@ -196,7 +195,7 @@ namespace LightBringer.Player
             if (stunDuration < duration)
             {
                 stunDuration = duration;
-                character.animator.SetBool("isStunned", true);
+                playerMotor.animator.SetBool("isStunned", true);
             }
         }
 
@@ -226,7 +225,7 @@ namespace LightBringer.Player
                 if (stunDuration <= 0f)
                 {
                     isStunned = false;
-                    character.animator.SetBool("isStunned", false);
+                    playerMotor.animator.SetBool("isStunned", false);
                 }
             }
         }
@@ -250,7 +249,7 @@ namespace LightBringer.Player
 
                 // TODO animation
 
-                character.Die();
+                playerMotor.Die();
 
             }
         }
@@ -305,8 +304,7 @@ namespace LightBringer.Player
             moveMultiplicators = new Dictionary<State, float>();
             maxRotation = new Dictionary<State, float>();
         }
-
-        #region Flash
+        
         private IEnumerator Flash()
         {
             RecFlashOn(transform);
@@ -354,7 +352,5 @@ namespace LightBringer.Player
                 }
             }
         }
-        #endregion
-        
     }
 }

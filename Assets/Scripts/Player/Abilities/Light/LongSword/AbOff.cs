@@ -118,7 +118,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.transform.position = spawnPoint.position;
             playerMotor.characterContainer.rotation = spawnPoint.rotation;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_FadeIn);
+            lightMotor.CallForAll(LightLongSwordMotor.M_FadeIn, playerMotor.transform.position);
 
             // Reset state
             playerMotor.psm.isTargetable = true;
@@ -134,7 +134,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             Transform enemyTransform = col.GetComponent<DamageTaker>().statusManager.transform;
             spawnPoint = enemyTransform.GetComponent<BackSpawn>().backSpawPoint;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_FadeOut);
+            lightMotor.CallForAll(LightLongSwordMotor.M_FadeOut, playerMotor.transform.position);
 
             // Anchor character
             playerMotor.MergeWith(enemyTransform);

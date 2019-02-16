@@ -16,6 +16,7 @@ namespace LightBringer.Player
         public const int IN_AB_OFF = 4;
         public const int IN_AB_ULT = 5;
         public const int IN_CANCEL = 6;
+        public const int IN_TEST = 7;
 
         // Input buttons (TODO: in preferences)
         private string[] inputButtons;
@@ -45,7 +46,7 @@ namespace LightBringer.Player
             desiredMove = Vector2.zero;
 
             // TODO: Put in in preferences
-            inputButtons = new string[7];
+            inputButtons = new string[8];
             inputButtons[IN_AB_ESC] = "AbEsc";
             inputButtons[IN_AB_1] = "Ab1";
             inputButtons[IN_AB_2] = "Ab2";
@@ -53,6 +54,7 @@ namespace LightBringer.Player
             inputButtons[IN_AB_OFF] = "AbOff";
             inputButtons[IN_AB_ULT] = "AbUlt";
             inputButtons[IN_CANCEL] = "Cancel";
+            inputButtons[IN_TEST] = "TestButton";
         }
 
         private void Update()

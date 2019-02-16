@@ -72,6 +72,11 @@ namespace LightBringer.Player
         // Inputs and abilities
         [HideInInspector] public Ability[] abilities;
 
+        // State Effects
+        [Header("States Effects")]
+        [SerializeField] private ParticleSystem hasteTrailsEffect;
+        private ParticleSystem.MainModule hasteTrailsEffectMain;
+
         // Use this for initialization
         public virtual void Start()
         {
@@ -81,6 +86,8 @@ namespace LightBringer.Player
             pc = GetComponent<PlayerController>();
 
             Init();
+
+            hasteTrailsEffectMain = hasteTrailsEffect.main;
 
             /* ********* Server ********** */
             if (isServer && isLocalPlayer)
@@ -195,14 +202,14 @@ namespace LightBringer.Player
         private void StartAbilities()
         {
             // Check queue first
-            if (pc.queue >= 0 && pc.queue < abilities.Length && abilities[pc.queue].CanStart())
+            if (pc.queue >= 0 && pc.queue < 6 && abilities[pc.queue].CanStart())
             {
                 abilities[pc.queue].StartChanneling();
                 pc.queue = PlayerController.IN_NONE;
             }
 
             // Check pressed button in a second time
-            if (pc.pressedButton >= 0 && pc.pressedButton < abilities.Length && abilities[pc.pressedButton].CanStart())
+            if (pc.pressedButton >= 0 && pc.pressedButton < 6 && abilities[pc.pressedButton].CanStart())
             {
                 abilities[pc.pressedButton].StartChanneling();
             }
@@ -211,6 +218,12 @@ namespace LightBringer.Player
             if (pc.queue == PlayerController.IN_CANCEL)
             {
                 Cancel();
+            }
+
+            // TEST: Test button
+            if (pc.queue == PlayerController.IN_TEST)
+            {
+                psm.AddAndStartState(new Haste(2));
             }
 
             // Clear queue if nothing happening
@@ -485,6 +498,8 @@ namespace LightBringer.Player
             {
                 case M_MakeVisible: MakeVisible(); return true;
                 case M_MakeInvisible: MakeInvisible(); return true;
+                case M_PlayHasteTrails: PlayHasteTrails(); return true;
+                case M_StopHasteTrails: StopHasteTrails(); return true;
             }
 
             return false;
@@ -504,6 +519,42 @@ namespace LightBringer.Player
         {
             visible = false;
             characterContainer.gameObject.SetActive(false);
+        }
+
+        //called by id
+        public const int M_PlayHasteTrails = 1002;
+        private void PlayHasteTrails()
+        {
+            hasteTrailsEffect.Play();
+        }
+
+        //called by id
+        public const int M_StopHasteTrails = 1003;
+        private void StopHasteTrails()
+        {
+            hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        }
+
+        protected override bool CallById(int methdodId, float f)
+        {
+            if (base.CallById(methdodId, f))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_HasteTrailsLength: HasteTrailsLength(f); return true;
+            }
+            
+            return false;
+        }
+
+        //called by id
+        public const int M_HasteTrailsLength = 1200;
+        private void HasteTrailsLength(float length)
+        {
+            hasteTrailsEffectMain.startLifetime = length;
         }
 
         protected override bool CallById(int methdodId, int i, float f)
@@ -536,8 +587,7 @@ namespace LightBringer.Player
         {
             abilities[id].coolDownRemaining = cd;
         }
-
-
+        
         /*
         private void OnGUI()
         {

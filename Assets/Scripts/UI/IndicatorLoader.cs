@@ -9,14 +9,6 @@ public class IndicatorLoader : MonoBehaviour {
 
     public SpriteMask mask;
 
-    private void Update()
-    {
-        if (Input.GetButtonDown("testButton"))
-        {
-            Load(1f);
-        }
-    }
-
     public void Load(float dur)
     {
         duration = dur - .05f;

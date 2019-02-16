@@ -45,6 +45,9 @@ public class BaseStatusBar : MonoBehaviour {
 
     protected void LookAtCamera(Camera camera)
     {
-        transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward, camera.transform.rotation * Vector3.up);
+        if (camera != null)
+        {
+            transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward, camera.transform.rotation * Vector3.up);
+        }
     }
 }
