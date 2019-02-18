@@ -54,20 +54,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             encounteredCols = new Dictionary<Collider, Vector3>();
 
             // Indicator
-            DisplayIndicator();
+            lightMotor.CallForAll(LightLongSwordMotor.M_AbUltDisplayIndicators);
 
             // Loading Sword animation
             lightMotor.CallForAll(LightLongSwordMotor.M_LoadSwordWithSpheres);
 
             // Action Time bool
             swordLoaded = false;
-        }
-
-        private void DisplayIndicator()
-        {
-            GameObject indicator = GameObject.Instantiate(lightMotor.abOffIndicatorPrefab, playerMotor.characterContainer);
-            GameObject.Destroy(indicator, channelDuration);
-            indicators.Add(indicator);
         }
 
         public override void Channel()

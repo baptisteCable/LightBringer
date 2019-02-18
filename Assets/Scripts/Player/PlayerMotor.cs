@@ -1,5 +1,6 @@
 ﻿using LightBringer.Networking;
 using LightBringer.Player.Abilities;
+using LightBringer.Tools;
 using LightBringer.UI;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -17,6 +18,9 @@ namespace LightBringer.Player
 
         private float moveSpeed = MOVE_SPEED;
         private float rotationSpeed = ROTATION_SPEED;
+
+        private const string IMMATERIAL_LAYER = "Immaterial";
+        private const string PLAYER_LAYER = "Player";
 
         // game objects
         public Transform characterContainer;
@@ -41,9 +45,6 @@ namespace LightBringer.Player
         private MovementMode movementMode;
         public float stickToGroundForce;
         private Vector3 previousPosition;
-
-        // Training
-        [HideInInspector] public bool ignoreCD = false;
 
         // Camera
         [SerializeField] private GameObject cameraPrefab;
@@ -76,6 +77,7 @@ namespace LightBringer.Player
         [Header("States Effects")]
         [SerializeField] private ParticleSystem hasteTrailsEffect;
         private ParticleSystem.MainModule hasteTrailsEffectMain;
+        [SerializeField] private ParticleSystem immaterialCloudEffect;
 
         // Use this for initialization
         public virtual void Start()
@@ -178,7 +180,7 @@ namespace LightBringer.Player
             {
                 if (ab.coolDownRemaining > 0)
                 {
-                    if (ignoreCD)
+                    if (GameManager.gm.ignoreCD)
                     {
                         ab.coolDownRemaining = -.01f;
                     }
@@ -223,7 +225,7 @@ namespace LightBringer.Player
             // TEST: Test button
             if (pc.queue == PlayerController.IN_TEST)
             {
-                psm.AddAndStartState(new Haste(2));
+                psm.AddAndStartState(new Immaterial(5f));
             }
 
             // Clear queue if nothing happening
@@ -500,6 +502,8 @@ namespace LightBringer.Player
                 case M_MakeInvisible: MakeInvisible(); return true;
                 case M_PlayHasteTrails: PlayHasteTrails(); return true;
                 case M_StopHasteTrails: StopHasteTrails(); return true;
+                case M_StartImmaterial: StartImmaterial(); return true;
+                case M_StopImmaterial: StopImmaterial(); return true;
             }
 
             return false;
@@ -535,6 +539,24 @@ namespace LightBringer.Player
             hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
         }
 
+        //called by id
+        public const int M_StartImmaterial = 1004;
+        private void StartImmaterial()
+        {
+            immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+            Immaterial.RecTransparentOn(psm.transform);
+        }
+
+        //called by id
+        public const int M_StopImmaterial = 1005;
+        private void StopImmaterial()
+        {
+            immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+            Immaterial.RecTransparentOff(psm.transform);
+        }
+
         protected override bool CallById(int methdodId, float f)
         {
             if (base.CallById(methdodId, f))
@@ -546,7 +568,7 @@ namespace LightBringer.Player
             {
                 case M_HasteTrailsLength: HasteTrailsLength(f); return true;
             }
-            
+
             return false;
         }
 
@@ -557,9 +579,32 @@ namespace LightBringer.Player
             hasteTrailsEffectMain.startLifetime = length;
         }
 
+        protected override bool CallById(int methdodId, int i)
+        {
+            if (base.CallById(methdodId, i))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_ClearIndicators: ClearIndicators(i); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_ClearIndicators = 1300;
+        private void ClearIndicators(int id)
+        {
+            abilities[id].indicators.Clear();
+        }
+
         protected override bool CallById(int methdodId, int i, float f)
         {
-            if (base.CallById(methdodId))
+            if (base.CallById(methdodId, i, f))
             {
                 return true;
             }
@@ -587,7 +632,7 @@ namespace LightBringer.Player
         {
             abilities[id].coolDownRemaining = cd;
         }
-        
+
         /*
         private void OnGUI()
         {
@@ -623,12 +668,6 @@ namespace LightBringer.Player
      * Pentes des ilots : bords progressifs pour la texture du chemin
      * 
      * Enemy not always focusing player. Laser indiquant la direction du regard. Se teinte avant une action offensive ?
-     * 
-     * mise en file des compétences :
-     *  - pendant le cast, mais pas pendant le channeling
-     *  - buttondown pour tout sauf clic gauche (pourrait dépendre de la compétence, faire ce test au chargement et laisser
-     *      les variables dans cette classe)
-     *  - test de la disponibilité à ce moment. Si pas dispo, file non remplacée et bruit d'erreur (et visible sur l'image)
      *  
      *  Base.Start à remplacer. ne pas override ces méthodes.
      *  
@@ -636,11 +675,8 @@ namespace LightBringer.Player
      *  
      *  Gêner le mostre : cancel de son attaque si on time bien un truc.
      *  
-     *  Trouver comment compenser le ping avec les temps de canalisation.
+     *  Indicators (moins visibles pour les autres joueurs)
      *  
-     *  Ajouter un NetworkTimer qui calcule le ping qui stocke le delay. Il les affiche. Le delay est prélevé dans le transform sync (lié par l'inspector)
-     *  Il calcule le delay en prennant le min des 10 dernières valeurs et des 10 derniers mins (donc 100 valeurs)
-     *  
-     *  Meilleur moyen de passer les RPC que par le nom de la méthode. Un int pour chaque méthode ?
+     *  Commenter le code
      * */
 }

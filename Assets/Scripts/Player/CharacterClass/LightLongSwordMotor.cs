@@ -150,6 +150,9 @@ namespace LightBringer.Player.Class
                 case M_PlayAbUlt: PlayAbUlt(); return true;
                 case M_UltLoadedEffectOn: UltLoadedEffectOn(); return true;
                 case M_UltLoadedEffectOff: UltLoadedEffectOff(); return true;
+                case M_Ab2DisplayIndicators: Ab2DisplayIndicators(); return true;
+                case M_AbOffDisplayIndicators: AbOffDisplayIndicators(); return true;
+                case M_AbUltDisplayIndicators: AbUltDisplayIndicators(); return true;
             }
 
             Debug.LogError("No such method Id: " + methdodId);
@@ -357,10 +360,59 @@ namespace LightBringer.Player.Class
         }
 
         // Called by id
-        public const int M_UltLoadedEffectOff= 24;
+        public const int M_UltLoadedEffectOff = 24;
         private void UltLoadedEffectOff()
         {
             sword.transform.Find("UltLoaded").gameObject.SetActive(false);
+        }
+
+        // Called by id
+        public const int M_Ab2DisplayIndicators = 25;
+        private void Ab2DisplayIndicators()
+        {
+            GameObject indicator = Instantiate(ab2IndicatorPrefab, characterContainer);
+            Destroy(indicator, abilities[AB_2].channelDuration);
+            abilities[AB_2].indicators.Add(indicator);
+
+            if (!isLocalPlayer)
+            {
+                Color col = indicator.GetComponent<SpriteRenderer>().color;
+                col.a = .25f;
+                indicator.GetComponent<SpriteRenderer>().color = col;
+            }
+
+        }
+
+        // Called by id
+        public const int M_AbOffDisplayIndicators = 27;
+        private void AbOffDisplayIndicators()
+        {
+            GameObject indicator = Instantiate(abOffIndicatorPrefab, characterContainer);
+            Destroy(indicator, AbOff.CHANNELING_DURATION_A);
+            abilities[AB_OFF].indicators.Add(indicator);
+
+            if (!isLocalPlayer)
+            {
+                Color col = indicator.GetComponent<SpriteRenderer>().color;
+                col.a = .25f;
+                indicator.GetComponent<SpriteRenderer>().color = col;
+            }
+        }
+
+        // Called by id
+        public const int M_AbUltDisplayIndicators = 28;
+        private void AbUltDisplayIndicators()
+        {
+            GameObject indicator = Instantiate(abOffIndicatorPrefab, characterContainer);
+            Destroy(indicator, abilities[AB_ULT].channelDuration);
+            abilities[AB_ULT].indicators.Add(indicator);
+
+            if (!isLocalPlayer)
+            {
+                Color col = indicator.GetComponent<SpriteRenderer>().color;
+                col.a = .25f;
+                indicator.GetComponent<SpriteRenderer>().color = col;
+            }
         }
 
 
@@ -379,6 +431,8 @@ namespace LightBringer.Player.Class
                 case M_LoadedImpactPE: LoadedImpactPE(vec); return true;
                 case M_FadeOut: FadeOut(vec); return true;
                 case M_FadeIn: FadeIn(vec); return true;
+                case M_AbEscDisplayIndicator: AbEscDisplayIndicator(vec); return true;
+                case M_AbEscMoveIndicator: AbEscMoveIndicator(vec); return true;
             }
 
             Debug.LogError("No such method Id: " + methdodId);
@@ -456,6 +510,39 @@ namespace LightBringer.Player.Class
 
             // unlock other abilities
             LockAbilitiesExcept(false, abilities[AB_OFF]);
+        }
+
+        // Called by id
+        public const int M_AbEscDisplayIndicator = 105;
+        private void AbEscDisplayIndicator(Vector3 pos)
+        {
+            ((AbEsc)abilities[AB_ESC]).landingIndicator = GameObject.Instantiate(abEscLandingIndicatorPrefab);
+            ((AbEsc)abilities[AB_ESC]).landingIndicator.transform.position = pos;
+            Destroy(((AbEsc)abilities[AB_ESC]).landingIndicator, abilities[AB_ESC].channelDuration);
+
+            GameObject indicator = Instantiate(abEscRangeIndicatorPrefab, characterContainer);
+            Destroy(indicator, abilities[AB_ESC].channelDuration);
+
+            if (!isLocalPlayer)
+            {
+                Color col = indicator.GetComponent<SpriteRenderer>().color;
+                col.a = .25f;
+                indicator.GetComponent<SpriteRenderer>().color = col;
+
+                col = ((AbEsc)abilities[AB_ESC]).landingIndicator.GetComponent<SpriteRenderer>().color;
+                col.a = .25f;
+                ((AbEsc)abilities[AB_ESC]).landingIndicator.GetComponent<SpriteRenderer>().color = col;
+            }
+        }
+
+        // Called by id
+        public const int M_AbEscMoveIndicator = 106;
+        private void AbEscMoveIndicator(Vector3 pos)
+        {
+            if (((AbEsc)abilities[AB_ESC]).landingIndicator != null)
+            {
+                ((AbEsc)abilities[AB_ESC]).landingIndicator.transform.position = pos;
+            }
         }
     }
 }

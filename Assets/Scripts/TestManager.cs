@@ -25,7 +25,6 @@ public class TestManager : NetworkBehaviour
 
     private bool knightPassive = true;
     private bool canDie = true;
-    private bool noCD = false;
 
     public GameObject newTerrainButton;
 
@@ -52,7 +51,6 @@ public class TestManager : NetworkBehaviour
         psm = pm.GetComponent<PlayerStatusManager>();
 
         psm.canDie = canDie;
-        playerMotor.ignoreCD = noCD;
     }
 
     public void RemovePlayer()
@@ -133,10 +131,9 @@ public class TestManager : NetworkBehaviour
 
     public void SetNoCD(bool noCD)
     {
-        this.noCD = noCD;
-        if (playerMotor != null)
+        if (GameManager.gm != null)
         {
-            playerMotor.ignoreCD = noCD;
+            GameManager.gm.ignoreCD = noCD;
         }
     }
 

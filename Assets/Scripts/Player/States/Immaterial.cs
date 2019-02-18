@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using LightBringer.Tools;
-using LightBringer.Enemies;
+﻿using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player
 {
@@ -8,39 +7,20 @@ namespace LightBringer.Player
     {
         private const bool CANCELLABLE = true;
 
-        private const string IMMATERIAL_LAYER = "Immaterial";
-        private const string PLAYER_LAYER = "Player";
-
-        private GameObject cloudEffectPrefab;
-
-        public Immaterial(float duration) : base(CANCELLABLE, duration) {
-            cloudEffectPrefab = Resources.Load("States/Immaterial/CouldEffect") as GameObject;
+        public Immaterial(float duration) : base(CANCELLABLE, duration)
+        {
         }
 
         public override void Start(PlayerStatusManager psm)
         {
             base.Start(psm);
-
-            GameObject cloudEffect = GameObject.Instantiate(cloudEffectPrefab);
-            cloudEffect.transform.position = psm.transform.position;
-            GameObject.Destroy(cloudEffect, .5f);
-
-            LayerTools.recSetLayer(psm.gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
-
-            RecTransparentOn(psm.transform);
+            psm.playerMotor.CallForAll(PlayerMotor.M_StartImmaterial);
         }
 
         public override void Stop()
         {
             base.Stop();
-
-            GameObject cloudEffect = GameObject.Instantiate(cloudEffectPrefab);
-            cloudEffect.transform.position = psm.transform.position;
-            GameObject.Destroy(cloudEffect, .5f);
-
-            LayerTools.recSetLayer(psm.gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
-
-            RecTransparentOff(psm.transform);
+            psm.playerMotor.CallForAll(PlayerMotor.M_StopImmaterial);
         }
 
         public override void Cancel()
@@ -79,7 +59,19 @@ namespace LightBringer.Player
             return dmg;
         }
 
-        private void RecTransparentOn(Transform tr)
+        public override bool isAffectedByCC(CrowdControl cc)
+        {
+            if (cc.damageType == DamageType.Self)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static void RecTransparentOn(Transform tr)
         {
             if (tr.tag != "Spell" && tr.tag != "UI")
             {
@@ -114,7 +106,7 @@ namespace LightBringer.Player
             }
         }
 
-        private void RecTransparentOff(Transform tr)
+        public static void RecTransparentOff(Transform tr)
         {
             if (tr.tag != "Spell" && tr.tag != "UI")
             {
@@ -146,18 +138,6 @@ namespace LightBringer.Player
                 {
                     RecTransparentOff(child);
                 }
-            }
-        }
-
-        public override bool isAffectedByCC(CrowdControl cc)
-        {
-            if (cc.damageType == DamageType.Self)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
     }

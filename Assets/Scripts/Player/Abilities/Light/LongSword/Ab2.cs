@@ -59,17 +59,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             encounteredCols = new List<Collider>();
 
             // Indicator
-            DisplayIndicator();
+            lightMotor.CallForAll(LightLongSwordMotor.M_Ab2DisplayIndicators);
 
             sphereAdded = false;
-        }
-
-        private void DisplayIndicator()
-        {
-            GameObject indicator = GameObject.Instantiate(lightMotor.ab2IndicatorPrefab, playerMotor.characterContainer);
-            indicator.GetComponent<IndicatorLoader>().Load(channelDuration);
-            GameObject.Destroy(indicator, channelDuration);
-            indicators.Add(indicator);
         }
 
         private void LoadLight()

@@ -24,7 +24,7 @@ namespace LightBringer.Player.Abilities
 
         protected PlayerMotor playerMotor;
 
-        protected List<GameObject> indicators;
+        public List<GameObject> indicators;
 
         public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor,
             bool channelingCancellable, bool castingCancellable, int id)
@@ -199,6 +199,12 @@ namespace LightBringer.Player.Abilities
             {
                 GameObject.Destroy(go);
             }
+
+            if (indicators.Count > 0)
+            {
+                playerMotor.CallForAll(PlayerMotor.M_ClearIndicators, id);
+            }
+
             indicators.Clear();
         }
     }

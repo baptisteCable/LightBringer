@@ -32,10 +32,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         // GameObjects
         private GameObject trigger;
-        private GameObject landingIndicator;
+        public GameObject landingIndicator;
 
         // Move data
-        private Vector3 destination, origin;
+        private Vector3 destination, origin, oldDestination;
         float landingTime;
         float damageTime;
         private bool landed;
@@ -79,6 +79,22 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public override void Channel()
         {
             base.Channel();
+            GetDestination();
+            Vector3 pos = new Vector3(destination.x, .2f, destination.z);
+
+            if (Vector3.Distance(oldDestination, destination) > .2f)
+            {
+                lightMotor.CallForAll(LightLongSwordMotor.M_AbEscMoveIndicator, pos);
+            }
+            else
+            {
+                landingIndicator.transform.position = pos;
+            }
+        }
+
+        private void GetDestination()
+        {
+            oldDestination = destination;
 
             if ((playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).magnitude < MAX_RANGE)
             {
@@ -88,15 +104,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 destination = playerMotor.transform.position + (playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).normalized * MAX_RANGE;
             }
-
-            landingIndicator.transform.position = new Vector3(destination.x, .2f, destination.z);
         }
 
         private void DisplayIndicator()
         {
-            landingIndicator = GameObject.Instantiate(lightMotor.abEscLandingIndicatorPrefab, playerMotor.characterContainer);
-            GameObject rangeIndicator = GameObject.Instantiate(lightMotor.abEscRangeIndicatorPrefab, playerMotor.characterContainer);
-            GameObject.Destroy(rangeIndicator, channelDuration);
+            GetDestination();
+            
+            lightMotor.CallForAll(LightLongSwordMotor.M_AbEscDisplayIndicator, new Vector3(destination.x, .2f, destination.z));
         }
 
         public override void StartAbility()
@@ -105,8 +119,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             landingTime = Time.time + LANDING_TIME;
             damageTime = Time.time + DAMAGE_TIME;
-
-            GameObject.Destroy(landingIndicator);
 
             lightMotor.CallForAll(LightLongSwordMotor.M_EscTrails);
 

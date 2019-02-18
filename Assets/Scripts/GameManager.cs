@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager gm;
 
+    // Training
+    [HideInInspector] public bool ignoreCD = false;
+
     // Use this for initialization
     void Start () {
         if (gm != null)

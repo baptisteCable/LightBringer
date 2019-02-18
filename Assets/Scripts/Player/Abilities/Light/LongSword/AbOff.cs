@@ -63,7 +63,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbOffaAndChangeChannelDuration);
 
                 // Indicator
-                DisplayIndicator();
+                lightMotor.CallForAll(LightLongSwordMotor.M_AbOffDisplayIndicators);
             }
             else
             {
@@ -76,13 +76,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 FadeIn();
             }
-        }
-
-        private void DisplayIndicator()
-        {
-            GameObject indicator = GameObject.Instantiate(lightMotor.abOffIndicatorPrefab, playerMotor.characterContainer);
-            GameObject.Destroy(indicator, CHANNELING_DURATION_A);
-            indicators.Add(indicator);
         }
 
         public override void StartAbility()
