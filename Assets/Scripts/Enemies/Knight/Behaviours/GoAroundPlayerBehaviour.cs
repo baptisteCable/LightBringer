@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class GoAroundPlayerBehaviour : KnightBehaviour
+    public class GoAroundPlayerBehaviour : Behaviour
     {
         private Transform target;
         private float duration;

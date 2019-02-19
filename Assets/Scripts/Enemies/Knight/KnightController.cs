@@ -19,7 +19,7 @@ namespace LightBringer.Enemies.Knight
         private NavMeshAgent agent;
 
         // Behaviours
-        private KnightBehaviour currentBehaviour;
+        private Behaviour currentBehaviour;
         private bool readyForNext = true;
         public bool passive = false;
 
@@ -75,7 +75,7 @@ namespace LightBringer.Enemies.Knight
                 if (readyForNext)
                 {
                     // Create the list of possible behaviours, depending on the situation
-                    Dictionary<KnightBehaviour, float> list = ComputeBehaviourList();
+                    Dictionary<Behaviour, float> list = ComputeBehaviourList();
 
                     // Determine next behaviour from list
                     ActivateNextBehaviourFromDictionary(list);
@@ -106,9 +106,9 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private Dictionary<KnightBehaviour, float> ComputeBehaviourList()
+        private Dictionary<Behaviour, float> ComputeBehaviourList()
         {
-            Dictionary<KnightBehaviour, float> list = new Dictionary<KnightBehaviour, float>();
+            Dictionary<Behaviour, float> list = new Dictionary<Behaviour, float>();
             float weight = 0;
 
             // Passive case
@@ -139,6 +139,7 @@ namespace LightBringer.Enemies.Knight
             {
                 // find a target
                 weight = .5f;
+                weight = 1000000f;
                 list.Add(new FindTargetBehaviour(motor), weight);
 
                 // no other possible options
@@ -188,6 +189,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
                 }
             }
+            weight = 1000000f;
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO,
                 motor.Attack1Indicator1, motor.Attack1Indicator2, motor.Attack1Indicator3), weight);
 
@@ -218,7 +220,7 @@ namespace LightBringer.Enemies.Knight
             return list;
         }
 
-        private void ActivateNextBehaviourFromDictionary(Dictionary<KnightBehaviour, float> list)
+        private void ActivateNextBehaviourFromDictionary(Dictionary<Behaviour, float> list)
         {
             currentBehaviour = null;
 
@@ -234,7 +236,7 @@ namespace LightBringer.Enemies.Knight
             float rnd = Random.value;
             float sum = 0;
 
-            Dictionary<KnightBehaviour, float>.Enumerator en = list.GetEnumerator();
+            Dictionary<Behaviour, float>.Enumerator en = list.GetEnumerator();
             while (currentBehaviour == null)
             {
                 sum += en.Current.Value;
@@ -249,7 +251,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void SetBehaviour(KnightBehaviour behaviour)
+        private void SetBehaviour(Behaviour behaviour)
         {
             if (behaviour.GetType() == typeof(Attack1Behaviour))
             {
@@ -270,23 +272,23 @@ namespace LightBringer.Enemies.Knight
             currentBehaviour.Init();
         }
 
-        private static Dictionary<KnightBehaviour, float> NormalizedDictionary(Dictionary<KnightBehaviour, float> list)
+        private static Dictionary<Behaviour, float> NormalizedDictionary(Dictionary<Behaviour, float> list)
         {
             float sum = 0;
 
-            foreach (KeyValuePair<KnightBehaviour, float> pair in list)
+            foreach (KeyValuePair<Behaviour, float> pair in list)
             {
                 sum += pair.Value;
             }
 
             if (sum < .0001f)
             {
-                return new Dictionary<KnightBehaviour, float>();
+                return new Dictionary<Behaviour, float>();
             }
 
-            Dictionary<KnightBehaviour, float> normalized = new Dictionary<KnightBehaviour, float>();
+            Dictionary<Behaviour, float> normalized = new Dictionary<Behaviour, float>();
 
-            foreach (KeyValuePair<KnightBehaviour, float> pair in list)
+            foreach (KeyValuePair<Behaviour, float> pair in list)
             {
                 normalized.Add(pair.Key, pair.Value / sum);
             }

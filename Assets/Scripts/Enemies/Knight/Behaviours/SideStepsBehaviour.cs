@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class SideStepsBehaviour : KnightBehaviour
+    public class SideStepsBehaviour : Behaviour
     {
         private Transform target;
         private float duration;

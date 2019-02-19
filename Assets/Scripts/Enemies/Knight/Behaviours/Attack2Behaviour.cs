@@ -5,7 +5,7 @@ using LightBringer.Abilities;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class Attack2Behaviour : KnightBehaviour, CollisionAbility
+    public class Attack2Behaviour : Behaviour, CollisionAbility
     {
         private const float DURATION = 4.133f;
         private const float RANGE = 30f;
@@ -15,7 +15,7 @@ namespace LightBringer.Enemies.Knight
         private const float ENEMY_RAIN_RADIUS = 1.5f;
         private const float TARGET_RAIN_RADIUS = 1f;
 
-
+        private KnightMotor km;
 
         private const float LOAD_1 = 59f / 60f;
         private const float LOAD_2 = 91f / 60f;
@@ -46,6 +46,7 @@ namespace LightBringer.Enemies.Knight
         public Attack2Behaviour(KnightMotor enemyMotor, Transform target) : base(enemyMotor)
         {
             this.target = target;
+            km = enemyMotor;
         }
 
         public override void Init()
@@ -128,7 +129,7 @@ namespace LightBringer.Enemies.Knight
 
         private GameObject InitBullet()
         {
-            GameObject bullet = GameObject.Instantiate(em.bulletPrefab, em.transform, false);
+            GameObject bullet = GameObject.Instantiate(km.bulletPrefab, em.transform, false);
             bullet.transform.localPosition = new Vector3(1.68f, 14.4f, .34f);
             bullet.transform.SetParent(null, true);
             return bullet;
@@ -146,7 +147,7 @@ namespace LightBringer.Enemies.Knight
 
         private void InstanciateCaster(Transform parentTransform, float range, float radius)
         {
-            GameObject caster = GameObject.Instantiate(em.casterPrefab, parentTransform);
+            GameObject caster = GameObject.Instantiate(km.casterPrefab, parentTransform);
             caster.transform.localPosition = Vector3.zero;
             Attack2Caster a2c = caster.GetComponent<Attack2Caster>();
             a2c.ability = this;

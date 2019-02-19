@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class FindTargetBehaviour : KnightBehaviour
+    public class FindTargetBehaviour : Behaviour
     {
         private const float MAX_CYCLE_DURATION = 4f;
         private const float MIN_CYCLE_DURATION = .5f;

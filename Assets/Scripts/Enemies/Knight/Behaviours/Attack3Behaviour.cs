@@ -5,7 +5,7 @@ using LightBringer.Abilities;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class Attack3Behaviour : KnightBehaviour, CollisionAbility
+    public class Attack3Behaviour : Behaviour, CollisionAbility
     {
         private const float DURATION = 1.6f;
         private const float SPEAR_DMG = 14f;

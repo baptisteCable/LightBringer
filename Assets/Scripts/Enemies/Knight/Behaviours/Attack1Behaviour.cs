@@ -1,132 +1,82 @@
-﻿using UnityEngine;
-using LightBringer.Player;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
+using LightBringer.Player;
+using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class Attack1Behaviour : KnightBehaviour, CollisionAbility
+    public class Attack1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 2.315f;
+        private const float INDICATOR_DISPLAY_TIME = .5f;
+        private const float DURATION = 2.9f;
         private const float CHARGE_RANGE = 20f;
 
-        private const float POS_CHECKPOINT_1_START = 38f / 60f;
-        private const float POS_CHECKPOINT_1_END = 46f / 60f;
-        private const float POS_CHECKPOINT_2_START = 60f / 60f;
-        private const float POS_CHECKPOINT_2_END = 70f / 60f;
-
-        private const float DMG_CHECKPOINT_1_START = 26f / 60f;
-        private const float DMG_CHECKPOINT_1_END = 29f / 60f;
-        private const float DMG_CHECKPOINT_2_START = 56f / 60f;
-        private const float DMG_CHECKPOINT_2_END = 58f / 60f;
-        private const float DMG_CHECKPOINT_3_START = 76f / 60f;
-        private const float DMG_CHECKPOINT_3_END = 118f / 60f;
-
-        // Colliders GO
-        public GameObject act1GO;
-        public GameObject act2GO;
-        public GameObject act3GO;
-        private AbilityColliderTrigger act1;
-        private AbilityColliderTrigger act2;
-        private AbilityColliderTrigger act3;
-
-        // Indicators
-        private GameObject indicator1, indicator2, indicator3;
-
-        // Collider list
-        private List<Collider> cols;
-
-        // Init booleans
-        private bool part1Initialized = false;
-        private bool part2Initialized = false;
-        private bool part3Initialized = false;
-
+        private const float DMG_CHECKPOINT_1_START = 60f / 60f;
+        private const float DMG_CHECKPOINT_1_END = 63f / 60f;
+        private const float POS_CHECKPOINT_1_START = 72f / 60f;
+        private const float POS_CHECKPOINT_1_END = 80f / 60f;
+        private const float DMG_CHECKPOINT_2_START = 90f / 60f;
+        private const float DMG_CHECKPOINT_2_END = 92f / 60f;
+        private const float DMG_CHECKPOINT_3_START = 110f / 60f;
+        private const float DMG_CHECKPOINT_3_END = 152f / 60f;
+        
         float stopDist;
         Transform target;
-
-        float ellapsedTime = 0f;
 
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
             GameObject attack1act2GO, GameObject attack1act3GO,
             GameObject indicator1, GameObject indicator2, GameObject indicator3) : base(enemyMotor)
         {
             this.target = target;
-            act1GO = attack1act1GO;
-            act2GO = attack1act2GO;
-            act3GO = attack1act3GO;
-            this.indicator1 = indicator1;
-            this.indicator2 = indicator2;
-            this.indicator3 = indicator3;
+            actGOs = new GameObject[3];
+            actGOs[0] = attack1act1GO;
+            actGOs[1] = attack1act2GO;
+            actGOs[2] = attack1act3GO;
+            parts = new Part[3];
+            parts[0] = new Part(State.Before, DMG_CHECKPOINT_1_START, DMG_CHECKPOINT_1_END - DMG_CHECKPOINT_1_START, indicator1);
+            parts[1] = new Part(State.Before, DMG_CHECKPOINT_2_START, DMG_CHECKPOINT_2_END - DMG_CHECKPOINT_2_START, indicator2);
+            parts[2] = new Part(State.Before, DMG_CHECKPOINT_3_START, DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START, indicator3);
+
         }
 
         public override void Init()
         {
+            base.Init();
+
             em.anim.SetBool("castingAttack1", true);
             em.anim.Play("Attack1");
-            act1 = act1GO.GetComponent<AbilityColliderTrigger>();
-            act2 = act2GO.GetComponent<AbilityColliderTrigger>();
-            act3 = act3GO.GetComponent<AbilityColliderTrigger>();
+            acts = new AbilityColliderTrigger[3];
+            for (int i = 0; i < actGOs.Length; i++)
+            {
 
-            // Indicator 1
-            indicator1.SetActive(true);
-            indicator1.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_1_START);
+                acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger>();
+            }
         }
 
         public override void Run()
         {
-            ellapsedTime += Time.deltaTime;
+            DisplayIndicators();
 
             // DMG 1
-            if (ellapsedTime >= DMG_CHECKPOINT_1_START && ellapsedTime <= DMG_CHECKPOINT_1_END)
-            {
-                InitPart1();
-            }
-            if (act1GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_1_END)
-            {
-                act1GO.SetActive(false);
-                act1.UnsetAbility();
-
-                // Indicator 2
-                indicator2.SetActive(true);
-                indicator2.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_2_START - DMG_CHECKPOINT_1_END);
-
-            }
+            InitPart0();
+            RunPart0();
 
             // DMG 2
-            if (ellapsedTime >= DMG_CHECKPOINT_2_START && ellapsedTime <= DMG_CHECKPOINT_2_END)
-            {
-                InitPart2();
-            }
-            if (act2GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_2_END)
-            {
-                act2GO.SetActive(false);
-                act2.UnsetAbility();
-
-                // Indicator 3
-                indicator3.SetActive(true);
-                indicator3.GetComponent<IndicatorLoader>().Load(DMG_CHECKPOINT_3_START - DMG_CHECKPOINT_2_END);
-            }
+            InitPart1();
+            RunPart1();
 
             // DMG 3
-            if (ellapsedTime >= DMG_CHECKPOINT_3_START && ellapsedTime <= DMG_CHECKPOINT_3_END)
-            {
-                InitPart3();
-
-                em.Move(em.transform.forward * CHARGE_RANGE / (DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START));
-            }
-            if (act3GO.activeSelf && ellapsedTime >= DMG_CHECKPOINT_3_END)
-            {
-                act3GO.SetActive(false);
-                act3.UnsetAbility();
-            }
+            InitPart2();
+            RunPart2();
 
             // POS init, 1 AND 2
-            if (ellapsedTime <= DMG_CHECKPOINT_1_START || (ellapsedTime >= POS_CHECKPOINT_1_START && ellapsedTime <= POS_CHECKPOINT_1_END))
+            if (Time.time <= startTime + DMG_CHECKPOINT_1_START ||
+                (Time.time >= startTime + POS_CHECKPOINT_1_START && Time.time <= startTime + POS_CHECKPOINT_1_END))
             {
                 em.RotateTowards(target.position);
             }
 
-            if (ellapsedTime > DURATION)
+            if (Time.time > startTime + DURATION)
             {
                 End();
             }
@@ -139,28 +89,28 @@ namespace LightBringer.Enemies.Knight
             em.SetOverrideAgent(false);
         }
 
-        public void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public override void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             if (col.tag == "Player")
             {
-                if (abilityColliderTrigger == act1GO.GetComponent<AbilityColliderTrigger>())
+                if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                {
+                    ApplyPart0Damage(col);
+                }
+
+                if (abilityColliderTrigger == actGOs[1].GetComponent<AbilityColliderTrigger>())
                 {
                     ApplyPart1Damage(col);
                 }
 
-                if (abilityColliderTrigger == act2GO.GetComponent<AbilityColliderTrigger>())
+                if (abilityColliderTrigger == actGOs[2].GetComponent<AbilityColliderTrigger>())
                 {
                     ApplyPart2Damage(col);
-                }
-
-                if (abilityColliderTrigger == act3GO.GetComponent<AbilityColliderTrigger>())
-                {
-                    ApplyPart3Damage(col);
                 }
             }
         }
 
-        private void ApplyPart1Damage(Collider col)
+        private void ApplyPart0Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
@@ -174,7 +124,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void ApplyPart2Damage(Collider col)
+        private void ApplyPart1Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
@@ -189,7 +139,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void ApplyPart3Damage(Collider col)
+        private void ApplyPart2Damage(Collider col)
         {
             if (!cols.Contains(col))
             {
@@ -204,57 +154,72 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
+        private void DisplayIndicators()
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (Time.time >= startTime + parts[i].startTime - INDICATOR_DISPLAY_TIME && parts[i].state == State.Before)
+                {
+                    DisplayIndicator(parts[i].indicator, INDICATOR_DISPLAY_TIME);
+                    parts[i].state = State.IndicatorDisplayed;
+                }
+            }
+        }
+
+        private void InitPart0()
+        {
+            InitPart(0);
+        }
+
         private void InitPart1()
         {
-            if (!part1Initialized)
-            {
-                // Indicator 1
-                indicator1.SetActive(false);
-
-                act1GO.SetActive(true);
-                act1.SetAbility(this);
-                cols = new List<Collider>();
-                part1Initialized = true;
-            }
+            InitPart(1);
         }
 
         private void InitPart2()
         {
-            if (!part2Initialized)
+            if (InitPart(2))
             {
-                // Indicator 2
-                indicator2.SetActive(false);
-
-                act2GO.SetActive(true);
-                act2.SetAbility(this);
-                cols = new List<Collider>();
-                part2Initialized = true;
+                // Effect
+                actGOs[2].transform.parent.Find("ChargeEffect").GetComponent<ParticleSystem>().Play();
             }
         }
 
-        private void InitPart3()
+        private void RunPart0()
         {
-            if (!part3Initialized)
+            EndPart(0);
+        }
+
+        private void RunPart1()
+        {
+            EndPart(1);
+        }
+
+        private void RunPart2()
+        {
+            if (parts[2].state == State.InProgress)
             {
-                // Indicator 3
-                indicator3.SetActive(false);
+                em.Move(em.transform.forward * CHARGE_RANGE / (DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START));
+                EndPart(2);
+            }
+        }
 
-                em.SetOverrideAgent(true);
-                act3GO.SetActive(true);
-                act3.SetAbility(this);
-                cols = new List<Collider>();
-                part3Initialized = true;
-
-                // Effect
-                act3GO.transform.parent.Find("ChargeEffect").GetComponent<ParticleSystem>().Play();
+        private void EndPart(int i)
+        {
+            if (parts[i].state == State.InProgress && Time.time >= startTime + parts[i].startTime + parts[i].duration)
+            {
+                actGOs[i].SetActive(false);
+                acts[i].UnsetAbility();
+                parts[i].state = State.Terminated;
             }
         }
 
         public override void Abort()
         {
-            indicator1.SetActive(false);
-            indicator2.SetActive(false);
-            indicator3.SetActive(false);
+            foreach (Part part in parts)
+            {
+                part.indicator.SetActive(false);
+            }
 
             base.Abort();
         }

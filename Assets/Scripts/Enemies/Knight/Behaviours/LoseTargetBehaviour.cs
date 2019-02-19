@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class LoseTargetBehaviour : KnightBehaviour
+    public class LoseTargetBehaviour : Behaviour
     {
         private const float DURATION = 2f;
         private const float TARGET_LOSE_TIME = 1f;

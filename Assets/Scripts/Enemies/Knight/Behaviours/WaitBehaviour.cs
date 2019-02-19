@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class WaitBehaviour : KnightBehaviour
+    public class WaitBehaviour : Behaviour
     {
         private float duration;
 

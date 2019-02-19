@@ -180,7 +180,7 @@ ModelImporter:
       name: Attack1
       takeName: Attack1
       firstFrame: 0
-      lastFrame: 139
+      lastFrame: 174
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -236,7 +236,7 @@ ModelImporter:
       name: Attack3
       takeName: Attack3
       firstFrame: 0
-      lastFrame: 94
+      lastFrame: 109
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

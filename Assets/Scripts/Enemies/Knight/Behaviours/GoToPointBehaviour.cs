@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class GoToTargetBehaviour : KnightBehaviour
+    public class GoToTargetBehaviour : Behaviour
     {
         float stopDist;
         Transform target;
