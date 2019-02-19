@@ -20,10 +20,5 @@ namespace LightBringer.Enemies.Knight
                 End();
             }
         }
-
-        public void End()
-        {
-            complete = true;
-        }
     }
 }

@@ -31,7 +31,7 @@ namespace LightBringer.Enemies.Knight
                 leftAroundDir = -leftAroundDir;
             }
             em.MoveInDirection(leftAroundDir);
-            em.RotateTowards(target.position - em.transform.position);
+            em.RotateTowards(target.position);
 
             currentDirectionDuration -= Time.deltaTime;
             if (currentDirectionDuration < 0)
@@ -53,9 +53,9 @@ namespace LightBringer.Enemies.Knight
             currentDirectionDuration = Random.value * .3f + .3f;
         }
 
-        public void End()
+        public override void End()
         {
-            complete = true;
+            base.End();
             em.SetOverrideAgent(false);
         }
     }

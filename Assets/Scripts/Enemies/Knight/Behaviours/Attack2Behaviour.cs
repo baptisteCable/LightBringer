@@ -119,10 +119,10 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public void End()
+        public override void End()
         {
+            base.End();
             em.anim.SetBool("castingAttack2", false);
-            complete = true;
             em.SetOverrideAgent(false);
         }
 

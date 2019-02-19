@@ -27,19 +27,20 @@ namespace LightBringer.Enemies.Knight
         private float[] remainingCD;
         private bool[] CDUp;
 
-        // Environment
+        // Target
         public Transform target;
+        public float targetModificationTime;
 
         // Use this for initialization
         void Start()
         {
             motor = GetComponent<KnightMotor>();
-            agent = GetComponent<NavMeshAgent>();
+            agent = motor.agent;
             agent.destination = transform.position;
 
             // last behaviour
             currentBehaviour = new WaitBehaviour(motor, 2f);
-
+           
             // CD
             remainingCD = new float[3];
             CDUp = new bool[3];
@@ -73,7 +74,12 @@ namespace LightBringer.Enemies.Knight
                 // New behaviour after run to have 1 frame to compute agent path
                 if (readyForNext)
                 {
-                    ComputeNextBehaviour();
+                    // Create the list of possible behaviours, depending on the situation
+                    Dictionary<KnightBehaviour, float> list = ComputeBehaviourList();
+
+                    // Determine next behaviour from list
+                    ActivateNextBehaviourFromDictionary(list);
+
                     readyForNext = false;
                 }
 
@@ -100,7 +106,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void ComputeNextBehaviour()
+        private Dictionary<KnightBehaviour, float> ComputeBehaviourList()
         {
             Dictionary<KnightBehaviour, float> list = new Dictionary<KnightBehaviour, float>();
             float weight = 0;
@@ -108,8 +114,8 @@ namespace LightBringer.Enemies.Knight
             // Passive case
             if (passive)
             {
-                list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
-                return;
+                list.Add(new WaitBehaviour(motor, 1.5f * Random.value + .5f), 1f);
+                return list;
             }
 
             // Wait behaviour
@@ -118,7 +124,32 @@ namespace LightBringer.Enemies.Knight
             {
                 weight -= .5f;
             }
-            list.Add(new WaitBehaviour(motor, .5f * Random.value + .5f), weight);
+            list.Add(new WaitBehaviour(motor, 1.5f * Random.value + .5f), weight);
+
+            // Random move
+            weight = 1f;
+            if (currentBehaviour.GetType() == typeof(RandomMove))
+            {
+                weight -= .5f;
+            }
+            list.Add(new RandomMove(motor, target), weight);
+
+            // If no target, find one
+            if (target == null)
+            {
+                // find a target
+                weight = .5f;
+                list.Add(new FindTargetBehaviour(motor), weight);
+
+                // no other possible options
+                return list;
+            }
+            else
+            {
+                // lose the current target
+                weight = (Time.time - targetModificationTime) / 10f;
+                list.Add(new LoseTargetBehaviour(motor), weight);
+            }
 
             // Wait and rotate behaviour
             weight = 1.5f;
@@ -134,7 +165,7 @@ namespace LightBringer.Enemies.Knight
             {
                 weight = ((target.position - motor.transform.position).magnitude - 4) / 2f;
             }
-            list.Add(new GoToPointBehaviour(motor, 3f, target), weight);
+            list.Add(new GoToTargetBehaviour(motor, 3f, target), weight);
 
             // Go around player
             weight = 1f;
@@ -184,22 +215,21 @@ namespace LightBringer.Enemies.Knight
             list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider,
                 motor.Attack3Indicator1, motor.Attack3Indicator2), weight);
 
-            // Determine next behaviour from list
-            ActivateNextBehaviourFromDictionary(list);
+            return list;
         }
 
         private void ActivateNextBehaviourFromDictionary(Dictionary<KnightBehaviour, float> list)
         {
             currentBehaviour = null;
 
+            list = NormalizedDictionary(list);
+
             if (list.Count == 0)
             {
                 Debug.LogError("Empty list of Knight Behaviour");
-                currentBehaviour = new WaitAndRotateBehaviour(motor, Random.value * 1.5f, target);
+                currentBehaviour = new WaitBehaviour(motor, Random.value * 1.5f);
                 return;
             }
-
-            list = NormalizedDictionary(list);
 
             float rnd = Random.value;
             float sum = 0;
@@ -247,6 +277,11 @@ namespace LightBringer.Enemies.Knight
             foreach (KeyValuePair<KnightBehaviour, float> pair in list)
             {
                 sum += pair.Value;
+            }
+
+            if (sum < .0001f)
+            {
+                return new Dictionary<KnightBehaviour, float>();
             }
 
             Dictionary<KnightBehaviour, float> normalized = new Dictionary<KnightBehaviour, float>();

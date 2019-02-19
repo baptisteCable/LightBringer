@@ -3,12 +3,12 @@ using UnityEngine.AI;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class GoToPointBehaviour : KnightBehaviour
+    public class GoToTargetBehaviour : KnightBehaviour
     {
         float stopDist;
         Transform target;
 
-        public GoToPointBehaviour(KnightMotor enemyMotor, float stopDist, Transform target) : base(enemyMotor)
+        public GoToTargetBehaviour(KnightMotor enemyMotor, float stopDist, Transform target) : base(enemyMotor)
         {
             this.stopDist = stopDist;
             this.target = target;
@@ -33,10 +33,10 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public void End()
+        public override void End()
         {
+            base.End();
             em.agent.isStopped = true;
-            complete = true;
         }
     }
 }

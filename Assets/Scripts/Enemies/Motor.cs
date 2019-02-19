@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Networking;
 
@@ -31,14 +32,25 @@ namespace LightBringer.Enemies
         // Rotation
         protected float currentRotationSpeed;
         protected float maxRotationSpeed = 0f;
+        private struct TimePoint
+        {
+            public float time;
+            public Vector3 point;
+
+            public TimePoint(float time, Vector3 point)
+            {
+                this.time = time;
+                this.point = point;
+            }
+        }
+        private List<TimePoint> delayedRotations;
 
         // Components
-        [HideInInspector]
         public Animator anim;
-        [HideInInspector]
-        public CharacterController cc;
-        [HideInInspector]
-        public StatusManager statusManager;
+        [HideInInspector] public CharacterController cc;
+        [HideInInspector] public StatusManager statusManager;
+        [HideInInspector] public Controller controller;
+        public Head head;
 
         //Animation acceleration smooth
         protected Vector3 animAcceleration;
@@ -49,28 +61,29 @@ namespace LightBringer.Enemies
         {
             if (isServer)
             {
-                GetComponent<Controller>().enabled = true;
-            }
+                controller = GetComponent<Controller>();
+                controller.enabled = true;
+                
+                // Agent
+                agent = GetComponent<NavMeshAgent>();
+                agent.updatePosition = false;
+                overrideAgent = false;
 
-            // Animator
-            anim = transform.Find("EnemyContainer").GetComponent<Animator>();
+                // Last position
+                lastPosition = transform.position;
+
+                // Rotations
+                delayedRotations = new List<TimePoint>();
+            }
 
             // Character controller
             cc = GetComponent<CharacterController>();
             statusManager = GetComponent<StatusManager>();
-
-            // Agent
-            agent = GetComponent<NavMeshAgent>();
-            agent.updatePosition = false;
-            overrideAgent = false;
-
-            // Last position
-            lastPosition = transform.position;
         }
 
         protected void BaseUpdate()
         {
-            if (!statusManager.isDead)
+            if (!statusManager.isDead && isServer)
             {
                 Vector3 worldDeltaPosition = transform.position - lastPosition;
                 lastPosition = transform.position;
@@ -85,7 +98,6 @@ namespace LightBringer.Enemies
                 smoothDeltaPosition = Vector2.Lerp(smoothDeltaPosition, deltaPosition, smooth);
 
                 // Update velocity if delta time is safe
-                //if (Time.deltaTime > 1e-5f)
                 Vector2 velocity = smoothDeltaPosition / Time.deltaTime;
 
                 bool shouldMove = velocity.magnitude > 0.5f && agent.remainingDistance > agent.radius;
@@ -99,6 +111,8 @@ namespace LightBringer.Enemies
                 {
                     Move(agent.velocity);
                 }
+
+                ApplyDelayedRotations();
 
                 /*
                 LookAt lookAt = GetComponent<LookAt>();
@@ -197,8 +211,33 @@ namespace LightBringer.Enemies
             }
         }
 
-        public void RotateTowards(Vector3 direction)
+        private void ApplyDelayedRotations()
         {
+            Vector3 target = Vector3.zero;
+            bool rotate = false;
+
+            while (delayedRotations.Count > 0 && Time.time >= delayedRotations[0].time)
+            {
+                target = delayedRotations[0].point;
+                rotate = true;
+                delayedRotations.RemoveAt(0);
+            }
+
+            if (rotate)
+            {
+                RotateTowards(target);
+            }
+        }
+
+        public void DelayedRotateTowards(Vector3 point, float delay)
+        {
+            TimePoint timeRot = new TimePoint(Time.time + delay, point);
+            delayedRotations.Add(timeRot);
+        }
+
+        public void RotateTowards(Vector3 point)
+        {
+            Vector3 direction = point - transform.position;
             float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
             float rotationSpeed;
 

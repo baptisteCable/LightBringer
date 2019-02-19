@@ -123,7 +123,7 @@ namespace LightBringer.Enemies.Knight
             // POS init, 1 AND 2
             if (ellapsedTime <= DMG_CHECKPOINT_1_START || (ellapsedTime >= POS_CHECKPOINT_1_START && ellapsedTime <= POS_CHECKPOINT_1_END))
             {
-                em.RotateTowards(target.position - em.transform.position);
+                em.RotateTowards(target.position);
             }
 
             if (ellapsedTime > DURATION)
@@ -132,10 +132,10 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public void End()
+        public override void End()
         {
+            base.End();
             em.anim.SetBool("castingAttack1", false);
-            complete = true;
             em.SetOverrideAgent(false);
         }
 

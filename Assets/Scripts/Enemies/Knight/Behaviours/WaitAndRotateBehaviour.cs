@@ -15,7 +15,7 @@ namespace LightBringer.Enemies.Knight
 
         public override void Run()
         {
-            em.RotateTowards(target.position - em.transform.position);
+            em.RotateTowards(target.position);
 
             duration -= Time.deltaTime;
 
@@ -23,11 +23,6 @@ namespace LightBringer.Enemies.Knight
             {
                 End();
             }
-        }
-
-        public void End()
-        {
-            complete = true;
         }
     }
 }

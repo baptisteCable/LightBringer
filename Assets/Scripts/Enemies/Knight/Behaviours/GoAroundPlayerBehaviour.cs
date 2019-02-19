@@ -39,9 +39,9 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public void End()
+        public override void End()
         {
-            complete = true;
+            base.End();
             em.SetOverrideAgent(false);
         }
     }

@@ -29,6 +29,7 @@ namespace LightBringer.Enemies.Knight
 
         private void Start()
         {
+            
             BaseStart();
 
             // Colliders

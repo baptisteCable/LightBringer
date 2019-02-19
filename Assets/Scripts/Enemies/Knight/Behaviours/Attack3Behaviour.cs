@@ -99,11 +99,11 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public void End()
+        public override void End()
         {
+            base.End();
             shieldCollider.SetActive(true);
             em.anim.SetBool("castingAttack3", false);
-            complete = true;
             em.SetOverrideAgent(false);
         }
 
