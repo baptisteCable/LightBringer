@@ -21,7 +21,6 @@ namespace LightBringer.Enemies.Knight
                 ((KnightController)em.controller).target = null;
                 ((KnightController)em.controller).targetModificationTime = Time.time;
                 em.head.NoTarget();
-                Debug.Log("No more target");
             }
 
             if (Time.time > startTime + DURATION)

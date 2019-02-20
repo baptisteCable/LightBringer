@@ -86,7 +86,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 lightMotor.CallForAll(LightLongSwordMotor.M_AbEscMoveIndicator, pos);
             }
-            else
+            else if (landingIndicator != null)
             {
                 landingIndicator.transform.position = pos;
             }
@@ -109,7 +109,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void DisplayIndicator()
         {
             GetDestination();
-            
+
             lightMotor.CallForAll(LightLongSwordMotor.M_AbEscDisplayIndicator, new Vector3(destination.x, .2f, destination.z));
         }
 

@@ -51,11 +51,14 @@ namespace LightBringer.Enemies
 
         public virtual void Abort()
         {
-            foreach (Part part in parts)
+            if (parts != null)
             {
-                if (part.indicator != null)
+                for (int i = 0; i < parts.Length; i++)
                 {
-                    part.indicator.SetActive(false);
+                    if (parts[i].indicator != null)
+                    {
+                        parts[i].indicator.SetActive(false);
+                    }
                 }
             }
 

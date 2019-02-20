@@ -37,7 +37,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void RpcSetAnchor(GameObject anchorGO)
         {
             anchor = anchorGO.transform;
-            Debug.Log("Anchor: " + anchor.name);
         }
 
         protected override bool CallById(int methdodId)
