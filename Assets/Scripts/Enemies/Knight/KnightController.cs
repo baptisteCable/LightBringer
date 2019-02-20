@@ -139,7 +139,6 @@ namespace LightBringer.Enemies.Knight
             {
                 // find a target
                 weight = .5f;
-                weight = 100000f; // Debug
                 list.Add(new FindTargetBehaviour(motor), weight);
 
                 // no other possible options
@@ -189,7 +188,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
                 }
             }
-            weight = 100000f; // Debug
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO,
                 motor.Attack1Indicator1, motor.Attack1Indicator2, motor.Attack1Indicator3), weight);
 

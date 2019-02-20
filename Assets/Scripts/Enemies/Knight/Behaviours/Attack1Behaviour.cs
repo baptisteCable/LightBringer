@@ -152,15 +152,5 @@ namespace LightBringer.Enemies.Knight
                 psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), 1f);
             }
         }
-
-        public override void Abort()
-        {
-            foreach (Part part in parts)
-            {
-                part.indicator.SetActive(false);
-            }
-
-            base.Abort();
-        }
     }
 }
