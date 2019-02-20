@@ -4,17 +4,21 @@ public class Head : MonoBehaviour
 {
     private const float TARGET_LERP_RATE = 10f;
     private const float LOOK_AROUND_LERP_RATE = 1f;
-    private const float MAX_HEAD_Y_ANGLE = 80f;
-    private const float MAX_HEAD_X_ANGLE = 20f;
-    private const float MAX_SIGHT_X_ANGLE = 50f;
     private const float TIME_BETWEEN_2_RAND = 2f;
     private const float LOOK_AROUND_TURN_PER_SEC = 2f;
     private const float LOOK_AROUND_X_ERROR = 10f;
     private const float LOOK_AROUND_Y_ERROR = 20f;
 
+    [Header("Transforms")]
     [SerializeField] Transform head;
     [SerializeField] Transform sight;
-    public Transform target;
+
+    [Header("Rotation bounds")]
+    [SerializeField] private float headYAngleBound = 80f;
+    [SerializeField] private float headXAngleBound = 20f;
+    [SerializeField] private float sightXAngleBound = 50f;
+    
+    private Transform target;
     private float theoYRot;
     private float theoXRot;
     private float targetHeadYRot;
@@ -87,31 +91,31 @@ public class Head : MonoBehaviour
 
     private void ComputeHeadAndSightRotation()
     {
-        if (theoYRot < -MAX_HEAD_Y_ANGLE)
+        if (theoYRot < -headYAngleBound)
         {
-            targetHeadYRot = -MAX_HEAD_Y_ANGLE;
+            targetHeadYRot = -headYAngleBound;
         }
-        else if (theoYRot > MAX_HEAD_Y_ANGLE)
+        else if (theoYRot > headYAngleBound)
         {
-            targetHeadYRot = MAX_HEAD_Y_ANGLE;
+            targetHeadYRot = headYAngleBound;
         }
         else
         {
             targetHeadYRot = theoYRot;
         }
 
-        if (theoXRot / 2 > MAX_HEAD_X_ANGLE)
+        if (theoXRot / 2 > headXAngleBound)
         {
-            targetHeadXRot = MAX_HEAD_X_ANGLE;
+            targetHeadXRot = headXAngleBound;
         }
         else
         {
             targetHeadXRot = theoXRot / 2;
         }
 
-        if (theoXRot - targetHeadXRot > MAX_SIGHT_X_ANGLE)
+        if (theoXRot - targetHeadXRot > sightXAngleBound)
         {
-            targetSightXRot = MAX_SIGHT_X_ANGLE;
+            targetSightXRot = sightXAngleBound;
         }
         else
         {
@@ -131,40 +135,25 @@ public class Head : MonoBehaviour
             lerpRate = TARGET_LERP_RATE;
         }
 
-        head.localRotation = Quaternion.Lerp(lastHeadRotation, HeadTargetRotation(1), lerpRate * Time.deltaTime);
-        sight.localRotation = Quaternion.Lerp(lastSightRotation, SightTargetRotation(1), lerpRate * Time.deltaTime);
+        head.localRotation = Quaternion.Lerp(lastHeadRotation, HeadTargetRotation(), lerpRate * Time.deltaTime);
+        sight.localRotation = Quaternion.Lerp(lastSightRotation, SightTargetRotation(), lerpRate * Time.deltaTime);
     }
 
-    private Quaternion HeadTargetRotation(int mode)
+    private Quaternion HeadTargetRotation()
     {
-        if (mode == 1)
-        {
-            return Quaternion.Euler(-targetHeadYRot, 0, targetHeadXRot);
-        }
-        else
-        {
-            return Quaternion.Euler(targetHeadXRot, targetHeadYRot, 0);
-        }
+        return Quaternion.Euler(-targetHeadYRot, 0, targetHeadXRot);
     }
 
-    private Quaternion SightTargetRotation(int mode)
+    private Quaternion SightTargetRotation()
     {
-        if (mode == 1)
-        {
-            return Quaternion.Euler(0, 0, targetSightXRot);
-        }
-        else
-        {
-            return Quaternion.Euler(targetSightXRot, 0, 0);
-        }
+        return Quaternion.Euler(0, 0, targetSightXRot);
     }
 
     private void RandomRotation()
     {
         nextRandomTime = Time.time + Random.value * 3f + 1f;
-        theoXRot = Mathf.Pow(Random.value, 3) * (MAX_HEAD_X_ANGLE + MAX_SIGHT_X_ANGLE);
-        theoYRot = Random.value * MAX_HEAD_Y_ANGLE * 2 - MAX_HEAD_Y_ANGLE;
-
+        theoXRot = Mathf.Pow(Random.value, 3) * (headXAngleBound + sightXAngleBound);
+        theoYRot = Random.value * headYAngleBound * 2 - headYAngleBound;
     }
 
     public void LookAtTarget(Transform tar)

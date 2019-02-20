@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
-using LightBringer.Abilities;
-using LightBringer.Enemies.Knight;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LightBringer.Enemies
 {
     public abstract class Behaviour
     {
+        private const float INDICATOR_DISPLAY_TIME = .5f;
+
         protected Motor em;
         public bool complete = false;
         public float startTime;
@@ -45,7 +44,8 @@ namespace LightBringer.Enemies
 
         public abstract void Run();
 
-        public virtual void Init() {
+        public virtual void Init()
+        {
             startTime = Time.time;
         }
 
@@ -59,10 +59,89 @@ namespace LightBringer.Enemies
             complete = true;
         }
 
-        protected void DisplayIndicator(GameObject indicator, float loadingTime)
+        protected void DisplayIndicators()
         {
-            indicator.SetActive(true);
-            indicator.GetComponent<IndicatorLoader>().Load(loadingTime);
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (IsDisplayIndicatorTime(i, INDICATOR_DISPLAY_TIME))
+                {
+                    DisplayIndicator(i, INDICATOR_DISPLAY_TIME);
+                }
+            }
+        }
+
+        protected bool IsDisplayIndicatorTime(int part, float displayTime)
+        {
+            return Time.time >= startTime + parts[part].startTime - displayTime && parts[part].state == State.Before;
+        }
+
+        protected void DisplayIndicator(int part, float loadingTime)
+        {
+            if (parts[part].indicator != null)
+            {
+                parts[part].indicator.SetActive(true);
+                parts[part].indicator.GetComponent<IndicatorLoader>().Load(loadingTime);
+            }
+            parts[part].state = State.IndicatorDisplayed;
+        }
+
+        protected void StartParts()
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (IsStartTime(i))
+                {
+                    StartPart(i);
+                }
+            }
+        }
+
+        protected bool IsStartTime(int part)
+        {
+            return Time.time > startTime + parts[part].startTime && parts[part].state == State.IndicatorDisplayed;
+        }
+
+        protected virtual void StartPart(int part)
+        {
+            if (parts[part].indicator != null)
+            {
+                parts[part].indicator.SetActive(false);
+            }
+            parts[part].state = State.InProgress;
+        }
+
+        protected virtual void RunParts()
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (IsRunTime(i))
+                {
+                    RunPart(i);
+                }
+            }
+        }
+
+        protected bool IsRunTime(int part)
+        {
+            return parts[part].state == State.InProgress;
+        }
+
+        protected virtual void RunPart(int part)
+        {
+            if (IsEndTime(part))
+            {
+                EndPart(part);
+            }
+        }
+
+        protected bool IsEndTime(int part)
+        {
+            return parts[part].state == State.InProgress && Time.time >= startTime + parts[part].startTime + parts[part].duration;
+        }
+
+        protected virtual void EndPart(int i)
+        {
+            parts[i].state = State.Terminated;
         }
     }
 }

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using LightBringer.Player;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using LightBringer.Abilities;
+using LightBringer.Player;
+using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
@@ -26,22 +26,12 @@ namespace LightBringer.Enemies.Knight
         private const float FIRE_3 = 139f / 60f;
 
         // Colliders GO
-        private GameObject bullet1, bullet2, bullet3, previousBullet;
+        private GameObject[] bullets;
 
         // Collider list
         private List<Collider> cols;
 
-        // Init booleans
-        private bool bullet1Loaded = false;
-        private bool bullet2Loaded = false;
-        private bool bullet3Loaded = false;
-        private bool bullet1Fired = false;
-        private bool bullet2Fired = false;
-        private bool bullet3Fired = false;
-
         private Transform target;
-
-        float ellapsedTime = 0f;
 
         public Attack2Behaviour(KnightMotor enemyMotor, Transform target) : base(enemyMotor)
         {
@@ -51,73 +41,46 @@ namespace LightBringer.Enemies.Knight
 
         public override void Init()
         {
+            base.Init();
+
             em.anim.SetBool("castingAttack2", true);
             em.anim.Play("Attack2");
             em.SetOverrideAgent(true);
+            bullets = new GameObject[3];
+
+            parts = new Part[3];
+            parts[0] = new Part(State.IndicatorDisplayed, LOAD_1, FIRE_1 - LOAD_1, null);
+            parts[1] = new Part(State.IndicatorDisplayed, LOAD_2, FIRE_2 - LOAD_2, null);
+            parts[2] = new Part(State.IndicatorDisplayed, LOAD_3, FIRE_3 - LOAD_3, null);
         }
 
         public override void Run()
         {
-            ellapsedTime += Time.deltaTime;
+            StartParts();
+            RunParts();
 
-            // DMG 1
-            if (ellapsedTime >= LOAD_1 && !bullet1Loaded)
-            {
-                bullet1Loaded = true;
-                bullet1 = InitBullet();
-            }
-
-            if (ellapsedTime >= LOAD_1 && ellapsedTime < FIRE_1)
-            {
-                bullet1.transform.localScale = Vector3.one * (ellapsedTime - LOAD_1) / (FIRE_1 - LOAD_1);
-            }
-
-            if (ellapsedTime >= FIRE_1 && !bullet1Fired)
-            {
-                bullet1Fired = true;
-                FireBullet(bullet1);
-            }
-
-            // DMG 2
-            if (ellapsedTime >= LOAD_2 && !bullet2Loaded)
-            {
-                bullet2Loaded = true;
-                bullet2 = InitBullet();
-            }
-
-            if (ellapsedTime >= LOAD_2 && ellapsedTime < FIRE_2)
-            {
-                bullet2.transform.localScale = Vector3.one * (ellapsedTime - LOAD_2) / (FIRE_1 - LOAD_2);
-            }
-
-            if (ellapsedTime >= FIRE_2 && !bullet2Fired)
-            {
-                bullet2Fired = true;
-                FireBullet(bullet2);
-            }
-
-            // DMG 3
-            if (ellapsedTime >= LOAD_3 && !bullet3Loaded)
-            {
-                bullet3Loaded = true;
-                bullet3 = InitBullet();
-            }
-
-            if (ellapsedTime >= LOAD_3 && ellapsedTime < FIRE_3)
-            {
-                bullet3.transform.localScale = Vector3.one * (ellapsedTime - LOAD_3) / (FIRE_3 - LOAD_3);
-            }
-
-            if (ellapsedTime >= FIRE_3 && !bullet3Fired)
-            {
-                bullet3Fired = true;
-                FireBullet(bullet3);
-            }
-
-            if (ellapsedTime > DURATION)
+            if (Time.time > startTime + DURATION)
             {
                 End();
             }
+        }
+
+        protected override void StartPart(int i)
+        {
+            bullets[i] = InitBullet();
+            base.StartPart(i);
+        }
+
+        protected override void RunPart(int part)
+        {
+            bullets[part].transform.localScale = Vector3.one * (Time.time - (startTime + parts[part].startTime)) / parts[part].duration;
+            base.RunPart(part);
+        }
+
+        protected override void EndPart(int i)
+        {
+            FireBullet(bullets[i]);
+            base.EndPart(i);
         }
 
         public override void End()
@@ -140,7 +103,7 @@ namespace LightBringer.Enemies.Knight
             Rigidbody rb = bullet.GetComponent<Rigidbody>();
             rb.AddForce(Vector3.up * 30f, ForceMode.Impulse);
             GameObject.Destroy(bullet, .5f);
-            
+
             InstanciateCaster(em.transform, ENEMY_RAIN_RANGE, ENEMY_RAIN_RADIUS);
             InstanciateCaster(target.transform, TARGET_RAIN_RANGE, TARGET_RAIN_RADIUS);
         }

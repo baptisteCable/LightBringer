@@ -7,7 +7,7 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack3Behaviour : Behaviour, CollisionAbility
     {
-        private const float DURATION = 1.6f;
+        private const float DURATION = 1.817f;
         private const float SPEAR_DMG = 14f;
         private const float SHIELD_DMG = 10f;
         private const float SHIELD_STUN_DURATION = 1f;
@@ -51,6 +51,8 @@ namespace LightBringer.Enemies.Knight
 
         public override void Init()
         {
+            base.Init();
+
             em.anim.SetBool("castingAttack3", true);
             em.anim.Play("Attack3");
             act1 = act1GO.GetComponent<AbilityColliderTrigger>();

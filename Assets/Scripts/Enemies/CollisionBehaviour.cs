@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using LightBringer.Abilities;
-using LightBringer.Player;
 using UnityEngine;
 
 namespace LightBringer.Enemies
@@ -35,25 +34,49 @@ namespace LightBringer.Enemies
         {
         }
 
-        protected bool InitPart(int i)
+        protected void StartCollisionParts()
         {
-            if (Time.time > startTime + parts[i].startTime && parts[i].state == State.IndicatorDisplayed)
+            for (int i = 0; i < parts.Length; i++)
             {
-                // Indicator 1
-                parts[i].indicator.SetActive(false);
-
-                // collision
-                actGOs[i].SetActive(true);
-                acts[i].SetAbility(this);
-                cols = new List<Collider>();
-
-                // state
-                parts[i].state = State.InProgress;
-
-                return true;
+                if (IsStartTime(i))
+                {
+                    StartCollisionPart(i);
+                }
             }
+        }
 
-            return false;
+        protected virtual void StartCollisionPart(int i)
+        {
+            StartPart(i);
+            actGOs[i].SetActive(true);
+            acts[i].SetAbility(this);
+            cols = new List<Collider>();
+        }
+
+        protected virtual void RunCollisionParts()
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (IsRunTime(i))
+                {
+                    RunCollisionPart(i);
+                }
+            }
+        }
+
+        protected virtual void RunCollisionPart(int part)
+        {
+            if (IsEndTime(part))
+            {
+                EndCollisionPart(part);
+            }
+        }
+
+        protected void EndCollisionPart(int i)
+        {
+            EndPart(i);
+            actGOs[i].SetActive(false);
+            acts[i].UnsetAbility();
         }
 
         public abstract void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col);
