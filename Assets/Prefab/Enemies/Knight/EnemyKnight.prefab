@@ -3241,15 +3241,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0549f258ebbc8dc4e85a92cc1e3e7996, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxMoveSpeedPassive: 4
-  MaxMoveSpeedFight: 12
-  MaxMoveSpeedRage: 20
+  MaxMoveSpeedPassive: 3
+  MaxMoveSpeedFight: 6
+  MaxMoveSpeedRage: 10
   AccelerationPassive: 4
-  AccelerationFight: 40
-  AccelerationRage: 80
+  AccelerationFight: 16
+  AccelerationRage: 40
   MaxRotationSpeedPassive: 100
-  MaxRotationSpeedFight: 180
-  MaxRotationSpeedRage: 360
+  MaxRotationSpeedFight: 140
+  MaxRotationSpeedRage: 250
   agent: {fileID: 0}
   anim: {fileID: 95419609098125186}
   cc: {fileID: 0}
