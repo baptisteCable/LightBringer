@@ -15,7 +15,6 @@ namespace LightBringer.Networking
 
         // ServerTime - LocalTime
         [HideInInspector] public float serverLocalTimeDiff;
-
         [HideInInspector] public float networkPing;
 
         // Time between control and backCommand, including syncInterval
@@ -118,8 +117,8 @@ namespace LightBringer.Networking
         private void OnClientPong(NetworkMessage netMsg)
         {
             FloatMessage message = netMsg.ReadMessage<FloatMessage>();
-            networkPing = (int)((Time.time - message.value) * 1000);
-            simulatedPing = networkPing + (int)((syncInterval + safetyInterval) * 1000);
+            networkPing = Time.time - message.value;
+            simulatedPing = networkPing + syncInterval + safetyInterval;
         }
 
         private void OnGUI()

@@ -34,8 +34,11 @@ namespace LightBringer.Enemies.Knight
             attack3act1GO.SetActive(false);
             attack3act2GO.SetActive(false);
 
-            // Initial mode
-            SetMode(Mode.Fight);
+            if (isServer)
+            {
+                // Initial mode
+                SetMode(Mode.Fight);
+            }
         }
 
         private void Update()

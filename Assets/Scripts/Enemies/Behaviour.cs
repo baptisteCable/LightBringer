@@ -83,14 +83,16 @@ namespace LightBringer.Enemies
 
         protected bool IsDisplayIndicatorTime(int part, float displayTime)
         {
-            return Time.time >= startTime + parts[part].startTime - displayTime && parts[part].state == State.Before;
+            // call the display MAX_RTT_COMPENSATION_INDICATOR seconds by advance
+            return Time.time >= startTime + parts[part].startTime - displayTime - Motor.MAX_RTT_COMPENSATION_INDICATOR
+                && parts[part].state == State.Before;
         }
 
         protected void DisplayIndicator(int part, float loadingTime)
         {
             if (parts[part].indicator != -1)
             {
-                em.CallForAll(Motor.M_DisplayIndicator, parts[part].indicator, loadingTime);
+                em.CallForAllDisplayIndicator(parts[part].indicator, loadingTime);
             }
             parts[part].state = State.IndicatorDisplayed;
         }

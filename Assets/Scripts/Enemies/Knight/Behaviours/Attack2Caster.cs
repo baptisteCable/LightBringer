@@ -9,7 +9,7 @@ namespace LightBringer.Enemies.Knight
         private const float MIN_TIME = .2f;
         private const float MAX_TIME = 2f;
 
-        public float timeBeforeNext;
+        public float nextShotTime = 0f;
         public int remainingShots;
         public float range;
         public float radius;
@@ -20,17 +20,18 @@ namespace LightBringer.Enemies.Knight
 
         void Update()
         {
-            timeBeforeNext -= Time.deltaTime;
-
-            if (timeBeforeNext <= 0)
+            if (isServer)
             {
-                timeBeforeNext = Random.value * (MAX_TIME - MIN_TIME) + MIN_TIME;
-                CreateImpactZone();
-            }
+                if (Time.time >= nextShotTime)
+                {
+                    nextShotTime = Time.time + Random.value * (MAX_TIME - MIN_TIME) + MIN_TIME;
+                    CreateImpactZone();
+                }
 
-            if (remainingShots == 0)
-            {
-                Destroy(gameObject, 2f);
+                if (remainingShots == 0)
+                {
+                    Destroy(gameObject, 2f);
+                }
             }
         }
 
@@ -65,7 +66,5 @@ namespace LightBringer.Enemies.Knight
             a2i.radius = rad;
             a2i.ability = ability;
         }
-
     }
-
 }

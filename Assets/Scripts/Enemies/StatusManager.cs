@@ -20,7 +20,7 @@ namespace LightBringer.Enemies
         public float currentHP;
         public GameObject statusBarGO;
         public float displayHeight;
-        public bool isDead = false;
+        [SyncVar] public bool isDead = false;
 
         // Components
         private Motor motor;
@@ -138,7 +138,7 @@ namespace LightBringer.Enemies
                 {
                     CallForAll(M_SetHP, newHP);
                 }
-                
+
                 if (currentHP <= 0)
                 {
                     isDead = true;

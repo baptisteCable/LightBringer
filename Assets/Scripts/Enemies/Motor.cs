@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using LightBringer.Networking;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Networking;
 
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(CharacterController))]
     public abstract class Motor : DelayedNetworkBehaviour
     {
+        public const float MAX_RTT_COMPENSATION_INDICATOR = .3f;
+
         public float MaxMoveSpeedPassive;
         public float MaxMoveSpeedFight;
         public float MaxMoveSpeedRage;
@@ -67,7 +71,7 @@ namespace LightBringer.Enemies
             {
                 controller = GetComponent<Controller>();
                 controller.enabled = true;
-                
+
                 // Agent
                 agent = GetComponent<NavMeshAgent>();
                 agent.enabled = true;
@@ -279,6 +283,56 @@ namespace LightBringer.Enemies
             }
         }
 
+        public void CallForAllDisplayIndicator(int id, float duration)
+        {
+            if (isServer)
+            {
+                RpcDisplayIndicator(id, duration, Time.time);
+                StartCoroutine(DisplayIndicator(id, duration, MAX_RTT_COMPENSATION_INDICATOR));
+            }
+        }
+
+        [ClientRpc]
+        private void RpcDisplayIndicator(int id, float duration, float serverTime)
+        {
+            if (!isServer)
+            {
+                float delay = NetworkSynchronization.singleton.GetLocalTimeFromServerTime(serverTime) - Time.time + MAX_RTT_COMPENSATION_INDICATOR;
+                
+                // if MAX_RTT_COMPENSATION_INDICATOR not enough to balance rtt
+                if (delay < NetworkSynchronization.singleton.simulatedPing)
+                {
+                    duration += delay;
+                    delay = 0f;
+
+                }
+                // add rtt to delay and duration
+                else
+                {
+                    duration += NetworkSynchronization.singleton.simulatedPing;
+                    delay -= NetworkSynchronization.singleton.simulatedPing;
+                }
+
+                StartCoroutine(DisplayIndicator(id, duration, delay));
+            }
+        }
+
+        private IEnumerator DisplayIndicator(int id, float duration, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            DisplayIndicator(id, duration);
+        }
+
+        private void DisplayIndicator(int id, float loadingTime)
+        {
+            if (!statusManager.isDead)
+            {
+                indicators[id].SetActive(true);
+                indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
+            }
+        }
+
+        // ---------------------- Delayed Network calls --------------------------
         protected override bool CallById(int methdodId, int i)
         {
             if (base.CallById(methdodId, i))
@@ -300,30 +354,6 @@ namespace LightBringer.Enemies
         private void HideIndicator(int id)
         {
             indicators[id].SetActive(false);
-        }
-
-        protected override bool CallById(int methdodId, int i, float f)
-        {
-            if (base.CallById(methdodId, i, f))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_DisplayIndicator: DisplayIndicator(i, f); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // Called by id
-        public const int M_DisplayIndicator = 1400;
-        private void DisplayIndicator(int id, float loadingTime)
-        {
-            indicators[id].SetActive(true);
-            indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
         }
     }
 }
