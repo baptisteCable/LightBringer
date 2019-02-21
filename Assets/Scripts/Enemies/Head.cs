@@ -15,8 +15,8 @@ namespace LightBringer.Enemies
         [SerializeField] Transform head;
         [SerializeField] Transform sight;
 
-        [Header("Effects")]
-        [SerializeField] ParticleSystem detectionEffect;
+        [Header("Detection")]
+        [SerializeField] Detection detectionSystem;
 
         [Header("Rotation bounds")]
         [SerializeField] private float headYAngleBound = 80f;
@@ -151,21 +151,21 @@ namespace LightBringer.Enemies
         {
             behaviour = Behaviour.LookAtTarget;
             target = tar.transform;
-            detectionEffect.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            detectionSystem.Stop();
         }
 
         public void LookForTarget(GameObject tar, float duration)
         {
             behaviour = Behaviour.LookForTarget;
             target = tar.transform;
-            detectionEffect.Play();
+            detectionSystem.Play();
         }
 
         public void NoTarget()
         {
             behaviour = Behaviour.NoTarget;
             RandomRotation();
-            detectionEffect.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+            detectionSystem.Stop();
         }
     }
 

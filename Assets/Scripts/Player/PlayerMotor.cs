@@ -629,12 +629,14 @@ namespace LightBringer.Player
      *  
      * Base.Start à remplacer. ne pas override ces méthodes.
      *  
-     * Gêner le monstre : cancel de son attaque si on time bien un truc.
-     *  
      * Commenter le code
-     *  
-     * Effet pour le scann
      * 
      * Network : enemy statusBar on death + head on death
+     * Network : display CC over status bar
+     * 
+     * Bugs:
+     *  - Bullet of attack2 can stay stuck in the air before fire
+     *  - Jump threw the ground
+     *  - Test manager: no mob repop after deco reco
      * */
 }
