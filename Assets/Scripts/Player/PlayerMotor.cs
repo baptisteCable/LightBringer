@@ -520,6 +520,8 @@ namespace LightBringer.Player
             switch (methdodId)
             {
                 case M_ClearIndicators: ClearIndicators(i); return true;
+                case M_StartChanneling: StartChanneling(i); return true;
+                case M_StartCasting: StartCasting(i); return true;
             }
 
             Debug.LogError("No such method Id: " + methdodId);
@@ -531,6 +533,37 @@ namespace LightBringer.Player
         private void ClearIndicators(int id)
         {
             abilities[id].indicators.Clear();
+        }
+
+        // Called by id
+        public const int M_StartChanneling = 1301;
+        private void StartChanneling(int id)
+        {
+            if (id >= 0)
+            {
+                currentChanneling = abilities[id];
+                currentChanneling.channelStartTime = Time.time;
+            }
+            else
+            {
+                currentChanneling = null;
+            }
+        }
+
+        // Called by id
+        public const int M_StartCasting = 1302;
+        private void StartCasting(int id)
+        {
+            if (id >= 0)
+            {
+                currentChanneling = null;
+                currentAbility = abilities[id];
+                currentAbility.castStartTime = Time.time;
+            }
+            else
+            {
+                currentAbility = null;
+            }
         }
 
         protected override bool CallById(int methdodId, int i, float f)
@@ -602,6 +635,6 @@ namespace LightBringer.Player
      *  
      * Effet pour le scann
      * 
-     * Network : channeling + compétence en cours
+     * Network : enemy statusBar on death + head on death
      * */
 }

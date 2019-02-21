@@ -13,10 +13,8 @@ namespace LightBringer.Player.Abilities
         public float coolDownDuration;
         public float castDuration;
         public float castStartTime;
-        public float castEndTime;
         public float channelDuration;
         public float channelStartTime;
-        public float channelEndTime;
         public bool channelingCancellable;
         public bool castingCancellable;
         public bool locked;
@@ -48,7 +46,7 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            playerMotor.currentChanneling = null;
+            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration * CANCELLING_CC_FACTOR);
@@ -67,7 +65,7 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            playerMotor.currentChanneling = null;
+            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
@@ -86,7 +84,7 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            playerMotor.currentAbility = null;
+            playerMotor.CallForAll(PlayerMotor.M_StartCasting, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
@@ -108,7 +106,7 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // current ability
-            playerMotor.currentAbility = null;
+            playerMotor.CallForAll(PlayerMotor.M_StartCasting, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
@@ -116,7 +114,7 @@ namespace LightBringer.Player.Abilities
 
         public virtual void Channel()
         {
-            if (Time.time > channelEndTime)
+            if (Time.time > channelStartTime + channelDuration)
             {
                 StartAbility();
             }
@@ -124,7 +122,7 @@ namespace LightBringer.Player.Abilities
 
         public virtual void Cast()
         {
-            if (Time.time > castEndTime)
+            if (Time.time > castStartTime + castDuration)
             {
                 End();
             }
@@ -132,20 +130,12 @@ namespace LightBringer.Player.Abilities
 
         public virtual void StartChanneling()
         {
-            channelStartTime = Time.time;
-            channelEndTime = Time.time + channelDuration;
-
-            playerMotor.currentChanneling = this;
+            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, id);
         }
 
         public virtual void StartAbility()
         {
-
-            castStartTime = Time.time;
-            castEndTime = Time.time + castDuration;
-
-            playerMotor.currentAbility = this;
-            playerMotor.currentChanneling = null;
+            playerMotor.CallForAll(PlayerMotor.M_StartCasting, id);
         }
 
         protected void resetMovementRestrictions()
