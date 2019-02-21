@@ -36,6 +36,7 @@ namespace LightBringer.UI
             {
                 cdImage.gameObject.SetActive(false);
             }
+
             // Channeling?
             if (character.currentChanneling == character.abilities[abilityIndex])
             {
@@ -47,7 +48,7 @@ namespace LightBringer.UI
                 channelingImage.gameObject.SetActive(false);
             }
 
-            // Current ability, available
+            // Current ability or not
             if (character.currentAbility == character.abilities[abilityIndex])
             {
                 abilityImage.color = Color.red;

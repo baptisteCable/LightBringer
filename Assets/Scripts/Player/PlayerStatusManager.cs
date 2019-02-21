@@ -4,6 +4,7 @@ using LightBringer.Enemies;
 using LightBringer.Networking;
 using LightBringer.Tools;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
@@ -38,7 +39,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public List<State> states;
         private List<State> queuedStates;
-        public bool isDead;
+        [SyncVar] public bool isDead;
 
         // Special status
         [HideInInspector]
@@ -131,9 +132,7 @@ namespace LightBringer.Player
 
             if (dmg.amount > 0)
             {
-                currentHP -= dmg.amount;
-
-                flashEffect.Flash();
+                CallForAll(M_SetHPReduced, currentHP - dmg.amount);
             }
 
             if (currentHP <= 0 && canDie)
@@ -376,6 +375,7 @@ namespace LightBringer.Player
             switch (methdodId)
             {
                 case M_HasteTrailsLength: HasteTrailsLength(f); return true;
+                case M_SetHPReduced: SetHPReduced(f); return true;
             }
 
             return false;
@@ -386,6 +386,14 @@ namespace LightBringer.Player
         private void HasteTrailsLength(float length)
         {
             hasteTrailsEffectMain.startLifetime = length;
+        }
+
+        // Called by id
+        public const int M_SetHPReduced = 201;
+        private void SetHPReduced(float hp)
+        {
+            flashEffect.Flash();
+            currentHP = hp;
         }
     }
 }

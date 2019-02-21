@@ -601,5 +601,7 @@ namespace LightBringer.Player
      * Commenter le code
      *  
      * Effet pour le scann
+     * 
+     * Network : channeling + compétence en cours
      * */
 }
