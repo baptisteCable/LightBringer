@@ -1,15 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using LightBringer.Effects;
 using LightBringer.Enemies;
+using LightBringer.Networking;
+using LightBringer.Tools;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(PlayerMotor))]
-    public class PlayerStatusManager : NetworkBehaviour
+    [RequireComponent(typeof(PlayerMotor)), RequireComponent(typeof(FlashEffect))]
+    public class PlayerStatusManager : DelayedNetworkBehaviour2
     {
-        private const float FLASH_DURATION = .1f;
+        private const string IMMATERIAL_LAYER = "Immaterial";
+        private const string PLAYER_LAYER = "Player";
 
         // HP MP
         public float maxHP;
@@ -50,15 +52,25 @@ namespace LightBringer.Player
         public StatusBar statusBar;
         [HideInInspector]
         public PlayerMotor playerMotor;
+        private FlashEffect flashEffect;
 
         // Training
         public bool canDie = true;
 
+        // State Effects
+        [Header("States Effects")]
+        [SerializeField] private ParticleSystem hasteTrailsEffect;
+        private ParticleSystem.MainModule hasteTrailsEffectMain;
+        [SerializeField] private ParticleSystem immaterialCloudEffect;
+
         void Start()
         {
             playerMotor = GetComponent<PlayerMotor>();
+            flashEffect = GetComponent<FlashEffect>();
 
             statusBar.psm = this;
+
+            hasteTrailsEffectMain = hasteTrailsEffect.main;
         }
 
         private void Update()
@@ -121,8 +133,7 @@ namespace LightBringer.Player
             {
                 currentHP -= dmg.amount;
 
-                StopCoroutine("Flash");
-                StartCoroutine("Flash");
+                flashEffect.Flash();
             }
 
             if (currentHP <= 0 && canDie)
@@ -304,53 +315,77 @@ namespace LightBringer.Player
             moveMultiplicators = new Dictionary<State, float>();
             maxRotation = new Dictionary<State, float>();
         }
-        
-        private IEnumerator Flash()
+
+        protected override bool CallById(int methdodId)
         {
-            RecFlashOn(transform);
-            yield return new WaitForSeconds(FLASH_DURATION);
-            RecFlashOff(transform);
+            if (base.CallById(methdodId))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_PlayHasteTrails: PlayHasteTrails(); return true;
+                case M_StopHasteTrails: StopHasteTrails(); return true;
+                case M_StartImmaterial: StartImmaterial(); return true;
+                case M_StopImmaterial: StopImmaterial(); return true;
+            }
+
+            return false;
         }
 
-        private void RecFlashOn(Transform tr)
+        //called by id
+        public const int M_PlayHasteTrails = 2;
+        private void PlayHasteTrails()
         {
-            if (tr.tag != "Shield" && tr.tag != "Weapon" && tr.tag != "Spell" && tr.tag != "UI" && tr.tag != "MainCamera")
-            {
-                Renderer renderer = tr.GetComponent<Renderer>();
-
-                if (renderer != null)
-                {
-                    Material mat = tr.GetComponent<Renderer>().material;
-
-                    mat.EnableKeyword("_EMISSION");
-                    mat.SetColor("_EmissionColor", new Color(.2f, .1f, .1f));
-                }
-
-                foreach (Transform child in tr)
-                {
-                    RecFlashOn(child);
-                }
-            }
+            hasteTrailsEffect.Play();
         }
 
-        private void RecFlashOff(Transform tr)
+        //called by id
+        public const int M_StopHasteTrails = 3;
+        private void StopHasteTrails()
         {
-            if (tr.tag != "Shield" && tr.tag != "Weapon" && tr.tag != "Spell" && tr.tag != "UI" && tr.tag != "MainCamera")
+            hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+        }
+
+        //called by id
+        public const int M_StartImmaterial = 4;
+        private void StartImmaterial()
+        {
+            immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+            Immaterial.RecTransparentOn(transform);
+        }
+
+        //called by id
+        public const int M_StopImmaterial = 5;
+        private void StopImmaterial()
+        {
+            immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+            Immaterial.RecTransparentOff(transform);
+        }
+
+        protected override bool CallById(int methdodId, float f)
+        {
+            if (base.CallById(methdodId, f))
             {
-                Renderer renderer = tr.GetComponent<Renderer>();
-
-                if (renderer != null)
-                {
-                    Material mat = tr.GetComponent<Renderer>().material;
-
-                    mat.DisableKeyword("_EMISSION");
-                }
-
-                foreach (Transform child in tr)
-                {
-                    RecFlashOff(child);
-                }
+                return true;
             }
+
+            switch (methdodId)
+            {
+                case M_HasteTrailsLength: HasteTrailsLength(f); return true;
+            }
+
+            return false;
+        }
+
+        //called by id
+        public const int M_HasteTrailsLength = 200;
+        private void HasteTrailsLength(float length)
+        {
+            hasteTrailsEffectMain.startLifetime = length;
         }
     }
 }

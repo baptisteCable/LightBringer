@@ -27,7 +27,7 @@ namespace LightBringer.Player
             ComputeCurve();
 
             psm.moveMultiplicators.Add(this, 1f);
-            psm.playerMotor.CallForAll(PlayerMotor.M_PlayHasteTrails);
+            psm.CallForAll(PlayerStatusManager.M_PlayHasteTrails);
             lastLength = 0f;
         }
 
@@ -40,7 +40,7 @@ namespace LightBringer.Player
             if (Mathf.Abs(lastLength - length) >= .1f)
             {
                 lastLength = length;
-                psm.playerMotor.CallForAll(PlayerMotor.M_HasteTrailsLength, length);
+                psm.CallForAll(PlayerStatusManager.M_HasteTrailsLength, length);
             }
 
             base.Update();
@@ -50,7 +50,7 @@ namespace LightBringer.Player
         {
             base.Stop();
 
-            psm.playerMotor.CallForAll(PlayerMotor.M_StopHasteTrails);
+            psm.CallForAll(PlayerStatusManager.M_StopHasteTrails);
             psm.moveMultiplicators.Remove(this);
         }
 

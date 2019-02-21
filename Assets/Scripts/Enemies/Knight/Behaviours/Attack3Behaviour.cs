@@ -20,24 +20,22 @@ namespace LightBringer.Enemies.Knight
         // Shield collider to disable
         private GameObject shieldCollider;
 
-        public Attack3Behaviour(KnightMotor enemyMotor, GameObject attack3act1GO, GameObject attack3act2GO, GameObject shieldCollider,
-            GameObject indicatora, GameObject indicatorb) : base(enemyMotor)
+        public Attack3Behaviour(KnightMotor enemyMotor, GameObject attack3act1GO, GameObject attack3act2GO, GameObject shieldCollider) : base(enemyMotor)
         {
             actGOs = new GameObject[2];
             actGOs[0] = attack3act1GO;
             actGOs[1] = attack3act2GO;
             this.shieldCollider = shieldCollider;
             parts = new Part[2];
-            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, indicatora);
-            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, indicatorb);
+            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, 3);
+            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, 4);
         }
 
         public override void Init()
         {
             base.Init();
 
-            em.anim.SetBool("castingAttack3", true);
-            em.anim.Play("Attack3");
+            em.CallForAll(KnightMotor.M_AnimAttack3);
             
             acts = new AbilityColliderTrigger[2];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
@@ -70,7 +68,6 @@ namespace LightBringer.Enemies.Knight
         {
             base.End();
             shieldCollider.SetActive(true);
-            em.anim.SetBool("castingAttack3", false);
             em.SetOverrideAgent(false);
         }
 

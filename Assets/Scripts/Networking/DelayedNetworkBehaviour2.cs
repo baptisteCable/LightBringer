@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 namespace LightBringer.Networking
 {
-    public abstract class DelayedNetworkBehaviour : NetworkBehaviour
+    public abstract class DelayedNetworkBehaviour2 : NetworkBehaviour
     {
         // ---------- void (000) ----------------
         protected virtual bool CallById(int methdodId)
@@ -16,13 +16,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAll(methodId, Time.time);
+                RpcCallForAll2(methodId, Time.time);
                 CallById(methodId);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAll(int methodId, float time)
+        private void RpcCallForAll2(int methodId, float time)
         {
             if (!isServer)
             {
@@ -46,13 +46,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAllVector3(methodid, vec, Time.time);
+                RpcCallForAllVector32(methodid, vec, Time.time);
                 CallById(methodid, vec);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAllVector3(int methodId, Vector3 vec, float time)
+        private void RpcCallForAllVector32(int methodId, Vector3 vec, float time)
         {
             if (!isServer)
             {
@@ -76,13 +76,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAllFloat(methodid, value, Time.time);
+                RpcCallForAllFloat2(methodid, value, Time.time);
                 CallById(methodid, value);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAllFloat(int methodId, float value, float time)
+        private void RpcCallForAllFloat2(int methodId, float value, float time)
         {
             if (!isServer)
             {
@@ -106,13 +106,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAllInt(methodid, i, Time.time);
+                RpcCallForAllInt2(methodid, i, Time.time);
                 CallById(methodid, i);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAllInt(int methodId, int i, float time)
+        private void RpcCallForAllInt2(int methodId, int i, float time)
         {
             if (!isServer)
             {
@@ -136,13 +136,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAllIntFloat(methodid, i, f, Time.time);
+                RpcCallForAllIntFloat2(methodid, i, f, Time.time);
                 CallById(methodid, i, f);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAllIntFloat(int methodId, int i, float f, float time)
+        private void RpcCallForAllIntFloat2(int methodId, int i, float f, float time)
         {
             if (!isServer)
             {
@@ -166,13 +166,13 @@ namespace LightBringer.Networking
         {
             if (isServer)
             {
-                RpcCallForAllIntBool(methodid, i, b, Time.time);
+                RpcCallForAllIntBool2(methodid, i, b, Time.time);
                 CallById(methodid, i, b);
             }
         }
 
         [ClientRpc]
-        private void RpcCallForAllIntBool(int methodId, int i, bool b, float time)
+        private void RpcCallForAllIntBool2(int methodId, int i, bool b, float time)
         {
             if (!isServer)
             {
@@ -184,66 +184,6 @@ namespace LightBringer.Networking
         {
             yield return new WaitForSeconds(delay);
             CallById(methodId, i, b);
-        }
-
-        // ---------- Vector3 + float (600) ----------------
-        protected virtual bool CallById(int methdodId, Vector3 vec, float f)
-        {
-            return false;
-        }
-
-        public void CallForAll(int methodid, Vector3 vec, float f)
-        {
-            if (isServer)
-            {
-                RpcCallForAllVector3Float(methodid, vec, f, Time.time);
-                CallById(methodid, vec, f);
-            }
-        }
-
-        [ClientRpc]
-        private void RpcCallForAllVector3Float(int methodId, Vector3 vec, float f, float time)
-        {
-            if (!isServer)
-            {
-                StartCoroutine(CallForAllWithDelay(methodId, vec, f, NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time) - Time.time));
-            }
-        }
-
-        private IEnumerator CallForAllWithDelay(int methodId, Vector3 vec, float f, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            CallById(methodId, vec, f);
-        }
-
-        // ---------- GameObject + float (700) ----------------
-        protected virtual bool CallById(int methdodId, GameObject go, float f)
-        {
-            return false;
-        }
-
-        public void CallForAll(int methodid, GameObject go, float f)
-        {
-            if (isServer)
-            {
-                RpcCallForAllGoFloat(methodid, go, f, Time.time);
-                CallById(methodid, go, f);
-            }
-        }
-
-        [ClientRpc]
-        private void RpcCallForAllGoFloat(int methodId, GameObject go, float f, float time)
-        {
-            if (!isServer)
-            {
-                StartCoroutine(CallForAllWithDelay(methodId, go, f, NetworkSynchronization.singleton.GetLocalTimeFromServerTime(time) - Time.time));
-            }
-        }
-
-        private IEnumerator CallForAllWithDelay(int methodId, GameObject go, float f, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            CallById(methodId, go, f);
         }
     }
 }

@@ -25,8 +25,6 @@ public class Head : MonoBehaviour
     private float targetHeadXRot;
     private float targetSightXRot;
 
-    public float lookAroundError;
-
     private float nextRandomTime;
 
     private Quaternion lastHeadRotation, lastSightRotation;
@@ -37,7 +35,7 @@ public class Head : MonoBehaviour
     {
         NoTarget,
         LookAtTarget,
-        LookAroundTarget
+        LookForTarget
     }
 
     private void Start()
@@ -75,17 +73,17 @@ public class Head : MonoBehaviour
             float c = Vector3.Distance(head.transform.position, target.transform.position + 1.8f * Vector3.up);
             theoXRot = 180 / 3.141592654f * Mathf.Asin(b / c);
         }
-        else if (behaviour == Behaviour.LookAroundTarget)
+        else if (behaviour == Behaviour.LookForTarget)
         {
             Vector3 targetDirection = target.transform.position - head.transform.position;
             targetDirection.y = 0;
             theoYRot = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up)
-                + lookAroundError * Mathf.Sin(Time.time * 3.14159f * LOOK_AROUND_TURN_PER_SEC) * LOOK_AROUND_Y_ERROR;
+                + Mathf.Sin(Time.time * 3.14159f * LOOK_AROUND_TURN_PER_SEC) * LOOK_AROUND_Y_ERROR;
 
             float b = head.transform.position.y - target.transform.position.y - 1.8f;
             float c = Vector3.Distance(head.transform.position, target.transform.position + 1.8f * Vector3.up);
             theoXRot = 180 / 3.141592654f * Mathf.Asin(b / c) 
-                + lookAroundError * Mathf.Cos(Time.time * 3.14159f * LOOK_AROUND_TURN_PER_SEC) * LOOK_AROUND_X_ERROR;
+                + Mathf.Cos(Time.time * 3.14159f * LOOK_AROUND_TURN_PER_SEC) * LOOK_AROUND_X_ERROR;
         }
     }
 
@@ -130,7 +128,7 @@ public class Head : MonoBehaviour
         {
             lerpRate = TARGET_LERP_RATE;
         }
-        else if (behaviour == Behaviour.LookAroundTarget)
+        else if (behaviour == Behaviour.LookForTarget)
         {
             lerpRate = TARGET_LERP_RATE;
         }
@@ -156,17 +154,16 @@ public class Head : MonoBehaviour
         theoYRot = Random.value * headYAngleBound * 2 - headYAngleBound;
     }
 
-    public void LookAtTarget(Transform tar)
+    public void LookAtTarget(GameObject tar)
     {
         behaviour = Behaviour.LookAtTarget;
-        target = tar;
+        target = tar.transform;
     }
 
-    public void LookAroundTarget(Transform tar, float error)
+    public void LookForTarget(GameObject tar, float duration)
     {
-        behaviour = Behaviour.LookAroundTarget;
-        target = tar;
-        lookAroundError = error;
+        behaviour = Behaviour.LookForTarget;
+        target = tar.transform;
     }
 
     public void NoTarget()

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using LightBringer.Effects;
 using LightBringer.Networking;
 using LightBringer.Player;
 using UnityEngine;
@@ -8,10 +9,9 @@ using UnityEngine.UI;
 
 namespace LightBringer.Enemies
 {
-    [RequireComponent(typeof(Motor))]
-    public class StatusManager : DelayedNetworkBehaviour
+    [RequireComponent(typeof(Motor)), RequireComponent(typeof(FlashEffect))]
+    public class StatusManager : DelayedNetworkBehaviour2
     {
-        private const float FLASH_DURATION = .1f;
         private const float DISPLAY_INTERVAL = .1f;
         private const float DISPLAY_DURATION = 1f;
 
@@ -20,8 +20,12 @@ namespace LightBringer.Enemies
         public float currentHP;
         public GameObject statusBarGO;
         public float displayHeight;
-        private Motor motor;
         public bool isDead = false;
+
+        // Components
+        private Motor motor;
+        private FlashEffect flashEffect;
+        [SerializeField] private FlashEffect shieldFlashEffect;
 
         // Damage
         private Dictionary<int, DamageDealer> frameDamage;
@@ -51,6 +55,7 @@ namespace LightBringer.Enemies
         void Start()
         {
             motor = GetComponent<Motor>();
+            flashEffect = GetComponent<FlashEffect>();
 
             frameDamage = new Dictionary<int, DamageDealer>();
             frameDamageDistance = new Dictionary<int, float>();
@@ -192,58 +197,26 @@ namespace LightBringer.Enemies
             txt.material = DamageManager.dm.ElementMaterial(element);
         }
 
-        private IEnumerator FlashCoroutine()
+        protected override bool CallById(int methdodId)
         {
-            RecFlashOn(transform);
-            yield return new WaitForSeconds(FLASH_DURATION);
-            RecFlashOff(transform);
+            if (base.CallById(methdodId))
+            {
+                return true;
+            }
+            switch (methdodId)
+            {
+                case M_ShieldFlash: ShieldFlash(); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
         }
 
-        private void RecFlashOn(Transform tr)
+        // Called by id
+        public const int M_ShieldFlash = 0;
+        private void ShieldFlash()
         {
-            if (tr.tag != "Shield" && tr.tag != "UI")
-            {
-                Renderer renderer = tr.GetComponent<Renderer>();
-
-                if (renderer != null)
-                {
-                    Material mat = tr.GetComponent<Renderer>().material;
-
-                    mat.EnableKeyword("_EMISSION");
-                    mat.SetColor("_EmissionColor", new Color(.2f, .1f, .1f));
-                }
-            }
-
-            foreach (Transform child in tr)
-            {
-                RecFlashOn(child);
-            }
-        }
-
-        private void RecFlashOff(Transform tr)
-        {
-            if (tr.tag != "Shield" && tr.tag != "UI")
-            {
-                Renderer renderer = tr.GetComponent<Renderer>();
-
-                if (renderer != null)
-                {
-                    Material mat = tr.GetComponent<Renderer>().material;
-
-                    mat.DisableKeyword("_EMISSION");
-                }
-            }
-
-            foreach (Transform child in tr)
-            {
-                RecFlashOff(child);
-            }
-        }
-
-        private void Flash()
-        {
-            StopCoroutine(FlashCoroutine());
-            StartCoroutine(FlashCoroutine());
+            shieldFlashEffect.Flash();
         }
 
         protected override bool CallById(int methdodId, float value)
@@ -267,7 +240,7 @@ namespace LightBringer.Enemies
         {
             if (hp < currentHP)
             {
-                Flash();
+                flashEffect.Flash();
             }
 
             currentHP = hp;

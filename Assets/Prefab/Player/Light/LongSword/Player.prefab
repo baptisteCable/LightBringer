@@ -1008,6 +1008,7 @@ GameObject:
   - component: {fileID: 114609658970633654}
   - component: {fileID: 114047714306766294}
   - component: {fileID: 114850675944989254}
+  - component: {fileID: 114273599073725766}
   m_Layer: 10
   m_Name: Player
   m_TagString: Player
@@ -2571,6 +2572,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   comparison: 8
   apply: 0
+--- !u!114 &114273599073725766
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1768039230338972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18e060c6d0aa11e4897a584f5decbded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  exclusions:
+  - UI
+  - Spell
+  - MainCamera
+  duration: 0.1
+  transformsToFlash: []
+  emissionColor: {r: 0.38679248, g: 0.20616768, b: 0.20616768, a: 1}
 --- !u!114 &114288080216122052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2732,6 +2751,8 @@ MonoBehaviour:
   statusBar: {fileID: 114653942790659906}
   playerMotor: {fileID: 0}
   canDie: 1
+  hasteTrailsEffect: {fileID: 198507753550529494}
+  immaterialCloudEffect: {fileID: 198933074135416156}
 --- !u!114 &114653942790659906
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2792,7 +2813,6 @@ MonoBehaviour:
   visible: 1
   weaponSlotR: {fileID: 4109173934543064}
   stickToGroundForce: 10
-  ignoreCD: 0
   cameraPrefab: {fileID: 1500073616758322, guid: f03a65279bedbf643b4b9db5cfa3a748,
     type: 2}
   playerCamera: {fileID: 0}
@@ -2800,8 +2820,6 @@ MonoBehaviour:
     type: 2}
   networkSynchronizerPrefab: {fileID: 1675133185955540, guid: 3630a2e516832bb408ff18a409e46c53,
     type: 2}
-  hasteTrailsEffect: {fileID: 198507753550529494}
-  immaterialCloudEffect: {fileID: 198933074135416156}
   lightColumnPrefab: {fileID: 1878124655510310, guid: 4c818e1e52198c64582499168d517a73,
     type: 2}
   ultiDTprefab: {fileID: 1904506915001948, guid: 16a81096b01331647b4fffedee465b12,

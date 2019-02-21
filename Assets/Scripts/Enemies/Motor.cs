@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using LightBringer.Networking;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Networking;
 
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(CharacterController))]
-    public abstract class Motor : NetworkBehaviour
+    public abstract class Motor : DelayedNetworkBehaviour
     {
         public float MaxMoveSpeedPassive;
         public float MaxMoveSpeedFight;
@@ -57,6 +57,10 @@ namespace LightBringer.Enemies
         protected Vector3 newAcceleration;
         protected Vector2 smoothDeltaPosition = Vector2.zero;
 
+        // Indicators
+        [Header("Indicators")]
+        [SerializeField] private GameObject[] indicators;
+
         protected void BaseStart()
         {
             if (isServer)
@@ -66,6 +70,7 @@ namespace LightBringer.Enemies
                 
                 // Agent
                 agent = GetComponent<NavMeshAgent>();
+                agent.enabled = true;
                 agent.updatePosition = false;
                 overrideAgent = false;
 
@@ -74,10 +79,12 @@ namespace LightBringer.Enemies
 
                 // Rotations
                 delayedRotations = new List<TimePoint>();
+
+                // Character controller
+                cc = GetComponent<CharacterController>();
+                cc.enabled = true;
             }
 
-            // Character controller
-            cc = GetComponent<CharacterController>();
             statusManager = GetComponent<StatusManager>();
         }
 
@@ -113,12 +120,6 @@ namespace LightBringer.Enemies
                 }
 
                 ApplyDelayedRotations();
-
-                /*
-                LookAt lookAt = GetComponent<LookAt>();
-                if (lookAt)
-                    lookAt.lookAtTargetPosition = agent.steeringTarget + transform.forward;
-                    */
             }
 
         }
@@ -276,6 +277,53 @@ namespace LightBringer.Enemies
             {
                 disableColliders(child);
             }
+        }
+
+        protected override bool CallById(int methdodId, int i)
+        {
+            if (base.CallById(methdodId, i))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_HideIndicator: HideIndicator(i); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_HideIndicator = 1300;
+        private void HideIndicator(int id)
+        {
+            indicators[id].SetActive(false);
+        }
+
+        protected override bool CallById(int methdodId, int i, float f)
+        {
+            if (base.CallById(methdodId, i, f))
+            {
+                return true;
+            }
+
+            switch (methdodId)
+            {
+                case M_DisplayIndicator: DisplayIndicator(i, f); return true;
+            }
+
+            Debug.LogError("No such method Id: " + methdodId);
+            return false;
+        }
+
+        // Called by id
+        public const int M_DisplayIndicator = 1400;
+        private void DisplayIndicator(int id, float loadingTime)
+        {
+            indicators[id].SetActive(true);
+            indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
         }
     }
 }

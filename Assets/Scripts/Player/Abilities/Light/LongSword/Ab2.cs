@@ -184,6 +184,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     STUN_DURATION
                 );
 
+                // effect
+                dt.TakeDamage(new Damage(DAMAGE_UNLOADED, DamageType.Melee, DamageElement.Light), playerMotor, playerMotor.transform.position, id);
+
                 if (lightMotor.sword.isLoaded)
                 {
                     lightMotor.CallForAll(LightLongSwordMotor.M_UnloadSword);

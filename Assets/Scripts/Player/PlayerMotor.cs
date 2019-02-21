@@ -19,9 +19,6 @@ namespace LightBringer.Player
         private float moveSpeed = MOVE_SPEED;
         private float rotationSpeed = ROTATION_SPEED;
 
-        private const string IMMATERIAL_LAYER = "Immaterial";
-        private const string PLAYER_LAYER = "Player";
-
         // game objects
         public Transform characterContainer;
 
@@ -73,12 +70,6 @@ namespace LightBringer.Player
         // Inputs and abilities
         [HideInInspector] public Ability[] abilities;
 
-        // State Effects
-        [Header("States Effects")]
-        [SerializeField] private ParticleSystem hasteTrailsEffect;
-        private ParticleSystem.MainModule hasteTrailsEffectMain;
-        [SerializeField] private ParticleSystem immaterialCloudEffect;
-
         // Use this for initialization
         public virtual void Start()
         {
@@ -88,8 +79,6 @@ namespace LightBringer.Player
             pc = GetComponent<PlayerController>();
 
             Init();
-
-            hasteTrailsEffectMain = hasteTrailsEffect.main;
 
             /* ********* Server ********** */
             if (isServer && isLocalPlayer)
@@ -500,10 +489,6 @@ namespace LightBringer.Player
             {
                 case M_MakeVisible: MakeVisible(); return true;
                 case M_MakeInvisible: MakeInvisible(); return true;
-                case M_PlayHasteTrails: PlayHasteTrails(); return true;
-                case M_StopHasteTrails: StopHasteTrails(); return true;
-                case M_StartImmaterial: StartImmaterial(); return true;
-                case M_StopImmaterial: StopImmaterial(); return true;
             }
 
             return false;
@@ -523,60 +508,6 @@ namespace LightBringer.Player
         {
             visible = false;
             characterContainer.gameObject.SetActive(false);
-        }
-
-        //called by id
-        public const int M_PlayHasteTrails = 1002;
-        private void PlayHasteTrails()
-        {
-            hasteTrailsEffect.Play();
-        }
-
-        //called by id
-        public const int M_StopHasteTrails = 1003;
-        private void StopHasteTrails()
-        {
-            hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-        }
-
-        //called by id
-        public const int M_StartImmaterial = 1004;
-        private void StartImmaterial()
-        {
-            immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
-            Immaterial.RecTransparentOn(psm.transform);
-        }
-
-        //called by id
-        public const int M_StopImmaterial = 1005;
-        private void StopImmaterial()
-        {
-            immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
-            Immaterial.RecTransparentOff(psm.transform);
-        }
-
-        protected override bool CallById(int methdodId, float f)
-        {
-            if (base.CallById(methdodId, f))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_HasteTrailsLength: HasteTrailsLength(f); return true;
-            }
-
-            return false;
-        }
-
-        //called by id
-        public const int M_HasteTrailsLength = 1200;
-        private void HasteTrailsLength(float length)
-        {
-            hasteTrailsEffectMain.startLifetime = length;
         }
 
         protected override bool CallById(int methdodId, int i)
@@ -655,10 +586,6 @@ namespace LightBringer.Player
      * Synchronisation des idle et run top et bot ?
      * Ralentir l'animation de course en fonction du modificateur de vitesse
      * 
-     * Flasher uniquement le DamageTaker qui a finalement pris les dégâts
-     * Impact Effects only on hurt part?
-     *  Shield qui clignotte quand on le tape
-     * 
      * Camera quand on monte. Gestion du 1er étage en général (chute, compétences qui partent du niveau 0, etc.)
      * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
      * par dessus un ilot ?
@@ -666,17 +593,13 @@ namespace LightBringer.Player
      * Compress textures
      * 
      * Pentes des ilots : bords progressifs pour la texture du chemin
-     * 
-     * Enemy not always focusing player. Laser indiquant la direction du regard. Se teinte avant une action offensive ?
      *  
-     *  Base.Start à remplacer. ne pas override ces méthodes.
+     * Base.Start à remplacer. ne pas override ces méthodes.
      *  
-     *  Init() : voir ce qui est serveur, ce qui est local et ce qui est tout le monde
+     * Gêner le monstre : cancel de son attaque si on time bien un truc.
      *  
-     *  Gêner le mostre : cancel de son attaque si on time bien un truc.
+     * Commenter le code
      *  
-     *  Indicators (moins visibles pour les autres joueurs)
-     *  
-     *  Commenter le code
+     * Effet pour le scann
      * */
 }

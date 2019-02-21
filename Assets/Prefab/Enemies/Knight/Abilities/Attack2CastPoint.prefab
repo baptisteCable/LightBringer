@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4634204556962542}
   - component: {fileID: 114080440326863012}
+  - component: {fileID: 114436479010534094}
   m_Layer: 0
   m_Name: Attack2CastPoint
   m_TagString: Untagged
@@ -57,3 +58,35 @@ MonoBehaviour:
   radius: 1
   ImpactPrefab: {fileID: 1523946655699152, guid: 8bbcc1c9cd8d26d4d9bba513b6babe19,
     type: 2}
+--- !u!114 &114436479010534094
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1219392242389180}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 372142912, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 56
+    i1: 25
+    i2: 97
+    i3: 87
+    i4: 8
+    i5: 79
+    i6: 129
+    i7: 20
+    i8: 123
+    i9: 38
+    i10: 55
+    i11: 235
+    i12: 136
+    i13: 190
+    i14: 254
+    i15: 80
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0

@@ -150,6 +150,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                         new CrowdControl(CrowdControlType.Stun, DamageType.Self, DamageElement.None),
                         STUN_DURATION
                     );
+
+                    // Effect
+                    dt.TakeDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light), playerMotor, playerMotor.transform.position, id);
                 }
                 else
                 {

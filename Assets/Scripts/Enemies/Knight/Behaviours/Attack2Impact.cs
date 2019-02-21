@@ -27,8 +27,13 @@ namespace LightBringer.Enemies.Knight
 
             explosion = transform.Find("Explosion").gameObject;
             explosion.transform.localScale *= radius;
-            AbilityColliderTrigger act = explosion.transform.Find("Effect").GetComponent<AbilityColliderTrigger>();
-            act.SetAbility(ability);
+
+            // if on server
+            if(ability != null)
+            {
+                explosion.transform.Find("Effect").GetComponent<AbilityColliderTrigger>().SetAbility(ability);
+                explosion.transform.Find("Effect").GetComponent<Collider>().enabled = true;
+            }
 
             startingTime = Time.time;
         }

@@ -85,7 +85,7 @@ GameObject:
   - component: {fileID: 137993399931054776}
   m_Layer: 13
   m_Name: Shield
-  m_TagString: Untagged
+  m_TagString: Shield
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -616,6 +616,10 @@ GameObject:
   - component: {fileID: 114946009707131008}
   - component: {fileID: 95419609098125186}
   - component: {fileID: 114063586334689054}
+  - component: {fileID: 114252475119622046}
+  - component: {fileID: 114624610929685132}
+  - component: {fileID: 114350213880831800}
+  - component: {fileID: 114657489208687036}
   m_Layer: 13
   m_Name: EnemyKnight
   m_TagString: Enemy
@@ -955,6 +959,7 @@ GameObject:
   - component: {fileID: 4461393071240286}
   - component: {fileID: 114849199048061962}
   - component: {fileID: 65626493643957248}
+  - component: {fileID: 114571898935383186}
   m_Layer: 13
   m_Name: ShieldColliderDamageTaker
   m_TagString: Enemy
@@ -1084,7 +1089,7 @@ GameObject:
   - component: {fileID: 137923713099565376}
   m_Layer: 13
   m_Name: Spear
-  m_TagString: Untagged
+  m_TagString: Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2594,7 +2599,6 @@ MonoBehaviour:
   headYAngleBound: 80
   headXAngleBound: 20
   sightXAngleBound: 50
-  lookAroundError: 0
 --- !u!114 &114063792088765234
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2648,6 +2652,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abTag: 
+--- !u!114 &114252475119622046
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1470060151669946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18e060c6d0aa11e4897a584f5decbded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  exclusions:
+  - Shield
+  - Weapon
+  - UI
+  duration: 0.1
+  transformsToFlash: []
+  emissionColor: {r: 0.2, g: 0.1, b: 0.1, a: 1}
 --- !u!114 &114256802597071230
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2735,6 +2757,18 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114350213880831800
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1470060151669946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d669575b07ab0644a88eec2a45f671f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncedTransform: {fileID: 4955673886357724}
 --- !u!114 &114422307144111108
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2839,6 +2873,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abTag: 
+--- !u!114 &114571898935383186
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1781911938304298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18e060c6d0aa11e4897a584f5decbded, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  exclusions: []
+  duration: 0.1
+  transformsToFlash:
+  - {fileID: 4635034221784894}
+  emissionColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
 --- !u!114 &114605293095063898
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2851,6 +2901,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abTag: 
+--- !u!114 &114624610929685132
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1470060151669946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999fe288db2e79b409abff7bb13cdf48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncedTransform: {fileID: 4955673886357724}
+--- !u!114 &114657489208687036
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1470060151669946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1590678366, guid: dc443db3e92b4983b9738c1131f555cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Animator: {fileID: 95419609098125186}
+  m_ParameterSendBits: 7
+  param0: 
+  param1: 
+  param2: 
+  param3: 
+  param4: 
+  param5: 
 --- !u!114 &114724510765645018
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2970,12 +3051,13 @@ MonoBehaviour:
   statusManager: {fileID: 0}
   controller: {fileID: 0}
   head: {fileID: 114063586334689054}
-  Attack1Indicator1: {fileID: 1768213210514262}
-  Attack1Indicator2: {fileID: 1400299598471372}
-  Attack1Indicator3: {fileID: 1747255934661782}
-  Attack3Indicator1: {fileID: 1262082297641090}
-  Attack3Indicator2: {fileID: 1794917491357562}
-  bulletPrefab: {fileID: 1003484191224384, guid: 817c848c9e2956e408730bb878b34a33,
+  indicators:
+  - {fileID: 1768213210514262}
+  - {fileID: 1400299598471372}
+  - {fileID: 1747255934661782}
+  - {fileID: 1262082297641090}
+  - {fileID: 1794917491357562}
+  bulletPrefab: {fileID: 1003484191224384, guid: 589b4311db7d36546a882bfd643c2935,
     type: 2}
   casterPrefab: {fileID: 1219392242389180, guid: 38196157084f81147b2637eb88befe50,
     type: 2}
@@ -2985,6 +3067,7 @@ MonoBehaviour:
   attack3act1GO: {fileID: 1410052713700448}
   attack3act2GO: {fileID: 1624381478546884}
   shieldCollider: {fileID: 1292009277677860}
+  chargeEffect: {fileID: 198875945367632884}
 --- !u!114 &114939520590619224
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3001,6 +3084,7 @@ MonoBehaviour:
   statusBarGO: {fileID: 1456338923472460}
   displayHeight: 6
   isDead: 0
+  shieldFlashEffect: {fileID: 114571898935383186}
   lostHpPoint: {fileID: 4143420326256134}
   lostHPPrefab: {fileID: 1604896443957886, guid: fa83ed5728e6fe44e9e8b7497deebc55,
     type: 2}
@@ -4146,7 +4230,7 @@ CharacterController:
   m_GameObject: {fileID: 1470060151669946}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Height: 6.4
   m_Radius: 1.79
@@ -4161,7 +4245,7 @@ NavMeshAgent:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1470060151669946}
-  m_Enabled: 1
+  m_Enabled: 0
   m_AgentTypeID: -1372625422
   m_Radius: 2.3
   m_Speed: 8

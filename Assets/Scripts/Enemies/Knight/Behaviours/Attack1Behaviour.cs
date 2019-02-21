@@ -22,8 +22,7 @@ namespace LightBringer.Enemies.Knight
         Transform target;
 
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
-            GameObject attack1act2GO, GameObject attack1act3GO,
-            GameObject indicator1, GameObject indicator2, GameObject indicator3) : base(enemyMotor)
+            GameObject attack1act2GO, GameObject attack1act3GO) : base(enemyMotor)
         {
             this.target = target;
             actGOs = new GameObject[3];
@@ -31,9 +30,9 @@ namespace LightBringer.Enemies.Knight
             actGOs[1] = attack1act2GO;
             actGOs[2] = attack1act3GO;
             parts = new Part[3];
-            parts[0] = new Part(State.Before, DMG_CHECKPOINT_1_START, DMG_CHECKPOINT_1_END - DMG_CHECKPOINT_1_START, indicator1);
-            parts[1] = new Part(State.Before, DMG_CHECKPOINT_2_START, DMG_CHECKPOINT_2_END - DMG_CHECKPOINT_2_START, indicator2);
-            parts[2] = new Part(State.Before, DMG_CHECKPOINT_3_START, DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START, indicator3);
+            parts[0] = new Part(State.Before, DMG_CHECKPOINT_1_START, DMG_CHECKPOINT_1_END - DMG_CHECKPOINT_1_START, 0);
+            parts[1] = new Part(State.Before, DMG_CHECKPOINT_2_START, DMG_CHECKPOINT_2_END - DMG_CHECKPOINT_2_START, 1);
+            parts[2] = new Part(State.Before, DMG_CHECKPOINT_3_START, DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START, 2);
 
         }
 
@@ -41,8 +40,8 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.SetBool("castingAttack1", true);
-            em.anim.Play("Attack1");
+            em.CallForAll(KnightMotor.M_AnimAttack1);
+
             acts = new AbilityColliderTrigger[3];
             for (int i = 0; i < actGOs.Length; i++)
             {
@@ -74,7 +73,7 @@ namespace LightBringer.Enemies.Knight
             if (i == 2)
             {
                 // Effect
-                actGOs[2].transform.parent.Find("ChargeEffect").GetComponent<ParticleSystem>().Play();
+                em.CallForAll(KnightMotor.M_SpearChargeEffect);
             }
 
             base.StartCollisionPart(i);
@@ -93,7 +92,6 @@ namespace LightBringer.Enemies.Knight
         public override void End()
         {
             base.End();
-            em.anim.SetBool("castingAttack1", false);
             em.SetOverrideAgent(false);
         }
 

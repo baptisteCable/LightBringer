@@ -63,13 +63,13 @@ namespace LightBringer.Enemies.Knight
             if (visiblePlayers.Count == 0)
             {
                 target = null;
-                em.head.NoTarget();
+                em.CallForAll(KnightMotor.M_HeadNoTarget);
             }
             else
             {
                 int index = (int) (Random.value * visiblePlayers.Count);
                 target = visiblePlayers[index];
-                em.head.LookAroundTarget(target.transform, 1f);
+                em.CallForAll(KnightMotor.M_HeadLookForTarget, target.gameObject, duration);
             }
 
         }
@@ -118,7 +118,6 @@ namespace LightBringer.Enemies.Knight
                 return;
             }
 
-            em.head.lookAroundError = (cycleEndTime - Time.time) / (cycleEndTime - cycleStartTime);
             em.DelayedRotateTowards(target.transform.position, .3f);
         }
 
@@ -133,7 +132,7 @@ namespace LightBringer.Enemies.Knight
             {
                 ((KnightController)em.controller).target = target.transform;
                 ((KnightController)em.controller).targetModificationTime = Time.time;
-                em.head.LookAtTarget(target.transform);
+                em.CallForAll(KnightMotor.M_HeadLookAtTarget, target.gameObject, 0f);
             }
         }
 

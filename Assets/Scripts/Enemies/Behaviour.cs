@@ -26,9 +26,9 @@ namespace LightBringer.Enemies
             public State state;
             public float startTime;
             public float duration;
-            public GameObject indicator;
+            public int indicator;
 
-            public Part(State state, float startTime, float duration, GameObject indicator)
+            public Part(State state, float startTime, float duration, int indicator)
             {
                 this.state = state;
                 this.startTime = startTime;
@@ -55,9 +55,9 @@ namespace LightBringer.Enemies
             {
                 for (int i = 0; i < parts.Length; i++)
                 {
-                    if (parts[i].indicator != null)
+                    if (parts[i].indicator != -1)
                     {
-                        parts[i].indicator.SetActive(false);
+                        em.CallForAll(Motor.M_HideIndicator, parts[i].indicator);
                     }
                 }
             }
@@ -88,10 +88,9 @@ namespace LightBringer.Enemies
 
         protected void DisplayIndicator(int part, float loadingTime)
         {
-            if (parts[part].indicator != null)
+            if (parts[part].indicator != -1)
             {
-                parts[part].indicator.SetActive(true);
-                parts[part].indicator.GetComponent<IndicatorLoader>().Load(loadingTime);
+                em.CallForAll(Motor.M_DisplayIndicator, parts[part].indicator, loadingTime);
             }
             parts[part].state = State.IndicatorDisplayed;
         }
@@ -114,9 +113,9 @@ namespace LightBringer.Enemies
 
         protected virtual void StartPart(int part)
         {
-            if (parts[part].indicator != null)
+            if (parts[part].indicator != -1)
             {
-                parts[part].indicator.SetActive(false);
+                em.CallForAll(Motor.M_HideIndicator, parts[part].indicator);
             }
             parts[part].state = State.InProgress;
         }

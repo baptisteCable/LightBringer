@@ -14,13 +14,13 @@ namespace LightBringer.Player
         public override void Start(PlayerStatusManager psm)
         {
             base.Start(psm);
-            psm.playerMotor.CallForAll(PlayerMotor.M_StartImmaterial);
+            psm.CallForAll(PlayerStatusManager.M_StartImmaterial);
         }
 
         public override void Stop()
         {
             base.Stop();
-            psm.playerMotor.CallForAll(PlayerMotor.M_StopImmaterial);
+            psm.CallForAll(PlayerStatusManager.M_StopImmaterial);
         }
 
         public override void Cancel()

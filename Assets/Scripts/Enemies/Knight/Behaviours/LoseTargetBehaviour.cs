@@ -20,7 +20,7 @@ namespace LightBringer.Enemies.Knight
                 lost = true;
                 ((KnightController)em.controller).target = null;
                 ((KnightController)em.controller).targetModificationTime = Time.time;
-                em.head.NoTarget();
+                em.CallForAll(KnightMotor.M_HeadNoTarget);
             }
 
             if (Time.time > startTime + DURATION)
