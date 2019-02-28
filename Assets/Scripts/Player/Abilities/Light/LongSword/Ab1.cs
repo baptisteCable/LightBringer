@@ -9,9 +9,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 {
     public class Ab1 : CollisionPlayerAbility
     {
-        // cancelling const
+        // status const
         private const bool CHANNELING_CANCELLABLE = true;
         private const bool CASTING_CANCELLABLE = false;
+        private const bool PARALLELIZABLE = false;
 
         // const
         private const float COOLDOWN_DURATION = 0f;
@@ -48,7 +49,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         LightLongSwordMotor lightMotor;
 
         public Ab1(LightLongSwordMotor playerMotor, int id) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION_AB, ABILITY_DURATION_AB, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
         {
             lightMotor = playerMotor;
         }

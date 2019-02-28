@@ -3,12 +3,19 @@ using UnityEngine;
 
 namespace LightBringer.Player.Abilities
 {
+    public enum AbilityState
+    {
+        cooldownInProgress = 0,
+        cooldownUp = 1,
+        channeling = 2,
+        casting = 3
+    }
+
     public abstract class Ability
     {
         public const float CANCELLING_CC_FACTOR = .3f;
 
-        public bool available = true;
-        public bool coolDownUp;
+        public AbilityState state;
         public float coolDownRemaining;
         public float coolDownDuration;
         public float castDuration;
@@ -17,7 +24,9 @@ namespace LightBringer.Player.Abilities
         public float channelStartTime;
         public bool channelingCancellable;
         public bool castingCancellable;
-        public bool locked;
+        public bool parallelizable;
+        public bool available = true;
+        public bool locked = false;
         public int id;
 
         protected PlayerMotor playerMotor;
@@ -25,16 +34,21 @@ namespace LightBringer.Player.Abilities
         public List<GameObject> indicators;
 
         public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor,
-            bool channelingCancellable, bool castingCancellable, int id)
+            bool channelingCancellable, bool castingCancellable, bool parallelizable, int id)
         {
-            coolDownUp = true;
-            locked = false;
+            state = AbilityState.cooldownUp;
+            coolDownRemaining = 0;
             this.coolDownDuration = coolDownDuration;
+
             channelDuration = channelingDuration;
             castDuration = castingDuration;
+
             playerMotor = motor;
+
             this.channelingCancellable = channelingCancellable;
             this.castingCancellable = castingCancellable;
+            this.parallelizable = parallelizable;
+
             this.id = id;
 
             indicators = new List<GameObject>();
@@ -44,9 +58,6 @@ namespace LightBringer.Player.Abilities
         {
             // Movement restrictions
             resetMovementRestrictions();
-
-            // current ability
-            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration * CANCELLING_CC_FACTOR);
@@ -64,9 +75,6 @@ namespace LightBringer.Player.Abilities
             // Movement restrictions
             resetMovementRestrictions();
 
-            // current ability
-            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, -1);
-
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
 
@@ -82,9 +90,6 @@ namespace LightBringer.Player.Abilities
         {
             // Movement restrictions
             resetMovementRestrictions();
-
-            // current ability
-            playerMotor.CallForAll(PlayerMotor.M_StartCasting, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
@@ -104,9 +109,6 @@ namespace LightBringer.Player.Abilities
         {
             // Movement restrictions
             resetMovementRestrictions();
-
-            // current ability
-            playerMotor.CallForAll(PlayerMotor.M_StartCasting, -1);
 
             // Cooldown
             playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
@@ -151,11 +153,9 @@ namespace LightBringer.Player.Abilities
         public virtual bool CanStart()
         {
             return
-                    coolDownUp &&
-                    playerMotor.currentAbility == null &&
-                    playerMotor.currentChanneling == null &&
+                    state == AbilityState.cooldownUp &&
+                    playerMotor.canStartNonParallelizableAbility() &&
                     !playerMotor.psm.isStunned &&
-                    !locked &&
                     available;
         }
 
@@ -163,10 +163,9 @@ namespace LightBringer.Player.Abilities
         protected bool CanStartEsc()
         {
             if (
-                    !coolDownUp ||
+                    state != AbilityState.cooldownUp ||
                     playerMotor.psm.isRooted ||
                     playerMotor.psm.isStunned ||
-                    locked ||
                     !available
                 )
             {
@@ -175,7 +174,7 @@ namespace LightBringer.Player.Abilities
 
             playerMotor.Cancel();
 
-            return playerMotor.currentAbility == null && playerMotor.currentChanneling == null;
+            return playerMotor.canStartNonParallelizableAbility();
         }
 
         public virtual void SpecialCancel()

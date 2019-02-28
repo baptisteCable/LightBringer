@@ -97,6 +97,12 @@ namespace LightBringer.Player.Class
         {
             base.Init();
 
+            // If Abilities already exist
+            if (abilities != null)
+            {
+                AbortAllAbilities();
+            }
+
             // Abilities
             abilities = new Ability[6];
             abilities[AB_ESC] = new AbEsc(this, AB_ESC);

@@ -19,10 +19,10 @@ public class Detection : MonoBehaviour
 
     public void Stop()
     {
+        anim.Play("Nothing");
         scanGO.SetActive(false);
         rightEye.SetActive(true);
         leftEye.SetActive(true);
-        anim.Play("Nothing");
         particle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
     }
 	

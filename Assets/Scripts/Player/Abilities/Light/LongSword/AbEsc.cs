@@ -16,6 +16,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = false;
         private const bool CASTING_CANCELLABLE = false;
+        private const bool PARALLELIZABLE = false;
 
         // const
         private const float COOLDOWN_DURATION = 12f;
@@ -48,7 +49,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private Dictionary<Collider, Vector3> encounteredCols;
 
         public AbEsc(LightLongSwordMotor playerMotor, int id) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
+            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
         {
             lightMotor = playerMotor;
         }
@@ -149,6 +150,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else if (!landed)
             {
                 playerMotor.SetMovementMode(MovementMode.Player);
+                LayerTools.recSetLayer(playerMotor.gameObject, NO_COLLISION_LAYER, PLAYER_LAYER);
                 landed = true;
             }
             else if (Time.time >= damageTime && !lightSpawned)
@@ -219,8 +221,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public override void AbortCasting()
         {
             base.AbortCasting();
-
-            LayerTools.recSetLayer(playerMotor.gameObject, NO_COLLISION_LAYER, PLAYER_LAYER);
 
             if (trigger != null)
             {

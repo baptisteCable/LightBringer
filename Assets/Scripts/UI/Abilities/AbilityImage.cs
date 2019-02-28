@@ -26,7 +26,7 @@ namespace LightBringer.UI
         protected virtual void Update()
         {
             // CD running
-            if (!character.abilities[abilityIndex].coolDownUp)
+            if (character.abilities[abilityIndex].state == Player.Abilities.AbilityState.cooldownInProgress)
             {
                 cdImage.gameObject.SetActive(true);
                 cdImage.fillAmount = character.abilities[abilityIndex].coolDownRemaining / character.abilities[abilityIndex].coolDownDuration;
@@ -38,7 +38,7 @@ namespace LightBringer.UI
             }
 
             // Channeling?
-            if (character.currentChanneling == character.abilities[abilityIndex])
+            if (character.abilities[abilityIndex].state == Player.Abilities.AbilityState.channeling)
             {
                 channelingImage.gameObject.SetActive(true);
                 channelingImage.fillAmount = (Time.time - character.abilities[abilityIndex].channelStartTime) / character.abilities[abilityIndex].channelDuration;
@@ -49,7 +49,7 @@ namespace LightBringer.UI
             }
 
             // Current ability or not
-            if (character.currentAbility == character.abilities[abilityIndex])
+            if (character.abilities[abilityIndex].state == Player.Abilities.AbilityState.casting)
             {
                 abilityImage.color = Color.red;
             }

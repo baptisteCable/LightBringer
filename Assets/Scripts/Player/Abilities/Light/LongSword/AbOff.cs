@@ -11,6 +11,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = true;
         private const bool CASTING_CANCELLABLE = false;
+        private const bool PARALLELIZABLE = false;
 
         // const
         public const float COOLDOWN_DURATION_A = 10f;
@@ -46,7 +47,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         LightLongSwordMotor lightMotor;
 
         public AbOff(LightLongSwordMotor motor, int id) :
-            base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, id)
+            base(COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
         {
             lightMotor = motor;
         }

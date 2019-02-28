@@ -92,7 +92,7 @@ namespace LightBringer.Player
             {
                 if (isServer)
                 {
-                    if (queue < pm.abilities.Length && !pm.abilities[queue].coolDownUp)
+                    if (queue < pm.abilities.Length && pm.abilities[queue].state != Abilities.AbilityState.cooldownUp)
                     {
                         queue = IN_NONE;
                     }

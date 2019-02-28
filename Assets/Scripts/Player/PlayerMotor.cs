@@ -1,6 +1,5 @@
 ﻿using LightBringer.Networking;
 using LightBringer.Player.Abilities;
-using LightBringer.Tools;
 using LightBringer.UI;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -63,12 +62,10 @@ namespace LightBringer.Player
          *      Step 2: Channeling. Can be cancelled. Target can be modified. Channeling animation.
          *      Step 3: Casting. When channeling ends, cast the ability. Can't be cancelled manually. 
          */
-        [HideInInspector] public Ability currentAbility = null;
-        [HideInInspector] public Ability currentChanneling = null;
-        [HideInInspector] public Ability specialCancelAbility = null;
 
-        // Inputs and abilities
+        // Abilities
         [HideInInspector] public Ability[] abilities;
+        [HideInInspector] public Ability specialCancelAbility = null;
 
         // Use this for initialization
         public virtual void Start()
@@ -148,26 +145,42 @@ namespace LightBringer.Player
             CCConsequences();
 
             // Channel
-            if (currentChanneling != null)
-            {
-                currentChanneling.Channel();
-            }
+            Channel();
 
             // Cast ability
-            if (currentAbility != null)
-            {
-                currentAbility.Cast();
-            }
+            Cast();
 
             // Special computations on abilities
             ComputeAbilitiesSpecial();
+        }
+
+        private void Channel()
+        {
+            foreach (Ability ab in abilities)
+            {
+                if (ab.state == AbilityState.channeling)
+                {
+                    ab.Channel();
+                }
+            }
+        }
+
+        private void Cast()
+        {
+            foreach (Ability ab in abilities)
+            {
+                if (ab.state == AbilityState.casting)
+                {
+                    ab.Cast();
+                }
+            }
         }
 
         private void RefreshCooldowns()
         {
             foreach (Ability ab in abilities)
             {
-                if (ab.coolDownRemaining > 0)
+                if (ab.state == AbilityState.cooldownInProgress)
                 {
                     if (GameManager.gm.ignoreCD)
                     {
@@ -177,7 +190,10 @@ namespace LightBringer.Player
                     {
                         ab.coolDownRemaining -= Time.deltaTime;
                     }
-                    ab.coolDownUp = ab.coolDownRemaining < 0;
+                    if (ab.coolDownRemaining <= 0)
+                    {
+                        ab.state = AbilityState.cooldownUp;
+                    }
                 }
             }
         }
@@ -218,7 +234,7 @@ namespace LightBringer.Player
             }
 
             // Clear queue if nothing happening
-            if (currentAbility == null && currentChanneling == null && pc.queue != PlayerController.IN_NONE)
+            if (canStartNonParallelizableAbility() && pc.queue != PlayerController.IN_NONE)
             {
                 pc.queue = PlayerController.IN_NONE;
             }
@@ -226,14 +242,16 @@ namespace LightBringer.Player
 
         public void Cancel()
         {
-            if (currentChanneling != null && currentChanneling.channelingCancellable)
+            foreach (Ability ab in abilities)
             {
-                currentChanneling.CancelChanelling();
-            }
-
-            if (currentAbility != null && currentAbility.castingCancellable)
-            {
-                currentAbility.AbortCasting();
+                if (!ab.parallelizable && ab.state == AbilityState.channeling && ab.channelingCancellable)
+                {
+                    ab.CancelChanelling();
+                }
+                else if (!ab.parallelizable && ab.state == AbilityState.casting && ab.castingCancellable)
+                {
+                    ab.AbortCasting();
+                }
             }
 
             // Special effect of cancelling on some abilities
@@ -369,18 +387,23 @@ namespace LightBringer.Player
 
         private void CCConsequences()
         {
-            if (currentChanneling != null)
+            if (psm.isStunned)
             {
-                if (psm.isStunned)
-                {
-                    currentChanneling.AbortChanelling();
-                }
+                AbortAllAbilities();
             }
-            if (currentAbility != null)
+        }
+
+        protected void AbortAllAbilities()
+        {
+            foreach (Ability ab in abilities)
             {
-                if (psm.isStunned)
+                if (ab.state == AbilityState.channeling)
                 {
-                    currentAbility.AbortCasting();
+                    ab.AbortChanelling();
+                }
+                else if (ab.state == AbilityState.casting)
+                {
+                    ab.AbortCasting();
                 }
             }
         }
@@ -418,15 +441,21 @@ namespace LightBringer.Player
 
         public void Die()
         {
-            if (currentChanneling != null)
-            {
-                currentChanneling.AbortChanelling();
-            }
-            if (currentAbility != null)
-            {
-                currentAbility.AbortCasting();
-            }
+            AbortAllAbilities();
             charController.enabled = false;
+        }
+
+        public bool canStartNonParallelizableAbility()
+        {
+            foreach (Ability ab in abilities)
+            {
+                if (!ab.parallelizable && (ab.state == AbilityState.channeling || ab.state == AbilityState.casting))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         [Command]
@@ -539,31 +568,16 @@ namespace LightBringer.Player
         public const int M_StartChanneling = 1301;
         private void StartChanneling(int id)
         {
-            if (id >= 0)
-            {
-                currentChanneling = abilities[id];
-                currentChanneling.channelStartTime = Time.time;
-            }
-            else
-            {
-                currentChanneling = null;
-            }
+            abilities[id].state = AbilityState.channeling;
+            abilities[id].channelStartTime = Time.time;
         }
 
         // Called by id
         public const int M_StartCasting = 1302;
         private void StartCasting(int id)
         {
-            if (id >= 0)
-            {
-                currentChanneling = null;
-                currentAbility = abilities[id];
-                currentAbility.castStartTime = Time.time;
-            }
-            else
-            {
-                currentAbility = null;
-            }
+            abilities[id].state = AbilityState.casting;
+            abilities[id].castStartTime = Time.time;
         }
 
         protected override bool CallById(int methdodId, int i, float f)
@@ -595,6 +609,7 @@ namespace LightBringer.Player
         private void SetCdRemaining(int id, float cd)
         {
             abilities[id].coolDownRemaining = cd;
+            abilities[id].state = AbilityState.cooldownInProgress;
         }
 
         /*
