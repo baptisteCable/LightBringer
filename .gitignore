@@ -4,6 +4,7 @@
 /[Bb]uild/
 /[Bb]uilds/
 /Assets/ShaderForge*
+/Assets/Plugins*
 
 /Assets/AssetStoreTools*
 /Assets/UETools*
