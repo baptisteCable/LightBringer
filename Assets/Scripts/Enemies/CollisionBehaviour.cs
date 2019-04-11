@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace LightBringer.Enemies
 {
-    public abstract class CollisionBehaviour : Behaviour, CollisionAbility
+    public abstract class CollisionBehaviour : EnemyBehaviour, CollisionAbility
     {
         private const float INDICATOR_DISPLAY_TIME = .5f;
         private const float DURATION = 2.9f;

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using LightBringer.Enemies;
+﻿using LightBringer.Enemies;
 using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword

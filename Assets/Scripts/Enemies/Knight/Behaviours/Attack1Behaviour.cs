@@ -21,6 +21,8 @@ namespace LightBringer.Enemies.Knight
         float stopDist;
         Transform target;
 
+        private KnightMotor km;
+
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
             GameObject attack1act2GO, GameObject attack1act3GO) : base(enemyMotor)
         {
@@ -33,14 +35,14 @@ namespace LightBringer.Enemies.Knight
             parts[0] = new Part(State.Before, DMG_CHECKPOINT_1_START, DMG_CHECKPOINT_1_END - DMG_CHECKPOINT_1_START, 0);
             parts[1] = new Part(State.Before, DMG_CHECKPOINT_2_START, DMG_CHECKPOINT_2_END - DMG_CHECKPOINT_2_START, 1);
             parts[2] = new Part(State.Before, DMG_CHECKPOINT_3_START, DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START, 2);
-
+            km = enemyMotor;
         }
 
         public override void Init()
         {
             base.Init();
 
-            em.CallForAll(KnightMotor.M_AnimAttack1);
+            em.anim.Play("Attack1");
 
             acts = new AbilityColliderTrigger[3];
             for (int i = 0; i < actGOs.Length; i++)
@@ -73,7 +75,7 @@ namespace LightBringer.Enemies.Knight
             if (i == 2)
             {
                 // Effect
-                em.CallForAll(KnightMotor.M_SpearChargeEffect);
+                km.chargeEffect.GetComponent<ParticleSystem>().Play();
             }
 
             base.StartCollisionPart(i);

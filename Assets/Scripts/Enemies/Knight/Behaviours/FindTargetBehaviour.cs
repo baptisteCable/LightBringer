@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class FindTargetBehaviour : Behaviour
+    public class FindTargetBehaviour : EnemyBehaviour
     {
         private const float MAX_CYCLE_DURATION = 4f;
         private const float MIN_CYCLE_DURATION = .5f;
@@ -63,15 +63,14 @@ namespace LightBringer.Enemies.Knight
             if (visiblePlayers.Count == 0)
             {
                 target = null;
-                em.CallForAll(KnightMotor.M_HeadNoTarget);
+                em.head.NoTarget();
             }
             else
             {
                 int index = (int) (Random.value * visiblePlayers.Count);
                 target = visiblePlayers[index];
-                em.CallForAll(KnightMotor.M_HeadLookForTarget, target.gameObject, duration);
+                em.head.LookForTarget(target.gameObject, duration);
             }
-
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace LightBringer.Enemies.Knight
             {
                 ((KnightController)em.controller).target = target.transform;
                 ((KnightController)em.controller).targetModificationTime = Time.time;
-                em.CallForAll(KnightMotor.M_HeadLookAtTarget, target.gameObject, 0f);
+                em.head.LookForTarget(target.gameObject, 0f);
             }
         }
 

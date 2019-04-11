@@ -1,15 +1,13 @@
-﻿using LightBringer.Networking;
-using LightBringer.Player.Abilities;
+﻿using LightBringer.Player.Abilities;
 using LightBringer.UI;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerStatusManager))]
     [RequireComponent(typeof(CharacterController))]
     [RequireComponent(typeof(PlayerController))]
-    public abstract class PlayerMotor : DelayedNetworkBehaviour
+    public abstract class PlayerMotor : MonoBehaviour
     {
         // constants
         private const float ROTATION_SPEED = 24f;
@@ -50,9 +48,6 @@ namespace LightBringer.Player
         public GameObject userInterfacePrefab;
         private GameObject userInterface;
 
-        // Networking
-        [SerializeField] private GameObject networkSynchronizerPrefab;
-
         /* Abilities :
          *      0: None
          *      1: Jump
@@ -70,44 +65,32 @@ namespace LightBringer.Player
         // Use this for initialization
         public virtual void Start()
         {
-            /* ********* Everyone ********** */
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
             pc = GetComponent<PlayerController>();
 
             Init();
 
-            /* ********* Server ********** */
-            if (isServer && isLocalPlayer)
+            // Test Manager
+            if (TestManager.singleton != null)
             {
-                // NetworkSynchronizer
-                GameObject ns = Instantiate(networkSynchronizerPrefab);
-                NetworkServer.Spawn(ns);
+                TestManager.singleton.SetPlayer(this);
             }
 
-            /* ********* Local player ********** */
-            if (isLocalPlayer)
+            // Camera
+            playerCamera = Instantiate(cameraPrefab);
+            playerCamera.GetComponent<PlayerCamera>().player = transform;
+            pc.cam = playerCamera.GetComponent<Camera>();
+
+            if (CameraManager.singleton != null)
             {
-                // Test Manager
-                if (TestManager.singleton != null)
-                {
-                    TestManager.singleton.SetPlayer(this);
-                }
-
-                // Camera
-                playerCamera = Instantiate(cameraPrefab);
-                playerCamera.GetComponent<PlayerCamera>().player = transform;
-                pc.cam = playerCamera.GetComponent<Camera>();
-
-                if (CameraManager.singleton != null)
-                {
-                    CameraManager.singleton.ActivatePlayerCamera();
-                }
-
-                // UI
-                userInterface = Instantiate(userInterfacePrefab);
-                userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
+                CameraManager.singleton.ActivatePlayerCamera();
             }
+
+            // UI
+            userInterface = Instantiate(userInterfacePrefab);
+            userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
+
         }
 
         // Update is called once per frame
@@ -126,11 +109,6 @@ namespace LightBringer.Player
 
             // cooldowns
             RefreshCooldowns();
-
-            if (!isServer)
-            {
-                return;
-            }
 
             // Move
             Move();
@@ -331,32 +309,29 @@ namespace LightBringer.Player
 
         void LookAtMouse()
         {
-            if (isServer)
+            if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
             {
-                if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
+                // Smoothly rotate towards the target point.
+                var targetRotation = Quaternion.LookRotation(
+                        pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
+                    );
+                Quaternion rotation = Quaternion.Slerp(
+                        characterContainer.rotation,
+                        targetRotation,
+                        rotationSpeed * Time.deltaTime
+                    );
+
+                currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
+
+                float mrs = MaxRotationSpeed();
+
+                if (Mathf.Abs(currentRotationSpeed) > mrs)
                 {
-                    // Smoothly rotate towards the target point.
-                    var targetRotation = Quaternion.LookRotation(
-                            pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
-                        );
-                    Quaternion rotation = Quaternion.Slerp(
-                            characterContainer.rotation,
-                            targetRotation,
-                            rotationSpeed * Time.deltaTime
-                        );
-
-                    currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
-
-                    float mrs = MaxRotationSpeed();
-
-                    if (Mathf.Abs(currentRotationSpeed) > mrs)
-                    {
-                        characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
-                    }
-                    else
-                    {
-                        characterContainer.rotation = rotation;
-                    }
+                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
+                }
+                else
+                {
+                    characterContainer.rotation = rotation;
                 }
             }
         }
@@ -414,7 +389,8 @@ namespace LightBringer.Player
             {
                 charController.enabled = true;
                 psm.anchor = null;
-                CallForAll(M_MakeVisible);
+                visible = true;
+                characterContainer.gameObject.SetActive(true);
             }
 
             movementMode = mode;
@@ -425,7 +401,8 @@ namespace LightBringer.Player
             charController.enabled = false;
             movementMode = MovementMode.Anchor;
             psm.anchor = anchor;
-            CallForAll(M_MakeInvisible);
+            visible = false;
+            characterContainer.gameObject.SetActive(false);
         }
 
         public void LockAbilitiesExcept(bool locked, Ability ability = null)
@@ -458,36 +435,15 @@ namespace LightBringer.Player
             return true;
         }
 
-        [Command]
-        public virtual void CmdServerInit()
-        {
-            psm.Init();
-            Init();
-
-            charController.enabled = true;
-
-            movementDirection = Vector3.zero;
-            previousPosition = Vector3.zero;
-
-            // call on clients too
-            RpcClientInit();
-        }
-
-        [ClientRpc]
-        public void RpcClientInit()
-        {
-            if (!isServer)
-            {
-                Init();
-            }
-        }
-
-        protected virtual void Init()
+        public virtual void Init()
         {
             psm.Init();
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
+
+            movementDirection = Vector3.zero;
+            previousPosition = Vector3.zero;
         }
 
         private void OnDestroy()
@@ -495,7 +451,7 @@ namespace LightBringer.Player
             Destroy(playerCamera);
             Destroy(userInterface);
 
-            if (isLocalPlayer && CameraManager.singleton != null)
+            if (CameraManager.singleton != null)
             {
                 CameraManager.singleton.DisactivatePlayerCamera();
             }
@@ -507,109 +463,11 @@ namespace LightBringer.Player
             }
         }
 
-        protected override bool CallById(int methdodId)
-        {
-            if (base.CallById(methdodId))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_MakeVisible: MakeVisible(); return true;
-                case M_MakeInvisible: MakeInvisible(); return true;
-            }
-
-            return false;
-        }
-
-        // Called by id
-        public const int M_MakeVisible = 1000;
-        private void MakeVisible()
-        {
-            visible = true;
-            characterContainer.gameObject.SetActive(true);
-        }
-
-        // Called by id
-        public const int M_MakeInvisible = 1001;
-        private void MakeInvisible()
-        {
-            visible = false;
-            characterContainer.gameObject.SetActive(false);
-        }
-
-        protected override bool CallById(int methdodId, int i)
-        {
-            if (base.CallById(methdodId, i))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_ClearIndicators: ClearIndicators(i); return true;
-                case M_StartChanneling: StartChanneling(i); return true;
-                case M_StartCasting: StartCasting(i); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // Called by id
-        public const int M_ClearIndicators = 1300;
-        private void ClearIndicators(int id)
-        {
-            abilities[id].indicators.Clear();
-        }
-
-        // Called by id
-        public const int M_StartChanneling = 1301;
-        private void StartChanneling(int id)
-        {
-            abilities[id].state = AbilityState.channeling;
-            abilities[id].channelStartTime = Time.time;
-        }
-
-        // Called by id
-        public const int M_StartCasting = 1302;
-        private void StartCasting(int id)
-        {
-            abilities[id].state = AbilityState.casting;
-            abilities[id].castStartTime = Time.time;
-        }
-
-        protected override bool CallById(int methdodId, int i, float f)
-        {
-            if (base.CallById(methdodId, i, f))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_SetCdDuration: SetCdDuration(i, f); return true;
-                case M_SetCdRemaining: SetCdRemaining(i, f); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
         // Called by id
         public const int M_SetCdDuration = 1400;
         private void SetCdDuration(int id, float cd)
         {
             abilities[id].coolDownDuration = cd;
-        }
-
-        // Called by id
-        public const int M_SetCdRemaining = 1401;
-        private void SetCdRemaining(int id, float cd)
-        {
-            abilities[id].coolDownRemaining = cd;
-            abilities[id].state = AbilityState.cooldownInProgress;
         }
 
         /*
@@ -645,9 +503,6 @@ namespace LightBringer.Player
      * Base.Start à remplacer. ne pas override ces méthodes.
      *  
      * Commenter le code
-     * 
-     * Network : enemy statusBar on death + head on death
-     * Network : display CC over status bar
      * 
      * Bugs:
      *  - Bullet of attack2 can stay stuck in the air before fire

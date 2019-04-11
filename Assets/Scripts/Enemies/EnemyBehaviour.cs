@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies
 {
-    public abstract class Behaviour
+    public abstract class EnemyBehaviour
     {
         private const float INDICATOR_DISPLAY_TIME = .5f;
 
@@ -37,7 +37,7 @@ namespace LightBringer.Enemies
             }
         }
 
-        public Behaviour(Motor enemyMotor)
+        public EnemyBehaviour(Motor enemyMotor)
         {
             em = enemyMotor;
         }
@@ -57,7 +57,7 @@ namespace LightBringer.Enemies
                 {
                     if (parts[i].indicator != -1)
                     {
-                        em.CallForAll(Motor.M_HideIndicator, parts[i].indicator);
+                        em.HideIndicator(parts[i].indicator);
                     }
                 }
             }
@@ -92,7 +92,7 @@ namespace LightBringer.Enemies
         {
             if (parts[part].indicator != -1)
             {
-                em.CallForAllDisplayIndicator(parts[part].indicator, loadingTime);
+                em.anim.Play("Attack2");
             }
             parts[part].state = State.IndicatorDisplayed;
         }
@@ -117,7 +117,7 @@ namespace LightBringer.Enemies
         {
             if (parts[part].indicator != -1)
             {
-                em.CallForAll(Motor.M_HideIndicator, parts[part].indicator);
+                em.HideIndicator(parts[part].indicator);
             }
             parts[part].state = State.InProgress;
         }

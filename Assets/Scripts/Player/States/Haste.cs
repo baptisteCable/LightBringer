@@ -27,7 +27,7 @@ namespace LightBringer.Player
             ComputeCurve();
 
             psm.moveMultiplicators.Add(this, 1f);
-            psm.CallForAll(PlayerStatusManager.M_PlayHasteTrails);
+            psm.hasteTrailsEffect.Play();
             lastLength = 0f;
         }
 
@@ -40,7 +40,7 @@ namespace LightBringer.Player
             if (Mathf.Abs(lastLength - length) >= .1f)
             {
                 lastLength = length;
-                psm.CallForAll(PlayerStatusManager.M_HasteTrailsLength, length);
+                psm.hasteTrailsEffectMain.startLifetime = length;
             }
 
             base.Update();
@@ -50,7 +50,7 @@ namespace LightBringer.Player
         {
             base.Stop();
 
-            psm.CallForAll(PlayerStatusManager.M_StopHasteTrails);
+            psm.hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
             psm.moveMultiplicators.Remove(this);
         }
 

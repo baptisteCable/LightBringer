@@ -60,7 +60,8 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // Cooldown
-            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration * CANCELLING_CC_FACTOR);
+            coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
+            state = AbilityState.cooldownInProgress;
 
             // animation
             playerMotor.animator.Play("TopIdle");
@@ -76,7 +77,8 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // Cooldown
-            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
+            coolDownRemaining = coolDownDuration;
+            state = AbilityState.cooldownInProgress;
 
             // animation
             playerMotor.animator.Play("TopIdle");
@@ -92,7 +94,8 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // Cooldown
-            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
+            coolDownRemaining = coolDownDuration;
+            state = AbilityState.cooldownInProgress;
 
             // animation
             if (!playerMotor.psm.isStunned)
@@ -111,7 +114,8 @@ namespace LightBringer.Player.Abilities
             resetMovementRestrictions();
 
             // Cooldown
-            playerMotor.CallForAll(PlayerMotor.M_SetCdRemaining, id, coolDownDuration);
+            coolDownRemaining = coolDownDuration;
+            state = AbilityState.cooldownInProgress;
         }
 
         public virtual void Channel()
@@ -132,12 +136,14 @@ namespace LightBringer.Player.Abilities
 
         public virtual void StartChanneling()
         {
-            playerMotor.CallForAll(PlayerMotor.M_StartChanneling, id);
+            state = AbilityState.channeling;
+            channelStartTime = Time.time;
         }
 
         public virtual void StartAbility()
         {
-            playerMotor.CallForAll(PlayerMotor.M_StartCasting, id);
+            state = AbilityState.casting;
+            castStartTime = Time.time;
         }
 
         protected void resetMovementRestrictions()
@@ -187,11 +193,6 @@ namespace LightBringer.Player.Abilities
             foreach (GameObject go in indicators)
             {
                 GameObject.Destroy(go);
-            }
-
-            if (indicators.Count > 0)
-            {
-                playerMotor.CallForAll(PlayerMotor.M_ClearIndicators, id);
             }
 
             indicators.Clear();

@@ -3,22 +3,20 @@ using LightBringer.Player;
 using LightBringer.TerrainGeneration;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Networking;
 
-public class TestManager : NetworkBehaviour
+public class TestManager : MonoBehaviour
 {
     public static TestManager singleton;
-    
+
     public GameObject knightPrefab;
-    
+    public GameObject playerPrefab;
+
     private TerrainGenerator tg;
     public Terrain terrain;
     private NavMeshSurface nms;
 
     private GameObject knight;
     private KnightController kc;
-    private GameObject knight2;
-    private KnightController kc2;
 
     private PlayerStatusManager psm;
     private PlayerMotor playerMotor;
@@ -34,8 +32,6 @@ public class TestManager : NetworkBehaviour
 
         tg = terrain.GetComponent<TerrainGenerator>();
         nms = terrain.GetComponent<NavMeshSurface>();
-
-        newTerrainButton.SetActive(isServer);
 
     }
 
@@ -64,13 +60,14 @@ public class TestManager : NetworkBehaviour
         KillKnight();
 
         // Player
-        playerMotor.transform.position = Vector3.zero;
-        playerMotor.CmdServerInit();
-
-        if (!isServer)
+        if (playerMotor == null)
         {
-            return;
+            GameObject playerGo = Instantiate(playerPrefab);
+            playerMotor = playerGo.GetComponent<PlayerMotor>();
         }
+
+        playerMotor.transform.position = Vector3.zero;
+        playerMotor.Init();
 
         // Knight
         knight = Instantiate(knightPrefab);
@@ -79,20 +76,6 @@ public class TestManager : NetworkBehaviour
 
         kc = knight.GetComponent<KnightController>();
         kc.passive = knightPassive;
-        NetworkServer.Spawn(knight);
-
-        // Knight 2
-        /*
-        knight2 = Instantiate(knightPrefab);
-        knight2.transform.position = new Vector3(10, 0, 20);
-        knight2.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
-
-        kc2 = knight2.GetComponent<KnightController>();
-        kc2.target = playerMotor.transform;
-        kc2.passive = knightPassive;
-
-        NetworkServer.Spawn(knight2);
-        */
     }
 
     public void KillKnight()
@@ -101,20 +84,12 @@ public class TestManager : NetworkBehaviour
         {
             Destroy(knight);
         }
-        if (knight2 != null)
-        {
-            Destroy(knight2);
-        }
     }
 
     public void SetKnightPassive(bool isPassive)
     {
         knightPassive = isPassive;
         if (kc != null)
-        {
-            kc.passive = knightPassive;
-        }
-        if (kc2 != null)
         {
             kc.passive = knightPassive;
         }

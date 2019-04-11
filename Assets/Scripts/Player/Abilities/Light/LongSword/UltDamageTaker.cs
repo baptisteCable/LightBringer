@@ -31,12 +31,12 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 dmg.amount = QUARTER_DAMAGE;
 
-                um.CallForAll(UltMotor.M_DestroyQuarter, quarterId);
+                um.DestroyQuarter(quarterId);
                 
                 if (um.qCount == 0)
                 {
                     dmg.amount += ALL_QUARTER_DAMAGE;
-                    um.CallForAll(UltMotor.M_DestroyObject);
+                    um.DestroyObject();
                 }
             }
             else

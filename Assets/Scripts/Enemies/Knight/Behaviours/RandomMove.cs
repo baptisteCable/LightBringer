@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class RandomMove : Behaviour
+    public class RandomMove : EnemyBehaviour
     {
         private Transform target;
 

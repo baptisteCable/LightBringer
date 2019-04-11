@@ -1,14 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using LightBringer.Networking;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Networking;
 
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(CharacterController))]
-    public abstract class Motor : DelayedNetworkBehaviour
+    public abstract class Motor : MonoBehaviour
     {
         public const float MAX_RTT_COMPENSATION_INDICATOR = .3f;
 
@@ -67,34 +64,29 @@ namespace LightBringer.Enemies
 
         protected void BaseStart()
         {
-            if (isServer)
-            {
-                controller = GetComponent<Controller>();
-                controller.enabled = true;
+            controller = GetComponent<Controller>();
+            
+            // Agent
+            agent = GetComponent<NavMeshAgent>();
+            agent.enabled = true;
+            agent.updatePosition = false;
+            overrideAgent = false;
 
-                // Agent
-                agent = GetComponent<NavMeshAgent>();
-                agent.enabled = true;
-                agent.updatePosition = false;
-                overrideAgent = false;
+            // Last position
+            lastPosition = transform.position;
 
-                // Last position
-                lastPosition = transform.position;
+            // Rotations
+            delayedRotations = new List<TimePoint>();
 
-                // Rotations
-                delayedRotations = new List<TimePoint>();
-
-                // Character controller
-                cc = GetComponent<CharacterController>();
-                cc.enabled = true;
-            }
-
+            // Character controller
+            cc = GetComponent<CharacterController>();
+            
             statusManager = GetComponent<StatusManager>();
         }
 
         protected void BaseUpdate()
         {
-            if (!statusManager.isDead && isServer)
+            if (!statusManager.isDead)
             {
                 Vector3 worldDeltaPosition = transform.position - lastPosition;
                 lastPosition = transform.position;
@@ -125,7 +117,6 @@ namespace LightBringer.Enemies
 
                 ApplyDelayedRotations();
             }
-
         }
 
         public void EnableAgentRotation()
@@ -153,6 +144,7 @@ namespace LightBringer.Enemies
                 overrideAgent = false;
             }
         }
+
         public void MoveInDirection(Vector3 direction)
         {
             Move(direction.normalized * moveSpeed);
@@ -282,78 +274,19 @@ namespace LightBringer.Enemies
                 disableColliders(child);
             }
         }
-
-        public void CallForAllDisplayIndicator(int id, float duration)
+        
+        public void HideIndicator(int id)
         {
-            if (isServer)
-            {
-                RpcDisplayIndicator(id, duration, Time.time);
-                StartCoroutine(DisplayIndicator(id, duration, MAX_RTT_COMPENSATION_INDICATOR));
-            }
+            indicators[id].SetActive(false);
         }
 
-        [ClientRpc]
-        private void RpcDisplayIndicator(int id, float duration, float serverTime)
-        {
-            if (!isServer)
-            {
-                float delay = NetworkSynchronization.singleton.GetLocalTimeFromServerTime(serverTime) - Time.time + MAX_RTT_COMPENSATION_INDICATOR;
-                
-                // if MAX_RTT_COMPENSATION_INDICATOR not enough to balance rtt
-                if (delay < NetworkSynchronization.singleton.simulatedPing)
-                {
-                    duration += delay;
-                    delay = 0f;
-
-                }
-                // add rtt to delay and duration
-                else
-                {
-                    duration += NetworkSynchronization.singleton.simulatedPing;
-                    delay -= NetworkSynchronization.singleton.simulatedPing;
-                }
-
-                StartCoroutine(DisplayIndicator(id, duration, delay));
-            }
-        }
-
-        private IEnumerator DisplayIndicator(int id, float duration, float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            DisplayIndicator(id, duration);
-        }
-
-        private void DisplayIndicator(int id, float loadingTime)
+        public void DisplayIndicator(int id, float loadingTime)
         {
             if (!statusManager.isDead)
             {
                 indicators[id].SetActive(true);
                 indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
             }
-        }
-
-        // ---------------------- Delayed Network calls --------------------------
-        protected override bool CallById(int methdodId, int i)
-        {
-            if (base.CallById(methdodId, i))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_HideIndicator: HideIndicator(i); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // Called by id
-        public const int M_HideIndicator = 1300;
-        private void HideIndicator(int id)
-        {
-            indicators[id].SetActive(false);
         }
     }
 }

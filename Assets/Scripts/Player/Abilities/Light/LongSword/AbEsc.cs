@@ -4,7 +4,6 @@ using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using LightBringer.Tools;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -36,7 +35,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public GameObject landingIndicator;
 
         // Move data
-        private Vector3 destination, origin, oldDestination;
+        private Vector3 destination, origin;
         float landingTime;
         float damageTime;
         private bool landed;
@@ -64,7 +63,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbEsc);
+            lightMotor.animator.Play("BotAbEsc");
+            lightMotor.animator.Play("TopAbEsc");
 
             LayerTools.recSetLayer(playerMotor.gameObject, PLAYER_LAYER, NO_COLLISION_LAYER);
 
@@ -83,11 +83,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GetDestination();
             Vector3 pos = new Vector3(destination.x, .2f, destination.z);
 
-            if (Vector3.Distance(oldDestination, destination) > .2f)
-            {
-                lightMotor.CallForAll(LightLongSwordMotor.M_AbEscMoveIndicator, pos);
-            }
-            else if (landingIndicator != null)
+            if (landingIndicator != null)
             {
                 landingIndicator.transform.position = pos;
             }
@@ -95,8 +91,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void GetDestination()
         {
-            oldDestination = destination;
-
             if ((playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).magnitude < MAX_RANGE)
             {
                 destination = playerMotor.pc.pointedWorldPoint;
@@ -111,7 +105,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             GetDestination();
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_AbEscDisplayIndicator, new Vector3(destination.x, .2f, destination.z));
+            Vector3 pos = new Vector3(destination.x, .2f, destination.z);
+
+            landingIndicator = GameObject.Instantiate(lightMotor.abEscLandingIndicatorPrefab);
+            landingIndicator.transform.position = pos;
+            GameObject.Destroy(landingIndicator, channelDuration);
+
+            GameObject indicator = GameObject.Instantiate(lightMotor.abEscRangeIndicatorPrefab, playerMotor.characterContainer);
+            GameObject.Destroy(indicator, channelDuration);
         }
 
         public override void StartAbility()
@@ -121,7 +122,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             landingTime = Time.time + LANDING_TIME;
             damageTime = Time.time + DAMAGE_TIME;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_EscTrails);
+            EscTrails();
 
             // No movement
             playerMotor.abilityMoveMultiplicator = 0f;
@@ -130,6 +131,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.SetMovementMode(MovementMode.Ability);
 
             ComputeOriginAndDestination();
+        }
+
+        private void EscTrails()
+        {
+            GameObject trailEffect1 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(-0.473f, 0.089f, 0f);
+            GameObject.Destroy(trailEffect1, castDuration);
+            GameObject trailEffect2 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
+            trailEffect1.transform.localPosition = new Vector3(0.177f, 0.094f, 0f);
+            GameObject.Destroy(trailEffect2, castDuration);
         }
 
         private void ComputeOriginAndDestination()
@@ -190,10 +201,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
-            NetworkServer.Spawn(lightZone);
 
             // Particle effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_LightSpawnPE, pos);
+            lightMotor.LightSpawnPE(pos);
 
             // Damage zone (trigger)
             trigger = GameObject.Instantiate(lightMotor.lightSpawnTriggerPrefab, null);

@@ -1,4 +1,5 @@
 ﻿using LightBringer.Enemies;
+using LightBringer.Tools;
 using UnityEngine;
 
 namespace LightBringer.Player
@@ -7,6 +8,9 @@ namespace LightBringer.Player
     {
         private const bool CANCELLABLE = true;
 
+        private const string IMMATERIAL_LAYER = "Immaterial";
+        private const string PLAYER_LAYER = "Player";
+
         public Immaterial(float duration) : base(CANCELLABLE, duration)
         {
         }
@@ -14,13 +18,17 @@ namespace LightBringer.Player
         public override void Start(PlayerStatusManager psm)
         {
             base.Start(psm);
-            psm.CallForAll(PlayerStatusManager.M_StartImmaterial);
+            psm.immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(psm.gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+            RecTransparentOn(psm.transform);
         }
 
         public override void Stop()
         {
             base.Stop();
-            psm.CallForAll(PlayerStatusManager.M_StopImmaterial);
+            psm.immaterialCloudEffect.Play();
+            LayerTools.recSetLayer(psm.gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+            RecTransparentOff(psm.transform);
         }
 
         public override void Cancel()

@@ -31,7 +31,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.abilityMoveMultiplicator = 0;
             playerMotor.abilityMaxRotation = 0;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbDef);
+            lightMotor.animator.Play("BotAbDef");
+            lightMotor.animator.Play("TopAbDef");
         }
 
         public override void StartAbility()

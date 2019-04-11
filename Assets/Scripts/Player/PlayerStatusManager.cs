@@ -1,19 +1,13 @@
 ﻿using System.Collections.Generic;
 using LightBringer.Effects;
 using LightBringer.Enemies;
-using LightBringer.Networking;
-using LightBringer.Tools;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerMotor)), RequireComponent(typeof(FlashEffect))]
-    public class PlayerStatusManager : DelayedNetworkBehaviour2
+    public class PlayerStatusManager : MonoBehaviour
     {
-        private const string IMMATERIAL_LAYER = "Immaterial";
-        private const string PLAYER_LAYER = "Player";
-
         // HP MP
         public float maxHP;
         [HideInInspector]
@@ -39,7 +33,7 @@ namespace LightBringer.Player
         [HideInInspector]
         public List<State> states;
         private List<State> queuedStates;
-        [SyncVar] public bool isDead;
+        public bool isDead;
 
         // Special status
         [HideInInspector]
@@ -60,9 +54,9 @@ namespace LightBringer.Player
 
         // State Effects
         [Header("States Effects")]
-        [SerializeField] private ParticleSystem hasteTrailsEffect;
-        private ParticleSystem.MainModule hasteTrailsEffectMain;
-        [SerializeField] private ParticleSystem immaterialCloudEffect;
+        public ParticleSystem hasteTrailsEffect;
+        public ParticleSystem.MainModule hasteTrailsEffectMain;
+        public ParticleSystem immaterialCloudEffect;
 
         void Start()
         {
@@ -77,7 +71,7 @@ namespace LightBringer.Player
         private void Update()
         {
             // get state information from server on connection
-            if (queuedStates != null && isServer)
+            if (queuedStates != null)
             {
                 AddAndStartQueuedStates();
 
@@ -122,7 +116,6 @@ namespace LightBringer.Player
             return true;
         }
 
-
         public void TakeDamage(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
         {
             foreach (State s in states)
@@ -132,7 +125,8 @@ namespace LightBringer.Player
 
             if (dmg.amount > 0)
             {
-                CallForAll(M_SetHPReduced, currentHP - dmg.amount);
+                flashEffect.Flash();
+                currentHP -= dmg.amount;
             }
 
             if (currentHP <= 0 && canDie)
@@ -313,87 +307,6 @@ namespace LightBringer.Player
             // Gradables
             moveMultiplicators = new Dictionary<State, float>();
             maxRotation = new Dictionary<State, float>();
-        }
-
-        protected override bool CallById(int methdodId)
-        {
-            if (base.CallById(methdodId))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_PlayHasteTrails: PlayHasteTrails(); return true;
-                case M_StopHasteTrails: StopHasteTrails(); return true;
-                case M_StartImmaterial: StartImmaterial(); return true;
-                case M_StopImmaterial: StopImmaterial(); return true;
-            }
-
-            return false;
-        }
-
-        //called by id
-        public const int M_PlayHasteTrails = 2;
-        private void PlayHasteTrails()
-        {
-            hasteTrailsEffect.Play();
-        }
-
-        //called by id
-        public const int M_StopHasteTrails = 3;
-        private void StopHasteTrails()
-        {
-            hasteTrailsEffect.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-        }
-
-        //called by id
-        public const int M_StartImmaterial = 4;
-        private void StartImmaterial()
-        {
-            immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
-            Immaterial.RecTransparentOn(transform);
-        }
-
-        //called by id
-        public const int M_StopImmaterial = 5;
-        private void StopImmaterial()
-        {
-            immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
-            Immaterial.RecTransparentOff(transform);
-        }
-
-        protected override bool CallById(int methdodId, float f)
-        {
-            if (base.CallById(methdodId, f))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_HasteTrailsLength: HasteTrailsLength(f); return true;
-                case M_SetHPReduced: SetHPReduced(f); return true;
-            }
-
-            return false;
-        }
-
-        //called by id
-        public const int M_HasteTrailsLength = 200;
-        private void HasteTrailsLength(float length)
-        {
-            hasteTrailsEffectMain.startLifetime = length;
-        }
-
-        // Called by id
-        public const int M_SetHPReduced = 201;
-        private void SetHPReduced(float hp)
-        {
-            flashEffect.Flash();
-            currentHP = hp;
         }
     }
 }

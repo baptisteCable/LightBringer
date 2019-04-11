@@ -1,11 +1,9 @@
-﻿using LightBringer.Networking;
-using UnityEngine;
-using UnityEngine.Networking;
+﻿using UnityEngine;
 
 namespace LightBringer.Player
 {
     [RequireComponent(typeof(PlayerMotor))]
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : MonoBehaviour
     {
         // Input const
         public const int IN_NONE = -1;
@@ -22,7 +20,6 @@ namespace LightBringer.Player
         private string[] inputButtons;
 
         // Queue and pressed button
-        private int oldPressedButton = IN_CANCEL;
         [HideInInspector] public int queue = IN_CANCEL;
         [HideInInspector] public int pressedButton = IN_CANCEL;
 
@@ -30,11 +27,7 @@ namespace LightBringer.Player
         [HideInInspector] public Vector2 desiredMove;
         [HideInInspector] public Vector3 pointedWorldPoint;
 
-        private Vector2 localMove;
-
         public Camera cam;
-
-        private float lastSyncTime = 0;
 
         // Components
         private PlayerMotor pm;
@@ -59,13 +52,7 @@ namespace LightBringer.Player
 
         private void Update()
         {
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-
             ComputePointedWorldPoint();
-            SendPointedWorldPointToServer();
             DesiredMove();
             AbilityInputAndQueue();
         }
@@ -87,27 +74,10 @@ namespace LightBringer.Player
                 }
             }
 
-            // If new data, send to server
-            if (queue != IN_NONE)
+            // Clear queue if CD not up
+            if (queue != IN_NONE && queue < pm.abilities.Length && pm.abilities[queue].state != Abilities.AbilityState.cooldownUp)
             {
-                if (isServer)
-                {
-                    if (queue < pm.abilities.Length && pm.abilities[queue].state != Abilities.AbilityState.cooldownUp)
-                    {
-                        queue = IN_NONE;
-                    }
-                }
-                else
-                {
-                    CmdSendQueue(queue);
-                    queue = IN_NONE;
-                }
-            }
-
-            if (oldPressedButton != pressedButton)
-            {
-                CmdSendPressedButton(pressedButton);
-                oldPressedButton = pressedButton;
+                queue = IN_NONE;
             }
         }
 
@@ -131,10 +101,6 @@ namespace LightBringer.Player
             if (move != desiredMove)
             {
                 desiredMove = move;
-                if (!isServer)
-                {
-                    CmdSetDesiredMove(move);
-                }
             }
         }
 
@@ -152,49 +118,6 @@ namespace LightBringer.Player
                 {
                     pointedWorldPoint = mouseRay.GetPoint(distance);
                 }
-            }
-        }
-
-        [Command]
-        void CmdSendQueue(int queueValue)
-        {
-            if (!isLocalPlayer)
-            {
-                queue = queueValue;
-            }
-        }
-
-        [Command]
-        void CmdSendPressedButton(int pressedButtonValue)
-        {
-            if (!isLocalPlayer)
-            {
-                pressedButton = pressedButtonValue;
-            }
-        }
-
-        [Command]
-        private void CmdSetDesiredMove(Vector2 move)
-        {
-            desiredMove = move;
-        }
-
-        void SendPointedWorldPointToServer()
-        {
-            if (isLocalPlayer && !isServer && NetworkSynchronization.singleton != null
-                && Time.time > lastSyncTime + NetworkSynchronization.singleton.syncInterval - .0001f)
-            {
-                CmdSendPointedWorldPointToServer(pointedWorldPoint);
-                lastSyncTime = Time.time;
-            }
-        }
-
-        [Command]
-        void CmdSendPointedWorldPointToServer(Vector3 point)
-        {
-            if (!isLocalPlayer)
-            {
-                pointedWorldPoint = point;
             }
         }
     }

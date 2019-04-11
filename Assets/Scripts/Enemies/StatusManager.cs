@@ -1,16 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using LightBringer.Effects;
-using LightBringer.Networking;
 using LightBringer.Player;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(Motor)), RequireComponent(typeof(FlashEffect))]
-    public class StatusManager : DelayedNetworkBehaviour2
+    public class StatusManager : MonoBehaviour
     {
         private const float DISPLAY_INTERVAL = .1f;
         private const float DISPLAY_DURATION = 1f;
@@ -20,7 +18,7 @@ namespace LightBringer.Enemies
         public float currentHP;
         public GameObject statusBarGO;
         public float displayHeight;
-        [SyncVar] public bool isDead = false;
+        public bool isDead = false;
 
         // Components
         private Motor motor;
@@ -65,19 +63,11 @@ namespace LightBringer.Enemies
 
         private void Update()
         {
-            if (isServer)
-            {
-                ApplyAllDamages();
-            }
+            ApplyAllDamages();
         }
 
         public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
         {
-            if (!isServer)
-            {
-                return;
-            }
-
             // If this damage id is already registered
             if (frameDamage.ContainsKey(id))
             {
@@ -121,14 +111,7 @@ namespace LightBringer.Enemies
                         newHP -= pair.Value.dmg.amount;
 
                         // add display only if local player, else send by message to client
-                        if (pair.Value.dealer.isLocalPlayer)
-                        {
-                            AddDamageToDisplay(pair.Value.dmg);
-                        }
-                        else
-                        {
-                            TargetAddDamageToDisplay(pair.Value.dealer.connectionToClient, pair.Value.dmg.ToMessage());
-                        }
+                        AddDamageToDisplay(pair.Value.dmg);
                     }
                 }
 
@@ -136,7 +119,12 @@ namespace LightBringer.Enemies
 
                 if (newHP < currentHP)
                 {
-                    CallForAll(M_SetHP, newHP);
+                    if (newHP < currentHP)
+                    {
+                        flashEffect.Flash();
+                    }
+
+                    currentHP = newHP;
                 }
 
                 if (currentHP <= 0)
@@ -146,12 +134,6 @@ namespace LightBringer.Enemies
                     Destroy(statusBarGO);
                 }
             }
-        }
-
-        [TargetRpc]
-        private void TargetAddDamageToDisplay(NetworkConnection target, DamageMessage message)
-        {
-            AddDamageToDisplay(Damage.FromMessage(message));
         }
 
         private void AddDamageToDisplay(Damage dmg)
@@ -197,53 +179,9 @@ namespace LightBringer.Enemies
             txt.material = DamageManager.dm.ElementMaterial(element);
         }
 
-        protected override bool CallById(int methdodId)
-        {
-            if (base.CallById(methdodId))
-            {
-                return true;
-            }
-            switch (methdodId)
-            {
-                case M_ShieldFlash: ShieldFlash(); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // Called by id
-        public const int M_ShieldFlash = 0;
-        private void ShieldFlash()
+        public void ShieldFlash()
         {
             shieldFlashEffect.Flash();
-        }
-
-        protected override bool CallById(int methdodId, float value)
-        {
-            if (base.CallById(methdodId, value))
-            {
-                return true;
-            }
-            switch (methdodId)
-            {
-                case M_SetHP: SetHP(value); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // Called by id
-        public const int M_SetHP = 200;
-        private void SetHP(float hp)
-        {
-            if (hp < currentHP)
-            {
-                flashEffect.Flash();
-            }
-
-            currentHP = hp;
         }
     }
 }

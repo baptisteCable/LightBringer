@@ -53,16 +53,24 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb2);
+            lightMotor.animator.Play("BotAb2");
+            lightMotor.animator.Play("TopAb2");
 
             LoadLight();
 
             encounteredCols = new List<Collider>();
 
             // Indicator
-            lightMotor.CallForAll(LightLongSwordMotor.M_Ab2DisplayIndicators);
+            DisplayIndicators();
 
             sphereAdded = false;
+        }
+        
+        private void DisplayIndicators()
+        {
+            GameObject indicator = GameObject.Instantiate(lightMotor.ab2IndicatorPrefab, playerMotor.characterContainer);
+            GameObject.Destroy(indicator, channelDuration);
+            indicators.Add(indicator);
         }
 
         private void LoadLight()
@@ -89,8 +97,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 if (closestZone != null)
                 {
-                    closestZone.CallForAll(LightZone.M_Absorb);
-                    lightMotor.CallForAll(LightLongSwordMotor.M_LoadSword);
+                    closestZone.Absorb();
+                    lightMotor.sword.Load();
                 }
             }
         }
@@ -109,12 +117,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             newCols = new Dictionary<Collider, float>();
 
             // Trail effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_TrailEffect);
+            lightMotor.sword.transform.Find("FxTrail").GetComponent<ParticleSystem>().Play();
         }
 
         public override void Cast()
         {
-
             // movement
             playerMotor.AbilityMove(playerMotor.characterContainer.forward * DASH_DISTANCE / ABILITY_DURATION);
 
@@ -143,7 +150,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             if (lightMotor.sword.isLoaded)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_UnloadSword);
+                lightMotor.sword.Unload();
             }
 
             playerMotor.SetMovementMode(MovementMode.Player);
@@ -190,7 +197,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 if (lightMotor.sword.isLoaded)
                 {
-                    lightMotor.CallForAll(LightLongSwordMotor.M_UnloadSword);
+                    lightMotor.sword.Unload();
                 }
             }
             else
@@ -231,7 +238,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 damageAmount = DAMAGE_LOADED;
 
                 // Effect
-                lightMotor.CallForAll(LightLongSwordMotor.M_LoadedImpactPE, impactPoint);
+                lightMotor.LoadedImpactPE(impactPoint);
 
                 // Load Ulti
                 LoadUlti();
@@ -242,7 +249,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
             // Effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
+            lightMotor.ImpactPE(impactPoint);
         }
 
         private void LoadUlti()
@@ -250,7 +257,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (!sphereAdded)
             {
                 sphereAdded = true;
-                lightMotor.CallForAll(LightLongSwordMotor.M_AddUltiSphere);
+                lightMotor.AddUltiSphere();
             }
         }
 

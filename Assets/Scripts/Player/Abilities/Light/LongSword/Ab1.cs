@@ -3,7 +3,6 @@ using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -85,15 +84,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // animation
             if (currentAttack == 1)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1a);
+                playerMotor.animator.Play("BotAb1a", -1, 0);
+                playerMotor.animator.Play("TopAb1a", -1, 0);
             }
             else if (currentAttack == 2)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1b);
+                playerMotor.animator.Play("BotAb1b");
+                playerMotor.animator.Play("TopAb1b");
             }
             else if (currentAttack == 3)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAnimAb1c);
+                playerMotor.animator.Play("BotAb1c");
+                playerMotor.animator.Play("TopAb1c");
             }
         }
 
@@ -126,11 +128,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_Ab1aSlash);
+                lightMotor.ab1aSlash.Play();
             }
             if (currentAttack == 2)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_Ab1bSlash);
+                lightMotor.ab1bSlash.Play();
             }
         }
 
@@ -160,10 +162,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
-            NetworkServer.Spawn(lightZone);
 
             // Particle effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_LightSpawnPE, pos);
+            lightMotor.LightSpawnPE(pos);
 
             // Damage zone (trigger)
             trigger = GameObject.Instantiate(lightMotor.lightSpawnTriggerPrefab, null);
@@ -285,7 +286,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
             // Particle effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
+            lightMotor.ImpactPE(impactPoint);
         }
 
         private void ApplyDamageC()

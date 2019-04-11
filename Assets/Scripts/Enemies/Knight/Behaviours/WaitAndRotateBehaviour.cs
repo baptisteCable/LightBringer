@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class WaitAndRotateBehaviour : Behaviour
+    public class WaitAndRotateBehaviour : EnemyBehaviour
     {
         private Transform target;
         private float duration;

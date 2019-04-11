@@ -2,11 +2,10 @@
 using LightBringer.Abilities;
 using LightBringer.Player;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class Attack2Behaviour : Behaviour, CollisionAbility
+    public class Attack2Behaviour : EnemyBehaviour, CollisionAbility
     {
         private const float DURATION = 4.133f;
         private const float RANGE = 30f;
@@ -31,6 +30,8 @@ namespace LightBringer.Enemies.Knight
 
         private Transform target;
 
+        private GameObject bullet;
+
         public Attack2Behaviour(KnightMotor enemyMotor, Transform target) : base(enemyMotor)
         {
             this.target = target;
@@ -41,7 +42,7 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.CallForAll(KnightMotor.M_AnimAttack2);
+            em.anim.Play("Attack2");
 
             em.SetOverrideAgent(true);
 
@@ -64,13 +65,18 @@ namespace LightBringer.Enemies.Knight
 
         protected override void StartPart(int i)
         {
-            em.CallForAll(KnightMotor.M_InitBullet);
+            bullet = GameObject.Instantiate(km.bulletPrefab, em.transform, false);
+            bullet.transform.localPosition = new Vector3(1.68f, 14.4f, .34f);
+            bullet.transform.SetParent(null, true);
             base.StartPart(i);
         }
 
         protected override void EndPart(int i)
         {
-            em.CallForAll(KnightMotor.M_FireBullet);
+            Rigidbody rb = bullet.GetComponent<Rigidbody>();
+            rb.AddForce(Vector3.up * 30f, ForceMode.Impulse);
+            GameObject.Destroy(bullet, .5f);
+
             InstanciateCaster(em.transform, ENEMY_RAIN_RANGE, ENEMY_RAIN_RADIUS);
             InstanciateCaster(target.transform, TARGET_RAIN_RANGE, TARGET_RAIN_RADIUS);
 
@@ -80,7 +86,6 @@ namespace LightBringer.Enemies.Knight
         private void InstanciateCaster(Transform parentTransform, float range, float radius)
         {
             GameObject caster = GameObject.Instantiate(km.casterPrefab, parentTransform);
-            NetworkServer.Spawn(caster);
             caster.transform.localPosition = Vector3.zero;
             Attack2Caster a2c = caster.GetComponent<Attack2Caster>();
             a2c.ability = this;

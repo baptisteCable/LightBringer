@@ -2,7 +2,7 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    public class LoseTargetBehaviour : Behaviour
+    public class LoseTargetBehaviour : EnemyBehaviour
     {
         private const float DURATION = 2f;
         private const float TARGET_LOSE_TIME = 1f;
@@ -20,7 +20,7 @@ namespace LightBringer.Enemies.Knight
                 lost = true;
                 ((KnightController)em.controller).target = null;
                 ((KnightController)em.controller).targetModificationTime = Time.time;
-                em.CallForAll(KnightMotor.M_HeadNoTarget);
+                em.head.NoTarget();
             }
 
             if (Time.time > startTime + DURATION)

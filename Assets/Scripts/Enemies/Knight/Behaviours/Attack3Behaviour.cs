@@ -35,8 +35,8 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.CallForAll(KnightMotor.M_AnimAttack3);
-            
+            em.anim.Play("Attack3");
+
             acts = new AbilityColliderTrigger[2];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
             acts[1] = actGOs[1].GetComponent<AbilityColliderTrigger>();

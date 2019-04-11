@@ -10,7 +10,7 @@ namespace LightBringer.Enemies.Knight
         {
             if (dmg.type == DamageType.Melee)
             {
-                statusManager.CallForAll(StatusManager.M_ShieldFlash);
+                statusManager.ShieldFlash();
             }
         }
     }

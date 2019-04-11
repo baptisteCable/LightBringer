@@ -3,7 +3,6 @@ using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
@@ -50,15 +49,18 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             base.StartChanneling();
             playerMotor.abilityMoveMultiplicator = CHANNELING_MOVE_MULTIPLICATOR;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbUlt);
+            lightMotor.animator.Play("BotUlt");
+            lightMotor.animator.Play("TopUlt");
 
             encounteredCols = new Dictionary<Collider, Vector3>();
 
             // Indicator
-            lightMotor.CallForAll(LightLongSwordMotor.M_AbUltDisplayIndicators);
+            GameObject indicator = GameObject.Instantiate(lightMotor.abOffIndicatorPrefab, lightMotor.characterContainer);
+            GameObject.Destroy(indicator, channelDuration);
+            indicators.Add(indicator);
 
             // Loading Sword animation
-            lightMotor.CallForAll(LightLongSwordMotor.M_LoadSwordWithSpheres);
+            lightMotor.LoadSwordWithSpheres();
 
             // Action Time bool
             swordLoaded = false;
@@ -71,7 +73,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (Time.time > channelStartTime + SWORD_LOADED_TIME && !swordLoaded)
             {
                 swordLoaded = true;
-                lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOn);
+                lightMotor.UltLoadedEffectOn();
             }
         }
 
@@ -102,11 +104,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             bool spheresConsumed = ApplyAllDamage();
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
+            lightMotor.UltLoadedEffectOff();
 
             if (!spheresConsumed)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
+                lightMotor.CancelLoadSwordWithSpheres();
             }
 
             if (trigger != null)
@@ -175,17 +177,16 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             // Spawn Ulti Extra damage taker
             ApplyEffect(col);
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
+            lightMotor.ImpactPE(impactPoint);
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_ConsumeAllSpheres);
+            lightMotor.ConsumeAllSpheres();
         }
 
         private void ApplyEffect(Collider col)
         {
             // TODO See what happens when monster no capsule-shaped or multi-part
             GameObject ultiDTContainer = GameObject.Instantiate(lightMotor.ultiDTprefab);
-            NetworkServer.Spawn(ultiDTContainer);
-
+            
             ultiDTContainer.GetComponent<UltMotor>().anchor = col.transform;
             ultiDTContainer.GetComponent<UltDamageTaker>().enabled = true;
             ultiDTContainer.GetComponent<UltDamageTaker>().statusManager = col.GetComponent<DamageTaker>().statusManager;
@@ -194,9 +195,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public override void AbortChanelling()
         {
             base.AbortChanelling();
-            
-            lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
-            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
+
+            lightMotor.CancelLoadSwordWithSpheres();
+            lightMotor.UltLoadedEffectOff();
         }
 
         public override void AbortCasting()
@@ -208,8 +209,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 GameObject.Destroy(trigger);
             }
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_CancelLoadSwordWithSpheres);
-            lightMotor.CallForAll(LightLongSwordMotor.M_UltLoadedEffectOff);
+            lightMotor.CancelLoadSwordWithSpheres();
+            lightMotor.UltLoadedEffectOff();
         }
 
         public override void OnCollision(AbilityColliderTrigger act, Collider col)

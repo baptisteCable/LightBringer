@@ -1,11 +1,10 @@
-﻿using LightBringer.Networking;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light
 {
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(Animator))]
-    public class LightZone : DelayedNetworkBehaviour
+    public class LightZone : MonoBehaviour
     {
         private const float DURATION = 8f;
 
@@ -18,18 +17,17 @@ namespace LightBringer.Player.Abilities.Light
 
         void Start()
         {
-            if (isServer)
-            {
-                destructionTime = Time.time + DURATION;
-                CallForAll(M_GrowUp);
-            }
+            destructionTime = Time.time + DURATION;
+            GetComponent<Animator>().Play("GrowUp");
+            pointLight.SetActive(true);
         }
 
         void Update()
         {
-            if (isServer && Time.time > destructionTime && !destructionPlanned)
+            if (Time.time > destructionTime && !destructionPlanned)
             {
-                CallForAll(M_SelfDestroy);
+                GetComponent<Animator>().Play("SelfDestroy");
+                DestroyLZ();
             }
         }
 
@@ -43,43 +41,7 @@ namespace LightBringer.Player.Abilities.Light
             destructionPlanned = true;
         }
 
-        protected override bool CallById(int methdodId)
-        {
-            if (base.CallById(methdodId))
-            {
-                return true;
-            }
-
-            switch (methdodId)
-            {
-                case M_GrowUp: GrowUp(); return true;
-                case M_SelfDestroy: SelfDestroy(); return true;
-                case M_Absorb: Absorb(); return true;
-            }
-
-            Debug.LogError("No such method Id: " + methdodId);
-            return false;
-        }
-
-        // called by id
-        public const int M_GrowUp = 0;
-        private void GrowUp()
-        {
-            GetComponent<Animator>().Play("GrowUp");
-            pointLight.SetActive(true);
-        }
-
-        // called by id
-        public const int M_SelfDestroy = 1;
-        private void SelfDestroy()
-        {
-            GetComponent<Animator>().Play("SelfDestroy");
-            DestroyLZ();
-        }
-
-        // called by id
-        public const int M_Absorb = 2;
-        private void Absorb()
+        public void Absorb()
         {
             GetComponent<Animator>().Play("Absorb");
             DestroyLZ();

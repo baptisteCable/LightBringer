@@ -19,7 +19,7 @@ namespace LightBringer.Enemies.Knight
         private NavMeshAgent agent;
 
         // Behaviours
-        private Behaviour currentBehaviour;
+        private EnemyBehaviour currentBehaviour;
         private bool readyForNext = true;
         public bool passive = false;
 
@@ -75,7 +75,7 @@ namespace LightBringer.Enemies.Knight
                 if (readyForNext)
                 {
                     // Create the list of possible behaviours, depending on the situation
-                    Dictionary<Behaviour, float> list = ComputeBehaviourList();
+                    Dictionary<EnemyBehaviour, float> list = ComputeBehaviourList();
 
                     // Determine next behaviour from list
                     ActivateNextBehaviourFromDictionary(list);
@@ -106,9 +106,9 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private Dictionary<Behaviour, float> ComputeBehaviourList()
+        private Dictionary<EnemyBehaviour, float> ComputeBehaviourList()
         {
-            Dictionary<Behaviour, float> list = new Dictionary<Behaviour, float>();
+            Dictionary<EnemyBehaviour, float> list = new Dictionary<EnemyBehaviour, float>();
             float weight = 0;
 
             // Passive case
@@ -216,7 +216,7 @@ namespace LightBringer.Enemies.Knight
             return list;
         }
 
-        private void ActivateNextBehaviourFromDictionary(Dictionary<Behaviour, float> list)
+        private void ActivateNextBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> list)
         {
             currentBehaviour = null;
 
@@ -232,7 +232,7 @@ namespace LightBringer.Enemies.Knight
             float rnd = Random.value;
             float sum = 0;
 
-            Dictionary<Behaviour, float>.Enumerator en = list.GetEnumerator();
+            Dictionary<EnemyBehaviour, float>.Enumerator en = list.GetEnumerator();
             while (currentBehaviour == null)
             {
                 sum += en.Current.Value;
@@ -247,7 +247,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void SetBehaviour(Behaviour behaviour)
+        private void SetBehaviour(EnemyBehaviour behaviour)
         {
             if (behaviour.GetType() == typeof(Attack1Behaviour))
             {
@@ -268,23 +268,23 @@ namespace LightBringer.Enemies.Knight
             currentBehaviour.Init();
         }
 
-        private static Dictionary<Behaviour, float> NormalizedDictionary(Dictionary<Behaviour, float> list)
+        private static Dictionary<EnemyBehaviour, float> NormalizedDictionary(Dictionary<EnemyBehaviour, float> list)
         {
             float sum = 0;
 
-            foreach (KeyValuePair<Behaviour, float> pair in list)
+            foreach (KeyValuePair<EnemyBehaviour, float> pair in list)
             {
                 sum += pair.Value;
             }
 
             if (sum < .0001f)
             {
-                return new Dictionary<Behaviour, float>();
+                return new Dictionary<EnemyBehaviour, float>();
             }
 
-            Dictionary<Behaviour, float> normalized = new Dictionary<Behaviour, float>();
+            Dictionary<EnemyBehaviour, float> normalized = new Dictionary<EnemyBehaviour, float>();
 
-            foreach (KeyValuePair<Behaviour, float> pair in list)
+            foreach (KeyValuePair<EnemyBehaviour, float> pair in list)
             {
                 normalized.Add(pair.Key, pair.Value / sum);
             }

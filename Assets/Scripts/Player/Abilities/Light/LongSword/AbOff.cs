@@ -61,10 +61,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             if (!vanished)
             {
                 currentAttack = 1;
-                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbOffaAndChangeChannelDuration);
+                lightMotor.animator.Play("BotAbOffa");
+                lightMotor.animator.Play("TopAbOffa");
+                channelDuration = CHANNELING_DURATION_A;
 
                 // Indicator
-                lightMotor.CallForAll(LightLongSwordMotor.M_AbOffDisplayIndicators);
+                GameObject indicator = GameObject.Instantiate(lightMotor.abOffIndicatorPrefab, lightMotor.characterContainer);
+                GameObject.Destroy(indicator, AbOff.CHANNELING_DURATION_A);
+                indicators.Add(indicator);                
             }
             else
             {
@@ -73,7 +77,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 // No more rotation
                 playerMotor.abilityMaxRotation = 0f;
 
-                lightMotor.CallForAll(LightLongSwordMotor.M_PlayAbOffbAndChangeChannelDuration);
+                lightMotor.animator.Play("BotAbOffb");
+                lightMotor.animator.Play("TopAbOffb");
+                channelDuration = AbOff.CHANNELING_DURATION_B;
 
                 FadeIn();
             }
@@ -97,11 +103,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             if (currentAttack == 1)
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_AbOffaSlash);
+                lightMotor.abOffaSlash.Play();
             }
             else
             {
-                lightMotor.CallForAll(LightLongSwordMotor.M_AbOffbSlash);
+                lightMotor.abOffbSlash.Play();
             }
         }
 
@@ -112,7 +118,21 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.transform.position = spawnPoint.position;
             playerMotor.characterContainer.rotation = spawnPoint.rotation;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_FadeIn, playerMotor.transform.position);
+            // Effect
+            Vector3 pos = playerMotor.transform.position;
+
+            GameObject effect = GameObject.Instantiate(lightMotor.fadeInEffetPrefab);
+            effect.transform.position = pos;
+            GameObject.Destroy(effect, .3f);
+            GameObject lightColumn = GameObject.Instantiate(lightMotor.lightColumnPrefab);
+            lightColumn.transform.position = pos;
+            GameObject.Destroy(lightColumn, .5f);
+
+            // Long cooldown
+            coolDownDuration = AbOff.COOLDOWN_DURATION_A;
+
+            // unlock other abilities
+            playerMotor.LockAbilitiesExcept(false, this);
 
             // Reset state
             playerMotor.psm.isTargetable = true;
@@ -128,7 +148,20 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             Transform enemyTransform = col.GetComponent<DamageTaker>().statusManager.transform;
             spawnPoint = enemyTransform.GetComponent<BackSpawn>().backSpawPoint;
 
-            lightMotor.CallForAll(LightLongSwordMotor.M_FadeOut, playerMotor.transform.position);
+            // effect
+            Vector3 pos = playerMotor.transform.position;
+            GameObject effect = GameObject.Instantiate(lightMotor.fadeOutEffetPrefab);
+            effect.transform.position = pos;
+            GameObject.Destroy(effect, .2f);
+            GameObject lightColumn = GameObject.Instantiate(lightMotor.lightColumnPrefab);
+            lightColumn.transform.position = pos;
+            GameObject.Destroy(lightColumn, .5f);
+
+            // Lock other abilities
+            playerMotor.LockAbilitiesExcept(true, this);
+
+            // short CD and set fadeIn time
+            coolDownDuration = AbOff.COOLDOWN_DURATION_B;
 
             // Anchor character
             playerMotor.MergeWith(enemyTransform);
@@ -220,7 +253,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, origin, id);
 
             // Impact effect
-            lightMotor.CallForAll(LightLongSwordMotor.M_ImpactPE, impactPoint);
+            lightMotor.ImpactPE(impactPoint);
         }
 
         public override void AbortCasting()
