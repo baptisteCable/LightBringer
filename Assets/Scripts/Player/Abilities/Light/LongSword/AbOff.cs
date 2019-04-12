@@ -268,7 +268,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             FadeIn();
         }
 
-        public override void OnCollision(AbilityColliderTrigger act, Collider col)
+        public override void OnColliderEnter(AbilityColliderTrigger act, Collider col)
         {
             if ((col.tag == "Enemy") && col.GetComponent<DamageTaker>() != null && !encounteredCols.ContainsKey(col))
             {

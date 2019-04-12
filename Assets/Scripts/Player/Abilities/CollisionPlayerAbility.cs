@@ -11,6 +11,10 @@ namespace LightBringer.Player.Abilities
         {
         }
 
-        public abstract void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+        public abstract void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+
+        public virtual void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
+        }
     }
 }

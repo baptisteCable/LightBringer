@@ -32,7 +32,12 @@ namespace LightBringer.Abilities
 
         private void OnTriggerEnter(Collider other)
         {
-            currentAbility.OnCollision(this, other);
+            currentAbility.OnColliderEnter(this, other);
+        }
+
+        private void OnTriggerStay(Collider other)
+        {
+            currentAbility.OnColliderStay(this, other);
         }
 
         private void Prepare()

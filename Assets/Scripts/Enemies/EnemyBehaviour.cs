@@ -6,8 +6,6 @@ namespace LightBringer.Enemies
     {
         private const float INDICATOR_DISPLAY_TIME = .5f;
 
-        public abstract bool isAction { get; }
-
         protected Motor em;
         public bool complete = false;
         public float startTime;
@@ -155,9 +153,9 @@ namespace LightBringer.Enemies
             return parts[part].state == State.InProgress && Time.time >= startTime + parts[part].startTime + parts[part].duration;
         }
 
-        protected virtual void EndPart(int i)
+        protected virtual void EndPart(int part)
         {
-            parts[i].state = State.Terminated;
+            parts[part].state = State.Terminated;
         }
     }
 }

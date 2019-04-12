@@ -120,7 +120,8 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
-            dic.Add(new Attack1Behaviour(km, target, km.attack1act1GO, km.attack1act2GO, km.attack1act3GO), weight);
+            weight = 10000; // Debug
+            dic.Add(new Attack1Behaviour(km, target, km.attack1actGO, km.attack1Container), weight);
 
             // Attack 2 behaviour
             weight = 0f;
@@ -191,14 +192,15 @@ namespace LightBringer.Enemies.Knight
             float weight;
 
             // Wait behaviour
-            if ((target.position - motor.transform.position).magnitude < 10)
+            if ((target.position - motor.transform.position).magnitude < 15f)
             {
                 weight = 1f;
             }
             else
             {
-                weight = .2f;
+                weight = .1f;
             }
+            weight = 10000; // Debug
             dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
 
             // Go to position

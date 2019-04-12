@@ -4,8 +4,6 @@ namespace LightBringer.Enemies.Knight
 {
     public class GoToPointBehaviour : EnemyBehaviour
     {
-        public override bool isAction { get { return false; } }
-        
         Vector3 target;
 
         public GoToPointBehaviour(KnightMotor enemyMotor, Vector3 target) : base(enemyMotor)

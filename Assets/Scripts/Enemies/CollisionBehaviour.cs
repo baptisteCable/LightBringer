@@ -6,21 +6,8 @@ namespace LightBringer.Enemies
 {
     public abstract class CollisionBehaviour : EnemyBehaviour, CollisionAbility
     {
-        private const float INDICATOR_DISPLAY_TIME = .5f;
-        private const float DURATION = 2.9f;
-        private const float CHARGE_RANGE = 20f;
-
-        private const float DMG_CHECKPOINT_1_START = 60f / 60f;
-        private const float DMG_CHECKPOINT_1_END = 63f / 60f;
-        private const float POS_CHECKPOINT_1_START = 72f / 60f;
-        private const float POS_CHECKPOINT_1_END = 80f / 60f;
-        private const float DMG_CHECKPOINT_2_START = 90f / 60f;
-        private const float DMG_CHECKPOINT_2_END = 92f / 60f;
-        private const float DMG_CHECKPOINT_3_START = 110f / 60f;
-        private const float DMG_CHECKPOINT_3_END = 152f / 60f;
-
         // Collider list
-        protected List<Collider> cols;
+        protected Dictionary<Collider, float> cols;
 
         // Colliders GO
         public GameObject[] actGOs;
@@ -50,7 +37,7 @@ namespace LightBringer.Enemies
             StartPart(i);
             actGOs[i].SetActive(true);
             acts[i].SetAbility(this);
-            cols = new List<Collider>();
+            cols = new Dictionary<Collider, float>();
         }
 
         protected virtual void RunCollisionParts()
@@ -79,6 +66,22 @@ namespace LightBringer.Enemies
             acts[i].UnsetAbility();
         }
 
-        public abstract void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+        public override void Abort()
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                actGOs[i].SetActive(false);
+                acts[i].UnsetAbility();
+            }
+
+            base.Abort();
+        }
+
+        public abstract void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+
+        public virtual void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
+        }
+
     }
 }

@@ -4,6 +4,8 @@ namespace LightBringer.Abilities
 {
     public interface CollisionAbility
     {
-        void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+        void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+
+        void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col);
     }
 }

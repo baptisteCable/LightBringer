@@ -10,10 +10,8 @@ namespace LightBringer.Enemies.Knight
         public GameObject casterPrefab;
 
         [Header("Game Objects")]
-        // Colliders GO
-        public GameObject attack1act1GO;
-        public GameObject attack1act2GO;
-        public GameObject attack1act3GO;
+        public GameObject attack1actGO;
+        public GameObject attack1Container;
         public GameObject attack3act1GO;
         public GameObject attack3act2GO;
         public GameObject shieldCollider;
@@ -26,9 +24,7 @@ namespace LightBringer.Enemies.Knight
             BaseStart();
 
             // Colliders
-            attack1act1GO.SetActive(false);
-            attack1act2GO.SetActive(false);
-            attack1act3GO.SetActive(false);
+            attack1actGO.SetActive(false);
             attack3act1GO.SetActive(false);
             attack3act2GO.SetActive(false);
 

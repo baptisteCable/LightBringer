@@ -15,8 +15,6 @@ namespace LightBringer.Enemies.Knight
         private const float ENEMY_RAIN_RADIUS = 1.5f;
         private const float TARGET_RAIN_RADIUS = 1f;
 
-        public override bool isAction { get { return true; } }
-
         private KnightMotor km;
 
         private const float LOAD_1 = 59f / 60f;
@@ -101,7 +99,7 @@ namespace LightBringer.Enemies.Knight
             em.SetOverrideAgent(false);
         }
 
-        public void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             if (col.tag == "Player")
             {
@@ -112,6 +110,10 @@ namespace LightBringer.Enemies.Knight
                     psm.TakeDamage(dmg, em);
                 }
             }
+        }
+
+        public void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
         }
     }
 }

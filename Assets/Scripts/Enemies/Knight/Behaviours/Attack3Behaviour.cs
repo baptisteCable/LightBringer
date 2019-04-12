@@ -17,8 +17,6 @@ namespace LightBringer.Enemies.Knight
         private const float SHIELD_DMG_START = 76f / 60f;
         private const float SHIELD_DMG_STOP = 96f / 60f;
 
-        public override bool isAction { get { return true; } }
-
         // Shield collider to disable
         private GameObject shieldCollider;
 
@@ -29,8 +27,8 @@ namespace LightBringer.Enemies.Knight
             actGOs[1] = attack3act2GO;
             this.shieldCollider = shieldCollider;
             parts = new Part[2];
-            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, 3);
-            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, 4);
+            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, 1);
+            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, 2);
         }
 
         public override void Init()
@@ -73,7 +71,7 @@ namespace LightBringer.Enemies.Knight
             em.SetOverrideAgent(false);
         }
 
-        public override void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             if (col.tag == "Player")
             {

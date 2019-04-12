@@ -6,47 +6,37 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 2.9f;
-        private const float CHARGE_RANGE = 20f;
+        private const float DURATION = 3.1f;
+        private const float RAY_DAMAGE = 15f;
 
-        private const float DMG_CHECKPOINT_1_START = 60f / 60f;
-        private const float DMG_CHECKPOINT_1_END = 63f / 60f;
-        private const float POS_CHECKPOINT_1_START = 72f / 60f;
-        private const float POS_CHECKPOINT_1_END = 80f / 60f;
-        private const float DMG_CHECKPOINT_2_START = 90f / 60f;
-        private const float DMG_CHECKPOINT_2_END = 92f / 60f;
-        private const float DMG_CHECKPOINT_3_START = 110f / 60f;
-        private const float DMG_CHECKPOINT_3_END = 152f / 60f;
+        private const float DMG_START = 60f / 60f;
+        private const float DMG_DURATION = 120f / 60f;
+        private const float CONE_ANGLE = 60f;
+        private const float TIME_BETWEEN_TICKS = .2f;
+        
+        private Vector3 targetPosition;
 
-        public override bool isAction { get { return true; } }
+        private Transform attackContainer;
+        private GameObject attackRenderer;
 
-        float stopDist;
-        Transform target;
-
-        private KnightMotor km;
-
-        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO,
-            GameObject attack1act2GO, GameObject attack1act3GO) : base(enemyMotor)
+        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO, GameObject attack1Container) : base(enemyMotor)
         {
-            this.target = target;
-            actGOs = new GameObject[3];
+            targetPosition = target.position;
+            actGOs = new GameObject[1];
             actGOs[0] = attack1act1GO;
-            actGOs[1] = attack1act2GO;
-            actGOs[2] = attack1act3GO;
-            parts = new Part[3];
-            parts[0] = new Part(State.Before, DMG_CHECKPOINT_1_START, DMG_CHECKPOINT_1_END - DMG_CHECKPOINT_1_START, 0);
-            parts[1] = new Part(State.Before, DMG_CHECKPOINT_2_START, DMG_CHECKPOINT_2_END - DMG_CHECKPOINT_2_START, 1);
-            parts[2] = new Part(State.Before, DMG_CHECKPOINT_3_START, DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START, 2);
-            km = enemyMotor;
+            parts = new Part[1];
+            parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, 0);
+            attackContainer = attack1Container.transform;
+            attackRenderer = attackContainer.Find("Renderer").gameObject;
         }
 
         public override void Init()
         {
             base.Init();
 
-            em.anim.Play("Attack1", -1, 0);
+            // em.anim.Play("Attack1", -1, 0);
 
-            acts = new AbilityColliderTrigger[3];
+            acts = new AbilityColliderTrigger[1];
             for (int i = 0; i < actGOs.Length; i++)
             {
                 acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger>();
@@ -59,11 +49,10 @@ namespace LightBringer.Enemies.Knight
             StartCollisionParts();
             RunCollisionParts();
 
-            // Rotate at some times
-            if (Time.time <= startTime + DMG_CHECKPOINT_1_START ||
-                (Time.time >= startTime + POS_CHECKPOINT_1_START && Time.time <= startTime + POS_CHECKPOINT_1_END))
+            // Rotate at the beginning
+            if (Time.time <= startTime + DMG_START)
             {
-                em.RotateTowards(target.position);
+                em.RotateTowards(targetPosition);
             }
 
             if (Time.time > startTime + DURATION)
@@ -72,25 +61,38 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        protected override void StartCollisionPart(int i)
+        protected override void StartCollisionPart(int part)
         {
-            if (i == 2)
+            if (part == 0)
             {
-                // Effect
-                km.chargeEffect.GetComponent<ParticleSystem>().Play();
+                // Activate ray
+                attackRenderer.SetActive(true);
             }
 
-            base.StartCollisionPart(i);
+            base.StartCollisionPart(part);
         }
 
         protected override void RunCollisionPart(int part)
         {
-            if (part == 2)
+            if (part == 0)
             {
-                em.Move(em.transform.forward * CHARGE_RANGE / (DMG_CHECKPOINT_3_END - DMG_CHECKPOINT_3_START));
+                // move Ray container
+                float angle = -CONE_ANGLE / 2 + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
+                attackContainer.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
             }
 
             base.RunCollisionPart(part);
+        }
+
+        protected override void EndPart(int part)
+        {
+            if (part == 0)
+            {
+                // Disactivate ray
+                attackRenderer.SetActive(false);
+            }
+
+            base.EndPart(part);
         }
 
         public override void End()
@@ -99,25 +101,42 @@ namespace LightBringer.Enemies.Knight
             em.SetOverrideAgent(false);
         }
 
-        public override void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
-            if (col.tag == "Player" && !cols.Contains(col))
+            OnCollision(abilityColliderTrigger, col);
+        }
+
+        public override void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
+            OnCollision(abilityColliderTrigger, col);
+        }
+
+        private void OnCollision(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
+            if (col.tag == "Player")
             {
-                cols.Add(col);
-
-                if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                if (cols.ContainsKey(col))
                 {
-                    ApplyPart0Damage(col);
+                    if (cols[col] + TIME_BETWEEN_TICKS < Time.time)
+                    {
+                        cols[col] = Time.time;
+
+                        // Damage
+                        if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                        {
+                            ApplyPart0Damage(col);
+                        }
+                    }
                 }
-
-                if (abilityColliderTrigger == actGOs[1].GetComponent<AbilityColliderTrigger>())
+                else
                 {
-                    ApplyPart1Damage(col);
-                }
+                    cols.Add(col, Time.time);
 
-                if (abilityColliderTrigger == actGOs[2].GetComponent<AbilityColliderTrigger>())
-                {
-                    ApplyPart2Damage(col);
+                    // Damage
+                    if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                    {
+                        ApplyPart0Damage(col);
+                    }
                 }
             }
         }
@@ -125,34 +144,18 @@ namespace LightBringer.Enemies.Knight
         private void ApplyPart0Damage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(15f, DamageType.Melee, DamageElement.Physical);
+            Damage dmg = new Damage(RAY_DAMAGE, DamageType.Melee, DamageElement.Physical);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
             }
-
         }
 
-        private void ApplyPart1Damage(Collider col)
+        public override void Abort()
         {
-            PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(5f, DamageType.AreaOfEffect, DamageElement.Physical);
-            if (psm.IsAffectedBy(dmg, em, em.transform.position))
-            {
-                psm.TakeDamage(dmg, em);
-                psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), 1f);
-            }
-        }
+            attackRenderer.SetActive(false);
 
-        private void ApplyPart2Damage(Collider col)
-        {
-            PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(25f, DamageType.Melee, DamageElement.Physical);
-            if (psm.IsAffectedBy(dmg, em, em.transform.position))
-            {
-                psm.TakeDamage(dmg, em);
-                psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), 1f);
-            }
+            base.Abort();
         }
     }
 }
