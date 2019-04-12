@@ -4,6 +4,8 @@ namespace LightBringer.Enemies.Knight
 {
     public class WaitBehaviour : EnemyBehaviour
     {
+        public override bool isAction { get { return false; } }
+
         private float duration;
 
         public WaitBehaviour(KnightMotor enemyMotor, float duration) : base(enemyMotor)

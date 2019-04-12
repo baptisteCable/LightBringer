@@ -18,6 +18,8 @@ namespace LightBringer.Enemies.Knight
         private const float DMG_CHECKPOINT_3_START = 110f / 60f;
         private const float DMG_CHECKPOINT_3_END = 152f / 60f;
 
+        public override bool isAction { get { return true; } }
+
         float stopDist;
         Transform target;
 
@@ -42,7 +44,7 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.Play("Attack1");
+            em.anim.Play("Attack1", -1, 0);
 
             acts = new AbilityColliderTrigger[3];
             for (int i = 0; i < actGOs.Length; i++)

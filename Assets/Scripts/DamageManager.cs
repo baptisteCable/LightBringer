@@ -1,5 +1,4 @@
-﻿using LightBringer;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace LightBringer
 {

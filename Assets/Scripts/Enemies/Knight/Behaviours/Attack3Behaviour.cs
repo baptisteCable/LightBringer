@@ -17,6 +17,8 @@ namespace LightBringer.Enemies.Knight
         private const float SHIELD_DMG_START = 76f / 60f;
         private const float SHIELD_DMG_STOP = 96f / 60f;
 
+        public override bool isAction { get { return true; } }
+
         // Shield collider to disable
         private GameObject shieldCollider;
 
@@ -35,7 +37,7 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.Play("Attack3");
+            em.anim.Play("Attack3", -1, 0);
 
             acts = new AbilityColliderTrigger[2];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();

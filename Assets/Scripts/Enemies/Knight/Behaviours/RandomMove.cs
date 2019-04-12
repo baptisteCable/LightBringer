@@ -4,6 +4,8 @@ namespace LightBringer.Enemies.Knight
 {
     public class RandomMove : EnemyBehaviour
     {
+        public override bool isAction { get { return false; } }
+
         private Transform target;
 
         public RandomMove(KnightMotor enemyMotor, Transform target) : base(enemyMotor)

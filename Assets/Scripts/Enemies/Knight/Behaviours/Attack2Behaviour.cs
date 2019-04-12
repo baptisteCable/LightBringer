@@ -15,6 +15,8 @@ namespace LightBringer.Enemies.Knight
         private const float ENEMY_RAIN_RADIUS = 1.5f;
         private const float TARGET_RAIN_RADIUS = 1f;
 
+        public override bool isAction { get { return true; } }
+
         private KnightMotor km;
 
         private const float LOAD_1 = 59f / 60f;
@@ -42,7 +44,7 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.Play("Attack2");
+            em.anim.Play("Attack2", -1, 0);
 
             em.SetOverrideAgent(true);
 

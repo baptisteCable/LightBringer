@@ -6,6 +6,8 @@ namespace LightBringer.Enemies
     {
         private const float INDICATOR_DISPLAY_TIME = .5f;
 
+        public abstract bool isAction { get; }
+
         protected Motor em;
         public bool complete = false;
         public float startTime;

@@ -1,6 +1,5 @@
-﻿using UnityEngine;
-using UnityEngine.AI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
@@ -13,43 +12,25 @@ namespace LightBringer.Enemies.Knight
         private const float ATTACK1_CD = 6f;
         private const float ATTACK2_CD = 15f;
         private const float ATTACK3_CD = 11f;
+        private const float TRANSITION_DURATION = 2f;
 
-        // Components
-        KnightMotor motor;
-        private NavMeshAgent agent;
-
-        // Behaviours
-        private EnemyBehaviour currentBehaviour;
-        private bool readyForNext = true;
-        public bool passive = false;
-
-        // CD
-        private float[] remainingCD;
-        private bool[] CDUp;
 
         // Target
         public Transform target;
-        public float targetModificationTime;
+
+        // Component
+        public KnightMotor km;
 
         // Use this for initialization
         void Start()
         {
-            motor = GetComponent<KnightMotor>();
-            agent = motor.agent;
-            agent.destination = transform.position;
+            BaseStart();
+
+            km = GetComponent<KnightMotor>();
 
             // last behaviour
-            currentBehaviour = new WaitBehaviour(motor, 2f);
-           
-            // CD
-            remainingCD = new float[3];
-            CDUp = new bool[3];
-            CDUp[ATTACK1] = false;
-            CDUp[ATTACK2] = false;
-            CDUp[ATTACK3] = false;
-            remainingCD[ATTACK1] = 0f;
-            remainingCD[ATTACK2] = ATTACK2_CD;
-            remainingCD[ATTACK3] = ATTACK3_CD;
+            currentBehaviour = new WaitBehaviour(km, 2f);
+            nextActionBehaviour = null;
         }
 
         // Update is called once per frame
@@ -64,183 +45,249 @@ namespace LightBringer.Enemies.Knight
             }
             else
             {
-                RefreshCD();
-
-                if (!readyForNext)
+                if (!currentBehaviour.complete)
                 {
                     currentBehaviour.Run();
                 }
 
-                // New behaviour after run to have 1 frame to compute agent path
-                if (readyForNext)
-                {
-                    // Create the list of possible behaviours, depending on the situation
-                    Dictionary<EnemyBehaviour, float> list = ComputeBehaviourList();
-
-                    // Determine next behaviour from list
-                    ActivateNextBehaviourFromDictionary(list);
-
-                    readyForNext = false;
-                }
-
-                // let one frame for animator before next behaviour
                 if (currentBehaviour.complete)
                 {
-                    readyForNext = true;
+                    ComputeNextActionAndTransitionBehaviours();
                 }
             }
         }
 
-        private void RefreshCD()
+        private void ComputeNextActionAndTransitionBehaviours()
         {
-            for (int i = 0; i < CDUp.Length; i++)
+            // If current behaviour is a transition behaviour, start action behaviour
+            if (currentBehaviour != nextActionBehaviour && nextActionBehaviour != null)
             {
-                if (!CDUp[i])
-                {
-                    remainingCD[i] -= Time.deltaTime;
-                    if (remainingCD[i] < 0)
-                    {
-                        CDUp[i] = true;
-                    }
-                }
-            }
-        }
-
-        private Dictionary<EnemyBehaviour, float> ComputeBehaviourList()
-        {
-            Dictionary<EnemyBehaviour, float> list = new Dictionary<EnemyBehaviour, float>();
-            float weight = 0;
-
-            // Passive case
-            if (passive)
-            {
-                list.Add(new WaitBehaviour(motor, 1.5f * Random.value + .5f), 1f);
-                return list;
+                SetBehaviour(nextActionBehaviour);
             }
 
-            // Wait behaviour
-            weight = 1f;
-            if (currentBehaviour.GetType() == typeof(WaitBehaviour))
+            // Else compute the next action behaviour
+            else
             {
-                weight -= .5f;
-            }
-            list.Add(new WaitBehaviour(motor, 1.5f * Random.value + .5f), weight);
+                // Create the list of possible behaviours, depending on the situation
+                Dictionary<EnemyBehaviour, float> dic = ActionBehaviourList();
 
-            // Random move
-            weight = 1f;
-            if (currentBehaviour.GetType() == typeof(RandomMove))
-            {
-                weight -= .5f;
-            }
-            list.Add(new RandomMove(motor, target), weight);
+                // Determine next action behaviour from list
+                nextActionBehaviour = SelectBehaviourFromDictionary(dic);
 
-            // Go to player behaviour
-            weight = 0;
-            if ((target.position - motor.transform.position).magnitude > 4)
-            {
-                weight = ((target.position - motor.transform.position).magnitude - 4) / 2f;
-            }
-            list.Add(new GoToTargetBehaviour(motor, 3f, target), weight);
+                // Create the list of possible behaviours, depending on the situation
+                dic = TransistionBehaviourList();
 
-            // Attack 1 behaviour
-            weight = 0f;
-            if (CDUp[ATTACK1])
-            {
-                if ((target.position - motor.transform.position).magnitude < 5f)
-                {
-                    weight = 8f;
-                }
-                else if ((target.position - motor.transform.position).magnitude < 10f)
-                {
-                    weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
-                }
-            }
-            weight = 100000; //Debug
-            list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
+                // Determine next transition behaviour from list and start it
+                EnemyBehaviour transitionBehaviour = SelectBehaviourFromDictionary(dic);
+                SetBehaviour(transitionBehaviour);
 
-            // Attack 2 behaviour
-            weight = 0f;
-            if (CDUp[ATTACK2] && (target.position - motor.transform.position).magnitude < 22f)
-            {
-                weight = 10f;
-            }
-            list.Add(new Attack2Behaviour(motor, target), weight);
-
-            // Attack 3 behaviour
-            weight = 0f;
-            if (CDUp[ATTACK3])
-            {
-                if ((target.position - motor.transform.position).magnitude < 6f)
-                {
-                    weight = 10f;
-                }
-                else if ((target.position - motor.transform.position).magnitude < 20f)
-                {
-                    weight = 10f * (20f - (target.position - motor.transform.position).magnitude) / (20f - 6f);
-                }
-            }
-            list.Add(new Attack3Behaviour(motor, motor.attack3act1GO, motor.attack3act2GO, motor.shieldCollider), weight);
-
-            return list;
-        }
-
-        private void ActivateNextBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> list)
-        {
-            currentBehaviour = null;
-
-            list = NormalizedDictionary(list);
-
-            if (list.Count == 0)
-            {
-                Debug.LogError("Empty list of Knight Behaviour");
-                currentBehaviour = new WaitBehaviour(motor, Random.value * 1.5f);
-                return;
-            }
-
-            float rnd = Random.value;
-            float sum = 0;
-
-            Dictionary<EnemyBehaviour, float>.Enumerator en = list.GetEnumerator();
-            while (currentBehaviour == null)
-            {
-                sum += en.Current.Value;
-                if (sum > rnd)
-                {
-                    SetBehaviour(en.Current.Key);
-                }
-                else
-                {
-                    en.MoveNext();
-                }
             }
         }
 
         private void SetBehaviour(EnemyBehaviour behaviour)
         {
-            if (behaviour.GetType() == typeof(Attack1Behaviour))
-            {
-                CDUp[ATTACK1] = false;
-                remainingCD[ATTACK1] = ATTACK1_CD;
-            }
-            else if (behaviour.GetType() == typeof(Attack2Behaviour))
-            {
-                CDUp[ATTACK2] = false;
-                remainingCD[ATTACK2] = ATTACK2_CD;
-            }
-            else if (behaviour.GetType() == typeof(Attack3Behaviour))
-            {
-                CDUp[ATTACK3] = false;
-                remainingCD[ATTACK3] = ATTACK3_CD;
-            }
             currentBehaviour = behaviour;
             currentBehaviour.Init();
         }
 
-        private static Dictionary<EnemyBehaviour, float> NormalizedDictionary(Dictionary<EnemyBehaviour, float> list)
+        private Dictionary<EnemyBehaviour, float> ActionBehaviourList()
+        {
+            Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+            float weight;
+
+            // Passive case
+            if (passive)
+            {
+                dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                return dic;
+            }
+
+            // Attack 1 behaviour
+            weight = 0f;
+            if (currentBehaviour.GetType() != typeof(Attack1Behaviour))
+            {
+                float distance = (target.position - motor.transform.position).magnitude;
+                if (distance < 5f)
+                {
+                    weight = 8f;
+                }
+                else if (distance < 20f)
+                {
+                    weight = 5f;
+                }
+                else
+                {
+                    weight = 100f / distance;
+                }
+            }
+            dic.Add(new Attack1Behaviour(km, target, km.attack1act1GO, km.attack1act2GO, km.attack1act3GO), weight);
+
+            // Attack 2 behaviour
+            weight = 0f;
+            if (currentBehaviour.GetType() != typeof(Attack2Behaviour))
+            {
+                if ((target.position - motor.transform.position).magnitude < 25f)
+                {
+                    weight = 10f;
+                }
+            }
+            dic.Add(new Attack2Behaviour(km, target), weight);
+
+            // Attack 3 behaviour
+            weight = 0f;
+            if (currentBehaviour.GetType() != typeof(Attack3Behaviour))
+            {
+                float distance = (target.position - motor.transform.position).magnitude;
+                if (distance < 5f)
+                {
+                    weight = 10f;
+                }
+                else if (distance < 20f)
+                {
+                    weight = 5f;
+                }
+                else
+                {
+                    weight = 100f / distance;
+                }
+            }
+            dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
+
+            return dic;
+        }
+
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourList()
+        {
+            // Passive case
+            if (passive || nextActionBehaviour.GetType() == typeof(WaitBehaviour))
+            {
+                Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+                dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                return dic;
+            }
+
+            if (nextActionBehaviour.GetType() == typeof(Attack1Behaviour))
+            {
+                return TransistionBehaviourListAfterAttack1();
+            }
+            else if (nextActionBehaviour.GetType() == typeof(Attack2Behaviour))
+            {
+                return TransistionBehaviourListAfterAttack2();
+            }
+            else if (nextActionBehaviour.GetType() == typeof(Attack3Behaviour))
+            {
+                return TransistionBehaviourListAfterAttack3();
+            }
+            else
+            {
+                Debug.Log("Invalid next action behaviour");
+                return new Dictionary<EnemyBehaviour, float>();
+            }
+        }
+
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack1()
+        {
+            Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+            float weight;
+
+            // Wait behaviour
+            if ((target.position - motor.transform.position).magnitude < 10)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .2f;
+            }
+            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+
+            // Go to position
+            weight = 0;
+            if ((target.position - motor.transform.position).magnitude > 13)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .2f;
+            }
+            dic.Add(new GoToPointBehaviour(km, target.position), weight);
+
+            return dic;
+        }
+
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack2()
+        {
+            Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+            return dic;
+        }
+
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack3()
+        {
+            Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+            float weight;
+
+            // Wait behaviour
+            if ((target.position - motor.transform.position).magnitude < 10)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .2f;
+            }
+            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+
+            // Go to position
+            weight = 0;
+            if ((target.position - motor.transform.position).magnitude > 13)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .2f;
+            }
+            dic.Add(new GoToPointBehaviour(km, target.position), weight);
+
+            return dic;
+        }
+
+
+        private EnemyBehaviour SelectBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> dic)
+        {
+            currentBehaviour = null;
+
+            dic = NormalizedDictionary(dic);
+
+            if (dic.Count == 0)
+            {
+                Debug.LogError("No behaviour in list");
+                return new WaitBehaviour(km, TRANSITION_DURATION);
+            }
+
+            float rnd = Random.value;
+            float sum = 0;
+
+            foreach (KeyValuePair<EnemyBehaviour, float> pair in dic)
+            {
+                sum += pair.Value;
+                if (sum > rnd)
+                {
+                    return pair.Key;
+                }
+            }
+            
+            Debug.Log("No behaviour selected");
+            return new WaitBehaviour(km, TRANSITION_DURATION);
+        }
+
+        private static Dictionary<EnemyBehaviour, float> NormalizedDictionary(Dictionary<EnemyBehaviour, float> dic)
         {
             float sum = 0;
 
-            foreach (KeyValuePair<EnemyBehaviour, float> pair in list)
+            foreach (KeyValuePair<EnemyBehaviour, float> pair in dic)
             {
                 sum += pair.Value;
             }
@@ -252,7 +299,7 @@ namespace LightBringer.Enemies.Knight
 
             Dictionary<EnemyBehaviour, float> normalized = new Dictionary<EnemyBehaviour, float>();
 
-            foreach (KeyValuePair<EnemyBehaviour, float> pair in list)
+            foreach (KeyValuePair<EnemyBehaviour, float> pair in dic)
             {
                 normalized.Add(pair.Key, pair.Value / sum);
             }

@@ -1,33 +1,27 @@
 ﻿using UnityEngine;
-using UnityEngine.AI;
 
 namespace LightBringer.Enemies.Knight
 {
-    public class GoToTargetBehaviour : EnemyBehaviour
+    public class GoToPointBehaviour : EnemyBehaviour
     {
-        float stopDist;
-        Transform target;
+        public override bool isAction { get { return false; } }
+        
+        Vector3 target;
 
-        public GoToTargetBehaviour(KnightMotor enemyMotor, float stopDist, Transform target) : base(enemyMotor)
+        public GoToPointBehaviour(KnightMotor enemyMotor, Vector3 target) : base(enemyMotor)
         {
-            this.stopDist = stopDist;
             this.target = target;
         }
 
         public override void Init()
         {
-            em.agent.SetDestination(target.position);
+            em.agent.SetDestination(target);
             em.agent.isStopped = false;
         }
 
         public override void Run()
         {
-            if (!em.agent.pathPending)
-            {
-                em.agent.SetDestination(target.position);
-            }
-
-            if (em.agent.remainingDistance < em.agent.stoppingDistance + stopDist)
+            if (em.agent.remainingDistance < em.agent.stoppingDistance)
             {
                 End();
             }
