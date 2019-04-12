@@ -15,9 +15,6 @@ namespace LightBringer.Enemies
         [SerializeField] Transform head;
         [SerializeField] Transform sight;
 
-        [Header("Detection")]
-        [SerializeField] Detection detectionSystem;
-
         [Header("Rotation bounds")]
         [SerializeField] private float headYAngleBound = 80f;
         [SerializeField] private float headXAngleBound = 20f;
@@ -151,21 +148,12 @@ namespace LightBringer.Enemies
         {
             behaviour = Behaviour.LookAtTarget;
             target = tar.transform;
-            detectionSystem.Stop();
-        }
-
-        public void LookForTarget(GameObject tar, float duration)
-        {
-            behaviour = Behaviour.LookForTarget;
-            target = tar.transform;
-            detectionSystem.Play();
         }
 
         public void NoTarget()
         {
             behaviour = Behaviour.NoTarget;
             RandomRotation();
-            detectionSystem.Stop();
         }
     }
 

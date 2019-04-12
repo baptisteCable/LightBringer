@@ -63,7 +63,7 @@ namespace LightBringer.Player
         [HideInInspector] public Ability specialCancelAbility = null;
 
         // Use this for initialization
-        public virtual void Start()
+        protected void BaseStart()
         {
             charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
@@ -90,11 +90,10 @@ namespace LightBringer.Player
             // UI
             userInterface = Instantiate(userInterfacePrefab);
             userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
-
         }
 
         // Update is called once per frame
-        void Update()
+        protected void BaseUpdate()
         {
             if (psm.isDead)
             {

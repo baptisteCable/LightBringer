@@ -60,7 +60,7 @@ namespace LightBringer.Enemies
 
         // Indicators
         [Header("Indicators")]
-        [SerializeField] private GameObject[] indicators;
+        [SerializeField] public GameObject[] indicators;
 
         protected void BaseStart()
         {

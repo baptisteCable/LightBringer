@@ -134,31 +134,6 @@ namespace LightBringer.Enemies.Knight
             }
             list.Add(new RandomMove(motor, target), weight);
 
-            // If no target, find one
-            if (target == null)
-            {
-                // find a target
-                weight = .5f;
-                list.Add(new FindTargetBehaviour(motor), weight);
-
-                // no other possible options
-                return list;
-            }
-            else
-            {
-                // lose the current target
-                weight = (Time.time - targetModificationTime) / 10f;
-                list.Add(new LoseTargetBehaviour(motor), weight);
-            }
-
-            // Wait and rotate behaviour
-            weight = 1.5f;
-            if (currentBehaviour.GetType() == typeof(WaitAndRotateBehaviour))
-            {
-                weight -= .5f;
-            }
-            list.Add(new WaitAndRotateBehaviour(motor, Random.value * .8f + .2f, target), weight);
-
             // Go to player behaviour
             weight = 0;
             if ((target.position - motor.transform.position).magnitude > 4)
@@ -166,14 +141,6 @@ namespace LightBringer.Enemies.Knight
                 weight = ((target.position - motor.transform.position).magnitude - 4) / 2f;
             }
             list.Add(new GoToTargetBehaviour(motor, 3f, target), weight);
-
-            // Go around player
-            weight = 1f;
-            list.Add(new GoAroundPlayerBehaviour(motor, .5f + Random.value * 1.2f, target, Random.value < .5f), weight);
-
-            // Side steps
-            weight = 1.5f;
-            list.Add(new SideStepsBehaviour(motor, .5f + Random.value * 1.2f, target), weight);
 
             // Attack 1 behaviour
             weight = 0f;
@@ -188,6 +155,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 8f * (10f - (target.position - motor.transform.position).magnitude) / (10f - 5f);
                 }
             }
+            weight = 100000; //Debug
             list.Add(new Attack1Behaviour(motor, target, motor.attack1act1GO, motor.attack1act2GO, motor.attack1act3GO), weight);
 
             // Attack 2 behaviour

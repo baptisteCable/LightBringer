@@ -66,12 +66,17 @@ namespace LightBringer.Player.Class
         [HideInInspector]
         public LightSword sword;
 
-        public override void Start()
+        private void Start()
         {
             // Sword
             sword = swordObject.GetComponent<LightSword>();
 
-            base.Start();
+            BaseStart();
+        }
+
+        private void Update()
+        {
+            BaseUpdate();
         }
 
         public int GetUltiShpereCount()

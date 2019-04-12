@@ -92,7 +92,9 @@ namespace LightBringer.Enemies
         {
             if (parts[part].indicator != -1)
             {
-                em.anim.Play("Attack2");
+                GameObject indicator = em.indicators[parts[part].indicator];
+                indicator.SetActive(true);
+                indicator.GetComponent<IndicatorLoader>().Load(loadingTime);
             }
             parts[part].state = State.IndicatorDisplayed;
         }

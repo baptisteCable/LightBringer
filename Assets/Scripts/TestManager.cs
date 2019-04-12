@@ -10,6 +10,7 @@ public class TestManager : MonoBehaviour
 
     public GameObject knightPrefab;
     public GameObject playerPrefab;
+    public GameObject testUI;
 
     private TerrainGenerator tg;
     public Terrain terrain;
@@ -33,6 +34,7 @@ public class TestManager : MonoBehaviour
         tg = terrain.GetComponent<TerrainGenerator>();
         nms = terrain.GetComponent<NavMeshSurface>();
 
+        testUI.SetActive(true);
     }
 
     public void GenerateNewTerrain()
