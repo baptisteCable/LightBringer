@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 using LightBringer.Player;
-using System.Collections.Generic;
 using LightBringer.Abilities;
 
 namespace LightBringer.Enemies.Knight
 {
     public class Attack3Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 1.817f;
+        private const float DURATION = 3.25f;
         private const float SPEAR_DMG = 14f;
         private const float SHIELD_DMG = 10f;
-        private const float SHIELD_STUN_DURATION = 1f;
 
-        private const float SPEAR_DMG_START = 41f / 60f;
-        private const float SPEAR_DMG_STOP = 61f / 60f;
-        private const float SHIELD_DMG_START = 76f / 60f;
-        private const float SHIELD_DMG_STOP = 96f / 60f;
+        private const float SPEAR_DMG_START = 121f / 60f;
+        private const float SPEAR_DMG_STOP = 146f / 60f;
+        private const float SHIELD_DMG_START = 157f / 60f;
+        private const float SHIELD_DMG_STOP = 177f / 60f;
 
         // Shield collider to disable
         private GameObject shieldCollider;

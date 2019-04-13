@@ -99,6 +99,7 @@ ModelImporter:
     7400018: Armature|MoveForward
     7400020: Armature|MoveLeft
     7400022: Armature|MoveRight
+    7400024: Armature|Charge1
     9500000: //RootNode
     13700000: CableTorseBas1
     13700002: CableTorseBas2
