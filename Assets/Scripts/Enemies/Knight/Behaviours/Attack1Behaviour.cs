@@ -1,4 +1,5 @@
-﻿using LightBringer.Abilities;
+﻿using System.Collections.Generic;
+using LightBringer.Abilities;
 using LightBringer.Player;
 using UnityEngine;
 
@@ -6,28 +7,49 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 3.1f;
-        private const float RAY_DAMAGE = 15f;
+        private const float DURATION = 4.3f;
+        private const float RAY_DAMAGE = 10f;
+        private const float TIME_BETWEEN_RAY_TICKS = .2f;
+        private const float GROUND_DAMAGE = 1.5f;
+        private const float TIME_BETWEEN_GROUND_TICKS = .05f;
 
-        private const float DMG_START = 60f / 60f;
-        private const float DMG_DURATION = 120f / 60f;
-        private const float CONE_ANGLE = 60f;
-        private const float TIME_BETWEEN_TICKS = .2f;
-        
-        private Vector3 targetPosition;
+        private const float DMG_START = 2f;
+        private const float DMG_DURATION = 2.2f;
+        private const float GROUND_DURATION = 5.5f;
+        private const float CONE_ANGLE = 75f;
+        private const float CONE_STARTING = -20f;
+
+        private const float TIME_BETWEEN_REFRESH = .1f;
 
         private Transform attackContainer;
         private GameObject attackRenderer;
+        private Transform target;
+        private Vector3 targetPosition;
 
-        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO, GameObject attack1Container) : base(enemyMotor)
+        private GameObject groundActPrefab;
+        private GameObject groundRendererPrefab;
+        private GameObject groundActGO;
+        private AbilityColliderTrigger groundAct;
+        private GameObject groundRenderer;
+        private ConeMesh groundConeMesh;
+
+        // Ground collider list
+        protected Dictionary<Collider, float> groundCols;
+
+        private float nextConeRefresh;
+
+        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO, GameObject attack1Container,
+            GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
         {
-            targetPosition = target.position;
+            this.target = target;
             actGOs = new GameObject[1];
             actGOs[0] = attack1act1GO;
             parts = new Part[1];
-            parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, 0);
+            parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, -1);
             attackContainer = attack1Container.transform;
             attackRenderer = attackContainer.Find("Renderer").gameObject;
+            this.groundActPrefab = groundActPrefab;
+            this.groundRendererPrefab = groundRendererPrefab;
         }
 
         public override void Init()
@@ -37,10 +59,10 @@ namespace LightBringer.Enemies.Knight
             // em.anim.Play("Attack1", -1, 0);
 
             acts = new AbilityColliderTrigger[1];
-            for (int i = 0; i < actGOs.Length; i++)
-            {
-                acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger>();
-            }
+            acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
+
+            // Rotate to face player
+            targetPosition = target.position;
         }
 
         public override void Run()
@@ -67,6 +89,19 @@ namespace LightBringer.Enemies.Knight
             {
                 // Activate ray
                 attackRenderer.SetActive(true);
+
+                // Activate ground collider trigger
+                groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
+                    em.transform.rotation * Quaternion.AngleAxis(CONE_STARTING, Vector3.up), null);
+                groundConeMesh = groundActGO.GetComponent<ConeMesh>();
+                GameObject.Destroy(groundActGO, GROUND_DURATION);
+                nextConeRefresh = Time.time + TIME_BETWEEN_REFRESH;
+
+                // Ground col list init
+                groundCols = new Dictionary<Collider, float>();
+
+                groundAct = groundActGO.GetComponent<AbilityColliderTrigger>();
+                groundAct.SetAbility(this, "ground");
             }
 
             base.StartCollisionPart(part);
@@ -77,8 +112,20 @@ namespace LightBringer.Enemies.Knight
             if (part == 0)
             {
                 // move Ray container
-                float angle = -CONE_ANGLE / 2 + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
+                float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
                 attackContainer.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
+
+                // Ground collider trigger
+                if (Time.time > nextConeRefresh)
+                {
+                    float coneAngleWidth = angle - CONE_STARTING;
+                    nextConeRefresh = Time.time + TIME_BETWEEN_REFRESH;
+                    groundConeMesh.angle = coneAngleWidth;
+                    groundConeMesh.CreateAngularAoEMesh();
+                    groundActGO.transform.localRotation = em.transform.rotation * 
+                        Quaternion.AngleAxis((angle - CONE_STARTING) / 2f + CONE_STARTING, Vector3.up);
+                }
+
             }
 
             base.RunCollisionPart(part);
@@ -98,7 +145,7 @@ namespace LightBringer.Enemies.Knight
         public override void End()
         {
             base.End();
-            em.SetOverrideAgent(false);
+            //em.SetOverrideAgent(false);
         }
 
         public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
@@ -115,36 +162,55 @@ namespace LightBringer.Enemies.Knight
         {
             if (col.tag == "Player")
             {
-                if (cols.ContainsKey(col))
+                if (abilityColliderTrigger == acts[0])
                 {
-                    if (cols[col] + TIME_BETWEEN_TICKS < Time.time)
+                    if (cols.ContainsKey(col))
                     {
-                        cols[col] = Time.time;
-
-                        // Damage
-                        if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                        if (cols[col] + TIME_BETWEEN_RAY_TICKS < Time.time)
                         {
-                            ApplyPart0Damage(col);
+                            cols[col] = Time.time;
+                            ApplyRayDamage(col);
                         }
                     }
-                }
-                else
-                {
-                    cols.Add(col, Time.time);
-
-                    // Damage
-                    if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                    else
                     {
-                        ApplyPart0Damage(col);
+                        cols.Add(col, Time.time);
+                        ApplyRayDamage(col);
+                    }
+                }
+                if (abilityColliderTrigger == groundAct)
+                {
+                    if (groundCols.ContainsKey(col))
+                    {
+                        if (groundCols[col] + TIME_BETWEEN_GROUND_TICKS < Time.time)
+                        {
+                            groundCols[col] = Time.time;
+                            ApplyGroundDamage(col);
+                        }
+                    }
+                    else
+                    {
+                        groundCols.Add(col, Time.time);
+                        ApplyGroundDamage(col);
                     }
                 }
             }
         }
 
-        private void ApplyPart0Damage(Collider col)
+        private void ApplyRayDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(RAY_DAMAGE, DamageType.Melee, DamageElement.Physical);
+            Damage dmg = new Damage(RAY_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
+            if (psm.IsAffectedBy(dmg, em, em.transform.position))
+            {
+                psm.TakeDamage(dmg, em, em.transform.position);
+            }
+        }
+
+        private void ApplyGroundDamage(Collider col)
+        {
+            PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
+            Damage dmg = new Damage(GROUND_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);

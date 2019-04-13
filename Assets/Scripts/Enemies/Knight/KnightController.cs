@@ -19,7 +19,7 @@ namespace LightBringer.Enemies.Knight
         public Transform target;
 
         // Component
-        public KnightMotor km;
+        [HideInInspector] public KnightMotor km;
 
         // Use this for initialization
         void Start()
@@ -121,7 +121,8 @@ namespace LightBringer.Enemies.Knight
                 }
             }
             weight = 10000; // Debug
-            dic.Add(new Attack1Behaviour(km, target, km.attack1actGO, km.attack1Container), weight);
+            dic.Add(new Attack1Behaviour(km, target, km.attack1actGO, km.attack1Container, km.attack1GroundActGOPrefab,
+                km.attack1GroundRendererGOPrefab), weight);
 
             // Attack 2 behaviour
             weight = 0f;

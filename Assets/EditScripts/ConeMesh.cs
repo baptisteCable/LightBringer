@@ -6,15 +6,24 @@ public class ConeMesh : MonoBehaviour {
     public float distance;
     public float angle;
     public float top;
+    public bool done;
 
     private Mesh s;
 
-    void Start () {
-        
-        CreateAngularAoEMesh(distance, angle, top);
+    void Start () {    
+        CreateAngularAoEMesh();
     }
 
-    private void CreateAngularAoEMesh(float distance, float angle, float height)
+    private void Update()
+    {
+        if (!done)
+        {
+            CreateAngularAoEMesh();
+            done = true;
+        }
+    }
+
+    public void CreateAngularAoEMesh()
     {
         s = new Mesh();
         
@@ -22,16 +31,16 @@ public class ConeMesh : MonoBehaviour {
         int[] triangles;
         int j = 0;
 
-        int nbVert = (int)Mathf.Ceil(angle / 22.5f) + 2;
+        int nbVert = (int)Mathf.Ceil(angle / 22.5f * distance / 10f) + 2;
 
         vertices = new Vector3[2 * nbVert];
         vertices[0] = new Vector3(0, 0, 0);
-        vertices[nbVert] = new Vector3(0, height, 0);
+        vertices[nbVert] = new Vector3(0, top, 0);
 
         for (int i = 0; i < nbVert - 1; i++)
         {
             vertices[i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), 0);
-            vertices[nbVert + i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), height);
+            vertices[nbVert + i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), top);
         }
 
         triangles = new int[12 * (nbVert - 1)];

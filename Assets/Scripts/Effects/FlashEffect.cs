@@ -11,27 +11,35 @@ namespace LightBringer.Effects
         [SerializeField] private Transform[] transformsToFlash = new Transform[0];
         [SerializeField] private Color emissionColor = new Color(.2f, .1f, .1f);
 
+        float flashEnd = 0;
+        bool flashIsOn = false;
+
         public void Flash()
         {
-            StopCoroutine(FlashCoroutine());
-            StartCoroutine(FlashCoroutine());
+            flashEnd = Time.time + duration;
         }
 
-        private IEnumerator FlashCoroutine()
+        private void Update()
         {
-            RecFlash(transform, true);
-            for (int i = 0; i < transformsToFlash.Length; i++)
+            if (Time.time < flashEnd && !flashIsOn)
             {
-                RecFlash(transformsToFlash[i], true);
+                RecFlash(transform, true);
+                for (int i = 0; i < transformsToFlash.Length; i++)
+                {
+                    RecFlash(transformsToFlash[i], true);
+                }
+                flashIsOn = true;
             }
-
-            yield return new WaitForSeconds(duration);
-
-            RecFlash(transform, false);
-            for (int i = 0; i < transformsToFlash.Length; i++)
+            else if (flashIsOn && Time.time > flashEnd)
             {
-                RecFlash(transformsToFlash[i], false);
+                RecFlash(transform, false);
+                for (int i = 0; i < transformsToFlash.Length; i++)
+                {
+                    RecFlash(transformsToFlash[i], false);
+                }
+                flashIsOn = false;
             }
+            
         }
 
         private void RecFlash(Transform tr, bool on)
