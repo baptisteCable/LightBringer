@@ -15,9 +15,9 @@ namespace LightBringer.Enemies.Knight
 
         private const float DMG_START = 2f;
         private const float DMG_DURATION = 2.2f;
-        private const float GROUND_DURATION = 5.5f;
-        private const float CONE_ANGLE = 75f;
-        private const float CONE_STARTING = -20f;
+        public const float GROUND_DURATION = 5.5f;
+        public const float CONE_ANGLE = 75f;
+        public const float CONE_STARTING = -20f;
 
         private const float TIME_BETWEEN_REFRESH = .1f;
 
@@ -32,6 +32,7 @@ namespace LightBringer.Enemies.Knight
         private AbilityColliderTrigger groundAct;
         private GameObject groundRenderer;
         private ConeMesh groundConeMesh;
+        private BurningGround burningGround;
 
         // Ground collider list
         protected Dictionary<Collider, float> groundCols;
@@ -99,9 +100,14 @@ namespace LightBringer.Enemies.Knight
 
                 // Ground col list init
                 groundCols = new Dictionary<Collider, float>();
-
                 groundAct = groundActGO.GetComponent<AbilityColliderTrigger>();
                 groundAct.SetAbility(this, "ground");
+
+                // Ground renderer
+                groundRenderer = GameObject.Instantiate(groundRendererPrefab, em.transform.position,
+                    em.transform.rotation, null);
+                burningGround = groundRenderer.GetComponent<BurningGround>();
+                GameObject.Destroy(groundRenderer, GROUND_DURATION);
             }
 
             base.StartCollisionPart(part);
@@ -124,6 +130,7 @@ namespace LightBringer.Enemies.Knight
                     groundConeMesh.CreateAngularAoEMesh();
                     groundActGO.transform.localRotation = em.transform.rotation * 
                         Quaternion.AngleAxis((angle - CONE_STARTING) / 2f + CONE_STARTING, Vector3.up);
+                    burningGround.SetAngle(angle);
                 }
 
             }

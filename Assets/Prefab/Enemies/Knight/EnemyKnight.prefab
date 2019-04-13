@@ -2141,6 +2141,7 @@ MonoBehaviour:
   distance: 7
   angle: 60
   top: 8
+  done: 1
 --- !u!64 &64974497139844452
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2337,6 +2338,7 @@ MonoBehaviour:
   distance: 2
   angle: 120
   top: 5
+  done: 1
 --- !u!1 &1441964114543602
 GameObject:
   m_ObjectHideFlags: 0
@@ -2643,6 +2645,10 @@ MonoBehaviour:
   bulletPrefab: {fileID: 1003484191224384, guid: 589b4311db7d36546a882bfd643c2935,
     type: 3}
   casterPrefab: {fileID: 1219392242389180, guid: 38196157084f81147b2637eb88befe50,
+    type: 3}
+  attack1GroundActGOPrefab: {fileID: 6212997618862569862, guid: 7937621773bd64843bf6c15531953043,
+    type: 3}
+  attack1GroundRendererGOPrefab: {fileID: 2136440961151465383, guid: e00957d77041b054982157ca87c3cdee,
     type: 3}
   attack1actGO: {fileID: 1630246916114434581}
   attack1Container: {fileID: 6556296068542075606}
