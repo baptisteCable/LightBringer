@@ -31,6 +31,8 @@ namespace LightBringer.Enemies.Knight
             // last behaviour
             currentBehaviour = new WaitBehaviour(km, 2f);
             nextActionBehaviour = null;
+
+            motor.head.LookAtTarget(target.gameObject);
         }
 
         // Update is called once per frame
@@ -120,7 +122,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
-            weight = 10000; // Debug
             dic.Add(new Attack1Behaviour(km, target, km.attack1actGO, km.attack1Container, km.attack1GroundActGOPrefab,
                 km.attack1GroundRendererGOPrefab), weight);
 
@@ -153,6 +154,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
+            weight = 10000; // Debug
             dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
 
             return dic;

@@ -129,7 +129,7 @@ namespace LightBringer.Enemies
 
         private Quaternion HeadTargetRotation()
         {
-            return Quaternion.Euler(-targetHeadYRot, 0, targetHeadXRot);
+            return Quaternion.Euler(0, targetHeadYRot, targetHeadXRot);
         }
 
         private Quaternion SightTargetRotation()

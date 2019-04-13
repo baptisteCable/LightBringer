@@ -2,65 +2,43 @@
 using LightBringer.Abilities;
 using LightBringer.Player;
 using UnityEngine;
-
+/*
 namespace LightBringer.Enemies.Knight
 {
-    public class Attack1Behaviour : CollisionBehaviour
+    public class Attack4Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 4.3f;
-        private const float RAY_DAMAGE = 10f;
-        private const float TIME_BETWEEN_RAY_TICKS = .2f;
-        private const float GROUND_DAMAGE = 1.5f;
-        private const float TIME_BETWEEN_GROUND_TICKS = .05f;
+        private const float DURATION = 3.3f;
+        private const float RAY_DAMAGE = 30f;
 
         private const float DMG_START = 2f;
-        private const float DMG_DURATION = 2.2f;
-        public const float GROUND_DURATION = 10f;
-        public const float CONE_ANGLE = 75f;
-        public const float CONE_STARTING = -20f;
+        private const float DMG_DURATION = 1f;
 
-        private const float TIME_BETWEEN_REFRESH = .1f;
-
-        private Transform attackContainer;
+        private GameObject attackContainerPrefab;
+        private GameObject attackContainer;
+        private GameObject attackRendererPrefab;
         private GameObject attackRenderer;
+
         private Transform target;
         private Vector3 targetPosition;
 
-        private GameObject groundActPrefab;
-        private GameObject groundRendererPrefab;
-        private GameObject groundActGO;
-        private AbilityColliderTrigger groundAct;
-        private GameObject groundRenderer;
-        private ConeMesh groundConeMesh;
-        private BurningGround burningGround;
-
-        // Ground collider list
-        protected Dictionary<Collider, float> groundCols;
-
-        private float nextConeRefresh;
-
-        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO, GameObject attack1Container,
-            GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
+        public Attack4Behaviour(KnightMotor enemyMotor, Transform target, GameObject attackContainerPrefab,
+            GameObject attackRendererPrefab) : base(enemyMotor)
         {
             this.target = target;
             actGOs = new GameObject[1];
-            actGOs[0] = attack1act1GO;
             parts = new Part[1];
             parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, -1);
-            attackContainer = attack1Container.transform;
-            attackRenderer = attackContainer.Find("Renderer").gameObject;
-            this.groundActPrefab = groundActPrefab;
-            this.groundRendererPrefab = groundRendererPrefab;
+            this.attackContainerPrefab = attackContainerPrefab;
+            this.attackRendererPrefab = attackRendererPrefab;
         }
 
         public override void Init()
         {
             base.Init();
 
-            em.anim.Play("Attack1", -1, 0);
+            // em.anim.Play("Attack1", -1, 0);
 
             acts = new AbilityColliderTrigger[1];
-            acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
 
             // Rotate to face player
             targetPosition = target.position;
@@ -88,8 +66,28 @@ namespace LightBringer.Enemies.Knight
         {
             if (part == 0)
             {
-                // Activate ray
-                attackRenderer.SetActive(true);
+                // Create ray
+                // Raycast
+                RaycastHit hit;
+                // Does the ray intersect any objects excluding the player layer
+                if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layerMask))
+                {
+                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                }
+                else
+                {
+                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * 1000, Color.white);
+                    Debug.Log("Did not Hit");
+                }
+
+                // Selon distance, calculer la taille du rayon
+
+                // instancier le rayon
+
+                // Init Collision behaviour data
+                actGOs[0] = attackContainer;
+                acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
 
                 // Activate ground collider trigger
                 groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
@@ -231,4 +229,4 @@ namespace LightBringer.Enemies.Knight
             base.Abort();
         }
     }
-}
+}*/
