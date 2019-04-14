@@ -154,8 +154,28 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
-            weight = 10000; // Debug
             dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
+
+            // Attack 4 behaviour
+            weight = 0f;
+            if (currentBehaviour.GetType() != typeof(Attack4Behaviour))
+            {
+                float distance = (target.position - motor.transform.position).magnitude;
+                if (distance < 5f)
+                {
+                    weight = 2f;
+                }
+                else if (distance < 30f)
+                {
+                    weight = 12f;
+                }
+                else
+                {
+                    weight = 5f;
+                }
+            }
+            weight = 10000; // Debug
+            dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
         }
@@ -182,6 +202,10 @@ namespace LightBringer.Enemies.Knight
             {
                 return TransistionBehaviourListAfterAttack3();
             }
+            else if (nextActionBehaviour.GetType() == typeof(Attack4Behaviour))
+            {
+                return TransistionBehaviourListAfterAttack4();
+            }
             else
             {
                 Debug.Log("Invalid next action behaviour");
@@ -203,7 +227,6 @@ namespace LightBringer.Enemies.Knight
             {
                 weight = .1f;
             }
-            weight = 10000; // Debug
             dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
 
             // Go to position
@@ -259,6 +282,38 @@ namespace LightBringer.Enemies.Knight
             return dic;
         }
 
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack4()
+        {
+            Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+            float weight;
+
+            // Wait behaviour
+            if ((target.position - motor.transform.position).magnitude < 15f)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .1f;
+            }
+            weight = 10000; // Debug
+            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+
+            // Go to position
+            weight = 0;
+            if ((target.position - motor.transform.position).magnitude > 13)
+            {
+                weight = 1f;
+            }
+            else
+            {
+                weight = .2f;
+            }
+            dic.Add(new GoToPointBehaviour(km, target.position), weight);
+
+            return dic;
+        }
+
 
         private EnemyBehaviour SelectBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> dic)
         {
@@ -283,7 +338,7 @@ namespace LightBringer.Enemies.Knight
                     return pair.Key;
                 }
             }
-            
+
             Debug.Log("No behaviour selected");
             return new WaitBehaviour(km, TRANSITION_DURATION);
         }

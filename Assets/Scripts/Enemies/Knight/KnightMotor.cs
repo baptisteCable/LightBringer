@@ -10,6 +10,8 @@ namespace LightBringer.Enemies.Knight
         public GameObject casterPrefab;
         public GameObject attack1GroundActGOPrefab;
         public GameObject attack1GroundRendererGOPrefab;
+        public GameObject attack4RayColliderPrefab;
+        public GameObject attack4RayRendererPrefab;
 
         [Header("Game Objects")]
         public GameObject attack1actGO;

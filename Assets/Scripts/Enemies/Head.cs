@@ -13,7 +13,7 @@ namespace LightBringer.Enemies
 
         [Header("Transforms")]
         [SerializeField] Transform head;
-        [SerializeField] Transform sight;
+        // [SerializeField] Transform sight;
 
         [Header("Rotation bounds")]
         [SerializeField] private float headYAngleBound = 80f;
@@ -25,7 +25,7 @@ namespace LightBringer.Enemies
         private float theoXRot;
         private float targetHeadYRot;
         private float targetHeadXRot;
-        private float targetSightXRot;
+        // private float targetSightXRot;
 
         private float nextRandomTime;
 
@@ -53,7 +53,7 @@ namespace LightBringer.Enemies
             RotateHeadAndSight();
 
             lastHeadRotation = head.transform.localRotation;
-            lastSightRotation = sight.transform.localRotation;
+            // lastSightRotation = sight.transform.localRotation;
         }
 
         public void ComputeTargetRotation()
@@ -100,7 +100,7 @@ namespace LightBringer.Enemies
             {
                 targetHeadXRot = theoXRot / 2;
             }
-
+            /*
             if (theoXRot - targetHeadXRot > sightXAngleBound)
             {
                 targetSightXRot = sightXAngleBound;
@@ -108,7 +108,7 @@ namespace LightBringer.Enemies
             else
             {
                 targetSightXRot = theoXRot - targetHeadXRot;
-            }
+            }*/
         }
 
         private void RotateHeadAndSight()
@@ -124,7 +124,7 @@ namespace LightBringer.Enemies
             }
 
             head.localRotation = Quaternion.Lerp(lastHeadRotation, HeadTargetRotation(), lerpRate * Time.deltaTime);
-            sight.localRotation = Quaternion.Lerp(lastSightRotation, SightTargetRotation(), lerpRate * Time.deltaTime);
+            // sight.localRotation = Quaternion.Lerp(lastSightRotation, SightTargetRotation(), lerpRate * Time.deltaTime);
         }
 
         private Quaternion HeadTargetRotation()
@@ -132,10 +132,11 @@ namespace LightBringer.Enemies
             return Quaternion.Euler(0, targetHeadYRot, targetHeadXRot);
         }
 
+        /*
         private Quaternion SightTargetRotation()
         {
             return Quaternion.Euler(0, 0, targetSightXRot);
-        }
+        }*/
 
         private void RandomRotation()
         {

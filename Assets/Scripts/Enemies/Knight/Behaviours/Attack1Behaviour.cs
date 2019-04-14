@@ -19,7 +19,7 @@ namespace LightBringer.Enemies.Knight
         public const float CONE_ANGLE = 75f;
         public const float CONE_STARTING = -20f;
 
-        private const float TIME_BETWEEN_REFRESH = .1f;
+        private const float TIME_BETWEEN_REFRESH = .02f;
 
         private Transform attackContainer;
         private GameObject attackRenderer;
@@ -118,8 +118,8 @@ namespace LightBringer.Enemies.Knight
             if (part == 0)
             {
                 // move Ray container
-                float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
-                attackContainer.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
+                float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration + 8f;
+                //attackContainer.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
 
                 // Ground collider trigger
                 if (Time.time > nextConeRefresh)
@@ -152,7 +152,7 @@ namespace LightBringer.Enemies.Knight
         public override void End()
         {
             base.End();
-            //em.SetOverrideAgent(false);
+            em.SetOverrideAgent(false);
         }
 
         public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
