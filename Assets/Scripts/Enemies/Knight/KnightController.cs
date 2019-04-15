@@ -230,7 +230,7 @@ namespace LightBringer.Enemies.Knight
             }
             dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
 
-            // Go to position
+            // Charge to position
             weight = 0;
             if ((target.position - motor.transform.position).magnitude > 13)
             {
