@@ -7,12 +7,12 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack4Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 3.3f;
+        private const float DURATION = 2.4f;
         private const float RAY_DAMAGE = 30f;
         private const float EXPLOSION_DAMAGE = 30f;
 
         private const float DMG_START = 1.8f;
-        private const float DMG_DURATION = 1.2f;
+        private const float DMG_DURATION = .5f;
 
         private const float RAYCAST_HEIGHT = 2f;
         private const float MAX_DISTANCE = 100f;

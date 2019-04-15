@@ -104,17 +104,13 @@ namespace LightBringer.Enemies.Knight
             if (currentBehaviour.GetType() != typeof(Attack1Behaviour))
             {
                 float distance = (target.position - motor.transform.position).magnitude;
-                if (distance < 5f)
+                if (distance < 20f)
                 {
-                    weight = 8f;
-                }
-                else if (distance < 20f)
-                {
-                    weight = 5f;
+                    weight = 10f;
                 }
                 else
                 {
-                    weight = 100f / distance;
+                    weight = 200f / distance;
                 }
             }
             dic.Add(new Attack1Behaviour(km, target, km.attack1actGO, km.attack1Container, km.attack1GroundActGOPrefab,
@@ -127,6 +123,10 @@ namespace LightBringer.Enemies.Knight
                 if ((target.position - motor.transform.position).magnitude < 25f)
                 {
                     weight = 10f;
+                }
+                else
+                {
+                    weight = 15f;
                 }
             }
             dic.Add(new Attack2Behaviour(km, target), weight);
@@ -149,7 +149,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
-            weight = 1000000f; // Debug
             dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
 
             // Attack 4 behaviour
@@ -167,9 +166,10 @@ namespace LightBringer.Enemies.Knight
                 }
                 else
                 {
-                    weight = 5f;
+                    weight = 15f;
                 }
             }
+            weight = 100000; // Debug
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
