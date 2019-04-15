@@ -7,16 +7,17 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack4Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 2.4f;
+        private const float DURATION = 2.2f;
         private const float RAY_DAMAGE = 30f;
         private const float EXPLOSION_DAMAGE = 30f;
 
-        private const float DMG_START = 1.8f;
+        private const float DMG_START = 82f/60f;
         private const float DMG_DURATION = .5f;
 
         private const float RAYCAST_HEIGHT = 2f;
         private const float MAX_DISTANCE = 100f;
-        private const float DIST_FROM_CENTER = 2f;
+        private const float DIST_FROM_CENTER_COLLIDER = 2f;
+        private const float DIST_FROM_CENTER_RENDERER = 4f;
 
         private const float EXPLOSION_RADIUS = 8f;
         private const float EXPLOSION_RENDER_DURATION = 4f;
@@ -49,7 +50,7 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            // em.anim.Play("Attack1", -1, 0);
+            em.anim.Play("Attack4", -1, 0);
 
             acts = new AbilityColliderTrigger[1];
 
@@ -86,7 +87,7 @@ namespace LightBringer.Enemies.Knight
                 LayerMask mask = LayerMask.GetMask("Environment");
 
                 // If environment contact, shorter ray and explosion
-                if (Physics.Raycast(em.transform.position + Vector3.up * RAYCAST_HEIGHT + em.transform.forward * DIST_FROM_CENTER,
+                if (Physics.Raycast(em.transform.position + Vector3.up * RAYCAST_HEIGHT + em.transform.forward * DIST_FROM_CENTER_COLLIDER,
                     em.transform.forward, out hit, MAX_DISTANCE, mask))
                 {
                     // ray length
@@ -112,7 +113,7 @@ namespace LightBringer.Enemies.Knight
 
                 // Instanciate ray collider
                 rayColliderContainer = GameObject.Instantiate(km.attack4RayColliderPrefab, em.transform);
-                rayColliderContainer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER);
+                rayColliderContainer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER_COLLIDER);
                 rayColliderContainer.transform.localScale = new Vector3(1, 1, length);
                 GameObject.Destroy(rayColliderContainer, DMG_DURATION + .05f);
 
@@ -122,8 +123,8 @@ namespace LightBringer.Enemies.Knight
 
                 // Instanciate ray renderer
                 rayRenderer = GameObject.Instantiate(km.attack4RayRendererPrefab, em.transform);
-                rayRenderer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER);
-                rayRenderer.GetComponent<RayRenderer>().SetupAndStart(DMG_DURATION, length + 1);
+                rayRenderer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER_RENDERER);
+                rayRenderer.GetComponent<RayRenderer>().SetupAndStart(DMG_DURATION, length - 1);
             }
 
             base.StartCollisionPart(part);

@@ -35,6 +35,14 @@ ModelImporter:
     100058: SphereHand.R
     100060: SphereShoulder.L
     100062: SphereShoulder.R
+    100064: BoneControlerSpearPartB
+    100066: BoneControlerSpearPartL
+    100068: BoneControlerSpearPartR
+    100070: BoneControlerSpearPartT
+    100072: Spear.001
+    100074: Spear.002
+    100076: Spear.003
+    100078: Spear.004
     400000: Armature
     400002: BoneChest
     400004: BoneControlerShield
@@ -67,6 +75,14 @@ ModelImporter:
     400058: SphereHand.R
     400060: SphereShoulder.L
     400062: SphereShoulder.R
+    400064: BoneControlerSpearPartB
+    400066: BoneControlerSpearPartL
+    400068: BoneControlerSpearPartR
+    400070: BoneControlerSpearPartT
+    400072: Spear.001
+    400074: Spear.002
+    400076: Spear.003
+    400078: Spear.004
     2100000: No Name
     4300000: CrystalHead
     4300002: CrystalDress
@@ -87,6 +103,10 @@ ModelImporter:
     4300032: CableTorseBas3
     4300034: CableTorseBas2
     4300036: SphereFoot
+    4300038: Spear.001
+    4300040: Spear.002
+    4300042: Spear.003
+    4300044: Spear.004
     7400000: Armature|Attack1
     7400002: Armature|Attack10
     7400004: Armature|Attack2
@@ -100,6 +120,8 @@ ModelImporter:
     7400020: Armature|MoveLeft
     7400022: Armature|MoveRight
     7400024: Armature|Charge1
+    7400026: Armature|Attack4
+    7400028: Armature|Attack4.001
     9500000: //RootNode
     13700000: CableTorseBas1
     13700002: CableTorseBas2
@@ -120,6 +142,10 @@ ModelImporter:
     13700032: SphereHand.R
     13700034: SphereShoulder.L
     13700036: SphereShoulder.R
+    13700038: Spear.001
+    13700040: Spear.002
+    13700042: Spear.003
+    13700044: Spear.004
     2186277476908879412: ImportLogs
   externalObjects:
   - first:
