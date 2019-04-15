@@ -1598,6 +1598,10 @@ MonoBehaviour:
     type: 3}
   attack4RayRendererPrefab: {fileID: 2185930945638234130, guid: 3b755766cc4316e4ca5532475e4892b4,
     type: 3}
+  attack4ExplColliderPrefab: {fileID: 3825955417808905344, guid: c45d8d2c0f4927f4e9e3da60d9f0292e,
+    type: 3}
+  attack4ExplRendererPrefab: {fileID: 2907310842709987038, guid: 97644e4af11cafd45b69930dc87400ce,
+    type: 3}
   attack1actGO: {fileID: 1630246916114434581}
   attack1Container: {fileID: 6556296068542075606}
   attack3act1GO: {fileID: 1410052713700448}

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2712390353077416242}
   - component: {fileID: 3238912327697401104}
   - component: {fileID: 3511669846231822361}
-  m_Layer: 13
+  m_Layer: 11
   m_Name: Attack1GroundTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}

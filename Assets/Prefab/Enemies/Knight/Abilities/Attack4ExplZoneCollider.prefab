@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1219392242389180
+--- !u!1 &3825955417808905344
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,44 +8,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4634204556962542}
-  - component: {fileID: 114080440326863012}
-  m_Layer: 0
-  m_Name: Attack2CastPoint
+  - component: {fileID: 8919630350410659460}
+  - component: {fileID: 6187380584552008899}
+  - component: {fileID: 6124426998294040773}
+  m_Layer: 11
+  m_Name: Attack4ExplZoneCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4634204556962542
+--- !u!4 &8919630350410659460
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219392242389180}
+  m_GameObject: {fileID: 3825955417808905344}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 8}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114080440326863012
+--- !u!135 &6187380584552008899
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3825955417808905344}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &6124426998294040773
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1219392242389180}
+  m_GameObject: {fileID: 3825955417808905344}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ae8422056d6cd4dafbb586470ec4d2, type: 3}
+  m_Script: {fileID: 11500000, guid: 98de3e2577ba0b5478b1dc8562a90f00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextShotTime: 0
-  remainingShots: 10
-  range: 15
-  radius: 1
-  ImpactPrefab: {fileID: 1523946655699152, guid: 8bbcc1c9cd8d26d4d9bba513b6babe19,
-    type: 3}
+  abTag: 

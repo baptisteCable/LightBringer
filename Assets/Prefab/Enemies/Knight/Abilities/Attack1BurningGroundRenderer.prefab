@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 8460598394328406692}
   - component: {fileID: 8460121801248807217}
-  m_Layer: 0
-  m_Name: BurningGround
+  m_Layer: 11
+  m_Name: Attack1BurningGroundRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2742357332916145408}
   - component: {fileID: 4615034008786529751}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -135,7 +135,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8036020944694805032}
   - component: {fileID: 7989009193131070093}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Mask
   m_TagString: Untagged
   m_Icon: {fileID: 0}

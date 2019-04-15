@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1297115501534488165}
   - component: {fileID: 5733214429953403048}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Attack4RayRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61,7 +61,7 @@ GameObject:
   - component: {fileID: 6936649658701095536}
   - component: {fileID: 6829272599299874139}
   - component: {fileID: 315251129537132770}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Emission
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4759,7 +4759,7 @@ GameObject:
   - component: {fileID: 4220155255822110349}
   - component: {fileID: 6904665182161045480}
   - component: {fileID: 2383181034076946959}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RotatingPS2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9515,7 +9515,7 @@ GameObject:
   - component: {fileID: 8573771421667596619}
   - component: {fileID: 7944835805028282109}
   - component: {fileID: 2510051679483364708}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RotatingPS1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14270,7 +14270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5690562483442101468}
   - component: {fileID: 6744547610471077815}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Line
   m_TagString: Untagged
   m_Icon: {fileID: 0}

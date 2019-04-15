@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1297115501534488165}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Attack4RayColliderContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 7048312484274838033}
   - component: {fileID: 470665708534257317}
   - component: {fileID: 5589856620311827445}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
