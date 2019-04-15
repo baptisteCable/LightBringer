@@ -229,6 +229,7 @@ namespace LightBringer.Enemies.Knight
             attackRenderer.SetActive(false);
 
             base.Abort();
+            em.SetOverrideAgent(false);
         }
     }
 }

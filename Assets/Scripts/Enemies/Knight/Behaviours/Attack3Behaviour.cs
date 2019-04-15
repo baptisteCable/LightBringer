@@ -109,6 +109,7 @@ namespace LightBringer.Enemies.Knight
         {
             shieldCollider.SetActive(true);
             base.Abort();
+            em.SetOverrideAgent(false);
         }
     }
 }

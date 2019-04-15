@@ -187,9 +187,8 @@ namespace LightBringer.Enemies.Knight
 
         public override void Abort()
         {
-            rayRenderer.SetActive(false);
-
             base.Abort();
+            em.SetOverrideAgent(false);
         }
     }
 }

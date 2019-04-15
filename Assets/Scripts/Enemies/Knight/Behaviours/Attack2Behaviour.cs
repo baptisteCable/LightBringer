@@ -115,5 +115,11 @@ namespace LightBringer.Enemies.Knight
         public void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
         }
+
+        public override void Abort()
+        {
+            base.Abort();
+            em.SetOverrideAgent(false);
+        }
     }
 }

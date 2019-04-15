@@ -14,10 +14,6 @@ namespace LightBringer.Enemies.Knight
         private const float ATTACK3_CD = 11f;
         private const float TRANSITION_DURATION = 2f;
 
-
-        // Target
-        public Transform target;
-
         // Component
         [HideInInspector] public KnightMotor km;
 
@@ -31,6 +27,8 @@ namespace LightBringer.Enemies.Knight
             // last behaviour
             currentBehaviour = new WaitBehaviour(km, 2f);
             nextActionBehaviour = null;
+
+            SelectTarget();
 
             motor.head.LookAtTarget(target.gameObject);
         }
@@ -70,6 +68,9 @@ namespace LightBringer.Enemies.Knight
             // Else compute the next action behaviour
             else
             {
+                // Find target
+                SelectTarget();
+
                 // Create the list of possible behaviours, depending on the situation
                 Dictionary<EnemyBehaviour, float> dic = ActionBehaviourList();
 
