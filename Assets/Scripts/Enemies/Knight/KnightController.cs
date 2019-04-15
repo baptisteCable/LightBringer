@@ -6,7 +6,7 @@ namespace LightBringer.Enemies.Knight
     [RequireComponent(typeof(KnightMotor))]
     public class KnightController : Controller
     {
-        private const float TRANSITION_DURATION = 1.85f;
+        private const float TRANSITION_DURATION = .3f;
 
         // Component
         [HideInInspector] public KnightMotor km;
@@ -169,7 +169,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 15f;
                 }
             }
-            weight = 100000; // Debug
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
@@ -410,4 +409,6 @@ namespace LightBringer.Enemies.Knight
             return normalized;
         }
     }
+
+    // TODO : option de dash : ne pas arriver plus loin du joueur que ce que l'on est au départ.
 }

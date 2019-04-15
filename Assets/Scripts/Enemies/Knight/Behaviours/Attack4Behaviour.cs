@@ -148,7 +148,6 @@ namespace LightBringer.Enemies.Knight
                 {
                     cols.Add(col, Time.time);
                     ApplyRayDamage(col);
-                    Debug.Log("Ray");
 
                 }
                 if (abilityColliderTrigger == explAct && !explCols.ContainsKey(col))
