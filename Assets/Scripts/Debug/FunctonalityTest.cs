@@ -1,19 +1,24 @@
-﻿using LightBringer.Enemies.Knight;
+﻿using LightBringer.Enemies;
 using UnityEngine;
 
-public class FunctonalityTest : MonoBehaviour {
+public class FunctonalityTest : MonoBehaviour
+{
 
     public bool done = false;
-    public Transform origin;
-    public Transform destination;
-    public float distance;
+    public Transform enemy;
+    public Transform player;
+    public float distanceOrMin;
+    public float maxDistance;
     public bool sightLineReq;
     public bool canGoBehindPlayer;
     public bool canGoBackward;
+    public float minChargeDist;
+    public float maxChargeDist;
 
     public GameObject spherePrefab;
 
-    void Start () {    
+    void Start()
+    {
     }
 
     private void Update()
@@ -31,9 +36,21 @@ public class FunctonalityTest : MonoBehaviour {
 
         for (int i = 0; i < 1000; i++)
         {
-            if (Charge1Behaviour.ComputeTargetPoint(origin, destination.position, distance, sightLineReq, canGoBehindPlayer, canGoBackward, out pos))
+            if (maxDistance > 0)
             {
-                Destroy(Instantiate(spherePrefab, pos, Quaternion.identity, null), 3);
+                if (Controller.CanFindTargetPoint(enemy, player.position, distanceOrMin, maxDistance, sightLineReq, canGoBehindPlayer,
+                    canGoBackward, minChargeDist, maxChargeDist, out pos))
+                {
+                    Destroy(Instantiate(spherePrefab, pos, Quaternion.identity, null), 3);
+                }
+            }
+            else
+            {
+                if (Controller.CanFindTargetPoint(enemy, player.position, distanceOrMin, canGoBehindPlayer,
+                    canGoBackward, minChargeDist, maxChargeDist, out pos))
+                {
+                    Destroy(Instantiate(spherePrefab, pos, Quaternion.identity, null), 3);
+                }
             }
         }
     }

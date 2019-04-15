@@ -6,13 +6,7 @@ namespace LightBringer.Enemies.Knight
     [RequireComponent(typeof(KnightMotor))]
     public class KnightController : Controller
     {
-        private const int ATTACK1 = 0;
-        private const int ATTACK2 = 1;
-        private const int ATTACK3 = 2;
-        private const float ATTACK1_CD = 6f;
-        private const float ATTACK2_CD = 15f;
-        private const float ATTACK3_CD = 11f;
-        private const float TRANSITION_DURATION = 2f;
+        private const float TRANSITION_DURATION = 1.85f;
 
         // Component
         [HideInInspector] public KnightMotor km;
@@ -155,6 +149,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
+            weight = 1000000f; // Debug
             dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
 
             // Attack 4 behaviour
@@ -175,7 +170,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 5f;
                 }
             }
-            weight = 10000; // Debug
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
@@ -217,30 +211,44 @@ namespace LightBringer.Enemies.Knight
         private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack1()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
-            float weight;
 
-            // Wait behaviour
-            if ((target.position - motor.transform.position).magnitude < 15f)
+            Vector3 destination;
+
+            // if good way to have a sight line after charge
+            if (CanFindTargetPoint(
+                    motor.transform, target.position, 5, 25, true, true, true,
+                    Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
+                   )
             {
-                weight = 1f;
+                dic.Add(new Charge1Behaviour(km, destination), 1f);
+
+                // if sight line and not too far (before charge), prefer waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 25f && hasSightLine(target.position, motor.transform.position))
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                }
             }
             else
             {
-                weight = .1f;
-            }
-            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+                // if sight line and not too far , waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 25f && hasSightLine(target.position, motor.transform.position))
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                }
+                // else, no way to be in right position, thus random move
+                else
+                {
+                    if (CanFindTargetPoint(
+                            motor.transform, target.position, 5, 50, false, true, false,
+                            Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
+                    {
+                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                    }
 
-            // Charge to position
-            weight = 0;
-            if ((target.position - motor.transform.position).magnitude > 13)
-            {
-                weight = 1f;
+                    // or wait
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                }
             }
-            else
-            {
-                weight = .2f;
-            }
-            dic.Add(new GoToPointBehaviour(km, target.position), weight);
 
             return dic;
         }
@@ -255,30 +263,52 @@ namespace LightBringer.Enemies.Knight
         private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack3()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
-            float weight;
 
-            // Wait behaviour
-            if ((target.position - motor.transform.position).magnitude < 10)
+            Vector3 destination;
+
+            // if good way to have a close position
+            if (CanFindTargetPoint(
+                    motor.transform, target.position, 6f, false, true,
+                    Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
+                   )
             {
-                weight = 1f;
+                dic.Add(new Charge1Behaviour(km, destination), 1f);
+
+                // if not too far (before charge), can also trigger waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 12f)
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                }
             }
             else
             {
-                weight = .2f;
-            }
-            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+                // if not too far, waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 15f)
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                }
+                // try a closer not optimal move
+                else if (CanFindTargetPoint(
+                    motor.transform, target.position, 3, 15f, false, true, true,
+                    Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
+                   )
+                {
+                    dic.Add(new Charge1Behaviour(km, destination), 1f);
+                }
+                // else, no way to be in right position, thus random move
+                else
+                {
+                    if (CanFindTargetPoint(
+                            motor.transform, target.position, 5, 50, false, true, true,
+                            Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
+                    {
+                        dic.Add(new Charge1Behaviour(km, destination), 1f);
+                    }
 
-            // Go to position
-            weight = 0;
-            if ((target.position - motor.transform.position).magnitude > 13)
-            {
-                weight = 1f;
+                    // or wait
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                }
             }
-            else
-            {
-                weight = .2f;
-            }
-            dic.Add(new GoToPointBehaviour(km, target.position), weight);
 
             return dic;
         }
@@ -286,35 +316,47 @@ namespace LightBringer.Enemies.Knight
         private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack4()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
-            float weight;
 
-            // Wait behaviour
-            if ((target.position - motor.transform.position).magnitude < 15f)
+            Vector3 destination;
+
+            // if good way to have a sight line after charge
+            if (CanFindTargetPoint(
+                    motor.transform, target.position, 5, 60, true, true, true,
+                    Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
+                   )
             {
-                weight = 1f;
+                dic.Add(new Charge1Behaviour(km, destination), 1f);
+
+                // if sight line and not too far (before charge), prefer waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 100f && hasSightLine(target.position, motor.transform.position))
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                }
             }
             else
             {
-                weight = .1f;
-            }
-            weight = 10000; // Debug
-            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), weight);
+                // if sight line, waiting behaviour
+                if ((target.position - motor.transform.position).magnitude < 100f && hasSightLine(target.position, motor.transform.position))
+                {
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                }
+                // else, no way to be in right position, thus random move
+                else
+                {
+                    if (CanFindTargetPoint(
+                            motor.transform, target.position, 5, 50, false, true, false,
+                            Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
+                    {
+                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                    }
 
-            // Go to position
-            weight = 0;
-            if ((target.position - motor.transform.position).magnitude > 13)
-            {
-                weight = 1f;
+                    // or wait
+                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                }
             }
-            else
-            {
-                weight = .2f;
-            }
-            dic.Add(new GoToPointBehaviour(km, target.position), weight);
 
             return dic;
         }
-
 
         private EnemyBehaviour SelectBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> dic)
         {

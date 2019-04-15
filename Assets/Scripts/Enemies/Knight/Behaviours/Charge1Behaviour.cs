@@ -6,7 +6,7 @@ namespace LightBringer.Enemies.Knight
 {
     public class Charge1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 2.9f;
+        private const float DURATION = 1.85f;
         public const float CHARGE_MAX_RANGE = 40f;
         public const float CHARGE_MIN_RANGE = 10f;
 
@@ -20,14 +20,14 @@ namespace LightBringer.Enemies.Knight
         private float range;
         private KnightMotor km;
 
-        public Charge1Behaviour(KnightMotor enemyMotor, Vector3 targetPoint, GameObject charge1actGO) : base(enemyMotor)
+        public Charge1Behaviour(KnightMotor enemyMotor, Vector3 targetPoint) : base(enemyMotor)
         {
+            km = enemyMotor;
             targetPosition = targetPoint;
             actGOs = new GameObject[1];
-            actGOs[0] = charge1actGO;
+            actGOs[0] = km.charge1actGO;
             parts = new Part[1];
             parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, 0);
-            km = enemyMotor;
         }
 
         public override void Init()
@@ -42,7 +42,7 @@ namespace LightBringer.Enemies.Knight
                 acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger>();
             }
 
-            range = Vector3.Distance(em.transform.position, targetPosition);
+            range = Mathf.Min(Mathf.Max(Vector3.Distance(em.transform.position, targetPosition), CHARGE_MIN_RANGE), CHARGE_MAX_RANGE);            
         }
 
         public override void Run()
@@ -63,15 +63,27 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
+        // Resize indicator depending on charge range
+        protected override void DisplayIndicator(int part, float loadingTime)
+        {
+            base.DisplayIndicator(part, loadingTime);
+
+            if (part == 0)
+            {
+                em.indicators[parts[part].indicator].transform.localScale = new Vector3(1, 1, range);
+            }
+        }
+
         protected override void StartCollisionPart(int i)
         {
+            base.StartCollisionPart(i);
+
             if (i == 0)
             {
                 // Effect
                 km.chargeEffect.GetComponent<ParticleSystem>().Play();
-            }
 
-            base.StartCollisionPart(i);
+            }
         }
 
         protected override void RunCollisionPart(int part)
@@ -111,23 +123,6 @@ namespace LightBringer.Enemies.Knight
             {
                 psm.TakeDamage(dmg, em);
                 psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), STUN_DURATION);
-            }
-        }
-
-        public static bool ComputeTargetPoint(Transform knight, Vector3 playerPos, float playerDistance, bool sightLineRequired,
-            bool canGoBehindPlayer, bool canGoBackWard, out Vector3 targetPosition)
-        {
-            // fixed distance to the player
-            if (playerDistance > 0)
-            {
-                return Controller.GetAccessiblePointInStraightLineAroundPlayer(knight, playerPos, playerDistance, sightLineRequired,
-                    canGoBehindPlayer, CHARGE_MIN_RANGE, CHARGE_MAX_RANGE, out targetPosition);
-            }
-            // random dist (accessible) with sight line
-            else
-            {
-                return Controller.GetAccessiblePointInStraightLineWithSightLine(knight, playerPos, sightLineRequired, canGoBehindPlayer,
-                    canGoBackWard, CHARGE_MIN_RANGE, CHARGE_MAX_RANGE, out targetPosition);
             }
         }
     }

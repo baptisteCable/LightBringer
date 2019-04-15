@@ -21,6 +21,7 @@ namespace LightBringer.Enemies.Knight
         public GameObject attack3act1GO;
         public GameObject attack3act2GO;
         public GameObject shieldCollider;
+        public GameObject charge1actGO;
 
         [Header("Effects")]
         public ParticleSystem chargeEffect;

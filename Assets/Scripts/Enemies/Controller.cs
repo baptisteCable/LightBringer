@@ -65,8 +65,8 @@ namespace LightBringer.Enemies
         }
 
         // Try 100 points
-        public static bool GetAccessiblePointInStraightLineWithSightLine(Transform enemy, Vector3 playerPos, bool sightLineRequired,
-            bool canGoBehindPlayer, bool canGoBackWard, float minDist, float maxDist, out Vector3 point)
+        public static bool GetAccessiblePointInStraightLineWithSightLine(Transform enemy, Vector3 playerPos, float minPlayerDistance,
+            float maxPlayerDistance, bool sightLineRequired, bool canGoBehindPlayer, bool canGoBackWard, float minDist, float maxDist, out Vector3 point)
         {
             for (int i = 0; i < 100; i++)
             {
@@ -76,11 +76,12 @@ namespace LightBringer.Enemies
                     angle *= 2;
                 }
 
-                float distance = Random.value * (maxDist - minDist) + maxDist;
+                float distance = Random.value * (maxDist - minDist) + minDist;
 
-                Vector3 targetPoint = enemy.position + Quaternion.AngleAxis(angle, Vector3.up) * ((enemy.forward).normalized * distance);
+                Vector3 targetPoint = enemy.position + Quaternion.AngleAxis(angle, Vector3.up) * ((playerPos - enemy.position).normalized * distance);
 
-                if (Controller.isPointAccessibleInStraightLine(enemy, targetPoint, minDist, maxDist)
+                if (Vector3.Distance(targetPoint, playerPos) >= minPlayerDistance && Vector3.Distance(targetPoint, playerPos) <= maxPlayerDistance
+                    && Controller.isPointAccessibleInStraightLine(enemy, targetPoint, minDist, maxDist)
                     && (!sightLineRequired || Controller.hasSightLine(playerPos, targetPoint))
                     && (canGoBehindPlayer || !Controller.isBehindPlayer(enemy, playerPos, targetPoint)))
                 {
@@ -131,6 +132,21 @@ namespace LightBringer.Enemies
             }
 
             return true;
+        }
+
+        public static bool CanFindTargetPoint(Transform enemy, Vector3 playerPos, float playerDistance, bool sightLineRequired,
+            bool canGoBehindPlayer, float minDist, float maxDist, out Vector3 targetPosition)
+        {
+            // fixed distance to the player
+            return Controller.GetAccessiblePointInStraightLineAroundPlayer(enemy, playerPos, playerDistance, sightLineRequired,
+                canGoBehindPlayer, minDist, maxDist, out targetPosition);
+        }
+
+        public static bool CanFindTargetPoint(Transform enemy, Vector3 playerPos, float minPlayerDistance, float maxPlayerDistance, bool sightLineRequired,
+            bool canGoBehindPlayer, bool canGoBackWard, float minDist, float maxDist, out Vector3 targetPosition)
+        {
+            return Controller.GetAccessiblePointInStraightLineWithSightLine(enemy, playerPos, minPlayerDistance, maxPlayerDistance, sightLineRequired,
+                canGoBehindPlayer, canGoBackWard, minDist, maxDist, out targetPosition);
         }
     }
 }

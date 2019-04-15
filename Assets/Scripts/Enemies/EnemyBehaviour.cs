@@ -88,7 +88,7 @@ namespace LightBringer.Enemies
                 && parts[part].state == State.Before;
         }
 
-        protected void DisplayIndicator(int part, float loadingTime)
+        protected virtual void DisplayIndicator(int part, float loadingTime)
         {
             if (parts[part].indicator != -1)
             {
