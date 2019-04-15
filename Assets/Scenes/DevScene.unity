@@ -897,6 +897,7 @@ MonoBehaviour:
   done: 1
   origin: {fileID: 856928154}
   destination: {fileID: 2025360416}
+  distance: 10
   sightLineReq: 0
   canGoBehindPlayer: 1
   canGoBackward: 0
