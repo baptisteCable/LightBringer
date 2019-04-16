@@ -163,9 +163,7 @@ namespace LightBringer.Enemies.Knight
                     {
                         explCols.Add(col, Time.time);
                         ApplyExplosionDamage(col);
-                        Debug.Log("Explosion");
                     }
-
                 }
             }
         }
@@ -173,7 +171,7 @@ namespace LightBringer.Enemies.Knight
         private void ApplyRayDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(RAY_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
+            Damage dmg = new Damage(RAY_DAMAGE, DamageType.RangeInstant, DamageElement.Energy);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);

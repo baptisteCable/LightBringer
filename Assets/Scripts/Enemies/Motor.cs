@@ -131,6 +131,11 @@ namespace LightBringer.Enemies
 
         public void SetOverrideAgent(bool oa)
         {
+            if (statusManager.isDead)
+            {
+                return;
+            }
+
             if (oa)
             {
                 agent.velocity = Vector3.zero;

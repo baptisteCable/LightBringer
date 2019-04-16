@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace LightBringer.Enemies
@@ -30,13 +31,25 @@ namespace LightBringer.Enemies
 
         protected void SelectTarget()
         {
-            LayerMask mask = LayerMask.GetMask("Player");
+            LayerMask mask = LayerMask.GetMask("Player", "Immaterial", "NoCollision");
             Collider[] cols = Physics.OverlapSphere(transform.position, TARGET_DETECTION_DISTANCE, mask);
+            List<Collider> colList = new List<Collider>(cols);
 
             // Random choice
-            int index = (int)(Random.value * cols.Length);
-            Debug.Log("Length: " + cols.Length + " ; Value: " + index);
-            target = cols[index].transform;
+            int index;
+            target = null;
+            while (colList.Count > 0 && (target == null || target.tag != "Player"))
+            {
+                index = (int)(Random.value * cols.Length);
+                target = colList[index].transform;
+                colList.RemoveAt(index);
+            }
+
+            if (target == null || target.tag != "Player")
+            {
+                target = null;
+                Debug.Log("No target found");
+            }
         }
 
         // Try 10 points at the right distance from the target point

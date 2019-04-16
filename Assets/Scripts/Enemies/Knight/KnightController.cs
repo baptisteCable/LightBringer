@@ -65,18 +65,28 @@ namespace LightBringer.Enemies.Knight
                 // Find target
                 SelectTarget();
 
-                // Create the list of possible behaviours, depending on the situation
-                Dictionary<EnemyBehaviour, float> dic = ActionBehaviourList();
+                // if no target, do nothing (TODO: improve it and make it passive after several tries)
+                if (target == null)
+                {
+                    nextActionBehaviour = new WaitBehaviour(km, .5f);
+                    SetBehaviour(new WaitBehaviour(km, .5f));
+                }
 
-                // Determine next action behaviour from list
-                nextActionBehaviour = SelectBehaviourFromDictionary(dic);
+                else
+                {
+                    // Create the list of possible behaviours, depending on the situation
+                    Dictionary<EnemyBehaviour, float> dic = ActionBehaviourList();
 
-                // Create the list of possible behaviours, depending on the situation
-                dic = TransistionBehaviourList();
+                    // Determine next action behaviour from list
+                    nextActionBehaviour = SelectBehaviourFromDictionary(dic);
 
-                // Determine next transition behaviour from list and start it
-                EnemyBehaviour transitionBehaviour = SelectBehaviourFromDictionary(dic);
-                SetBehaviour(transitionBehaviour);
+                    // Create the list of possible behaviours, depending on the situation
+                    dic = TransistionBehaviourList();
+
+                    // Determine next transition behaviour from list and start it
+                    EnemyBehaviour transitionBehaviour = SelectBehaviourFromDictionary(dic);
+                    SetBehaviour(transitionBehaviour);
+                }
 
             }
         }
