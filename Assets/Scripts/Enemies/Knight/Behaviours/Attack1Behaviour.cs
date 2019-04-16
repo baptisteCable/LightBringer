@@ -19,10 +19,12 @@ namespace LightBringer.Enemies.Knight
         public const float CONE_ANGLE = 75f;
         public const float CONE_STARTING = -20f;
 
+        private const float RAYCAST_HEIGHT = 2f;
+        private const float MAX_DISTANCE = 29f;
+        private const float DIST_FROM_CENTER_COLLIDER = 2f;
+
         private const float TIME_BETWEEN_REFRESH = .02f;
 
-        private Transform attackContainer;
-        private GameObject attackRenderer;
         private Transform target;
         private Vector3 targetPosition;
 
@@ -34,21 +36,21 @@ namespace LightBringer.Enemies.Knight
         private ConeMesh groundConeMesh;
         private BurningGround burningGround;
 
+        private KnightMotor km;
+
         // Ground collider list
         protected Dictionary<Collider, float> groundCols;
 
         private float nextConeRefresh;
 
-        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject attack1act1GO, GameObject attack1Container,
-            GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
+        public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
         {
+            km = enemyMotor;
             this.target = target;
             actGOs = new GameObject[1];
-            actGOs[0] = attack1act1GO;
+            actGOs[0] = km.attack1actGO;
             parts = new Part[1];
             parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, -1);
-            attackContainer = attack1Container.transform;
-            attackRenderer = attackContainer.Find("Renderer").gameObject;
             this.groundActPrefab = groundActPrefab;
             this.groundRendererPrefab = groundRendererPrefab;
         }
@@ -89,7 +91,7 @@ namespace LightBringer.Enemies.Knight
             if (part == 0)
             {
                 // Activate ray
-                attackRenderer.SetActive(true);
+                km.attack1RayRenderer.SetupAndStart(DMG_DURATION, MAX_DISTANCE);
 
                 // Activate ground collider trigger
                 groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
@@ -119,7 +121,23 @@ namespace LightBringer.Enemies.Knight
             {
                 // move Ray container
                 float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration + 8f;
-                //attackContainer.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
+                km.attack1Container.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
+
+                // compute length
+                float length = MAX_DISTANCE;
+                RaycastHit hit;
+                LayerMask mask = LayerMask.GetMask("Environment");
+
+                // If environment contact, shorter ray and explosion
+                if (Physics.Raycast(km.attack1Container.transform.position + km.attack1Container.transform.forward * DIST_FROM_CENTER_COLLIDER,
+                    km.attack1Container.transform.forward, out hit, MAX_DISTANCE, mask))
+                {
+                    // ray length (collider)
+                    length = hit.distance;
+                }
+
+                km.attack1actContainer.transform.localScale = new Vector3(1, 1, length);
+                km.attack1RayRenderer.SetLength(length - 1);
 
                 // Ground collider trigger
                 if (Time.time > nextConeRefresh)
@@ -128,7 +146,7 @@ namespace LightBringer.Enemies.Knight
                     nextConeRefresh = Time.time + TIME_BETWEEN_REFRESH;
                     groundConeMesh.angle = coneAngleWidth;
                     groundConeMesh.CreateAngularAoEMesh();
-                    groundActGO.transform.localRotation = em.transform.rotation * 
+                    groundActGO.transform.localRotation = em.transform.rotation *
                         Quaternion.AngleAxis((angle - CONE_STARTING) / 2f + CONE_STARTING, Vector3.up);
                     burningGround.SetAngle(angle);
                 }
@@ -140,12 +158,6 @@ namespace LightBringer.Enemies.Knight
 
         protected override void EndPart(int part)
         {
-            if (part == 0)
-            {
-                // Disactivate ray
-                attackRenderer.SetActive(false);
-            }
-
             base.EndPart(part);
         }
 
@@ -226,8 +238,6 @@ namespace LightBringer.Enemies.Knight
 
         public override void Abort()
         {
-            attackRenderer.SetActive(false);
-
             base.Abort();
             em.SetOverrideAgent(false);
         }

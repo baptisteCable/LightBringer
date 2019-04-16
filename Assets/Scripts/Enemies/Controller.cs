@@ -35,6 +35,7 @@ namespace LightBringer.Enemies
 
             // Random choice
             int index = (int)(Random.value * cols.Length);
+            Debug.Log("Length: " + cols.Length + " ; Value: " + index);
             target = cols[index].transform;
         }
 

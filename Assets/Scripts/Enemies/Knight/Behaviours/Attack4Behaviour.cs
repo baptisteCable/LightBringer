@@ -56,6 +56,8 @@ namespace LightBringer.Enemies.Knight
             em.anim.Play("Attack4", -1, 0);
 
             acts = new AbilityColliderTrigger[1];
+            actGOs[0] = km.attack4actGO;
+            acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
 
             // Rotate to face player
             targetPosition = target.position;
@@ -99,8 +101,8 @@ namespace LightBringer.Enemies.Knight
                 LayerMask mask = LayerMask.GetMask("Environment");
 
                 // If environment contact, shorter ray and explosion
-                if (Physics.Raycast(em.transform.position + Vector3.up * RAYCAST_HEIGHT + em.transform.forward * DIST_FROM_CENTER_COLLIDER,
-                    em.transform.forward, out hit, MAX_DISTANCE, mask))
+                if (Physics.Raycast(km.attack4Container.transform.position + km.attack4Container.transform.forward * DIST_FROM_CENTER_COLLIDER,
+                    km.attack4Container.transform.forward, out hit, MAX_DISTANCE, mask))
                 {
                     // ray length
                     length = hit.distance;
@@ -123,20 +125,11 @@ namespace LightBringer.Enemies.Knight
                     GameObject.Destroy(explRenderer, EXPLOSION_RENDER_DURATION);
                 }
 
-                // Instanciate ray collider
-                rayColliderContainer = GameObject.Instantiate(km.attack4RayColliderPrefab, em.transform);
-                rayColliderContainer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER_COLLIDER);
-                rayColliderContainer.transform.localScale = new Vector3(1, 1, length);
-                GameObject.Destroy(rayColliderContainer, DMG_DURATION + .05f);
-
-                // Init Collision behaviour data
-                actGOs[0] = rayColliderContainer.transform.Find("Cylinder").gameObject;
-                acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
+                // Ray collider length
+                km.attack4actContainer.transform.localScale = new Vector3(1, 1, length);
 
                 // Instanciate ray renderer
-                rayRenderer = GameObject.Instantiate(km.attack4RayRendererPrefab, em.transform);
-                rayRenderer.transform.localPosition = new Vector3(0f, RAYCAST_HEIGHT, DIST_FROM_CENTER_RENDERER);
-                rayRenderer.GetComponent<RayRenderer>().SetupAndStart(DMG_DURATION, length - 1);
+                km.attack4RayRenderer.SetupAndStart(DMG_DURATION, length - (DIST_FROM_CENTER_RENDERER - DIST_FROM_CENTER_COLLIDER));
             }
 
             base.StartCollisionPart(part);
