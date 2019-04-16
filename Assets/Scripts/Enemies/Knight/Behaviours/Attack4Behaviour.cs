@@ -11,8 +11,9 @@ namespace LightBringer.Enemies.Knight
         private const float RAY_DAMAGE = 30f;
         private const float EXPLOSION_DAMAGE = 30f;
 
-        private const float DMG_START = 82f/60f;
-        private const float DMG_DURATION = .5f;
+        private const float CHANNELING_EFFECT_START = 22f / 60f;
+        private const float DMG_START = 82f / 60f;
+        private const float DMG_DURATION = .3f;
 
         private const float RAYCAST_HEIGHT = 2f;
         private const float MAX_DISTANCE = 100f;
@@ -20,7 +21,7 @@ namespace LightBringer.Enemies.Knight
         private const float DIST_FROM_CENTER_RENDERER = 4f;
 
         private const float EXPLOSION_RADIUS = 8f;
-        private const float EXPLOSION_RENDER_DURATION = 4f;
+        private const float EXPLOSION_RENDER_DURATION = 2f;
 
         private GameObject rayColliderContainer;
         private GameObject rayRenderer;
@@ -32,7 +33,9 @@ namespace LightBringer.Enemies.Knight
         private GameObject explActGO;
         private AbilityColliderTrigger explAct;
 
-        KnightMotor km;
+        private bool effectStarted;
+
+        private KnightMotor km;
 
         // Explosion collider list
         protected Dictionary<Collider, float> explCols;
@@ -56,6 +59,8 @@ namespace LightBringer.Enemies.Knight
 
             // Rotate to face player
             targetPosition = target.position;
+
+            effectStarted = false;
         }
 
         public override void Run()
@@ -68,6 +73,13 @@ namespace LightBringer.Enemies.Knight
             if (Time.time <= startTime + DMG_START)
             {
                 em.RotateTowards(targetPosition);
+            }
+
+            // Channeling effect
+            if (!effectStarted && Time.time > startTime + CHANNELING_EFFECT_START)
+            {
+                effectStarted = true;
+                km.attack4ChannelingEffect.Play(true);
             }
 
             if (Time.time > startTime + DURATION)

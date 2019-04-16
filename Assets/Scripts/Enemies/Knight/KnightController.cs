@@ -169,6 +169,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 15f;
                 }
             }
+            weight = 1000000f;
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
@@ -320,7 +321,7 @@ namespace LightBringer.Enemies.Knight
 
             // if good way to have a sight line after charge
             if (CanFindTargetPoint(
-                    motor.transform, target.position, 5, 60, true, true, true,
+                    motor.transform, target.position, 5, 25, true, true, true,
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
             {
@@ -342,8 +343,23 @@ namespace LightBringer.Enemies.Knight
                 // else, no way to be in right position, thus random move
                 else
                 {
+                    // can find with sight line but farther
                     if (CanFindTargetPoint(
-                            motor.transform, target.position, 5, 50, false, true, false,
+                            motor.transform, target.position, 5, 50, true, true, true,
+                            Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
+                    {
+                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                    }
+                    // no sightline but closer
+                    else if (CanFindTargetPoint(
+                            motor.transform, target.position, 5, 20, false, true, false,
+                            Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
+                    {
+                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                    }
+                    // no sightline and not that close
+                    else if (CanFindTargetPoint(
+                            motor.transform, target.position, 5, 40, false, true, false,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
                         dic.Add(new Charge1Behaviour(km, destination), 3f);
@@ -409,6 +425,4 @@ namespace LightBringer.Enemies.Knight
             return normalized;
         }
     }
-
-    // TODO : option de dash : ne pas arriver plus loin du joueur que ce que l'on est au départ.
 }

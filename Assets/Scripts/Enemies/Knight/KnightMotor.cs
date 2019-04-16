@@ -25,6 +25,7 @@ namespace LightBringer.Enemies.Knight
 
         [Header("Effects")]
         public ParticleSystem chargeEffect;
+        public ParticleSystem attack4ChannelingEffect;
 
         private void Start()
         {
