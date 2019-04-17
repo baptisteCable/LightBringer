@@ -54,7 +54,11 @@ namespace LightBringer.Enemies.Knight
             ps1.Play();
             ps2.Play();
             emiter.Play();
-            ending.Play();
+
+            if (ending != null)
+            {
+                ending.Play();
+            }
         }
 
         public void SetLength(float length)
@@ -69,7 +73,10 @@ namespace LightBringer.Enemies.Knight
             shape2.length = Mathf.Max(length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
 
             // Ending position
-            ending.transform.localPosition = new Vector3(0, 0, length);
+            if (ending != null)
+            {
+                ending.transform.localPosition = new Vector3(0, 0, length);
+            }
         }
 
         // Update is called once per frame
@@ -90,7 +97,10 @@ namespace LightBringer.Enemies.Knight
             if (endTime > 0 && Time.time > endTime)
             {
                 emiter.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-                ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                if (ending != null)
+                {
+                    ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                }
                 line.widthMultiplier = Mathf.Max(1 - (Time.time - endTime) / VANISH_DURATION, 0) * LINE_WIDTH;
             }
 

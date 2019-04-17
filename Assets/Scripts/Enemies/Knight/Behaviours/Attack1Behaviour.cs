@@ -7,17 +7,17 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 4.3f;
+        private const float DURATION = 4.85f;
         private const float RAY_DAMAGE = 10f;
         private const float TIME_BETWEEN_RAY_TICKS = .2f;
         private const float GROUND_DAMAGE = 1.5f;
         private const float TIME_BETWEEN_GROUND_TICKS = .05f;
 
-        private const float DMG_START = 2f;
-        private const float DMG_DURATION = 2.2f;
+        private const float DMG_START = 123f/60f;
+        private const float DMG_DURATION = 136f / 60f;
         public const float GROUND_DURATION = 10f;
-        public const float CONE_ANGLE = 75f;
-        public const float CONE_STARTING = -20f;
+        public const float CONE_ANGLE = 70.8f;
+        public const float CONE_STARTING = -18.8f;
 
         private const float RAYCAST_HEIGHT = 2f;
         private const float MAX_DISTANCE = 29f;
@@ -96,7 +96,7 @@ namespace LightBringer.Enemies.Knight
                 groundCols = new Dictionary<Collider, float>();
 
                 // Ground renderer
-                groundRenderer = GameObject.Instantiate(groundRendererPrefab, em.transform.position + Vector3.up * .1f,
+                groundRenderer = GameObject.Instantiate(groundRendererPrefab, em.transform.position + Vector3.up * .1f + em.transform.right * 2f,
                     em.transform.rotation, null);
                 burningGround = groundRenderer.GetComponent<BurningGround>();
                 GameObject.Destroy(groundRenderer, GROUND_DURATION);
@@ -113,8 +113,8 @@ namespace LightBringer.Enemies.Knight
             if (part == 0)
             {
                 // move Ray container
-                float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration + 8f;
-                km.attack1Container.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
+                float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
+                // km.attack1Container.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
 
                 // compute length
                 float length = MAX_DISTANCE;

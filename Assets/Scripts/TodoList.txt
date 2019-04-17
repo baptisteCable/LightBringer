@@ -1,0 +1,28 @@
+Intensités variables : rage et fatigue
+
+Changer la vitesse d'une partie d'animation
+
+Bouclier qui repousse le joueur proche
+
+Rage (durée fixe) :
+	- jauge cachée augmente avec :
+		* attaques ratées
+		* total de dégâts (sauf petites attaques)
+		* interrupt
+	- Le jauge n'augmente pas lorsque le monstre est en rage ou fatigué.
+	- raccourcir les channeling
+	- lumières plus agressives (rouges)
+	- particules éclairs rouges
+	- chargements plus inquiétants
+	- charge plus rapide
+	- pas d'interrupt
+
+Fatigue (durée fixe) : 
+	- ralonger le temps une fois sur 3 (idle fatigué à chaque attente longue)
+	- lumières moins agressives
+	- déplacement au lieu de charge (animation déplacement fatigué)
+
+Interruption :
+	- Les attaques à grande ou moyenne puissance interrompent (ex. ulti, attack2)
+	- A condition qu'une interruption soit disponible. Elles sont débloquées quand on passe en dessous de certains paliers de PV. Une à la fois au max.
+	- Les paliers sont, par exemple : 70, 40, 25, 10. Plus fréquents sur la fin du monstre.
