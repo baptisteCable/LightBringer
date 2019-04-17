@@ -1,127 +1,56 @@
 fileFormatVersion: 2
-guid: 44affb822de49e040b76db638863f823
+guid: 401bb423bab3cef44bae0cba45aa025a
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: ArmArmature_L
-    100002: ArmArmature_R
-    100004: Chest
-    100006: ChestArmature
-    100008: FingersArmature_L
-    100010: FingersArmature_R
-    100012: FootArmature_L
-    100014: FootArmature_R
-    100016: ForearmArmature_L
-    100018: ForearmArmature_R
-    100020: Greaves
-    100022: Hand_L
-    100024: Hand_R
-    100026: HandArmature_IK_L
-    100028: HandArmature_IK_R
-    100030: HandArmature_L
-    100032: HandArmature_R
-    100034: Helmet
-    100036: HelmetArmature
-    100038: LegArmature_L
-    100040: LegArmature_R
-    100042: LongSword
-    100044: PJ_Armature
-    100046: //RootNode
-    100048: Shoulder_L
-    100050: Shoulder_R
-    100052: ShoulderArmature_L
-    100054: ShoulderArmature_R
-    100056: SphereChest
-    100058: SphereChestArmature
-    100060: SphereHelmet
-    100062: SphereHelmetArmature
-    100064: SwordArmature
-    100066: ThighArmature_L
-    100068: ThighArmature_R
-    100070: ThumbArmature_L
-    100072: ThumbArmature_R
-    100074: ToesArmature_L
-    100076: ToesArmature_R
-    400000: ArmArmature_L
-    400002: ArmArmature_R
-    400004: Chest
-    400006: ChestArmature
-    400008: FingersArmature_L
-    400010: FingersArmature_R
-    400012: FootArmature_L
-    400014: FootArmature_R
-    400016: ForearmArmature_L
-    400018: ForearmArmature_R
-    400020: Greaves
-    400022: Hand_L
-    400024: Hand_R
-    400026: HandArmature_IK_L
-    400028: HandArmature_IK_R
-    400030: HandArmature_L
-    400032: HandArmature_R
-    400034: Helmet
-    400036: HelmetArmature
-    400038: LegArmature_L
-    400040: LegArmature_R
-    400042: LongSword
-    400044: PJ_Armature
-    400046: //RootNode
-    400048: Shoulder_L
-    400050: Shoulder_R
-    400052: ShoulderArmature_L
-    400054: ShoulderArmature_R
-    400056: SphereChest
-    400058: SphereChestArmature
-    400060: SphereHelmet
-    400062: SphereHelmetArmature
-    400064: SwordArmature
-    400066: ThighArmature_L
-    400068: ThighArmature_R
-    400070: ThumbArmature_L
-    400072: ThumbArmature_R
-    400074: ToesArmature_L
-    400076: ToesArmature_R
-    2100000: None__BluePJ_png
-    4300000: LongSword
-    4300002: Shoulder_R
-    4300004: Hand_R
-    4300006: Chest
-    4300008: Helmet
-    4300010: SphereHelmet
-    4300012: SphereChest
-    4300014: Shoulder_L
-    4300016: Hand_L
-    4300018: Greaves
-    7400000: Default Take
-    7400002: AttackDef
-    7400004: AttackEspace
-    7400006: AttackLB1
-    7400008: AttackLB2
-    7400010: AttackLB3
-    7400012: AttackOff1
-    7400014: AttackOff2
-    7400016: AttackRB
-    7400018: AttackUlt
-    7400020: Idle
-    7400022: MoveBackward
-    7400024: MoveForward
-    7400026: MoveRight
-    7400028: MoveLeft
-    7400030: MoveToIdle
-    7400032: Repos
-    7400034: Stun
-    9500000: //RootNode
-    13700000: Chest
-    13700002: Greaves
-    13700004: Hand_L
-    13700006: Hand_R
-    13700008: Helmet
-    13700010: LongSword
-    13700012: Shoulder_L
-    13700014: Shoulder_R
-    13700016: SphereChest
-    13700018: SphereHelmet
-    2186277476908879412: ImportLogs
+  serializedVersion: 25
+  internalIDToNameTable:
+  - first:
+      74: 928893324302783882
+    second: PJ_Armature|AttackDef
+  - first:
+      74: 3942969539028356027
+    second: PJ_Armature|AttackEspace
+  - first:
+      74: -5210285732050152281
+    second: PJ_Armature|AttackLB1
+  - first:
+      74: 3972079614128061019
+    second: PJ_Armature|AttackLB2
+  - first:
+      74: -6672932011295633716
+    second: PJ_Armature|AttackLB3
+  - first:
+      74: -168521710510712575
+    second: PJ_Armature|AttackOff1
+  - first:
+      74: -4396113011966407427
+    second: PJ_Armature|AttackOff2
+  - first:
+      74: -7957945054774339200
+    second: PJ_Armature|AttackRB
+  - first:
+      74: 7099515087250896071
+    second: PJ_Armature|AttackUlt
+  - first:
+      74: 8051540907834811521
+    second: PJ_Armature|Idle
+  - first:
+      74: -3448670893467378339
+    second: PJ_Armature|MoveBackward
+  - first:
+      74: -6313233846946217694
+    second: PJ_Armature|MoveForward
+  - first:
+      74: 3429536754939714485
+    second: PJ_Armature|MoveLeft
+  - first:
+      74: 4862051083351162057
+    second: PJ_Armature|MoveRight
+  - first:
+      74: 7566337981228433673
+    second: PJ_Armature|MoveToIdle
+  - first:
+      74: -3640506812038227246
+    second: PJ_Armature|Repos
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -151,10 +80,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: AttackDef
-      takeName: AttackDef
+      name: PJ_Armature|AttackDef
+      takeName: PJ_Armature|AttackDef
+      internalID: 928893324302783882
       firstFrame: 0
-      lastFrame: 149
+      lastFrame: 82
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -179,8 +109,9 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackEspace
-      takeName: AttackEspace
+      name: PJ_Armature|AttackEspace
+      takeName: PJ_Armature|AttackEspace
+      internalID: 3942969539028356027
       firstFrame: 0
       lastFrame: 79
       wrapMode: 0
@@ -207,10 +138,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackLB1
-      takeName: AttackLB1
+      name: PJ_Armature|AttackLB1
+      takeName: PJ_Armature|AttackLB1
+      internalID: -5210285732050152281
       firstFrame: 0
-      lastFrame: 79
+      lastFrame: 80
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -235,10 +167,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackLB2
-      takeName: AttackLB2
+      name: PJ_Armature|AttackLB2
+      takeName: PJ_Armature|AttackLB2
+      internalID: 3972079614128061019
       firstFrame: 0
-      lastFrame: 79
+      lastFrame: 80
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -263,10 +196,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackLB3
-      takeName: AttackLB3
+      name: PJ_Armature|AttackLB3
+      takeName: PJ_Armature|AttackLB3
+      internalID: -6672932011295633716
       firstFrame: 0
-      lastFrame: 99
+      lastFrame: 69
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -291,10 +225,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackOff1
-      takeName: AttackOff1
+      name: PJ_Armature|AttackOff1
+      takeName: PJ_Armature|AttackOff1
+      internalID: -168521710510712575
       firstFrame: 0
-      lastFrame: 17
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -319,10 +254,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackOff2
-      takeName: AttackOff2
+      name: PJ_Armature|AttackOff2
+      takeName: PJ_Armature|AttackOff2
+      internalID: -4396113011966407427
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 41
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -347,10 +283,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackRB
-      takeName: AttackRB
+      name: PJ_Armature|AttackRB
+      takeName: PJ_Armature|AttackRB
+      internalID: -7957945054774339200
       firstFrame: 0
-      lastFrame: 53
+      lastFrame: 54
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -375,10 +312,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: AttackUlt
-      takeName: AttackUlt
+      name: PJ_Armature|AttackUlt
+      takeName: PJ_Armature|AttackUlt
+      internalID: 7099515087250896071
       firstFrame: 0
-      lastFrame: 59
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -403,150 +341,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Idle
-      takeName: Idle
+      name: PJ_Armature|Idle
+      takeName: PJ_Armature|Idle
+      internalID: 8051540907834811521
       firstFrame: 0
-      lastFrame: 179
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 0
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 0
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: MoveBackward
-      takeName: MoveBackward
-      firstFrame: 0
-      lastFrame: 39
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 1
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 1
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: MoveForward
-      takeName: MoveForward
-      firstFrame: 0
-      lastFrame: 39
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 1
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: MoveRight
-      takeName: MoveRight
-      firstFrame: 0
-      lastFrame: 39
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 1
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 1
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: MoveLeft
-      takeName: MoveLeft
-      firstFrame: 0
-      lastFrame: 39
-      wrapMode: 0
-      orientationOffsetY: 0
-      level: 0
-      cycleOffset: 0
-      loop: 0
-      hasAdditiveReferencePose: 0
-      loopTime: 1
-      loopBlend: 1
-      loopBlendOrientation: 0
-      loopBlendPositionY: 0
-      loopBlendPositionXZ: 1
-      keepOriginalOrientation: 0
-      keepOriginalPositionY: 1
-      keepOriginalPositionXZ: 0
-      heightFromFeet: 0
-      mirror: 0
-      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
-      curves: []
-      events: []
-      transformMask: []
-      maskType: 3
-      maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 0
-    - serializedVersion: 16
-      name: MoveToIdle
-      takeName: MoveToIdle
-      firstFrame: 0
-      lastFrame: 39
+      lastFrame: 180
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -571,10 +370,11 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Stun
-      takeName: Stun
+      name: PJ_Armature|MoveBackward
+      takeName: PJ_Armature|MoveBackward
+      internalID: -3448670893467378339
       firstFrame: 0
-      lastFrame: 159
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -598,12 +398,158 @@ ModelImporter:
       maskType: 3
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
-    isReadable: 1
+    - serializedVersion: 16
+      name: PJ_Armature|MoveForward
+      takeName: PJ_Armature|MoveForward
+      internalID: -6313233846946217694
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: PJ_Armature|MoveLeft
+      takeName: PJ_Armature|MoveLeft
+      internalID: 3429536754939714485
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: PJ_Armature|MoveRight
+      takeName: PJ_Armature|MoveRight
+      internalID: 4862051083351162057
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: PJ_Armature|MoveToIdle
+      takeName: PJ_Armature|MoveToIdle
+      internalID: 7566337981228433673
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: PJ_Armature|Repos
+      takeName: PJ_Armature|Repos
+      internalID: -3640506812038227246
+      firstFrame: 0
+      lastFrame: 1
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
   meshes:
     lODScreenPercentages: []
     globalScale: 0.25
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
@@ -611,27 +557,32 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.25
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
     normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -641,7 +592,8 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    rootMotionBoneName: PJ_Armature
+    globalScale: 0.0025
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
     skeletonHasParents: 1

@@ -4,7 +4,8 @@
 AvatarMask:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: BotMask
   m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
   m_Elements:
@@ -14,9 +15,9 @@ AvatarMask:
     m_Weight: 0
   - m_Path: Greaves
     m_Weight: 0
-  - m_Path: Hand_L
+  - m_Path: Hand.L
     m_Weight: 0
-  - m_Path: Hand_R
+  - m_Path: Hand.R
     m_Weight: 0
   - m_Path: Helmet
     m_Weight: 0
@@ -30,57 +31,87 @@ AvatarMask:
     m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/HelmetArmature/SphereHelmetArmature
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L
+  - m_Path: PJ_Armature/ChestArmature/HelmetArmature/SphereHelmetArmature/SphereHelmetArmature_end
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L/FingersArmature_L
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L/HandArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_L/ArmArmature_L/ForearmArmature_L/HandArmature_L/ThumbArmature_L
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L/HandArmature.L/FingersArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L/HandArmature.L/FingersArmature.L/FingersArmature.L_end
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L/HandArmature.L/ThumbArmature.L
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.L/ArmArmature.L/ForearmArmature.L/HandArmature.L/ThumbArmature.L/ThumbArmature.L_end
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/FingersArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/SwordArmature
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R
     m_Weight: 0
-  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature_R/ArmArmature_R/ForearmArmature_R/HandArmature_R/ThumbArmature_R
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/FingersArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/FingersArmature.R/FingersArmature.R_end
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/SwordArmature
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/SwordArmature/SwordArmature_end
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/ThumbArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/ThumbArmature.R/ThumbArmature.R_end
     m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/SphereChestArmature
     m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L/FootArmature_L
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_L/LegArmature_L/FootArmature_L/ToesArmature_L
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R/FootArmature_R
-    m_Weight: 1
-  - m_Path: PJ_Armature/ChestArmature/ThighArmature_R/LegArmature_R/FootArmature_R/ToesArmature_R
-    m_Weight: 1
-  - m_Path: PJ_Armature/HandArmature_IK_L
+  - m_Path: PJ_Armature/ChestArmature/SphereChestArmature/SphereChestArmature_end
     m_Weight: 0
-  - m_Path: PJ_Armature/HandArmature_IK_R
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.L
     m_Weight: 0
-  - m_Path: Shoulder_L
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L
     m_Weight: 0
-  - m_Path: Shoulder_R
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L/FootArmature.L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L/FootArmature.L/ToesArmature.L
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L/FootArmature.L/ToesArmature.L/ToesArmature.L_end
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R/FootArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R/FootArmature.R/ToesArmature.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R/FootArmature.R/ToesArmature.R/ToesArmature.R_end
+    m_Weight: 0
+  - m_Path: PJ_Armature/FootArmature_IK.L
+    m_Weight: 1
+  - m_Path: PJ_Armature/FootArmature_IK.L/FootArmature_IK.L_end
+    m_Weight: 1
+  - m_Path: PJ_Armature/FootArmature_IK.R
+    m_Weight: 1
+  - m_Path: PJ_Armature/FootArmature_IK.R/FootArmature_IK.R_end
+    m_Weight: 1
+  - m_Path: PJ_Armature/HandArmature_IK.L
+    m_Weight: 0
+  - m_Path: PJ_Armature/HandArmature_IK.L/HandArmature_IK.L_end
+    m_Weight: 0
+  - m_Path: PJ_Armature/HandArmature_IK.R
+    m_Weight: 0
+  - m_Path: PJ_Armature/HandArmature_IK.R/HandArmature_IK.R_end
+    m_Weight: 0
+  - m_Path: Shoulder.L
+    m_Weight: 0
+  - m_Path: Shoulder.R
     m_Weight: 0
   - m_Path: SphereChest
     m_Weight: 0
