@@ -123,6 +123,7 @@ namespace LightBringer.Enemies.Knight
                     weight = 200f / distance;
                 }
             }
+            weight = 1000000f; // DEBUG
             dic.Add(new Attack1Behaviour(km, target, km.attack1GroundActGOPrefab, km.attack1GroundRendererGOPrefab), weight);
 
             // Attack 2 behaviour
@@ -178,7 +179,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 15f;
                 }
             }
-            weight = 1000000f; // DEBUG
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;

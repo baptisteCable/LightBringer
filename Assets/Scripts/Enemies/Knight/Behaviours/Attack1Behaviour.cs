@@ -23,15 +23,14 @@ namespace LightBringer.Enemies.Knight
         private const float MAX_DISTANCE = 29f;
         private const float DIST_FROM_CENTER_COLLIDER = 2f;
 
-        private const float TIME_BETWEEN_REFRESH = .02f;
+        private const float ANGLE_SPACING = 3f;
+        private const float SAFETY_OVERLAP = .5f;
 
         private Transform target;
         private Vector3 targetPosition;
 
         private GameObject groundActPrefab;
         private GameObject groundRendererPrefab;
-        private GameObject groundActGO;
-        private AbilityColliderTrigger groundAct;
         private GameObject groundRenderer;
         private ConeMesh groundConeMesh;
         private BurningGround burningGround;
@@ -41,7 +40,7 @@ namespace LightBringer.Enemies.Knight
         // Ground collider list
         protected Dictionary<Collider, float> groundCols;
 
-        private float nextConeRefresh;
+        private float nextAngle;
 
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
         {
@@ -93,23 +92,17 @@ namespace LightBringer.Enemies.Knight
                 // Activate ray
                 km.attack1RayRenderer.SetupAndStart(DMG_DURATION, MAX_DISTANCE);
 
-                // Activate ground collider trigger
-                groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
-                    em.transform.rotation * Quaternion.AngleAxis(CONE_STARTING, Vector3.up), null);
-                groundConeMesh = groundActGO.GetComponent<ConeMesh>();
-                GameObject.Destroy(groundActGO, GROUND_DURATION);
-                nextConeRefresh = Time.time + TIME_BETWEEN_REFRESH;
-
                 // Ground col list init
                 groundCols = new Dictionary<Collider, float>();
-                groundAct = groundActGO.GetComponent<AbilityColliderTrigger>();
-                groundAct.SetAbility(this, "ground");
 
                 // Ground renderer
-                groundRenderer = GameObject.Instantiate(groundRendererPrefab, em.transform.position,
+                groundRenderer = GameObject.Instantiate(groundRendererPrefab, em.transform.position + Vector3.up * .1f,
                     em.transform.rotation, null);
                 burningGround = groundRenderer.GetComponent<BurningGround>();
                 GameObject.Destroy(groundRenderer, GROUND_DURATION);
+
+                // First angle
+                nextAngle = CONE_STARTING + (ANGLE_SPACING - SAFETY_OVERLAP) / 2f;
             }
 
             base.StartCollisionPart(part);
@@ -139,16 +132,23 @@ namespace LightBringer.Enemies.Knight
                 km.attack1actContainer.transform.localScale = new Vector3(1, 1, length);
                 km.attack1RayRenderer.SetLength(length - 1);
 
-                // Ground collider trigger
-                if (Time.time > nextConeRefresh)
+                // Next sector
+                if (angle > nextAngle)
                 {
-                    float coneAngleWidth = angle - CONE_STARTING;
-                    nextConeRefresh = Time.time + TIME_BETWEEN_REFRESH;
-                    groundConeMesh.angle = coneAngleWidth;
-                    groundConeMesh.CreateAngularAoEMesh();
-                    groundActGO.transform.localRotation = em.transform.rotation *
-                        Quaternion.AngleAxis((angle - CONE_STARTING) / 2f + CONE_STARTING, Vector3.up);
-                    burningGround.SetAngle(angle);
+                    nextAngle = angle + ANGLE_SPACING - SAFETY_OVERLAP;
+
+                    // Ground renderer
+                    burningGround.addAngle3d(angle, length + DIST_FROM_CENTER_COLLIDER);
+
+                    // new ground collider trigger for this sector
+                    GameObject groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
+                                    em.transform.rotation * Quaternion.AngleAxis(angle, Vector3.up), null);
+                    groundActGO.transform.localScale = new Vector3(length + DIST_FROM_CENTER_COLLIDER, 1, length + DIST_FROM_CENTER_COLLIDER);
+                    GameObject.Destroy(groundActGO, GROUND_DURATION - (Time.time - startTime - DMG_START));
+
+                    // Ability coolider trigger
+                    AbilityColliderTrigger groundAct = groundActGO.GetComponent<AbilityColliderTrigger>();
+                    groundAct.SetAbility(this, "ground");
                 }
 
             }
@@ -197,7 +197,7 @@ namespace LightBringer.Enemies.Knight
                         ApplyRayDamage(col);
                     }
                 }
-                if (abilityColliderTrigger == groundAct)
+                if (abilityColliderTrigger.abTag == "ground")
                 {
                     if (groundCols.ContainsKey(col))
                     {

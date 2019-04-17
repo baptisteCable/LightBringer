@@ -2298,9 +2298,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 114884752503773958, guid: db8b73ba5eb41264badf64a7a80609bb,
+    - target: {fileID: 7819928891720746799, guid: db8b73ba5eb41264badf64a7a80609bb,
         type: 3}
-      propertyPath: passive
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -2334,7 +2334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcaff8a818418ea4cbe814b221ecd8fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overViewCamera: {fileID: 173799918}
+  overviewCamera: {fileID: 173799917}
 --- !u!4 &2121823711
 Transform:
   m_ObjectHideFlags: 0
@@ -2343,7 +2343,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2121823709}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.8425493, y: -0.9089253, z: -2.4473822}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

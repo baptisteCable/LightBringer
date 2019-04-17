@@ -12,6 +12,7 @@ namespace LightBringer.Enemies.Knight
         [SerializeField] private ParticleSystem ps1;
         [SerializeField] private ParticleSystem ps2;
         [SerializeField] private ParticleSystem emiter;
+        [SerializeField] private ParticleSystem ending;
         [SerializeField] private LineRenderer line;
         private float spawnTime = -1;
         private float endTime = -1;
@@ -53,6 +54,7 @@ namespace LightBringer.Enemies.Knight
             ps1.Play();
             ps2.Play();
             emiter.Play();
+            ending.Play();
         }
 
         public void SetLength(float length)
@@ -65,6 +67,9 @@ namespace LightBringer.Enemies.Knight
             shape1.length = Mathf.Max(length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
             ParticleSystem.ShapeModule shape2 = ps2.shape;
             shape2.length = Mathf.Max(length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
+
+            // Ending position
+            ending.transform.localPosition = new Vector3(0, 0, length);
         }
 
         // Update is called once per frame
@@ -85,6 +90,7 @@ namespace LightBringer.Enemies.Knight
             if (endTime > 0 && Time.time > endTime)
             {
                 emiter.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                 line.widthMultiplier = Mathf.Max(1 - (Time.time - endTime) / VANISH_DURATION, 0) * LINE_WIDTH;
             }
 

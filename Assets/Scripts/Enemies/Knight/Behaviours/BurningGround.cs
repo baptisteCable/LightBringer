@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
@@ -6,18 +7,25 @@ namespace LightBringer.Enemies.Knight
     {
         private const float FADING_TIME = .4f;
 
-        [SerializeField] SpriteMask mask;
+        [SerializeField] GameObject maskGOPrefab;
         [SerializeField] SpriteRenderer spriteRenderer;
 
         private float fadingStarting;
         private float initialAlpha;
+        private int maskLayer = 0;
 
-        // Start is called before the first frame update
         void Start()
         {
             fadingStarting = Time.time + Attack1Behaviour.GROUND_DURATION - FADING_TIME;
-            mask.transform.localRotation = Quaternion.Euler(90f, Attack1Behaviour.CONE_STARTING, 0);
             initialAlpha = spriteRenderer.color.a;
+
+            if (maskLayer == 0)
+            {
+                InitLayerID();
+            }
+
+            // Set the sprite mask
+            spriteRenderer.sortingLayerID = SortingLayer.NameToID("Enemy" + maskLayer);
         }
 
         // Update is called once per frame
@@ -25,16 +33,35 @@ namespace LightBringer.Enemies.Knight
         {
             if (Time.time > fadingStarting)
             {
-                float alpha = initialAlpha * (1 - (Time.time - fadingStarting) / FADING_TIME);
+                float alpha = Mathf.Max(initialAlpha * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
                 Color col = spriteRenderer.color;
                 col.a = alpha;
                 spriteRenderer.color = col;
             }
         }
 
-        public void SetAngle(float angle)
+        private void InitLayerID()
         {
-            mask.alphaCutoff = 1 - (angle - Attack1Behaviour.CONE_STARTING) / 360f;
+            maskLayer = GameManager.gm.GetNextEnemyMaskIndex();
+        }
+
+        public void addAngle3d(float angle, float length)
+        {
+            GameObject newMask = Instantiate(maskGOPrefab, transform);
+            newMask.transform.localPosition = Vector3.zero;
+            newMask.transform.localRotation = Quaternion.Euler(0, angle, 0);
+            newMask.transform.localScale = Vector3.one * length;
+            SpriteMask mask = newMask.transform.Find("Mask").GetComponent<SpriteMask>();
+            mask.isCustomRangeActive = true;
+
+            if (maskLayer == 0)
+            {
+                InitLayerID();
+            }
+
+            mask.frontSortingLayerID = SortingLayer.NameToID("Enemy" + (maskLayer + 1));
+            mask.backSortingLayerID = SortingLayer.NameToID("Enemy" + (maskLayer - 1));
+
         }
     }
 }

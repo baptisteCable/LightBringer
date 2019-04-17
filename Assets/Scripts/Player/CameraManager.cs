@@ -3,7 +3,7 @@
 public class CameraManager : MonoBehaviour {
     public static CameraManager singleton;
 
-    public Camera overViewCamera;
+    public GameObject overviewCamera;
 
     private void Start()
     {
@@ -12,11 +12,11 @@ public class CameraManager : MonoBehaviour {
 
     public void ActivatePlayerCamera()
     {
-        overViewCamera.enabled = false;
+        overviewCamera.SetActive(false);
     }
 
     public void DisactivatePlayerCamera()
     {
-        overViewCamera.enabled = true;
+        overviewCamera.SetActive(true);
     }
 }
