@@ -65,7 +65,6 @@ namespace LightBringer.Player
         // Use this for initialization
         protected void BaseStart()
         {
-            charController = GetComponent<CharacterController>();
             psm = GetComponent<PlayerStatusManager>();
             pc = GetComponent<PlayerController>();
 
@@ -436,6 +435,9 @@ namespace LightBringer.Player
 
         public virtual void Init()
         {
+            charController = GetComponent<CharacterController>();
+            charController.enabled = true;
+
             psm.Init();
 
             abilityMoveMultiplicator = 1f;
@@ -443,6 +445,8 @@ namespace LightBringer.Player
 
             movementDirection = Vector3.zero;
             previousPosition = Vector3.zero;
+
+            SetMovementMode(MovementMode.Player);
         }
 
         private void OnDestroy()
