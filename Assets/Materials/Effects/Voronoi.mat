@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BurningGround
-  m_Shader: {fileID: 4800000, guid: 60ce33712ce0e8c408adbfecba3bf13c, type: 3}
+  m_Name: Voronoi
+  m_Shader: {fileID: 4800000, guid: d170bf28b204ac44296737879783d7f2, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 241d7bb226d7e7443b25372f97278bf1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 71f808d3b7567fa4a822a94fb7d3a43b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -49,14 +49,6 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _Noise:
         m_Texture: {fileID: 2800000, guid: f903a29d36552ae499e605e4cfba5278, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseSequence:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseTexture:
-        m_Texture: {fileID: 2800000, guid: 6fd2c3cb9a0dd8a4a87a32376fb917c9, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -78,47 +70,31 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _Density: 0.05
+    - _Density: 0.005
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _IntensityBlurWidth: 0.38
-    - _IntensityCoeff: 2.57
-    - _IntensityLatency: 1
-    - _IntensityScale: 0.5
-    - _IntensitySpeed: 0.2
-    - _IntensityTimeMod: 0.1
-    - _IntensityWidth: 0.14
-    - _LightBlurWidth: 0.1
-    - _LightLatency: 1.7
-    - _LightScale: 0.2
-    - _LightSpeed: 0.7
-    - _LightTimeMod: 0.01
-    - _LightWidth: 0.05
+    - _LightLatency: 4.6
+    - _LightScale: 0.05
+    - _LightSpeed: 3
+    - _LightTimeMod: 0.001
+    - _LightWidth: 0.3
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 0.002
+    - _Speed: 0.01
     - _SrcBlend: 1
-    - _Swap: 0.25
+    - _Swap: 0.2
     - _UVSec: 0
-    - _VoronoiScale: 0.5
+    - _VoronoiScale: 10
     - _ZWrite: 1
-    - _lightIntensityBlurWidth: 0.1
-    - _lightIntensityLatency: 2
-    - _lightIntensityScale: 50
-    - _lightIntensitySpeed: 1
-    - _lightIntensityTimeMod: 0.001
-    - _lightIntensityWidth: 0.1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _IntensityColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LightColor: {r: 1, g: 0.34022656, b: 0.1792453, a: 0.1882353}
-    - _TintColor: {r: 1, g: 0.6714762, b: 0.3018868, a: 0.49411765}
-    - _lightIntensityColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LightColor: {r: 0.39649343, g: 0.7239189, b: 0.9339623, a: 1}
+    - _TintColor: {r: 0.66252, g: 0.6886792, b: 0.35733354, a: 1}

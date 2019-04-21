@@ -284,7 +284,8 @@ Light:
   m_BounceIntensity: 0
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 2.8899317e+29, y: 2.7891105e+29, z: 1.0505635e-38,
+    w: 7.006224e+22}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1396,6 +1397,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114918061961514880, guid: db8b73ba5eb41264badf64a7a80609bb,
+        type: 3}
+      propertyPath: attack1GroundActGOPrefab
+      value: 
+      objectReference: {fileID: 404119210156601847, guid: 608610cfff158f74e8eef8f75e24390c,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db8b73ba5eb41264badf64a7a80609bb, type: 3}
 --- !u!4 &2025360416 stripped

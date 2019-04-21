@@ -13,14 +13,14 @@ namespace LightBringer.Enemies.Knight
         private const float GROUND_DAMAGE = 1.5f;
         private const float TIME_BETWEEN_GROUND_TICKS = .05f;
 
-        private const float DMG_START = 123f/60f;
+        private const float DMG_START = 123f / 60f;
         private const float DMG_DURATION = 136f / 60f;
         public const float GROUND_DURATION = 10f;
         public const float CONE_ANGLE = 70.8f;
         public const float CONE_STARTING = -18.8f;
 
         private const float RAYCAST_HEIGHT = 2f;
-        private const float MAX_DISTANCE = 29f;
+        public const float MAX_DISTANCE = 29f;
         private const float DIST_FROM_CENTER_COLLIDER = 2f;
 
         private const float ANGLE_SPACING = 3f;
@@ -114,7 +114,6 @@ namespace LightBringer.Enemies.Knight
             {
                 // move Ray container
                 float angle = CONE_STARTING + CONE_ANGLE * (Time.time - parts[0].startTime - startTime) / parts[0].duration;
-                // km.attack1Container.transform.localRotation = Quaternion.AngleAxis(angle, Vector3.up);
 
                 // compute length
                 float length = MAX_DISTANCE;
@@ -122,8 +121,8 @@ namespace LightBringer.Enemies.Knight
                 LayerMask mask = LayerMask.GetMask("Environment");
 
                 // If environment contact, shorter ray and explosion
-                if (Physics.Raycast(km.attack1Container.transform.position + km.attack1Container.transform.forward * DIST_FROM_CENTER_COLLIDER,
-                    km.attack1Container.transform.forward, out hit, MAX_DISTANCE, mask))
+                if (Physics.Raycast(groundRenderer.transform.position + km.attack1Container.transform.forward * DIST_FROM_CENTER_COLLIDER,
+                    Quaternion.Euler(0, angle, 0) * km.transform.forward, out hit, MAX_DISTANCE, mask))
                 {
                     // ray length (collider)
                     length = hit.distance;
@@ -131,6 +130,9 @@ namespace LightBringer.Enemies.Knight
 
                 km.attack1actContainer.transform.localScale = new Vector3(1, 1, length);
                 km.attack1RayRenderer.SetLength(length - 1);
+
+                // Ground angle
+                burningGround.SetAngle(angle);
 
                 // Next sector
                 if (angle > nextAngle)
@@ -141,7 +143,7 @@ namespace LightBringer.Enemies.Knight
                     burningGround.addAngle3d(angle, length + DIST_FROM_CENTER_COLLIDER);
 
                     // new ground collider trigger for this sector
-                    GameObject groundActGO = GameObject.Instantiate(groundActPrefab, em.transform.position,
+                    GameObject groundActGO = GameObject.Instantiate(groundActPrefab, groundRenderer.transform.position,
                                     em.transform.rotation * Quaternion.AngleAxis(angle, Vector3.up), null);
                     groundActGO.transform.localScale = new Vector3(length + DIST_FROM_CENTER_COLLIDER, 1, length + DIST_FROM_CENTER_COLLIDER);
                     GameObject.Destroy(groundActGO, GROUND_DURATION - (Time.time - startTime - DMG_START));
@@ -159,6 +161,7 @@ namespace LightBringer.Enemies.Knight
         protected override void EndPart(int part)
         {
             base.EndPart(part);
+            burningGround.EndRotation();
         }
 
         public override void End()

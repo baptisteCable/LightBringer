@@ -6,26 +6,33 @@ namespace LightBringer.Enemies.Knight
     public class BurningGround : MonoBehaviour
     {
         private const float FADING_TIME = .4f;
+        private const string LAYER_NAME = "Enemy";
 
-        [SerializeField] GameObject maskGOPrefab;
-        [SerializeField] SpriteRenderer spriteRenderer;
+        [SerializeField] GameObject maskPrefab;
+        [SerializeField] SpriteRenderer burningGroundSprite;
+        [SerializeField] SpriteMask burningGroundMask;
 
         private float fadingStarting;
         private float initialAlpha;
         private int maskLayer = 0;
 
+        private List<SpriteRenderer> cones;
+
         void Start()
         {
             fadingStarting = Time.time + Attack1Behaviour.GROUND_DURATION - FADING_TIME;
-            initialAlpha = spriteRenderer.color.a;
+            initialAlpha = burningGroundSprite.color.a;
 
             if (maskLayer == 0)
             {
                 InitLayerID();
+                Debug.Log("Init: " + maskLayer);
             }
 
-            // Set the sprite mask
-            spriteRenderer.sortingLayerID = SortingLayer.NameToID("Enemy" + maskLayer);
+            burningGroundSprite.sortingLayerID = SortingLayer.NameToID(LAYER_NAME + maskLayer);
+            burningGroundMask.isCustomRangeActive = true;
+            burningGroundMask.frontSortingLayerID = SortingLayer.NameToID(LAYER_NAME + (maskLayer + 1));
+            burningGroundMask.backSortingLayerID = SortingLayer.NameToID(LAYER_NAME + (maskLayer - 1));
         }
 
         // Update is called once per frame
@@ -33,10 +40,12 @@ namespace LightBringer.Enemies.Knight
         {
             if (Time.time > fadingStarting)
             {
+                
                 float alpha = Mathf.Max(initialAlpha * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
-                Color col = spriteRenderer.color;
+                Color col = burningGroundSprite.color;
                 col.a = alpha;
-                spriteRenderer.color = col;
+                burningGroundSprite.color = col;
+                
             }
         }
 
@@ -47,21 +56,34 @@ namespace LightBringer.Enemies.Knight
 
         public void addAngle3d(float angle, float length)
         {
-            GameObject newMask = Instantiate(maskGOPrefab, transform);
-            newMask.transform.localPosition = Vector3.zero;
-            newMask.transform.localRotation = Quaternion.Euler(0, angle, 0);
-            newMask.transform.localScale = Vector3.one * length;
-            SpriteMask mask = newMask.transform.Find("Mask").GetComponent<SpriteMask>();
-            mask.isCustomRangeActive = true;
-
-            if (maskLayer == 0)
+            if (length < Attack1Behaviour.MAX_DISTANCE)
             {
-                InitLayerID();
+                GameObject newMask = Instantiate(maskPrefab, transform);
+                newMask.transform.localPosition = Vector3.zero;
+                newMask.transform.localRotation = Quaternion.Euler(0, angle, 0);
+                newMask.transform.localScale = Vector3.one * length;
+                SpriteMask sm = newMask.transform.Find("Cone").GetComponent<SpriteMask>();
+
+                if (maskLayer == 0)
+                {
+                    InitLayerID();
+                    Debug.Log("Init: " + maskLayer);
+                }
+
+                sm.isCustomRangeActive = true;
+                sm.frontSortingLayerID = SortingLayer.NameToID(LAYER_NAME + (maskLayer + 1));
+                sm.backSortingLayerID = SortingLayer.NameToID(LAYER_NAME + (maskLayer - 1));
             }
+        }
 
-            mask.frontSortingLayerID = SortingLayer.NameToID("Enemy" + (maskLayer + 1));
-            mask.backSortingLayerID = SortingLayer.NameToID("Enemy" + (maskLayer - 1));
+        public void SetAngle(float angle)
+        {
+            burningGroundMask.alphaCutoff = .1f + (angle - Attack1Behaviour.CONE_STARTING) / 360f;
+        }
 
+        public void EndRotation()
+        {
+            burningGroundMask.gameObject.SetActive(false);
         }
     }
 }
