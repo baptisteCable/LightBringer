@@ -37,6 +37,8 @@ namespace LightBringer.Enemies.Knight
 
         private KnightMotor km;
 
+        private bool missed = true;
+
         // Explosion collider list
         protected Dictionary<Collider, float> explCols;
 
@@ -139,6 +141,11 @@ namespace LightBringer.Enemies.Knight
         {
             base.End();
             em.SetOverrideAgent(false);
+
+            if (missed)
+            {
+                em.statusManager.IncreaseRageMissedAttack();
+            }
         }
 
         public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
@@ -175,6 +182,7 @@ namespace LightBringer.Enemies.Knight
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
+                missed = false;
             }
         }
 
@@ -185,6 +193,7 @@ namespace LightBringer.Enemies.Knight
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
+                missed = false;
             }
         }
 

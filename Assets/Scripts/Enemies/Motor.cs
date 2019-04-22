@@ -12,14 +12,17 @@ namespace LightBringer.Enemies
         public float MaxMoveSpeedPassive;
         public float MaxMoveSpeedFight;
         public float MaxMoveSpeedRage;
+        public float MaxMoveSpeedExhaustion;
 
         public float AccelerationPassive;
         public float AccelerationFight;
         public float AccelerationRage;
+        public float AccelerationExhaustion;
 
         public float MaxRotationSpeedPassive;
         public float MaxRotationSpeedFight;
         public float MaxRotationSpeedRage;
+        public float MaxRotationSpeedExhaustion;
 
         [HideInInspector]
         public NavMeshAgent agent;
@@ -81,7 +84,12 @@ namespace LightBringer.Enemies
             // Character controller
             cc = GetComponent<CharacterController>();
             
+            // Status manager
             statusManager = GetComponent<StatusManager>();
+            statusManager.Init();
+
+            // Mode
+            SetMode(Mode.Fight);
         }
 
         protected void BaseUpdate()
@@ -167,6 +175,8 @@ namespace LightBringer.Enemies
 
         public void SetMode(Mode mode)
         {
+            statusManager.mode = mode;
+
             switch (mode)
             {
                 case Mode.Passive:
@@ -180,6 +190,10 @@ namespace LightBringer.Enemies
                 case Mode.Rage:
                     SetMovementParameters(MaxMoveSpeedRage, AccelerationRage);
                     SetRotationParameters(MaxRotationSpeedRage);
+                    break;
+                case Mode.Exhaustion:
+                    SetMovementParameters(MaxMoveSpeedExhaustion, AccelerationExhaustion);
+                    SetRotationParameters(MaxRotationSpeedExhaustion);
                     break;
                 default: throw new System.Exception("Invalid Enemy Mode");
             }

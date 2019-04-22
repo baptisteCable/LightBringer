@@ -26,7 +26,6 @@ namespace LightBringer.Enemies.Knight
             if (maskLayer == 0)
             {
                 InitLayerID();
-                Debug.Log("Init: " + maskLayer);
             }
 
             burningGroundSprite.sortingLayerID = SortingLayer.NameToID(LAYER_NAME + maskLayer);

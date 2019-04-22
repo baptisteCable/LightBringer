@@ -13,12 +13,28 @@ namespace LightBringer.Enemies
         private const float DISPLAY_INTERVAL = .1f;
         private const float DISPLAY_DURATION = 1f;
 
+        private const float RAGE_INCREASE_WITH_MISSED = .1f;
+        private const float RAGE_INCREASE_WITH_INTERRUPTION = .2f;
+        private const float RAGE_RATIO_WITH_DAMAGE = 1.5f; // ratio applied to % of max HP that the taken damages represent
+        private const float RAGE_DURATION = 15;
+        private const float EXHAUSTION_DURATION = 10;
+
+        // DEBUG
+        private GUIStyle frontStyle = null;
+        private GUIStyle backStyle = null;
+
         // status
         public float maxHP;
         public float currentHP;
         public GameObject statusBarGO;
         public float displayHeight;
-        public bool isDead = false;
+        public bool isDead;
+        private float rageAmount;
+        public Mode mode;
+
+        // Rage
+        private float rageEnd;
+        private float exhaustionEnd;
 
         // Components
         private Motor motor;
@@ -64,6 +80,75 @@ namespace LightBringer.Enemies
         private void Update()
         {
             ApplyAllDamages();
+            UpdateMode();
+        }
+
+        public void Init()
+        {
+            currentHP = maxHP;
+            isDead = false;
+            rageAmount = 0f;
+        }
+
+        private void UpdateMode()
+        {
+            if (mode == Mode.Rage && Time.time >= rageEnd)
+            {
+                ExhaustionStart();
+            }
+            else if (mode == Mode.Exhaustion && Time.time >= exhaustionEnd)
+            {
+                ExhaustionEnd();
+            }
+        }
+
+        public void IncreaseRageMissedAttack()
+        {
+            RageIncrease(RAGE_INCREASE_WITH_MISSED);
+        }
+
+        public void IncreaseRageInterruption()
+        {
+            RageIncrease(RAGE_INCREASE_WITH_INTERRUPTION);
+        }
+
+        public void IncreaseRageDamageTaken(float damage)
+        {
+            RageIncrease(damage / maxHP * RAGE_RATIO_WITH_DAMAGE);
+        }
+
+        private void RageIncrease(float amount)
+        {
+            if (mode == Mode.Exhaustion || mode == Mode.Rage)
+            {
+                return;
+            }
+
+            rageAmount += amount;
+
+            if (rageAmount >= 1f)
+            {
+                RageStart();
+            }
+        }
+
+        public void RageStart()
+        {
+            motor.SetMode(Mode.Rage);
+            rageEnd = Time.time + RAGE_DURATION;
+        }
+
+        public void ExhaustionStart()
+        {
+            motor.SetMode(Mode.Exhaustion);
+            exhaustionEnd = Time.time + EXHAUSTION_DURATION;
+        }
+
+        public void ExhaustionEnd()
+        {
+            motor.SetMode(Mode.Fight);
+            rageAmount = 0;
+            Debug.Log("Rage: " + rageAmount);
         }
 
         public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
@@ -119,10 +204,9 @@ namespace LightBringer.Enemies
 
                 if (newHP < currentHP)
                 {
-                    if (newHP < currentHP)
-                    {
-                        flashEffect.Flash();
-                    }
+                    IncreaseRageDamageTaken(currentHP - newHP);
+
+                    flashEffect.Flash();
 
                     currentHP = newHP;
                 }
@@ -182,6 +266,42 @@ namespace LightBringer.Enemies
         public void ShieldFlash()
         {
             shieldFlashEffect.Flash();
+        }
+
+        void OnGUI()
+        {
+            int length = (int)(400 * rageAmount);
+
+            InitStyles();
+            GUI.Box(new Rect(20, 10, 400, 30), "", backStyle);
+            GUI.Box(new Rect(20, 10, length, 30), "", frontStyle);
+            GUILayout.BeginArea(new Rect(20, 45, 250, 120));
+            GUILayout.Label("Rage: " + rageAmount);
+            GUILayout.Label("Mode: " + mode);
+            GUILayout.EndArea();
+        }
+        private void InitStyles()
+        {
+            if (frontStyle == null)
+            {
+                frontStyle = new GUIStyle(GUI.skin.box);
+                frontStyle.normal.background = MakeTex(2, 2, new Color(.6f, .6f, 0f, 1f));
+                backStyle = new GUIStyle(GUI.skin.box);
+                backStyle.normal.background = MakeTex(2, 2, new Color(.3f, .3f, .3f, 1f));
+            }
+        }
+
+        private Texture2D MakeTex(int width, int height, Color col)
+        {
+            Color[] pix = new Color[width * height];
+            for (int i = 0; i < pix.Length; ++i)
+            {
+                pix[i] = col;
+            }
+            Texture2D result = new Texture2D(width, height);
+            result.SetPixels(pix);
+            result.Apply();
+            return result;
         }
     }
 }

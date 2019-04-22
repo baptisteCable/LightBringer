@@ -5,6 +5,7 @@ namespace LightBringer.Enemies
     {
         Passive,
         Fight,
-        Rage
+        Rage,
+        Exhaustion
     }
 }

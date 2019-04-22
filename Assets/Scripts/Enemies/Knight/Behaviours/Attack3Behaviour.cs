@@ -18,6 +18,8 @@ namespace LightBringer.Enemies.Knight
         // Motor
         KnightMotor km;
 
+        private bool missed = true;
+
         // Shield collider to disable
         private GameObject shieldCollider;
 
@@ -73,6 +75,11 @@ namespace LightBringer.Enemies.Knight
             base.End();
             shieldCollider.SetActive(true);
             em.SetOverrideAgent(false);
+
+            if (missed)
+            {
+                em.statusManager.IncreaseRageMissedAttack();
+            }
         }
 
         public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
@@ -98,6 +105,7 @@ namespace LightBringer.Enemies.Knight
             if (psm.IsAffectedBy(dmg, em))
             {
                 psm.TakeDamage(dmg, em);
+                missed = false;
             }
         }
 
@@ -108,6 +116,7 @@ namespace LightBringer.Enemies.Knight
             if (psm.IsAffectedBy(dmg, em))
             {
                 psm.TakeDamage(dmg, em);
+                missed = false;
             }
         }
 

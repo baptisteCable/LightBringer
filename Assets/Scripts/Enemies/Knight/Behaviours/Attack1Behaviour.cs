@@ -37,6 +37,8 @@ namespace LightBringer.Enemies.Knight
 
         private KnightMotor km;
 
+        private bool missed = true;
+
         // Ground collider list
         protected Dictionary<Collider, float> groundCols;
 
@@ -59,6 +61,7 @@ namespace LightBringer.Enemies.Knight
             base.Init();
 
             em.anim.Play("Attack1", -1, 0);
+            km.attack1ChannelingEffect.Play();
 
             acts = new AbilityColliderTrigger[1];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
@@ -168,6 +171,11 @@ namespace LightBringer.Enemies.Knight
         {
             base.End();
             em.SetOverrideAgent(false);
+
+            if (missed)
+            {
+                em.statusManager.IncreaseRageMissedAttack();
+            }
         }
 
         public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
@@ -226,6 +234,7 @@ namespace LightBringer.Enemies.Knight
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
+                missed = false;
             }
         }
 
