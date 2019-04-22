@@ -15,25 +15,31 @@ namespace LightBringer.Enemies.Knight
         private const float SHIELD_DMG_START = 157f / 60f;
         private const float SHIELD_DMG_STOP = 177f / 60f;
 
+        // Motor
+        KnightMotor km;
+
         // Shield collider to disable
         private GameObject shieldCollider;
 
         public Attack3Behaviour(KnightMotor enemyMotor, GameObject attack3act1GO, GameObject attack3act2GO, GameObject shieldCollider) : base(enemyMotor)
         {
+            km = enemyMotor;
             actGOs = new GameObject[2];
             actGOs[0] = attack3act1GO;
             actGOs[1] = attack3act2GO;
             this.shieldCollider = shieldCollider;
-            parts = new Part[2];
-            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, 1);
-            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, 2);
         }
 
         public override void Init()
         {
             base.Init();
 
+            parts = new Part[2];
+            parts[0] = new Part(State.Before, SPEAR_DMG_START, SPEAR_DMG_STOP - SPEAR_DMG_START, -1);
+            parts[1] = new Part(State.Before, SHIELD_DMG_START, SHIELD_DMG_STOP - SHIELD_DMG_START, -1);
+
             em.anim.Play("Attack3", -1, 0);
+            km.attack3ChannelingEffect.Play();
 
             acts = new AbilityColliderTrigger[2];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
