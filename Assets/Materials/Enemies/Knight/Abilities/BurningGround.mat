@@ -92,9 +92,9 @@ Material:
     - _IntensityTimeMod: 0.1
     - _IntensityWidth: 0.14
     - _LightBlurWidth: 0.1
-    - _LightLatency: 1.7
+    - _LightLatency: 1.26
     - _LightScale: 0.2
-    - _LightSpeed: 0.7
+    - _LightSpeed: 0.4
     - _LightTimeMod: 0.01
     - _LightWidth: 0.05
     - _Metallic: 0
@@ -107,7 +107,7 @@ Material:
     - _SrcBlend: 1
     - _Swap: 0.25
     - _UVSec: 0
-    - _VoronoiScale: 0.5
+    - _VoronoiScale: 0.42
     - _ZWrite: 1
     - _lightIntensityBlurWidth: 0.1
     - _lightIntensityLatency: 2
@@ -119,6 +119,6 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _IntensityColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LightColor: {r: 1, g: 0.34022656, b: 0.1792453, a: 0.1882353}
-    - _TintColor: {r: 1, g: 0.6714762, b: 0.3018868, a: 0.49411765}
+    - _LightColor: {r: 1, g: 0.44726518, b: 0.18039215, a: 0.20784314}
+    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
     - _lightIntensityColor: {r: 1, g: 1, b: 1, a: 1}

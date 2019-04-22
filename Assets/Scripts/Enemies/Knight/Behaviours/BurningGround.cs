@@ -40,7 +40,6 @@ namespace LightBringer.Enemies.Knight
         {
             if (Time.time > fadingStarting)
             {
-                
                 float alpha = Mathf.Max(initialAlpha * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
                 Color col = burningGroundSprite.color;
                 col.a = alpha;

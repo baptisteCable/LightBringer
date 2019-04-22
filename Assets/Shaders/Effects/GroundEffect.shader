@@ -131,7 +131,7 @@ Shader "Effects/GroundEffect" {
 				l = (lightUpperBound - lightLowerBound) / 2;
 				attenuation = 1 - step(l, d) * (d - l) / _LightBlurWidth;
 				float lightIntensity = step(lightLowerBound - _LightBlurWidth, noiseLight) * step(noiseLight, lightUpperBound + _LightBlurWidth) * attenuation;
-				float3 light = lightIntensity * _LightColor.rgb * _LightColor.a * _MainTex_var.a;
+				float3 light = lightIntensity * _LightColor.rgb * _LightColor.a * _MainTex_var.a * i.vertexColor.a;
 
 
 				// Position to read in line or column in noise
@@ -152,7 +152,7 @@ Shader "Effects/GroundEffect" {
 				float4 _Voronoi_var = tex2D(_Voronoi,TRANSFORM_TEX(vonoroiWorldCoord, _Voronoi));
 
 
-				float3 finalColor = (light + ((_MainTex_var.rgb * i.vertexColor.rgb * _TintColor.rgb * _TintColor.a)
+				float3 finalColor = (light + ((_MainTex_var.rgb * i.vertexColor.rgb * i.vertexColor.a * _TintColor.rgb * _TintColor.a)
 					* (_MainTex_var.a * 2.0 * _Voronoi_var.a * voronoiIntensity)));
 				
 				fixed4 finalRGBA = fixed4(finalColor,1);
