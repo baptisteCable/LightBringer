@@ -6,9 +6,11 @@ namespace LightBringer.Enemies.Knight
 
     public class Attack2Impact : MonoBehaviour
     {
-        private GameObject bullet;
-        private GameObject explosion;
-        private GameObject indicator;
+        private const float FALLDOWN_TIME = 1f;
+
+        [SerializeField] private GameObject bullet;
+        [SerializeField] private GameObject explosion;
+        [SerializeField] private GameObject indicator;
         private float startingTime;
         private bool exploded = false;
 
@@ -18,14 +20,11 @@ namespace LightBringer.Enemies.Knight
 
         void Start()
         {
-            bullet = transform.Find("LightningBullet").gameObject;
-            bullet.GetComponent<Rigidbody>().velocity = Vector3.down * 40;
+            bullet.GetComponent<Rigidbody>().velocity = Vector3.down * 40 / FALLDOWN_TIME;
             bullet.transform.localScale *= radius;
 
-            indicator = transform.Find("Indicator").gameObject;
             indicator.transform.localScale *= radius;
 
-            explosion = transform.Find("Explosion").gameObject;
             explosion.transform.localScale *= radius;
 
             // if on server
@@ -40,7 +39,7 @@ namespace LightBringer.Enemies.Knight
 
         void Update()
         {
-            if (Time.time > startingTime + 1f && exploded == false)
+            if (Time.time > startingTime + FALLDOWN_TIME && exploded == false)
             {
                 exploded = true;
                 Destroy(bullet);

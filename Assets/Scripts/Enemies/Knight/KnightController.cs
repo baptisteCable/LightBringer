@@ -161,7 +161,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 100f / distance;
                 }
             }
-            weight = 1000000; // DEBUG
             dic.Add(new Attack3Behaviour(km, km.attack3act1GO, km.attack3act2GO, km.shieldCollider), weight);
 
             // Attack 4 behaviour
