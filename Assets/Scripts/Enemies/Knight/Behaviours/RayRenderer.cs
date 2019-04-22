@@ -96,7 +96,7 @@ namespace LightBringer.Enemies.Knight
             // Vanishing effect
             if (endTime > 0 && Time.time > endTime)
             {
-                emiter.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+                emiter.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                 if (ending != null)
                 {
                     ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
