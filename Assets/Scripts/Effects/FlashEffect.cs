@@ -6,7 +6,7 @@ namespace LightBringer.Effects
 {
     public class FlashEffect : MonoBehaviour
     {
-        [SerializeField] private string[] exclusions = new string[1] { "UI" };
+        [SerializeField] private string[] exclusions = new string[2] { "UI", "NoFlash" };
         [SerializeField] private float duration = .1f;
         [SerializeField] private Transform[] transformsToFlash = new Transform[0];
         [SerializeField] private Color emissionColor = new Color(.2f, .1f, .1f);

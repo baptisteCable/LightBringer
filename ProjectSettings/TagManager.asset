@@ -13,6 +13,7 @@ TagManager:
   - Ground
   - PlayerHitbox
   - EnemyHitbox
+  - NoFlash
   layers:
   - Default
   - TransparentFX

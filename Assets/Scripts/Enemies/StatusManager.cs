@@ -139,18 +139,21 @@ namespace LightBringer.Enemies
             motor.SetMode(Mode.Rage);
             rageEnd = Time.time + RAGE_DURATION;
             rageToBeStarted = true;
+            motor.StartRage();
         }
 
         public void ExhaustionStart()
         {
             motor.SetMode(Mode.Exhaustion);
             exhaustionEnd = Time.time + EXHAUSTION_DURATION;
+            motor.StartExhaustion();
         }
 
         public void ExhaustionEnd()
         {
             motor.SetMode(Mode.Fight);
             rageAmount = 0;
+            motor.StopExhaustion();
         }
 
         public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)

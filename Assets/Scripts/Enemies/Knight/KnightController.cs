@@ -23,11 +23,6 @@ namespace LightBringer.Enemies.Knight
             nextActionBehaviour = null;
 
             SelectTarget();
-
-            if (target != null)
-            {
-                motor.head.LookAtTarget(target.gameObject);
-            }
         }
 
         // Update is called once per frame

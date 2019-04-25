@@ -54,7 +54,6 @@ namespace LightBringer.Enemies
         [HideInInspector] public CharacterController cc;
         [HideInInspector] public StatusManager statusManager;
         [HideInInspector] public Controller controller;
-        public Head head;
 
         //Animation acceleration smooth
         protected Vector3 animAcceleration;
@@ -310,5 +309,11 @@ namespace LightBringer.Enemies
                 indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
             }
         }
+
+        public abstract void StartRage();
+
+        public abstract void StartExhaustion();
+
+        public abstract void StopExhaustion();
     }
 }
