@@ -17,7 +17,7 @@ namespace LightBringer.Enemies
         private const float RAGE_INCREASE_WITH_INTERRUPTION = .2f;
         private const float RAGE_RATIO_WITH_DAMAGE = 1.5f; // ratio applied to % of max HP that the taken damages represent
         private const float RAGE_DURATION = 15;
-        private const float EXHAUSTION_DURATION = 10;
+        private const float EXHAUSTION_DURATION = 12;
 
         // DEBUG
         private GUIStyle frontStyle = null;
@@ -33,6 +33,7 @@ namespace LightBringer.Enemies
         public Mode mode;
 
         // Rage
+        public Mode nextMode;
         private float rageEnd;
         private float exhaustionEnd;
 
@@ -80,25 +81,26 @@ namespace LightBringer.Enemies
         private void Update()
         {
             ApplyAllDamages();
-            UpdateMode();
+            UpdateNextMode();
         }
 
         public void Init()
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = 0f;
+            rageAmount = 0;
+            rageAmount = 0;
         }
 
-        private void UpdateMode()
+        private void UpdateNextMode()
         {
             if (mode == Mode.Rage && Time.time >= rageEnd)
             {
-                ExhaustionStart();
+                nextMode = Mode.Exhaustion;
             }
             else if (mode == Mode.Exhaustion && Time.time >= exhaustionEnd)
             {
-                ExhaustionEnd();
+                nextMode = Mode.Fight;
             }
         }
 
@@ -128,7 +130,7 @@ namespace LightBringer.Enemies
 
             if (rageAmount >= 1f)
             {
-                RageStart();
+                nextMode = Mode.Rage;
             }
         }
 
@@ -148,7 +150,6 @@ namespace LightBringer.Enemies
         {
             motor.SetMode(Mode.Fight);
             rageAmount = 0;
-            Debug.Log("Rage: " + rageAmount);
         }
 
         public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)

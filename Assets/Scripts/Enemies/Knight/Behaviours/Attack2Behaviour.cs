@@ -7,7 +7,8 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack2Behaviour : EnemyBehaviour, CollisionAbility
     {
-        private const float DURATION = 4.133f;
+        private const float DURATION = 4.2f;
+        private const float DURATION_RAGE = 3.6f;
         private const float RANGE = 30f;
         private const float DAMAGE = 10f;
         private const float ENEMY_RAIN_RANGE = 15f;
@@ -18,12 +19,9 @@ namespace LightBringer.Enemies.Knight
         private KnightMotor km;
 
         private const float LOAD_1 = 59f / 60f;
-        private const float LOAD_2 = 91f / 60f;
-        private const float LOAD_3 = 123f / 60f;
-
-        private const float FIRE_1 = 75f / 60f;
-        private const float FIRE_2 = 107f / 60f;
-        private const float FIRE_3 = 139f / 60f;
+        private const float LOAD_1_RAGE = 22f / 60f;
+        private const float TIME_BETWEEN_LOAD = 32f / 60f;
+        private const float FIRE_AFTER_LOADING = 16f / 60f;
 
         // Collider list
         private List<Collider> cols;
@@ -31,6 +29,9 @@ namespace LightBringer.Enemies.Knight
         private Transform target;
 
         private GameObject bullet;
+
+        private float duration;
+        private float load1;
 
         public Attack2Behaviour(KnightMotor enemyMotor, Transform target) : base(enemyMotor)
         {
@@ -42,14 +43,25 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.Play("Attack2", -1, 0);
+            if (em.statusManager.mode == Mode.Rage)
+            {
+                duration = DURATION_RAGE;
+                load1 = LOAD_1_RAGE;
+                em.anim.Play("Attack2Rage", -1, 0);
+            }
+            else
+            {
+                duration = DURATION;
+                load1 = LOAD_1;
+                em.anim.Play("Attack2", -1, 0);
+            }
 
             em.SetOverrideAgent(true);
 
             parts = new Part[3];
-            parts[0] = new Part(State.IndicatorDisplayed, LOAD_1, FIRE_1 - LOAD_1, -1);
-            parts[1] = new Part(State.IndicatorDisplayed, LOAD_2, FIRE_2 - LOAD_2, -1);
-            parts[2] = new Part(State.IndicatorDisplayed, LOAD_3, FIRE_3 - LOAD_3, -1);
+            parts[0] = new Part(State.IndicatorDisplayed, load1, FIRE_AFTER_LOADING, -1);
+            parts[1] = new Part(State.IndicatorDisplayed, load1 + TIME_BETWEEN_LOAD, FIRE_AFTER_LOADING, -1);
+            parts[2] = new Part(State.IndicatorDisplayed, load1 + 2 * TIME_BETWEEN_LOAD, FIRE_AFTER_LOADING, -1);
         }
 
         public override void Run()
@@ -57,7 +69,7 @@ namespace LightBringer.Enemies.Knight
             StartParts();
             RunParts();
 
-            if (Time.time > startTime + DURATION)
+            if (Time.time > startTime + duration)
             {
                 End();
             }

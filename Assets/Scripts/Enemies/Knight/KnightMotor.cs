@@ -30,8 +30,11 @@ namespace LightBringer.Enemies.Knight
         [Header("Effects")]
         public ParticleSystem chargeEffect;
         public ParticleSystem attack1ChannelingEffect;
+        public ParticleSystem attack1ChannelingEffectRage;
         public ParticleSystem attack3ChannelingEffect;
+        public ParticleSystem attack3ChannelingEffectRage;
         public ParticleSystem attack4ChannelingEffect;
+        public ParticleSystem attack4ChannelingEffectRage;
 
         private void Start()
         {

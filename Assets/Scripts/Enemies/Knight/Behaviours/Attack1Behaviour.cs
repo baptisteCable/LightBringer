@@ -7,13 +7,15 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack1Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 4.85f;
+        private const float DURATION = 4.83f;
+        private const float DURATION_RAGE = 3.58f;
         private const float RAY_DAMAGE = 10f;
         private const float TIME_BETWEEN_RAY_TICKS = .2f;
         private const float GROUND_DAMAGE = 1.5f;
         private const float TIME_BETWEEN_GROUND_TICKS = .05f;
 
         private const float DMG_START = 123f / 60f;
+        private const float DMG_START_RAGE = 63f / 60f;
         private const float DMG_DURATION = 136f / 60f;
         public const float GROUND_DURATION = 10f;
         public const float CONE_ANGLE = 70.8f;
@@ -36,6 +38,8 @@ namespace LightBringer.Enemies.Knight
         private BurningGround burningGround;
 
         private KnightMotor km;
+        private float dmgStart;
+        private float duration;
 
         private bool missed = true;
 
@@ -48,10 +52,6 @@ namespace LightBringer.Enemies.Knight
         {
             km = enemyMotor;
             this.target = target;
-            actGOs = new GameObject[1];
-            actGOs[0] = km.attack1actGO;
-            parts = new Part[1];
-            parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, -1);
             this.groundActPrefab = groundActPrefab;
             this.groundRendererPrefab = groundRendererPrefab;
         }
@@ -60,8 +60,25 @@ namespace LightBringer.Enemies.Knight
         {
             base.Init();
 
-            em.anim.Play("Attack1", -1, 0);
-            km.attack1ChannelingEffect.Play();
+            if (em.statusManager.mode == Mode.Rage)
+            {
+                duration = DURATION_RAGE;
+                dmgStart = DMG_START_RAGE;
+                em.anim.Play("Attack1Rage", -1, 0);
+                km.attack1ChannelingEffectRage.Play();
+            }
+            else
+            {
+                duration = DURATION;
+                dmgStart = DMG_START;
+                em.anim.Play("Attack1", -1, 0);
+                km.attack1ChannelingEffect.Play();
+            }
+
+            actGOs = new GameObject[1];
+            actGOs[0] = km.attack1actGO;
+            parts = new Part[1];
+            parts[0] = new Part(State.Before, dmgStart, DMG_DURATION, -1);
 
             acts = new AbilityColliderTrigger[1];
             acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
@@ -77,12 +94,12 @@ namespace LightBringer.Enemies.Knight
             RunCollisionParts();
 
             // Rotate at the beginning
-            if (Time.time <= startTime + DMG_START)
+            if (Time.time <= startTime + dmgStart)
             {
                 em.RotateTowards(targetPosition);
             }
 
-            if (Time.time > startTime + DURATION)
+            if (Time.time > startTime + duration)
             {
                 End();
             }

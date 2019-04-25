@@ -176,6 +176,9 @@ namespace LightBringer.Enemies
         public void SetMode(Mode mode)
         {
             statusManager.mode = mode;
+            statusManager.nextMode = mode;
+
+            anim.SetInteger("Mode", (int)mode);
 
             switch (mode)
             {

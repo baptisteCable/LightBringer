@@ -3,9 +3,9 @@ namespace LightBringer.Enemies
 {
     public enum Mode
     {
-        Passive,
-        Fight,
-        Rage,
-        Exhaustion
+        Passive = 0,
+        Fight = 1,
+        Rage = 2,
+        Exhaustion = 3
     }
 }

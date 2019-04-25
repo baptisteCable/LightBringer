@@ -1,152 +1,461 @@
 fileFormatVersion: 2
 guid: 0599d71196a9d5242a5edb1dc989d13d
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Armature
-    100002: BoneChest
-    100004: BoneControlerShield
-    100006: BoneControlerSpear
-    100008: BoneDress
-    100010: BoneElbow.L
-    100012: BoneElbow.R
-    100014: BoneHand.L
-    100016: BoneHand.R
-    100018: BoneHelmet
-    100020: BoneShoulder.L
-    100022: BoneShoulder.R
-    100024: CableTorseBas1
-    100026: CableTorseBas2
-    100028: CableTorseBas3
-    100030: CableTorseBas4
-    100032: CrystalDress
-    100034: CrystalHead
-    100036: CrystalShield
-    100038: Dress
-    100040: //RootNode
-    100042: Head
-    100044: Shield
-    100046: Spear
-    100048: SphereChest
-    100050: SphereElbow.L
-    100052: SphereElbow.R
-    100054: SphereFoot
-    100056: SphereHand.L
-    100058: SphereHand.R
-    100060: SphereShoulder.L
-    100062: SphereShoulder.R
-    100064: BoneControlerSpearPartB
-    100066: BoneControlerSpearPartL
-    100068: BoneControlerSpearPartR
-    100070: BoneControlerSpearPartT
-    100072: Spear.001
-    100074: Spear.002
-    100076: Spear.003
-    100078: Spear.004
-    400000: Armature
-    400002: BoneChest
-    400004: BoneControlerShield
-    400006: BoneControlerSpear
-    400008: BoneDress
-    400010: BoneElbow.L
-    400012: BoneElbow.R
-    400014: BoneHand.L
-    400016: BoneHand.R
-    400018: BoneHelmet
-    400020: BoneShoulder.L
-    400022: BoneShoulder.R
-    400024: CableTorseBas1
-    400026: CableTorseBas2
-    400028: CableTorseBas3
-    400030: CableTorseBas4
-    400032: CrystalDress
-    400034: CrystalHead
-    400036: CrystalShield
-    400038: Dress
-    400040: //RootNode
-    400042: Head
-    400044: Shield
-    400046: Spear
-    400048: SphereChest
-    400050: SphereElbow.L
-    400052: SphereElbow.R
-    400054: SphereFoot
-    400056: SphereHand.L
-    400058: SphereHand.R
-    400060: SphereShoulder.L
-    400062: SphereShoulder.R
-    400064: BoneControlerSpearPartB
-    400066: BoneControlerSpearPartL
-    400068: BoneControlerSpearPartR
-    400070: BoneControlerSpearPartT
-    400072: Spear.001
-    400074: Spear.002
-    400076: Spear.003
-    400078: Spear.004
-    2100000: No Name
-    4300000: CrystalHead
-    4300002: CrystalDress
-    4300004: CrystalShield
-    4300006: SphereHand.L
-    4300008: Dress
-    4300010: SphereChest
-    4300012: Head
-    4300014: SphereShoulder.R
-    4300016: SphereElbow.R
-    4300018: SphereHand.R
-    4300020: Spear
-    4300022: SphereShoulder.L
-    4300024: SphereElbow.L
-    4300026: Shield
-    4300028: CableTorseBas1
-    4300030: CableTorseBas4
-    4300032: CableTorseBas3
-    4300034: CableTorseBas2
-    4300036: SphereFoot
-    4300038: Spear.001
-    4300040: Spear.002
-    4300042: Spear.003
-    4300044: Spear.004
-    7400000: Armature|Attack1
-    7400002: Armature|Attack10
-    7400004: Armature|Attack2
-    7400006: Armature|Attack3
-    7400008: Armature|Cancel
-    7400010: Armature|Die
-    7400012: Armature|Idle
-    7400014: Armature|IdleTired
-    7400016: Armature|MoveBackward
-    7400018: Armature|MoveForward
-    7400020: Armature|MoveLeft
-    7400022: Armature|MoveRight
-    7400024: Armature|Charge1
-    7400026: Armature|Attack4
-    7400028: Armature|Attack4.001
-    9500000: //RootNode
-    13700000: CableTorseBas1
-    13700002: CableTorseBas2
-    13700004: CableTorseBas3
-    13700006: CableTorseBas4
-    13700008: CrystalDress
-    13700010: CrystalHead
-    13700012: CrystalShield
-    13700014: Dress
-    13700016: Head
-    13700018: Shield
-    13700020: Spear
-    13700022: SphereChest
-    13700024: SphereElbow.L
-    13700026: SphereElbow.R
-    13700028: SphereFoot
-    13700030: SphereHand.L
-    13700032: SphereHand.R
-    13700034: SphereShoulder.L
-    13700036: SphereShoulder.R
-    13700038: Spear.001
-    13700040: Spear.002
-    13700042: Spear.003
-    13700044: Spear.004
-    2186277476908879412: ImportLogs
+  serializedVersion: 25
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Armature
+  - first:
+      1: 100002
+    second: BoneChest
+  - first:
+      1: 100004
+    second: BoneControlerShield
+  - first:
+      1: 100006
+    second: BoneControlerSpear
+  - first:
+      1: 100008
+    second: BoneDress
+  - first:
+      1: 100010
+    second: BoneElbow.L
+  - first:
+      1: 100012
+    second: BoneElbow.R
+  - first:
+      1: 100014
+    second: BoneHand.L
+  - first:
+      1: 100016
+    second: BoneHand.R
+  - first:
+      1: 100018
+    second: BoneHelmet
+  - first:
+      1: 100020
+    second: BoneShoulder.L
+  - first:
+      1: 100022
+    second: BoneShoulder.R
+  - first:
+      1: 100024
+    second: CableTorseBas1
+  - first:
+      1: 100026
+    second: CableTorseBas2
+  - first:
+      1: 100028
+    second: CableTorseBas3
+  - first:
+      1: 100030
+    second: CableTorseBas4
+  - first:
+      1: 100032
+    second: CrystalDress
+  - first:
+      1: 100034
+    second: CrystalHead
+  - first:
+      1: 100036
+    second: CrystalShield
+  - first:
+      1: 100038
+    second: Dress
+  - first:
+      1: 100040
+    second: //RootNode
+  - first:
+      1: 100042
+    second: Head
+  - first:
+      1: 100044
+    second: Shield
+  - first:
+      1: 100046
+    second: Spear
+  - first:
+      1: 100048
+    second: SphereChest
+  - first:
+      1: 100050
+    second: SphereElbow.L
+  - first:
+      1: 100052
+    second: SphereElbow.R
+  - first:
+      1: 100054
+    second: SphereFoot
+  - first:
+      1: 100056
+    second: SphereHand.L
+  - first:
+      1: 100058
+    second: SphereHand.R
+  - first:
+      1: 100060
+    second: SphereShoulder.L
+  - first:
+      1: 100062
+    second: SphereShoulder.R
+  - first:
+      1: 100064
+    second: BoneControlerSpearPartB
+  - first:
+      1: 100066
+    second: BoneControlerSpearPartL
+  - first:
+      1: 100068
+    second: BoneControlerSpearPartR
+  - first:
+      1: 100070
+    second: BoneControlerSpearPartT
+  - first:
+      1: 100072
+    second: Spear.001
+  - first:
+      1: 100074
+    second: Spear.002
+  - first:
+      1: 100076
+    second: Spear.003
+  - first:
+      1: 100078
+    second: Spear.004
+  - first:
+      4: 400000
+    second: Armature
+  - first:
+      4: 400002
+    second: BoneChest
+  - first:
+      4: 400004
+    second: BoneControlerShield
+  - first:
+      4: 400006
+    second: BoneControlerSpear
+  - first:
+      4: 400008
+    second: BoneDress
+  - first:
+      4: 400010
+    second: BoneElbow.L
+  - first:
+      4: 400012
+    second: BoneElbow.R
+  - first:
+      4: 400014
+    second: BoneHand.L
+  - first:
+      4: 400016
+    second: BoneHand.R
+  - first:
+      4: 400018
+    second: BoneHelmet
+  - first:
+      4: 400020
+    second: BoneShoulder.L
+  - first:
+      4: 400022
+    second: BoneShoulder.R
+  - first:
+      4: 400024
+    second: CableTorseBas1
+  - first:
+      4: 400026
+    second: CableTorseBas2
+  - first:
+      4: 400028
+    second: CableTorseBas3
+  - first:
+      4: 400030
+    second: CableTorseBas4
+  - first:
+      4: 400032
+    second: CrystalDress
+  - first:
+      4: 400034
+    second: CrystalHead
+  - first:
+      4: 400036
+    second: CrystalShield
+  - first:
+      4: 400038
+    second: Dress
+  - first:
+      4: 400040
+    second: //RootNode
+  - first:
+      4: 400042
+    second: Head
+  - first:
+      4: 400044
+    second: Shield
+  - first:
+      4: 400046
+    second: Spear
+  - first:
+      4: 400048
+    second: SphereChest
+  - first:
+      4: 400050
+    second: SphereElbow.L
+  - first:
+      4: 400052
+    second: SphereElbow.R
+  - first:
+      4: 400054
+    second: SphereFoot
+  - first:
+      4: 400056
+    second: SphereHand.L
+  - first:
+      4: 400058
+    second: SphereHand.R
+  - first:
+      4: 400060
+    second: SphereShoulder.L
+  - first:
+      4: 400062
+    second: SphereShoulder.R
+  - first:
+      4: 400064
+    second: BoneControlerSpearPartB
+  - first:
+      4: 400066
+    second: BoneControlerSpearPartL
+  - first:
+      4: 400068
+    second: BoneControlerSpearPartR
+  - first:
+      4: 400070
+    second: BoneControlerSpearPartT
+  - first:
+      4: 400072
+    second: Spear.001
+  - first:
+      4: 400074
+    second: Spear.002
+  - first:
+      4: 400076
+    second: Spear.003
+  - first:
+      4: 400078
+    second: Spear.004
+  - first:
+      21: 2100000
+    second: No Name
+  - first:
+      43: 4300000
+    second: CrystalHead
+  - first:
+      43: 4300002
+    second: CrystalDress
+  - first:
+      43: 4300004
+    second: CrystalShield
+  - first:
+      43: 4300006
+    second: SphereHand.L
+  - first:
+      43: 4300008
+    second: Dress
+  - first:
+      43: 4300010
+    second: SphereChest
+  - first:
+      43: 4300012
+    second: Head
+  - first:
+      43: 4300014
+    second: SphereShoulder.R
+  - first:
+      43: 4300016
+    second: SphereElbow.R
+  - first:
+      43: 4300018
+    second: SphereHand.R
+  - first:
+      43: 4300020
+    second: Spear
+  - first:
+      43: 4300022
+    second: SphereShoulder.L
+  - first:
+      43: 4300024
+    second: SphereElbow.L
+  - first:
+      43: 4300026
+    second: Shield
+  - first:
+      43: 4300028
+    second: CableTorseBas1
+  - first:
+      43: 4300030
+    second: CableTorseBas4
+  - first:
+      43: 4300032
+    second: CableTorseBas3
+  - first:
+      43: 4300034
+    second: CableTorseBas2
+  - first:
+      43: 4300036
+    second: SphereFoot
+  - first:
+      43: 4300038
+    second: Spear.001
+  - first:
+      43: 4300040
+    second: Spear.002
+  - first:
+      43: 4300042
+    second: Spear.003
+  - first:
+      43: 4300044
+    second: Spear.004
+  - first:
+      74: 7400000
+    second: Armature|Attack1
+  - first:
+      74: 7400002
+    second: Armature|Attack10
+  - first:
+      74: 7400004
+    second: Armature|Attack2
+  - first:
+      74: 7400006
+    second: Armature|Attack3
+  - first:
+      74: 7400008
+    second: Armature|Cancel
+  - first:
+      74: 7400010
+    second: Armature|Die
+  - first:
+      74: 7400012
+    second: Armature|Idle
+  - first:
+      74: 7400014
+    second: Armature|IdleTired
+  - first:
+      74: 7400016
+    second: Armature|MoveBackward
+  - first:
+      74: 7400018
+    second: Armature|MoveForward
+  - first:
+      74: 7400020
+    second: Armature|MoveLeft
+  - first:
+      74: 7400022
+    second: Armature|MoveRight
+  - first:
+      74: 7400024
+    second: Armature|Charge1
+  - first:
+      74: 7400026
+    second: Armature|Attack4
+  - first:
+      74: 7400028
+    second: Armature|Attack4.001
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: CableTorseBas1
+  - first:
+      137: 13700002
+    second: CableTorseBas2
+  - first:
+      137: 13700004
+    second: CableTorseBas3
+  - first:
+      137: 13700006
+    second: CableTorseBas4
+  - first:
+      137: 13700008
+    second: CrystalDress
+  - first:
+      137: 13700010
+    second: CrystalHead
+  - first:
+      137: 13700012
+    second: CrystalShield
+  - first:
+      137: 13700014
+    second: Dress
+  - first:
+      137: 13700016
+    second: Head
+  - first:
+      137: 13700018
+    second: Shield
+  - first:
+      137: 13700020
+    second: Spear
+  - first:
+      137: 13700022
+    second: SphereChest
+  - first:
+      137: 13700024
+    second: SphereElbow.L
+  - first:
+      137: 13700026
+    second: SphereElbow.R
+  - first:
+      137: 13700028
+    second: SphereFoot
+  - first:
+      137: 13700030
+    second: SphereHand.L
+  - first:
+      137: 13700032
+    second: SphereHand.R
+  - first:
+      137: 13700034
+    second: SphereShoulder.L
+  - first:
+      137: 13700036
+    second: SphereShoulder.R
+  - first:
+      137: 13700038
+    second: Spear.001
+  - first:
+      137: 13700040
+    second: Spear.002
+  - first:
+      137: 13700042
+    second: Spear.003
+  - first:
+      137: 13700044
+    second: Spear.004
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
+  - first:
+      74: 6745878487793359448
+    second: Armature|Attack1Rage
+  - first:
+      74: 5132392938009420156
+    second: Armature|Attack2Rage
+  - first:
+      74: 2800987822865060577
+    second: Armature|Attack3Rage
+  - first:
+      74: 1064107772345556045
+    second: Armature|Attack4Rage
+  - first:
+      74: -4590684617893166247
+    second: Armature|Charge1Rage
+  - first:
+      74: -7588987196998380486
+    second: Armature|MoveForwardTired
+  - first:
+      74: 5887098101811204791
+    second: Armature|RageOn
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -183,6 +492,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Attack1
       takeName: Armature|Attack1
+      internalID: 7400000
       firstFrame: 0
       lastFrame: 289
       wrapMode: 0
@@ -211,6 +521,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Attack10
       takeName: Armature|Attack10
+      internalID: 7400002
       firstFrame: 0
       lastFrame: 174
       wrapMode: 0
@@ -239,6 +550,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Attack2
       takeName: Armature|Attack2
+      internalID: 7400004
       firstFrame: 0
       lastFrame: 248
       wrapMode: 0
@@ -267,6 +579,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Attack3
       takeName: Armature|Attack3
+      internalID: 7400006
       firstFrame: 0
       lastFrame: 189
       wrapMode: 0
@@ -295,6 +608,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Attack4
       takeName: Armature|Attack4
+      internalID: 7400026
       firstFrame: 0
       lastFrame: 113
       wrapMode: 0
@@ -323,6 +637,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Cancel
       takeName: Armature|Cancel
+      internalID: 7400008
       firstFrame: 0
       lastFrame: 29
       wrapMode: 0
@@ -351,6 +666,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Charge1
       takeName: Armature|Charge1
+      internalID: 7400024
       firstFrame: 0
       lastFrame: 110
       wrapMode: 0
@@ -379,6 +695,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Die
       takeName: Armature|Die
+      internalID: 7400010
       firstFrame: 0
       lastFrame: 79
       wrapMode: 0
@@ -407,6 +724,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|Idle
       takeName: Armature|Idle
+      internalID: 7400012
       firstFrame: 0
       lastFrame: 89
       wrapMode: 0
@@ -435,6 +753,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|IdleTired
       takeName: Armature|IdleTired
+      internalID: 7400014
       firstFrame: 0
       lastFrame: 89
       wrapMode: 0
@@ -443,7 +762,7 @@ ModelImporter:
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0
@@ -463,6 +782,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|MoveBackward
       takeName: Armature|MoveBackward
+      internalID: 7400016
       firstFrame: 0
       lastFrame: 89
       wrapMode: 0
@@ -491,6 +811,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|MoveForward
       takeName: Armature|MoveForward
+      internalID: 7400018
       firstFrame: 0
       lastFrame: 89
       wrapMode: 0
@@ -519,6 +840,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|MoveLeft
       takeName: Armature|MoveLeft
+      internalID: 7400020
       firstFrame: 0
       lastFrame: 89
       wrapMode: 0
@@ -547,8 +869,212 @@ ModelImporter:
     - serializedVersion: 16
       name: Armature|MoveRight
       takeName: Armature|MoveRight
+      internalID: 7400022
       firstFrame: 0
       lastFrame: 89
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Attack1Rage
+      takeName: Armature|Attack1Rage
+      internalID: 6745878487793359448
+      firstFrame: 0
+      lastFrame: 214
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Attack2Rage
+      takeName: Armature|Attack2Rage
+      internalID: 5132392938009420156
+      firstFrame: 0
+      lastFrame: 211
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Attack3Rage
+      takeName: Armature|Attack3Rage
+      internalID: 2800987822865060577
+      firstFrame: 0
+      lastFrame: 129
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Attack4Rage
+      takeName: Armature|Attack4Rage
+      internalID: 1064107772345556045
+      firstFrame: 0
+      lastFrame: 73
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|Charge1Rage
+      takeName: Armature|Charge1Rage
+      internalID: -4590684617893166247
+      firstFrame: 0
+      lastFrame: 83
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|MoveForwardTired
+      takeName: Armature|MoveForwardTired
+      internalID: -7588987196998380486
+      firstFrame: 0
+      lastFrame: 89
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|RageOn
+      takeName: Armature|RageOn
+      internalID: 5887098101811204791
+      firstFrame: 0
+      lastFrame: 99
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -586,18 +1112,19 @@ ModelImporter:
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 0.01
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -606,10 +1133,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -619,6 +1147,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

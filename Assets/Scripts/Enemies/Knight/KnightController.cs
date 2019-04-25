@@ -6,10 +6,10 @@ namespace LightBringer.Enemies.Knight
     [RequireComponent(typeof(KnightMotor))]
     public class KnightController : Controller
     {
-        private const float TRANSITION_DURATION = .3f;
-
         // Component
         [HideInInspector] public KnightMotor km;
+
+        private int waitCounter = 0;
 
         // Use this for initialization
         void Start()
@@ -19,7 +19,7 @@ namespace LightBringer.Enemies.Knight
             km = GetComponent<KnightMotor>();
 
             // last behaviour
-            currentBehaviour = new WaitBehaviour(km, .5f);
+            currentBehaviour = new WaitBehaviour(km);
             nextActionBehaviour = null;
 
             SelectTarget();
@@ -65,14 +65,17 @@ namespace LightBringer.Enemies.Knight
             // Else compute the next action behaviour
             else
             {
+                // Change mode if needed
+                ChangeMode();
+
                 // Find target
                 SelectTarget();
 
                 // if no target, do nothing (TODO: improve it and make it passive after several tries)
                 if (target == null)
                 {
-                    nextActionBehaviour = new WaitBehaviour(km, .5f);
-                    SetBehaviour(new WaitBehaviour(km, .5f));
+                    nextActionBehaviour = new WaitBehaviour(km);
+                    SetBehaviour(new WaitBehaviour(km));
                 }
 
                 else
@@ -94,6 +97,22 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
+        private void ChangeMode()
+        {
+            if (motor.statusManager.mode == Mode.Fight && motor.statusManager.nextMode == Mode.Rage)
+            {
+                motor.statusManager.RageStart();
+            }
+            else if (motor.statusManager.mode == Mode.Rage && motor.statusManager.nextMode == Mode.Exhaustion)
+            {
+                motor.statusManager.ExhaustionStart();
+            }
+            else if (motor.statusManager.mode == Mode.Exhaustion && motor.statusManager.nextMode == Mode.Fight)
+            {
+                motor.statusManager.ExhaustionEnd();
+            }
+        }
+
         private void SetBehaviour(EnemyBehaviour behaviour)
         {
             currentBehaviour = behaviour;
@@ -108,7 +127,7 @@ namespace LightBringer.Enemies.Knight
             // Passive case
             if (passive)
             {
-                dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                AddWaitBehaviour(dic, 1f);
                 return dic;
             }
 
@@ -192,25 +211,25 @@ namespace LightBringer.Enemies.Knight
             if (passive || nextActionBehaviour.GetType() == typeof(WaitBehaviour))
             {
                 Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
-                dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                AddWaitBehaviour(dic, 1f);
                 return dic;
             }
 
             if (nextActionBehaviour.GetType() == typeof(Attack1Behaviour))
             {
-                return TransistionBehaviourListAfterAttack1();
+                return TransistionBehaviourListBeforeAttack1();
             }
             else if (nextActionBehaviour.GetType() == typeof(Attack2Behaviour))
             {
-                return TransistionBehaviourListAfterAttack2();
+                return TransistionBehaviourListBeforeAttack2();
             }
             else if (nextActionBehaviour.GetType() == typeof(Attack3Behaviour))
             {
-                return TransistionBehaviourListAfterAttack3();
+                return TransistionBehaviourListBeforeAttack3();
             }
             else if (nextActionBehaviour.GetType() == typeof(Attack4Behaviour))
             {
-                return TransistionBehaviourListAfterAttack4();
+                return TransistionBehaviourListBeforeAttack4();
             }
             else
             {
@@ -219,7 +238,7 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack1()
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListBeforeAttack1()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
 
@@ -231,12 +250,12 @@ namespace LightBringer.Enemies.Knight
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
             {
-                dic.Add(new Charge1Behaviour(km, destination), 1f);
+                AddMovementBehaviour(dic, destination, 1f);
 
                 // if sight line and not too far (before charge), prefer waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 25f && hasSightLine(target.position, motor.transform.position))
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                    AddWaitBehaviour(dic, 3f);
                 }
             }
             else
@@ -244,7 +263,7 @@ namespace LightBringer.Enemies.Knight
                 // if sight line and not too far , waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 25f && hasSightLine(target.position, motor.transform.position))
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                    AddWaitBehaviour(dic, 3f);
                 }
                 // else, no way to be in right position, thus random move
                 else
@@ -253,25 +272,25 @@ namespace LightBringer.Enemies.Knight
                             motor.transform, target.position, 5, 50, false, true, false,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
-                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                        AddMovementBehaviour(dic, destination, 3f);
                     }
 
                     // or wait
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                    AddWaitBehaviour(dic, 1f);
                 }
             }
 
             return dic;
         }
 
-        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack2()
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListBeforeAttack2()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
-            dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+            AddWaitBehaviour(dic, 1f);
             return dic;
         }
 
-        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack3()
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListBeforeAttack3()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
 
@@ -283,12 +302,12 @@ namespace LightBringer.Enemies.Knight
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
             {
-                dic.Add(new Charge1Behaviour(km, destination), 1f);
+                AddMovementBehaviour(dic, destination, 1f);
 
                 // if not too far (before charge), can also trigger waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 12f)
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                    AddWaitBehaviour(dic, 1f);
                 }
             }
             else
@@ -296,7 +315,7 @@ namespace LightBringer.Enemies.Knight
                 // if not too far, waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 15f)
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                    AddWaitBehaviour(dic, 1f);
                 }
                 // try a closer not optimal move
                 else if (CanFindTargetPoint(
@@ -304,7 +323,7 @@ namespace LightBringer.Enemies.Knight
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
                 {
-                    dic.Add(new Charge1Behaviour(km, destination), 1f);
+                    AddMovementBehaviour(dic, destination, 1f);
                 }
                 // else, no way to be in right position, thus random move
                 else
@@ -313,18 +332,18 @@ namespace LightBringer.Enemies.Knight
                             motor.transform, target.position, 5, 50, false, true, true,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
-                        dic.Add(new Charge1Behaviour(km, destination), 1f);
+                        AddMovementBehaviour(dic, destination, 1f);
                     }
 
                     // or wait
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                    AddWaitBehaviour(dic, 1f);
                 }
             }
 
             return dic;
         }
 
-        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListAfterAttack4()
+        private Dictionary<EnemyBehaviour, float> TransistionBehaviourListBeforeAttack4()
         {
             Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
 
@@ -336,12 +355,12 @@ namespace LightBringer.Enemies.Knight
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
             {
-                dic.Add(new Charge1Behaviour(km, destination), 1f);
+                AddMovementBehaviour(dic, destination, 1f);
 
                 // if sight line and not too far (before charge), prefer waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 100f && hasSightLine(target.position, motor.transform.position))
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                    AddWaitBehaviour(dic, 3f);
                 }
             }
             else
@@ -349,7 +368,7 @@ namespace LightBringer.Enemies.Knight
                 // if sight line, waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 100f && hasSightLine(target.position, motor.transform.position))
                 {
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 3f);
+                    AddWaitBehaviour(dic, 3f);
                 }
                 // else, no way to be in right position, thus random move
                 else
@@ -359,29 +378,56 @@ namespace LightBringer.Enemies.Knight
                             motor.transform, target.position, 5, 50, true, true, true,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
-                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                        AddMovementBehaviour(dic, destination, 3f);
                     }
                     // no sightline but closer
                     else if (CanFindTargetPoint(
                             motor.transform, target.position, 5, 20, false, true, false,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
-                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                        AddMovementBehaviour(dic, destination, 3f);
                     }
                     // no sightline and not that close
                     else if (CanFindTargetPoint(
                             motor.transform, target.position, 5, 40, false, true, false,
                             Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination))
                     {
-                        dic.Add(new Charge1Behaviour(km, destination), 3f);
+                        AddMovementBehaviour(dic, destination, 3f);
                     }
 
                     // or wait
-                    dic.Add(new WaitBehaviour(km, TRANSITION_DURATION), 1f);
+                    AddWaitBehaviour(dic, 1f);
                 }
             }
 
             return dic;
+        }
+
+        private void AddWaitBehaviour(Dictionary<EnemyBehaviour, float> dic, float weight)
+        {
+            // 1 wait over 2 is an exhaustion wait if exhausted
+            waitCounter = (waitCounter + 1) % 2;
+
+            if (motor.statusManager.mode == Mode.Exhaustion && waitCounter == 0)
+            {
+                dic.Add(new WaitExhaustionBehaviour(km), weight);
+            }
+            else
+            {
+                dic.Add(new WaitBehaviour(km), weight);
+            }
+        }
+
+        private void AddMovementBehaviour(Dictionary<EnemyBehaviour, float> dic, Vector3 destination, float weight)
+        {
+            if (motor.statusManager.mode == Mode.Exhaustion)
+            {
+                dic.Add(new GoToPointBehaviour(km, destination), weight);
+            }
+            else
+            {
+                dic.Add(new Charge1Behaviour(km, destination), weight);
+            }
         }
 
         private EnemyBehaviour SelectBehaviourFromDictionary(Dictionary<EnemyBehaviour, float> dic)
@@ -393,7 +439,7 @@ namespace LightBringer.Enemies.Knight
             if (dic.Count == 0)
             {
                 Debug.LogError("No behaviour in list");
-                return new WaitBehaviour(km, TRANSITION_DURATION);
+                return new WaitBehaviour(km);
             }
 
             float rnd = Random.value;
@@ -409,7 +455,7 @@ namespace LightBringer.Enemies.Knight
             }
 
             Debug.Log("No behaviour selected");
-            return new WaitBehaviour(km, TRANSITION_DURATION);
+            return new WaitBehaviour(km);
         }
 
         private static Dictionary<EnemyBehaviour, float> NormalizedDictionary(Dictionary<EnemyBehaviour, float> dic)

@@ -7,12 +7,15 @@ namespace LightBringer.Enemies.Knight
 {
     public class Attack4Behaviour : CollisionBehaviour
     {
-        private const float DURATION = 2.2f;
+        private const float DURATION = 2.0f;
+        private const float DURATION_RAGE = 1.3f;
         private const float RAY_DAMAGE = 30f;
         private const float EXPLOSION_DAMAGE = 30f;
 
         private const float CHANNELING_EFFECT_START = 22f / 60f;
+        private const float CHANNELING_EFFECT_START_RAGE = 0;
         private const float DMG_START = 82f / 60f;
+        private const float DMG_START_RAGE = 42f / 60f;
         private const float DMG_DURATION = .3f;
 
         private const float RAYCAST_HEIGHT = 2f;
@@ -39,6 +42,10 @@ namespace LightBringer.Enemies.Knight
 
         private bool missed = true;
 
+        private float dmgStart;
+        private float duration;
+        private float channelingEffectStart;
+
         // Explosion collider list
         protected Dictionary<Collider, float> explCols;
 
@@ -46,16 +53,33 @@ namespace LightBringer.Enemies.Knight
         {
             km = enemyMotor;
             this.target = target;
-            actGOs = new GameObject[1];
-            parts = new Part[1];
-            parts[0] = new Part(State.Before, DMG_START, DMG_DURATION, -1);
         }
 
         public override void Init()
         {
             base.Init();
 
-            em.anim.Play("Attack4", -1, 0);
+            if (em.statusManager.mode == Mode.Rage)
+            {
+                duration = DURATION_RAGE;
+                dmgStart = DMG_START_RAGE;
+                channelingEffectStart = CHANNELING_EFFECT_START_RAGE;
+                em.anim.Play("Attack4Rage", -1, 0);
+                km.attack4ChannelingEffectRage.Play();
+            }
+            else
+            {
+                duration = DURATION;
+                dmgStart = DMG_START;
+                channelingEffectStart = CHANNELING_EFFECT_START;
+                em.anim.Play("Attack4", -1, 0);
+                km.attack4ChannelingEffect.Play();
+            }
+
+
+            actGOs = new GameObject[1];
+            parts = new Part[1];
+            parts[0] = new Part(State.Before, dmgStart, DMG_DURATION, -1);
 
             acts = new AbilityColliderTrigger[1];
             actGOs[0] = km.attack4actGO;
@@ -74,19 +98,19 @@ namespace LightBringer.Enemies.Knight
             RunCollisionParts();
 
             // Rotate at the beginning
-            if (Time.time <= startTime + DMG_START)
+            if (Time.time <= startTime + dmgStart)
             {
                 em.RotateTowards(targetPosition);
             }
 
             // Channeling effect
-            if (!effectStarted && Time.time > startTime + CHANNELING_EFFECT_START)
+            if (!effectStarted && Time.time > startTime + channelingEffectStart)
             {
                 effectStarted = true;
                 km.attack4ChannelingEffect.Play(true);
             }
 
-            if (Time.time > startTime + DURATION)
+            if (Time.time > startTime + duration)
             {
                 End();
             }
