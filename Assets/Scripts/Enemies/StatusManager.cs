@@ -16,7 +16,7 @@ namespace LightBringer.Enemies
         private const float RAGE_INCREASE_WITH_MISSED = .1f;
         private const float RAGE_INCREASE_WITH_INTERRUPTION = .2f;
         private const float RAGE_RATIO_WITH_DAMAGE = 1.5f; // ratio applied to % of max HP that the taken damages represent
-        private const float RAGE_DURATION = 15;
+        private const float RAGE_DURATION = 18;
         private const float EXHAUSTION_DURATION = 12;
 
         // DEBUG
@@ -36,6 +36,7 @@ namespace LightBringer.Enemies
         public Mode nextMode;
         private float rageEnd;
         private float exhaustionEnd;
+        public bool rageToBeStarted = false;
 
         // Components
         private Motor motor;
@@ -88,8 +89,7 @@ namespace LightBringer.Enemies
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = 0;
-            rageAmount = 0;
+            rageAmount = .95f;
         }
 
         private void UpdateNextMode()
@@ -138,6 +138,7 @@ namespace LightBringer.Enemies
         {
             motor.SetMode(Mode.Rage);
             rageEnd = Time.time + RAGE_DURATION;
+            rageToBeStarted = true;
         }
 
         public void ExhaustionStart()

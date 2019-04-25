@@ -131,6 +131,14 @@ namespace LightBringer.Enemies.Knight
                 return dic;
             }
 
+            // Rage starting
+            if (motor.statusManager.rageToBeStarted && motor.statusManager.mode == Mode.Rage)
+            {
+                dic.Add(new StartRageBehaviour(km), 1f);
+                motor.statusManager.rageToBeStarted = false;
+                return dic;
+            }
+
             // Attack 1 behaviour
             weight = 0f;
             if (currentBehaviour.GetType() != typeof(Attack1Behaviour))
@@ -215,7 +223,14 @@ namespace LightBringer.Enemies.Knight
                 return dic;
             }
 
-            if (nextActionBehaviour.GetType() == typeof(Attack1Behaviour))
+            // Rage start case
+            if (nextActionBehaviour.GetType() == typeof(StartRageBehaviour))
+            {
+                Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+                AddWaitBehaviour(dic, 1f);
+                return dic;
+            }
+            else if (nextActionBehaviour.GetType() == typeof(Attack1Behaviour))
             {
                 return TransistionBehaviourListBeforeAttack1();
             }
