@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BurningGround
-  m_Shader: {fileID: 4800000, guid: 60ce33712ce0e8c408adbfecba3bf13c, type: 3}
+  m_Name: CrackMaterial
+  m_Shader: {fileID: 4800000, guid: 103a5827542813940abd13e4c0270204, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
-  m_LightmapFlags: 4
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -21,6 +21,22 @@ Material:
     m_TexEnvs:
     - _BumpMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CrackTexture:
+        m_Texture: {fileID: 2800000, guid: 71f808d3b7567fa4a822a94fb7d3a43b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CrackTextureBot:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _CrackTextureTop:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DepthTex:
+        m_Texture: {fileID: 2800000, guid: fb41b2b6da4c26b4a915785df9f41291, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -39,20 +55,20 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _GrassTex:
+        m_Texture: {fileID: 2800000, guid: ae3db869680ac7c4d9655f511d330d07, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 241d7bb226d7e7443b25372f97278bf1, type: 3}
+        m_Texture: {fileID: 2800000, guid: 71f808d3b7567fa4a822a94fb7d3a43b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Noise:
-        m_Texture: {fileID: 2800000, guid: f903a29d36552ae499e605e4cfba5278, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _NoiseSequence:
-        m_Texture: {fileID: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 1521f7cbdfda3f44c847c627add6e241, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTexture:
@@ -67,58 +83,51 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Voronoi:
-        m_Texture: {fileID: 2800000, guid: 649ab139e81698a4ab23249bfcbd9277, type: 3}
+    - _StoneTex:
+        m_Texture: {fileID: 2800000, guid: 218abe6f091087e40ae0d5571d68e966, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _node_8387:
-        m_Texture: {fileID: 2800000, guid: 6fd2c3cb9a0dd8a4a87a32376fb917c9, type: 3}
+    - _SurfaceTex:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _Cutoff: 0.5
-    - _Density: 0.05
+    - _Cutoff: 0.24
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _Height: 0.013
     - _IntensityBlurWidth: 0.38
-    - _IntensityCoeff: 2.57
+    - _IntensityCoeff: 0.81
     - _IntensityLatency: 1
+    - _IntensityMovement: 0.05
     - _IntensityScale: 0.5
-    - _IntensitySpeed: 0.2
-    - _IntensityTimeMod: 0.1
+    - _IntensitySpeed: 0.1
+    - _IntensityTimeMod: 0.01
     - _IntensityWidth: 0.14
-    - _LightBlurWidth: 0.1
-    - _LightLatency: 1.26
-    - _LightScale: 0.2
-    - _LightSpeed: 0.4
-    - _LightTimeMod: 0.01
-    - _LightWidth: 0.05
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 0.002
     - _SrcBlend: 1
-    - _Swap: 0.25
+    - _StepDistance: 0.001
+    - _Steps: 300
+    - _TexScale: 3
     - _UVSec: 0
-    - _VoronoiScale: 0.42
     - _ZWrite: 1
-    - _lightIntensityBlurWidth: 0.1
-    - _lightIntensityLatency: 2
-    - _lightIntensityScale: 50
-    - _lightIntensitySpeed: 1
-    - _lightIntensityTimeMod: 0.001
-    - _lightIntensityWidth: 0.1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _CrackColor: {r: 0.9716981, g: 0.59012294, b: 0.14667141, a: 1}
+    - _CrackColorBot: {r: 0.8584906, g: 0.8360626, b: 0.20247422, a: 1}
+    - _CrackColorTop: {r: 0.57563466, g: 0.59607846, b: 0.20784314, a: 0.52156866}
+    - _DepthColor: {r: 0.6426664, g: 0.8207547, b: 0.76957965, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _IntensityColor: {r: 1, g: 1, b: 1, a: 1}
-    - _LightColor: {r: 1, g: 0.44726518, b: 0.18039215, a: 0.20784314}
-    - _TintColor: {r: 1, g: 1, b: 1, a: 1}
-    - _lightIntensityColor: {r: 1, g: 1, b: 1, a: 1}
+    - _Steps: {r: 1, g: 1, b: 1, a: 1}
+    - _SurfaceColor: {r: 0, g: 0, b: 0, a: 0.16078432}
+    - _TintColor: {r: 0.990566, g: 0.15886438, b: 0.72080564, a: 1}
+    - _WaterColor: {r: 1, g: 0.7499924, b: 0.028301895, a: 1}

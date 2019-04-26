@@ -1,4 +1,4 @@
-Shader "Effects/GroundEffect" {
+Shader "Effects/OldGroundEffect" {
     Properties {
         _MainTex ("MainTex", 2D) = "white" {}
         _TintColor ("Color", Color) = (0.5,0.5,0.5,1)
