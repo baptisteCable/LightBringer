@@ -33,6 +33,7 @@ namespace LightBringer.Enemies.Knight
         public ParticleSystem attack1ChannelingEffectRage;
         public ParticleSystem attack2ChannelingEffect;
         public ParticleSystem attack3ChannelingEffect;
+        public ParticleSystem attack3SlashEffect;
         public ParticleSystem attack3ChannelingEffectRage;
         public ParticleSystem attack4ChannelingEffect;
         public ParticleSystem attack4ChannelingEffectRage;

@@ -16,9 +16,7 @@ Interruption :
 
 Effets :
 	- Attack3 : ok. Trainée derrière le coup
-	- Attack1 : Particules qui aident à voir la rotation.
 	- Sol : plus grande échelle (moins zoomé)
-	- Attack3 : à la mort, l'indicateur ne s'arrête pas
 
 Autre
 	- Enemy hors de champs

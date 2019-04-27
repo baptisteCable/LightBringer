@@ -82,6 +82,7 @@ namespace LightBringer.Enemies.Knight
             if (i == 0)
             {
                 shieldCollider.SetActive(false);
+                km.attack3SlashEffect.Play();
             }
 
             base.StartCollisionPart(i);
@@ -142,6 +143,8 @@ namespace LightBringer.Enemies.Knight
             shieldCollider.SetActive(true);
             base.Abort();
             em.SetOverrideAgent(false);
+            km.attack3ChannelingEffectRage.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            km.attack3ChannelingEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 }
