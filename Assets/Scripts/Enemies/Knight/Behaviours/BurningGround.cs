@@ -22,7 +22,6 @@ namespace LightBringer.Enemies.Knight
             fadingStarting = Time.time + Attack1Behaviour.GROUND_DURATION - FADING_TIME;
             Material mat = burningGroundSprite.material;
             initialColor = mat.GetColor("_Color");
-            Debug.Log(initialColor);
         }
 
         // Update is called once per frame
@@ -35,7 +34,6 @@ namespace LightBringer.Enemies.Knight
                 col.a = alpha;
                 Material mat = burningGroundSprite.material;
                 mat.SetColor("_Color", col);
-                
             }
         }
 
