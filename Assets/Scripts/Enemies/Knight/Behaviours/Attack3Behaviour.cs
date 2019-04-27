@@ -82,7 +82,12 @@ namespace LightBringer.Enemies.Knight
             if (i == 0)
             {
                 shieldCollider.SetActive(false);
-                km.attack3SlashEffect.Play();
+                km.attack3Slash1Effect.Play();
+            }
+            else if (i == 1)
+            {
+
+                km.attack3Slash2Effect.Play();
             }
 
             base.StartCollisionPart(i);
