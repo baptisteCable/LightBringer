@@ -1,11 +1,12 @@
 Shader "Effects/BurningGround" {
 	Properties{
 		_MainTex("MainTex", 2D) = "white" {}
+		_Color("Color", Color) = (1,1,1,1)
 		
 		_DepthTex("Depth texture", 2D) = "white" {}
 		_TexScale("Depth texture scale", Range(.1, 10)) = 1
 		_Height("Height", Range(0.001,.2)) = 1.0
-		_DepthColor("Color", Color) = (1,1,1,1)
+		_DepthColor("DepthColor", Color) = (1,1,1,1)
 
 		_CrackTextureTop("Crack border top texture", 2D) = "white" {}
 		_CrackColorTop("Crack border top color", Color) = (1,1,1,1)
@@ -51,10 +52,12 @@ Shader "Effects/BurningGround" {
 			#pragma target 3.0
 
 			uniform sampler2D _MainTex;
+			float4 _Color;
 			uniform float4 _MainTex_ST;
 
 			//Input
 			sampler2D _DepthTex;
+			float4 _DepthColor;
 			float _TexScale;
 			sampler2D _CrackTextureTop;
 			float4 _CrackColorTop;
@@ -62,7 +65,6 @@ Shader "Effects/BurningGround" {
 			float4 _CrackColorBot;
 			sampler2D _SurfaceTex;
 			float4 _SurfaceColor;
-			float4 _DepthColor;
 			float _Height;
 			float _StepDistance;
 			int _Steps;
@@ -265,7 +267,7 @@ Shader "Effects/BurningGround" {
 				float4 _MainTex_var = tex2D(_MainTex, TRANSFORM_TEX(i.uv0, _MainTex));
 				finalColor.a *= _MainTex_var.a;
 
-				return finalColor;
+				return finalColor * _Color;
 			}
 			ENDCG
 		}

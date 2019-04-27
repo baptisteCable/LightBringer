@@ -5,7 +5,7 @@ namespace LightBringer.Enemies.Knight
 {
     public class BurningGround : MonoBehaviour
     {
-        private const float FADING_TIME = .4f;
+        private const float FADING_TIME = .5f;
         private const string LAYER_NAME = "Enemy";
 
         [SerializeField] GameObject maskPrefab;
@@ -13,14 +13,16 @@ namespace LightBringer.Enemies.Knight
         [SerializeField] SpriteMask burningGroundMask;
 
         private float fadingStarting;
-        private float initialAlpha;
+        private Color initialColor;
 
         private List<SpriteRenderer> cones;
 
         void Start()
         {
             fadingStarting = Time.time + Attack1Behaviour.GROUND_DURATION - FADING_TIME;
-            initialAlpha = burningGroundSprite.color.a;
+            Material mat = burningGroundSprite.material;
+            initialColor = mat.GetColor("_Color");
+            Debug.Log(initialColor);
         }
 
         // Update is called once per frame
@@ -28,10 +30,11 @@ namespace LightBringer.Enemies.Knight
         {
             if (Time.time > fadingStarting)
             {
-                float alpha = Mathf.Max(initialAlpha * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
-                Color col = burningGroundSprite.color;
+                float alpha = Mathf.Max(initialColor.a * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
+                Color col = initialColor;
                 col.a = alpha;
-                burningGroundSprite.color = col;
+                Material mat = burningGroundSprite.material;
+                mat.SetColor("_Color", col);
                 
             }
         }

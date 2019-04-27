@@ -6,9 +6,6 @@ Rage (durée fixe) :
 	- bouclier qui repousse le joueur proche au début de la rage
 
 Fatigue (durée fixe) : 
-	- ralonger le temps une fois sur 3 (idle fatigué à chaque attente longue)
-	- lumières moins agressives
-	- déplacement au lieu de charge (animation déplacement fatigué)
 	- idle fatigué dès le départ
 	- fin de fatigue : animation de retour à la normale
 
@@ -29,6 +26,9 @@ Autre
 	- Supprimer la rotation de la tête
 	- Le E cancel l'aptitude en cours
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir
+	- Passif en début de combat
+	- Descriptif des compétences
+	- Icones des compétences
 
 Bugs :
 	- Epée chargée : plus d'effet visuel (lumière)

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CrackMaterial
+  m_Name: BurningGround
   m_Shader: {fileID: 4800000, guid: 103a5827542813940abd13e4c0270204, type: 3}
   m_ShaderKeywords: ETC1_EXTERNAL_ALPHA
   m_LightmapFlags: 0
@@ -123,9 +123,9 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _CrackColor: {r: 0.9716981, g: 0.59012294, b: 0.14667141, a: 1}
-    - _CrackColorBot: {r: 0.8584906, g: 0.8360626, b: 0.20247422, a: 1}
-    - _CrackColorTop: {r: 0.57563466, g: 0.59607846, b: 0.20784314, a: 0.52156866}
-    - _DepthColor: {r: 0.6426664, g: 0.8207547, b: 0.76957965, a: 1}
+    - _CrackColorBot: {r: 0.8584906, g: 0.8360626, b: 0.20247422, a: 0.54901963}
+    - _CrackColorTop: {r: 0.57563466, g: 0.59607846, b: 0.20784314, a: 0.3254902}
+    - _DepthColor: {r: 0.6426664, g: 0.8207547, b: 0.76957965, a: 0.6862745}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Steps: {r: 1, g: 1, b: 1, a: 1}
     - _SurfaceColor: {r: 0, g: 0, b: 0, a: 0.16078432}
