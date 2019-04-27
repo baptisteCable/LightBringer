@@ -22,6 +22,7 @@ namespace LightBringer.Enemies.Knight
         private const float LOAD_1_RAGE = 22f / 60f;
         private const float TIME_BETWEEN_LOAD = 32f / 60f;
         private const float FIRE_AFTER_LOADING = 16f / 60f;
+        private const float CHANNELING_START_BEFORE_LOAD = 20f / 60f;
 
         // Collider list
         private List<Collider> cols;
@@ -58,10 +59,15 @@ namespace LightBringer.Enemies.Knight
 
             em.SetOverrideAgent(true);
 
-            parts = new Part[3];
+            parts = new Part[6];
             parts[0] = new Part(State.IndicatorDisplayed, load1, FIRE_AFTER_LOADING, -1);
             parts[1] = new Part(State.IndicatorDisplayed, load1 + TIME_BETWEEN_LOAD, FIRE_AFTER_LOADING, -1);
             parts[2] = new Part(State.IndicatorDisplayed, load1 + 2 * TIME_BETWEEN_LOAD, FIRE_AFTER_LOADING, -1);
+            
+            // channeling effects
+            parts[3] = new Part(State.IndicatorDisplayed, load1 - CHANNELING_START_BEFORE_LOAD, FIRE_AFTER_LOADING, -1);
+            parts[4] = new Part(State.IndicatorDisplayed, load1 + TIME_BETWEEN_LOAD - CHANNELING_START_BEFORE_LOAD, FIRE_AFTER_LOADING, -1);
+            parts[5] = new Part(State.IndicatorDisplayed, load1 + 2 * TIME_BETWEEN_LOAD - CHANNELING_START_BEFORE_LOAD, FIRE_AFTER_LOADING, -1);
         }
 
         public override void Run()
@@ -77,20 +83,31 @@ namespace LightBringer.Enemies.Knight
 
         protected override void StartPart(int i)
         {
-            bullet = GameObject.Instantiate(km.bulletPrefab, em.transform, false);
-            bullet.transform.localPosition = new Vector3(1.68f, 14.4f, .34f);
-            bullet.transform.SetParent(null, true);
+            if (i < 3)
+            {
+                bullet = GameObject.Instantiate(km.bulletPrefab, em.transform, false);
+                bullet.transform.localPosition = new Vector3(1.68f, 14.4f, .34f);
+                bullet.transform.SetParent(null, true);
+            }
+            else
+            {
+                km.attack2ChannelingEffect.Play();
+            }
+
             base.StartPart(i);
         }
 
         protected override void EndPart(int i)
         {
-            Rigidbody rb = bullet.GetComponent<Rigidbody>();
-            rb.AddForce(Vector3.up * 30f, ForceMode.Impulse);
-            GameObject.Destroy(bullet, .5f);
+            if (i < 3)
+            {
+                Rigidbody rb = bullet.GetComponent<Rigidbody>();
+                rb.AddForce(Vector3.up * 30f, ForceMode.Impulse);
+                GameObject.Destroy(bullet, .5f);
 
-            InstanciateCaster(em.transform, ENEMY_RAIN_RANGE, ENEMY_RAIN_RADIUS);
-            InstanciateCaster(target.transform, TARGET_RAIN_RANGE, TARGET_RAIN_RADIUS);
+                InstanciateCaster(em.transform, ENEMY_RAIN_RANGE, ENEMY_RAIN_RADIUS);
+                InstanciateCaster(target.transform, TARGET_RAIN_RANGE, TARGET_RAIN_RADIUS);
+            }
 
             base.EndPart(i);
         }
