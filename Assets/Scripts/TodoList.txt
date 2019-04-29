@@ -10,7 +10,6 @@ Rage (durée fixe) :
 Fatigue (durée fixe) : 
 	- idle fatigué dès le départ
 	- fin de fatigue : animation de retour à la normale
-	- utiliser animations
 
 Interruption :
 	- Les attaques à grande ou moyenne puissance interrompent (ex. ulti, attack2)

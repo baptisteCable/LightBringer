@@ -134,6 +134,22 @@ namespace LightBringer.Enemies.Knight
                 return dic;
             }
 
+            // Exhaustion Starting
+            if (motor.statusManager.exhaustionToBeStarted && motor.statusManager.mode == Mode.Exhaustion)
+            {
+                dic.Add(new WaitBehaviour(km), 1f);
+                motor.statusManager.exhaustionToBeStarted = false;
+                return dic;
+            }
+
+            // Exhaustion Ending
+            if (motor.statusManager.exhaustionToBeEnded && motor.statusManager.mode == Mode.Fight)
+            {
+                dic.Add(new EndExhaustionBehaviour(km), 1f);
+                motor.statusManager.exhaustionToBeEnded = false;
+                return dic;
+            }
+
             // Attack 1 behaviour
             weight = 0f;
             if (currentBehaviour.GetType() != typeof(Attack1Behaviour))
@@ -220,6 +236,13 @@ namespace LightBringer.Enemies.Knight
 
             // Rage start case
             if (nextActionBehaviour.GetType() == typeof(StartRageBehaviour))
+            {
+                Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
+                AddWaitBehaviour(dic, 1f);
+                return dic;
+            }
+            // End exhaustion case
+            else if (nextActionBehaviour.GetType() == typeof(EndExhaustionBehaviour))
             {
                 Dictionary<EnemyBehaviour, float> dic = new Dictionary<EnemyBehaviour, float>();
                 AddWaitBehaviour(dic, 1f);
