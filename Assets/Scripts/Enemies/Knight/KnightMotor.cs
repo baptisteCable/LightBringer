@@ -38,6 +38,7 @@ namespace LightBringer.Enemies.Knight
         public ParticleSystem attack3ChannelingEffectRage;
         public ParticleSystem attack4ChannelingEffect;
         public ParticleSystem attack4ChannelingEffectRage;
+        public ParticleSystem startRagePs;
 
         [Header("Scripts")]
         public Rage rage;
@@ -58,11 +59,6 @@ namespace LightBringer.Enemies.Knight
         private void Update()
         {
             BaseUpdate();
-        }
-
-        public override void StartRage()
-        {
-            rage.StartRage();
         }
 
         public override void StartExhaustion()

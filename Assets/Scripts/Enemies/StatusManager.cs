@@ -141,7 +141,6 @@ namespace LightBringer.Enemies
             motor.SetMode(Mode.Rage);
             rageEnd = Time.time + RAGE_DURATION;
             rageToBeStarted = true;
-            motor.StartRage();
         }
 
         public void ExhaustionStart()

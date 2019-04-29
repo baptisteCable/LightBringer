@@ -28,6 +28,7 @@ Autre
 	- Icones des compétences
 	- Changer le mode de rendu
 	- Collision avec le Knight. Ne pas monder dessus ou ressortir dessus. La charge pousse le joueur.
+	- Effet onde de choc qui déforme la lumière
 
 Bugs :
 	- 

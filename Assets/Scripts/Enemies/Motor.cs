@@ -310,8 +310,6 @@ namespace LightBringer.Enemies
             }
         }
 
-        public abstract void StartRage();
-
         public abstract void StartExhaustion();
 
         public abstract void StopExhaustion();
