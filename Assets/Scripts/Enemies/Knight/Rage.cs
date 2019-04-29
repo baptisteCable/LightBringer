@@ -25,7 +25,7 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", new Color(1, 0, 0));
             }
 
-            for (int i = 0; i < crystals.Length; i++)
+            for (int i = 0; i < lights.Length; i++)
             {
                 lightInitialColors[i] = lights[i].color;
                 lights[i].color = new Color(1, 0, 0);
@@ -42,7 +42,7 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", new Color(.25f, .125f, .06f));
             }
 
-            for (int i = 0; i < crystals.Length; i++)
+            for (int i = 0; i < lights.Length; i++)
             {
                 lights[i].color = new Color(.25f, .125f, .06f);
             }
@@ -57,7 +57,7 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", crystalInitialColors[i]);
             }
 
-            for (int i = 0; i < crystals.Length; i++)
+            for (int i = 0; i < lights.Length; i++)
             {
                 lights[i].color = lightInitialColors[i];
             }

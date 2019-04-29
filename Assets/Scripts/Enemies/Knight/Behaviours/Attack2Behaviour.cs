@@ -54,7 +54,15 @@ namespace LightBringer.Enemies.Knight
             {
                 duration = DURATION;
                 load1 = LOAD_1;
-                em.anim.Play("Attack2", -1, 0);
+
+                if (em.statusManager.mode == Mode.Exhaustion)
+                {
+                    em.anim.Play("Attack2Exhaustion", -1, 0);
+                }
+                else
+                {
+                    em.anim.Play("Attack2", -1, 0);
+                }
             }
 
             em.SetOverrideAgent(true);

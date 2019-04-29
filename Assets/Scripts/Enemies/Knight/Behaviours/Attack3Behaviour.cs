@@ -52,8 +52,16 @@ namespace LightBringer.Enemies.Knight
             {
                 duration = DURATION;
                 spearDmgStart = SPEAR_DMG_START;
-                em.anim.Play("Attack3", -1, 0);
                 km.attack3ChannelingEffect.Play();
+
+                if (em.statusManager.mode == Mode.Exhaustion)
+                {
+                    em.anim.Play("Attack3Exhaustion", -1, 0);
+                }
+                else
+                {
+                    em.anim.Play("Attack3", -1, 0);
+                }
             }
 
             parts = new Part[2];

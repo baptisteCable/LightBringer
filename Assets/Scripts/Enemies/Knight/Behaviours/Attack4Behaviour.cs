@@ -72,8 +72,16 @@ namespace LightBringer.Enemies.Knight
                 duration = DURATION;
                 dmgStart = DMG_START;
                 channelingEffectStart = CHANNELING_EFFECT_START;
-                em.anim.Play("Attack4", -1, 0);
                 km.attack4ChannelingEffect.Play();
+
+                if (em.statusManager.mode == Mode.Exhaustion)
+                {
+                    em.anim.Play("Attack4Exhaustion", -1, 0);
+                }
+                else
+                {
+                    em.anim.Play("Attack4", -1, 0);
+                }
             }
 
 

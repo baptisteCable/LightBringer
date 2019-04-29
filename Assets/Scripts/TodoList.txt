@@ -4,10 +4,13 @@ Rage (durée fixe) :
 	- chargements plus inquiétants
 	- pas d'interrupt
 	- bouclier qui repousse le joueur proche au début de la rage
+	- éclair rouge qui tombe du ciel
+	- utiliser animations
 
 Fatigue (durée fixe) : 
 	- idle fatigué dès le départ
 	- fin de fatigue : animation de retour à la normale
+	- utiliser animations
 
 Interruption :
 	- Les attaques à grande ou moyenne puissance interrompent (ex. ulti, attack2)
@@ -15,17 +18,17 @@ Interruption :
 	- Les paliers sont, par exemple : 70, 40, 25, 10. Plus fréquents sur la fin du monstre.
 
 Effets :
-	- Attack3 : ok. Trainée derrière le coup
 	- Sol : plus grande échelle (moins zoomé)
 
 Autre
 	- Enemy hors de champs
-	- Supprimer la rotation de la tête
-	- Le E cancel l'aptitude en cours
+	- Le E cancel l'aptitude en cours --> direction du regard bloqué par la compétence en cours ?
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir
 	- Passif en début de combat
 	- Descriptif des compétences
 	- Icones des compétences
+	- Changer le mode de rendu
+	- Collision avec le Knight. Ne pas monder dessus ou ressortir dessus. La charge pousse le joueur.
 
 Bugs :
-	- Epée chargée : plus d'effet visuel (lumière)
+	- 

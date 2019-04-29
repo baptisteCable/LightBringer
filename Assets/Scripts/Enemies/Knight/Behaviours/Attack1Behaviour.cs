@@ -71,8 +71,16 @@ namespace LightBringer.Enemies.Knight
             {
                 duration = DURATION;
                 dmgStart = DMG_START;
-                em.anim.Play("Attack1", -1, 0);
                 km.attack1ChannelingEffect.Play();
+
+                if (em.statusManager.mode == Mode.Exhaustion)
+                {
+                    em.anim.Play("Attack1Exhaustion", -1, 0);
+                }
+                else
+                {
+                    em.anim.Play("Attack1", -1, 0);
+                }
             }
 
             actGOs = new GameObject[1];

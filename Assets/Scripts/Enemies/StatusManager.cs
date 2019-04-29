@@ -16,8 +16,8 @@ namespace LightBringer.Enemies
         private const float RAGE_INCREASE_WITH_MISSED = .1f;
         private const float RAGE_INCREASE_WITH_INTERRUPTION = .2f;
         private const float RAGE_RATIO_WITH_DAMAGE = 1.5f; // ratio applied to % of max HP that the taken damages represent
-        private const float RAGE_DURATION = 18;
-        private const float EXHAUSTION_DURATION = 12;
+        private const float RAGE_DURATION = 1; // DEBUG
+        private const float EXHAUSTION_DURATION = 120; // DEBUG
 
         // DEBUG
         private GUIStyle frontStyle = null;
@@ -89,7 +89,7 @@ namespace LightBringer.Enemies
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = .95f;
+            rageAmount = .95f; // DEBUG
         }
 
         private void UpdateNextMode()
