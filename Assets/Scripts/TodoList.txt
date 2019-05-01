@@ -2,15 +2,11 @@ Rage (durée fixe) :
 	- jauge cachée augmente avec :
 		* interrupt
 	- pas d'interrupt
-	- bouclier qui repousse le joueur proche au début de la rage
 
 Interruption :
 	- Les attaques à grande ou moyenne puissance interrompent (ex. ulti, attack2)
 	- A condition qu'une interruption soit disponible. Elles sont débloquées quand on passe en dessous de certains paliers de PV. Une à la fois au max.
 	- Les paliers sont, par exemple : 70, 40, 25, 10. Plus fréquents sur la fin du monstre.
-
-Effets :
-	- Sol : plus grande échelle (moins zoomé)
 
 Autre
 	- Enemy hors de champs
