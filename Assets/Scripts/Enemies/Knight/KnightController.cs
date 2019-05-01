@@ -219,7 +219,6 @@ namespace LightBringer.Enemies.Knight
                     weight = 15f;
                 }
             }
-            weight = 1000000; // DEBUG
             dic.Add(new Attack4Behaviour(km, target), weight);
 
             return dic;
@@ -389,7 +388,7 @@ namespace LightBringer.Enemies.Knight
                     Charge1Behaviour.CHARGE_MIN_RANGE, Charge1Behaviour.CHARGE_MAX_RANGE, out destination)
                    )
             {
-                AddMovementBehaviour(dic, destination, 1000000f); // DEBUG 1f
+                AddMovementBehaviour(dic, destination, 1f);
 
                 // if sight line and not too far (before charge), prefer waiting behaviour
                 if ((target.position - motor.transform.position).magnitude < 100f && hasSightLine(target.position, motor.transform.position))

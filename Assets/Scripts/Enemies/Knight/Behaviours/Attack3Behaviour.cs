@@ -64,6 +64,8 @@ namespace LightBringer.Enemies.Knight
                 }
             }
 
+            em.SetOverrideAgent(true);
+
             parts = new Part[2];
             parts[0] = new Part(State.Before, spearDmgStart, SPEAR_DMG_DURATION, -1);
             parts[1] = new Part(State.Before, spearDmgStart + SHIELD_DMG_START_AFTER_SPEAR, SHIELD_DMG_DURATION, -1);

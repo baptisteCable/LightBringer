@@ -83,6 +83,8 @@ namespace LightBringer.Enemies.Knight
                 }
             }
 
+            em.SetOverrideAgent(true);
+
             actGOs = new GameObject[1];
             actGOs[0] = km.attack1actGO;
             parts = new Part[1];

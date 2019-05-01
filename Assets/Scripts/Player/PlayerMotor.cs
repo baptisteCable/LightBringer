@@ -48,6 +48,9 @@ namespace LightBringer.Player
         public GameObject userInterfacePrefab;
         private GameObject userInterface;
 
+        // Movement with curves
+        MovementCurve movementCurve;
+
         /* Abilities :
          *      0: None
          *      1: Jump
@@ -298,6 +301,18 @@ namespace LightBringer.Player
                 }
                 charController.Move(movementDirection * Time.deltaTime);
             }
+            else if (movementMode == MovementMode.Curve)
+            {
+                Debug.Log("Curve movement");
+
+                transform.position = movementCurve.GetPosition();
+
+                if (movementCurve.isEnded())
+                {
+                    movementCurve = null;
+                    SetMovementMode(MovementMode.Player);
+                }
+            }
         }
 
         public void AbilityMove(Vector3 speed)
@@ -392,6 +407,12 @@ namespace LightBringer.Player
             }
 
             movementMode = mode;
+        }
+
+        public void MoveByCurve(float duration, AnimationCurve xCurve, AnimationCurve yCurve, AnimationCurve zCurve)
+        {
+            movementCurve = new MovementCurve(duration, xCurve, yCurve, zCurve);
+            SetMovementMode(MovementMode.Curve);
         }
 
         public void MergeWith(Transform anchor, bool hide = true)

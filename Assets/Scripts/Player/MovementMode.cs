@@ -4,7 +4,7 @@
     {
         Player,
         Ability,
-        Physics,
+        Curve,
         Anchor
     }
 }
