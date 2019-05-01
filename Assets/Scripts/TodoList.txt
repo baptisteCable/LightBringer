@@ -1,15 +1,8 @@
 Rage (durée fixe) :
 	- jauge cachée augmente avec :
 		* interrupt
-	- chargements plus inquiétants
 	- pas d'interrupt
 	- bouclier qui repousse le joueur proche au début de la rage
-	- éclair rouge qui tombe du ciel
-	- utiliser animations
-
-Fatigue (durée fixe) : 
-	- idle fatigué dès le départ
-	- fin de fatigue : animation de retour à la normale
 
 Interruption :
 	- Les attaques à grande ou moyenne puissance interrompent (ex. ulti, attack2)
@@ -21,14 +14,12 @@ Effets :
 
 Autre
 	- Enemy hors de champs
-	- Le E cancel l'aptitude en cours --> direction du regard bloqué par la compétence en cours ?
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir
 	- Passif en début de combat
 	- Descriptif des compétences
 	- Icones des compétences
 	- Changer le mode de rendu
 	- Collision avec le Knight. Ne pas monder dessus ou ressortir dessus. La charge pousse le joueur.
-	- Effet onde de choc qui déforme la lumière
 
 Bugs :
 	- 

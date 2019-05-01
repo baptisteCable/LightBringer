@@ -27,6 +27,8 @@ namespace LightBringer.Enemies
         [HideInInspector]
         public NavMeshAgent agent;
 
+        [SerializeField] GameObject movementCollisionManager;
+
         // Movement
         protected float moveSpeed;
         protected float acceleration;
@@ -89,6 +91,9 @@ namespace LightBringer.Enemies
 
             // Mode
             SetMode(Mode.Fight);
+
+            // Movement collisions
+            SetMovementCollisonActive(false);
         }
 
         protected void BaseUpdate()
@@ -271,6 +276,11 @@ namespace LightBringer.Enemies
             }
 
             transform.Rotate(Vector3.up, currentRotationSpeed * Time.deltaTime);
+        }
+
+        public void SetMovementCollisonActive(bool active)
+        {
+            movementCollisionManager.SetActive(active);
         }
 
         public virtual void Die()

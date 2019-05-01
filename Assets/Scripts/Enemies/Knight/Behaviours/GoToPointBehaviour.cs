@@ -15,6 +15,9 @@ namespace LightBringer.Enemies.Knight
         {
             em.agent.SetDestination(target);
             em.agent.isStopped = false;
+
+            // Movement collisions
+            em.SetMovementCollisonActive(true);
         }
 
         public override void Run()
@@ -29,6 +32,17 @@ namespace LightBringer.Enemies.Knight
         {
             base.End();
             em.agent.isStopped = true;
+
+            // Movement collisions
+            em.SetMovementCollisonActive(false);
+        }
+
+        public override void Abort()
+        {
+            base.Abort();
+
+            // Movement collisions
+            em.SetMovementCollisonActive(false);
         }
     }
 }

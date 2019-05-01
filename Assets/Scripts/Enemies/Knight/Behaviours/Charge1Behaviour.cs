@@ -64,7 +64,6 @@ namespace LightBringer.Enemies.Knight
             }
 
             range = Mathf.Min(Mathf.Max(Vector3.Distance(em.transform.position, targetPosition), CHARGE_MIN_RANGE), CHARGE_MAX_RANGE);
-
         }
 
         public override void Run()
@@ -104,6 +103,9 @@ namespace LightBringer.Enemies.Knight
             {
                 // Effect
                 km.chargeEffect.GetComponent<ParticleSystem>().Play();
+
+                // Movement collisions
+                em.SetMovementCollisonActive(true);
             }
         }
 
@@ -125,7 +127,11 @@ namespace LightBringer.Enemies.Knight
             {
                 // Effect
                 km.chargeEffect.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+                // Movement collisions
+                em.SetMovementCollisonActive(false);
             }
+
         }
 
         public override void End()
@@ -156,6 +162,14 @@ namespace LightBringer.Enemies.Knight
                 psm.TakeDamage(dmg, em);
                 psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), STUN_DURATION);
             }
+        }
+
+        public override void Abort()
+        {
+            base.Abort();
+
+            // Movement collisions
+            em.SetMovementCollisonActive(false);
         }
     }
 }
