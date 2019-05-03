@@ -24,7 +24,7 @@ AvatarMask:
   - m_Path: LongSword
     m_Weight: 0
   - m_Path: PJ_Armature
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature
     m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/HelmetArmature
@@ -70,11 +70,11 @@ AvatarMask:
   - m_Path: PJ_Armature/ChestArmature/ShoulderArmature.R/ArmArmature.R/ForearmArmature.R/HandArmature.R/ThumbArmature.R/ThumbArmature.R_end
     m_Weight: 1
   - m_Path: PJ_Armature/ChestArmature/SphereChestArmature
-    m_Weight: 0
+    m_Weight: 1
   - m_Path: PJ_Armature/ChestArmature/SphereChestArmature/SphereChestArmature_end
     m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.L
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L
     m_Weight: 1
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L/FootArmature.L
@@ -84,7 +84,7 @@ AvatarMask:
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.L/LegArmature.L/FootArmature.L/ToesArmature.L/ToesArmature.L_end
     m_Weight: 1
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.R
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R
     m_Weight: 1
   - m_Path: PJ_Armature/ChestArmature/ThighArmature.R/LegArmature.R/FootArmature.R

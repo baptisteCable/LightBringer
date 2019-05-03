@@ -2,16 +2,12 @@
 using LightBringer.Abilities;
 using LightBringer.Enemies;
 using LightBringer.Player.Class;
-using LightBringer.Tools;
 using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
     public class AbEsc : CollisionPlayerAbility
     {
-        private const string NO_COLLISION_LAYER = "NoCollision";
-        private const string PLAYER_LAYER = "Player";
-
         // cancelling const
         private const bool CHANNELING_CANCELLABLE = false;
         private const bool CASTING_CANCELLABLE = false;
@@ -66,7 +62,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             lightMotor.animator.Play("BotAbEsc");
             lightMotor.animator.Play("TopAbEsc");
 
-            LayerTools.recSetLayer(playerMotor.gameObject, PLAYER_LAYER, NO_COLLISION_LAYER);
+            playerMotor.layerManager.CallLayer(LayerManager.PlayerLayer.NoCollision, this);
 
             // Init
             landed = false;
@@ -161,7 +157,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else if (!landed)
             {
                 playerMotor.SetMovementMode(MovementMode.Player);
-                LayerTools.recSetLayer(playerMotor.gameObject, NO_COLLISION_LAYER, PLAYER_LAYER);
+                playerMotor.layerManager.DiscardLayer(this);
                 landed = true;
             }
             else if (Time.time >= damageTime && !lightSpawned)
@@ -216,7 +212,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.End();
 
-            LayerTools.recSetLayer(playerMotor.gameObject, NO_COLLISION_LAYER, PLAYER_LAYER);
+            playerMotor.layerManager.DiscardLayer(this);
 
             ApplyDamage();
 
@@ -237,6 +233,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 GameObject.Destroy(trigger);
             }
 
+            playerMotor.layerManager.DiscardLayer(this);
             playerMotor.SetMovementMode(MovementMode.Player);
         }
 

@@ -7,6 +7,7 @@ namespace LightBringer.Player
         CharacterController cc;
         private float radius;
         LayerMask mask;
+        [SerializeField] private PlayerMotor motor;
 
         void Start()
         {
@@ -17,17 +18,25 @@ namespace LightBringer.Player
 
         void FixedUpdate()
         { 
+            if (LayerMask.LayerToName(gameObject.layer) == "Player")
+            {
+                CollisionManagement();
+            }
+        }
+
+        void CollisionManagement()
+        {
             Vector3 point0;
             Vector3 point1;
 
             GetCapsuleInfo(out point0, out point1);
-            
+
 
             Collider[] cols = Physics.OverlapCapsule(point0, point1, radius, mask);
 
             foreach (Collider col in cols)
             {
-                if (!col.isTrigger)
+                if (!col.isTrigger && motor.GetMovementMode() != MovementMode.Anchor)
                 {
                     Debug.Log(col.name);
 
@@ -44,6 +53,7 @@ namespace LightBringer.Player
 
         private void Depenetrate(Collider col)
         {
+            // TODO: take colliders orientation in account
             if (col.GetType() == typeof(CharacterController))
             {
                 CharacterController ccCol = (CharacterController)col;
@@ -96,7 +106,6 @@ namespace LightBringer.Player
                 xPenetrationDepth = boxCol.size.x / 2f * scale + radius - Mathf.Abs(xDist);
 
                 Vector3 colZDir = boxCol.transform.forward;
-                Debug.Log("ColZDir: " + colZDir);
                 float zDist = Vector3.Dot(colZDir, transform.position - colWorldCenter);
                 zPenetrationDepth = boxCol.size.z / 2f * scale + radius - Mathf.Abs(zDist);
 

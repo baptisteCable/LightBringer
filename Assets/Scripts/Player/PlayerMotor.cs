@@ -24,6 +24,7 @@ namespace LightBringer.Player
         [HideInInspector] public PlayerStatusManager psm;
         private CharacterController charController;
         [HideInInspector] public PlayerController pc;
+        public LayerManager layerManager;
 
         // misc
         [HideInInspector] public float abilityMoveMultiplicator;
@@ -431,6 +432,11 @@ namespace LightBringer.Player
                     ab.locked = locked;
                 }
             }
+        }
+
+        public MovementMode GetMovementMode()
+        {
+            return movementMode;
         }
 
         public void Die()

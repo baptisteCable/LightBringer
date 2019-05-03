@@ -15,7 +15,7 @@ Autre
 	- Descriptif des compétences
 	- Icones des compétences
 	- Changer le mode de rendu
-	- Collision avec le Knight. Ne pas monder dessus ou ressortir dessus. La charge pousse le joueur.
+	- Collisions --> Cas des colliders non verticaux.
 	- Attack3 repousse à l'extérieur des cercles
 	- Aura lumineuse quand l'utli peut être lancé
 	- Augmenter un peu la vitesse de rotation de l'ulti pour qu'il ne soit pas bloqué (à voir selon les autres retours)

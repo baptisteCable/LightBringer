@@ -1,5 +1,4 @@
 ﻿using LightBringer.Enemies;
-using LightBringer.Tools;
 using UnityEngine;
 
 namespace LightBringer.Player
@@ -19,7 +18,7 @@ namespace LightBringer.Player
         {
             base.Start(psm);
             psm.immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(psm.gameObject, PLAYER_LAYER, IMMATERIAL_LAYER);
+            psm.playerMotor.layerManager.CallLayer(LayerManager.PlayerLayer.Immaterial, this);
             RecTransparentOn(psm.transform);
         }
 
@@ -27,7 +26,7 @@ namespace LightBringer.Player
         {
             base.Stop();
             psm.immaterialCloudEffect.Play();
-            LayerTools.recSetLayer(psm.gameObject, IMMATERIAL_LAYER, PLAYER_LAYER);
+            psm.playerMotor.layerManager.DiscardLayer(this);
             RecTransparentOff(psm.transform);
         }
 
