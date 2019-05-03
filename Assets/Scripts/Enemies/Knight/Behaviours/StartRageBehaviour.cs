@@ -96,8 +96,6 @@ namespace LightBringer.Enemies.Knight
 
                 // Add curve to player movement
                 psm.playerMotor.MoveByCurve(PUSH_AWAY_DURATION, xCurve, yCurve, zCurve);
-
-                Debug.Log("Curve added");
             }
         }
     }

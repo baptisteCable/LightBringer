@@ -303,8 +303,6 @@ namespace LightBringer.Player
             }
             else if (movementMode == MovementMode.Curve)
             {
-                Debug.Log("Curve movement");
-
                 transform.position = movementCurve.GetPosition();
 
                 if (movementCurve.isEnded())

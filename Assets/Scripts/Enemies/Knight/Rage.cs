@@ -12,22 +12,33 @@ namespace LightBringer.Enemies.Knight
         private Color[] lightInitialColors;
         private Color[] crystalInitialColors;
 
-        public void StartRage()
+        private void Start()
         {
-            ragePs.Play();
-
             lightInitialColors = new Color[lights.Length];
             crystalInitialColors = new Color[crystals.Length];
 
             for (int i = 0; i < crystals.Length; i++)
             {
                 crystalInitialColors[i] = crystals[i].material.GetColor("_EmissionColor");
-                crystals[i].material.SetColor("_EmissionColor", new Color(1, 0, 0));
             }
 
             for (int i = 0; i < lights.Length; i++)
             {
                 lightInitialColors[i] = lights[i].color;
+            }
+        }
+
+        public void StartRage()
+        {
+            ragePs.Play();
+
+            for (int i = 0; i < crystals.Length; i++)
+            {
+                crystals[i].material.SetColor("_EmissionColor", new Color(1, 0, 0));
+            }
+
+            for (int i = 0; i < lights.Length; i++)
+            {
                 lights[i].color = new Color(1, 0, 0);
             }
         }

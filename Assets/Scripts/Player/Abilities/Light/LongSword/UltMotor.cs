@@ -4,7 +4,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 {
     public class UltMotor : MonoBehaviour
     {
-        private const float ROTATION_SPEED = 12f;
+        private const float ROTATION_SPEED = 18f;
         private const float EXTRA_DAMAGE_TAKER_DURATION = 10f;
 
         public GameObject[] quarters;
