@@ -7,7 +7,7 @@ namespace LightBringer.Player
         CharacterController cc;
         private float radius;
         LayerMask mask;
-        // [SerializeField] private PlayerMotor motor;
+        // [SerializeField] private PlayerMotor motor; // DEV
 
         void Start()
         {
@@ -36,7 +36,7 @@ namespace LightBringer.Player
 
             foreach (Collider col in cols)
             {
-                if (!col.isTrigger /*&& motor.GetMovementMode() != MovementMode.Anchor*/)
+                if (!col.isTrigger /*&& motor.GetMovementMode() != MovementMode.Anchor*/) // DEV
                 {
                     Debug.Log(col.name);
                     Depenetrate(col);
@@ -92,12 +92,13 @@ namespace LightBringer.Player
             Vector3 zDir = boxCol.transform.forward;
             Vector3 boxColSize = boxCol.size * scale / 2f;
 
-            // Bottom point of the player collider
+            // Bottom and top point of the player collider
             Vector3 playerP0 = cc.transform.TransformPoint(cc.center - cc.transform.up * (cc.height / 2f - radius));
             Vector3 playerP1 = cc.transform.TransformPoint(cc.center + cc.transform.up * (cc.height / 2f - radius));
 
-            Vector3[] depenetrations = new Vector3[6];
+            Vector3[] depenetrations = new Vector3[9];
 
+            // Half-sphere collisions
             depenetrations[0] = HalfSphereDepenetration(colWorldCenter, boxColSize.z, boxColSize.x, boxColSize.y,
                 zDir, xDir, yDir, playerP0, false);
             depenetrations[1] = HalfSphereDepenetration(colWorldCenter, boxColSize.x, boxColSize.y, boxColSize.z,
@@ -110,6 +111,10 @@ namespace LightBringer.Player
                 xDir, yDir, zDir, playerP1, true);
             depenetrations[5] = HalfSphereDepenetration(colWorldCenter, boxColSize.y, boxColSize.z, boxColSize.x,
                 yDir, zDir, xDir, playerP1, true);
+
+            // Cylinder collision
+            depenetrations[6] = CylinderDepenetration(colWorldCenter, boxColSize.z, boxColSize.x, boxColSize.y,
+                zDir, xDir, yDir, playerP0, playerP1);
 
             // find the smallest depenetration
             Vector3 finalDepen = Vector3.positiveInfinity;
@@ -126,6 +131,38 @@ namespace LightBringer.Player
             {
                 transform.position += finalDepen;
             }
+        }
+
+        private Vector3 CylinderDepenetration(Vector3 colWorldCenter, float mainSize, float size1, float size2,
+            Vector3 mainDir, Vector3 dir1, Vector3 dir2, Vector3 P0, Vector3 P1)
+        {
+            Vector3 depenetration = Vector3.positiveInfinity;
+
+            // vector from boxCollider to cylinder center
+            Vector3 colToCenter = (P0 + P1) / 2f - colWorldCenter;
+
+            // horizontal main direction
+            Vector3 hDir = mainDir;
+            hDir.y = 0;
+            if (hDir.magnitude == 0)
+            {
+                return depenetration;
+            }
+            hDir.Normalize();
+
+            // Face to consider
+            float sign = Mathf.Sign(Vector3.Dot(colToCenter, mainDir));
+            mainDir *= sign;
+            Vector3 midPlanePoint = colWorldCenter + mainDir * mainSize;
+
+            Vector3 botIntersection = LineAndPlaneIntersection(P0, hDir, midPlanePoint, mainDir);
+            Vector3 topIntersection = LineAndPlaneIntersection(P1, hDir, midPlanePoint, mainDir);
+            Debug.Log("botIntersection: " + botIntersection.ToString("F3"));
+            Debug.Log("topIntersection: " + topIntersection.ToString("F3"));
+
+            // Find the deepest between both to know which one to use to depenetrate
+
+            return depenetration;
         }
 
         private Vector3 HalfSphereDepenetration(Vector3 colWorldCenter, float mainSize, float size1, float size2,
@@ -171,11 +208,8 @@ namespace LightBringer.Player
             }
 
             // find the intersection between the horizontal ray and the plane. This point should be moved to the tangent point of
-            // the sphere. t is the value in the parametric representation of the line.
-            float t = Vector3.Dot(ray, closestPointOnPlane - sphereTangentPoint) / Vector3.Dot(horizontalRay, horizontalRay);
-
-            // intersection point
-            Vector3 intersection = sphereTangentPoint + t * horizontalRay;
+            // the sphere.
+            Vector3 intersection = LineAndPlaneIntersection(sphereTangentPoint, horizontalRay, closestPointOnPlane, ray);
 
             // If intersection not on the face, take the closest point on the face
             intersection = ClosestPointOnFace(intersection, midPlanePoint, dir1, dir2, size1, size2);
@@ -197,7 +231,30 @@ namespace LightBringer.Player
             return depenetration;
         }
 
-        // 
+        private Vector3 LineAndPlaneIntersection(Vector3 linePoint, Vector3 lineDir, Vector3 planePoint, Vector3 planeNormal)
+        {
+            float dotProd = Vector3.Dot(planeNormal, lineDir);
+
+            // if parallel
+            if (dotProd == 0)
+            {
+                // inclusions
+                if (Vector3.Dot(planeNormal, linePoint - planePoint) == 0)
+                {
+                    return linePoint;
+                }
+                // or not
+                else
+                {
+                    return Vector3.positiveInfinity;
+                }
+            }
+
+            float t = Vector3.Dot(planeNormal, planePoint - linePoint) / dotProd;
+            return linePoint + t * lineDir;
+        }
+
+
         private Vector3 ClosestPointOnFace(Vector3 point, Vector3 midPlanePoint, Vector3 dir1, Vector3 dir2, float size1, float size2)
         {
             float coord1 = Mathf.Min(size1, Mathf.Max(-size1, Vector3.Dot(dir1, point - midPlanePoint)));
