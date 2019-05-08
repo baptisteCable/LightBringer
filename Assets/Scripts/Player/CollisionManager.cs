@@ -7,7 +7,7 @@ namespace LightBringer.Player
         CharacterController cc;
         private float radius;
         LayerMask mask;
-        // [SerializeField] private PlayerMotor motor; // DEV
+        [SerializeField] private PlayerMotor motor;
 
         void Start()
         {
@@ -36,9 +36,8 @@ namespace LightBringer.Player
 
             foreach (Collider col in cols)
             {
-                if (!col.isTrigger /*&& motor.GetMovementMode() != MovementMode.Anchor*/) // DEV
+                if (!col.isTrigger && motor.GetMovementMode() != MovementMode.Anchor)
                 {
-                    Debug.Log(col.name);
                     Depenetrate(col);
                 }
             }
@@ -80,7 +79,6 @@ namespace LightBringer.Player
             transform.position = newPosition;
         }
 
-        // TODO: Vertical collision and vertex in cylinder collision
         private void BoxColliderDepenetration(BoxCollider boxCol)
         {
             Vector3 colWorldCenter = boxCol.transform.TransformPoint(boxCol.center);
@@ -115,6 +113,10 @@ namespace LightBringer.Player
             // Cylinder collision
             depenetrations[6] = CylinderDepenetration(colWorldCenter, boxColSize.z, boxColSize.x, boxColSize.y,
                 zDir, xDir, yDir, playerP0, playerP1);
+            depenetrations[7] = CylinderDepenetration(colWorldCenter, boxColSize.y, boxColSize.z, boxColSize.x,
+                yDir, zDir, xDir, playerP0, playerP1);
+            depenetrations[8] = CylinderDepenetration(colWorldCenter, boxColSize.x, boxColSize.y, boxColSize.z,
+                xDir, yDir, zDir, playerP0, playerP1);
 
             // find the smallest depenetration
             Vector3 finalDepen = Vector3.positiveInfinity;
@@ -138,9 +140,6 @@ namespace LightBringer.Player
         {
             Vector3 depenetration = Vector3.positiveInfinity;
 
-            // vector from boxCollider to cylinder center
-            Vector3 colToCenter = (P0 + P1) / 2f - colWorldCenter;
-
             // horizontal main direction
             Vector3 hDir = mainDir;
             hDir.y = 0;
@@ -150,18 +149,64 @@ namespace LightBringer.Player
             }
             hDir.Normalize();
 
-            // Face to consider
-            float sign = Mathf.Sign(Vector3.Dot(colToCenter, mainDir));
+            // mainDir orientation
+            Vector2 circleCenter = new Vector2(P0.x, P0.z);
+            Vector2 colWorldCenter2D = new Vector2(colWorldCenter.x, colWorldCenter.z);
+            Vector2 hDir2D = new Vector2(hDir.x, hDir.z);
+            float sign = Mathf.Sign(Vector2.Dot(circleCenter - colWorldCenter2D, hDir2D));
             mainDir *= sign;
+            hDir *= sign;
+            hDir2D *= sign;
+
+            // Face to consider
             Vector3 midPlanePoint = colWorldCenter + mainDir * mainSize;
 
             Vector3 botIntersection = LineAndPlaneIntersection(P0, hDir, midPlanePoint, mainDir);
             Vector3 topIntersection = LineAndPlaneIntersection(P1, hDir, midPlanePoint, mainDir);
-            Debug.Log("botIntersection: " + botIntersection.ToString("F3"));
-            Debug.Log("topIntersection: " + topIntersection.ToString("F3"));
 
             // Find the deepest between both to know which one to use to depenetrate
+            float botPenetration = Vector3.Dot(hDir, botIntersection - P0);
+            float topPenetration = Vector3.Dot(hDir, topIntersection - P1);
 
+            Vector3 closestPointOnFace;
+            if (botPenetration > topPenetration)
+            {
+                closestPointOnFace = ClosestPointOnFace(botIntersection, midPlanePoint, dir1, dir2, size1, size2);
+            }
+            else
+            {
+                closestPointOnFace = ClosestPointOnFace(topIntersection, midPlanePoint, dir1, dir2, size1, size2);
+            }
+
+            if (closestPointOnFace.y < P0.y - .05f || closestPointOnFace.y > P1.y + .05f)
+            {
+                return depenetration;
+            }
+
+            Vector2 closestPointOnFace2D = new Vector2(closestPointOnFace.x, closestPointOnFace.z);
+            Vector2 normDir2D = new Vector2(hDir2D.y, -hDir2D.x);
+
+            // if out of the circe and not behind it, no depen
+            if ((closestPointOnFace2D - circleCenter).magnitude >= radius
+                &&
+                    (
+                        Vector2.Dot(closestPointOnFace2D - circleCenter, hDir2D) <= 0
+                        || Mathf.Abs(Vector2.Dot(closestPointOnFace2D - circleCenter, normDir2D)) >= radius
+                    ))
+            {
+                return depenetration;
+            }
+
+            // Find point on cylinder
+            Vector2 pointOnCircle = LineAndCircleIntersection(
+                    closestPointOnFace2D,
+                    hDir2D,
+                    circleCenter,
+                    radius
+                );
+            Vector3 pointOnCylinder = new Vector3(pointOnCircle.x, closestPointOnFace.y, pointOnCircle.y);
+
+            depenetration = closestPointOnFace - pointOnCylinder;
             return depenetration;
         }
 
@@ -272,6 +317,18 @@ namespace LightBringer.Player
             // At intersection, t followes the equation : t^2 * ||u||^2 + 2 * t * u.v + ||v||^2 - radius^2 = 0
             float delta = 4f * (Mathf.Pow(Vector3.Dot(u, v), 2) - Vector3.Dot(u, u) * (Vector3.Dot(v, v) - radius * radius));
             float t = (-2f * Vector3.Dot(u, v) + Mathf.Sqrt(delta)) / (2f * Vector3.Dot(u, u));
+            return linePoint + lineDirection * t;
+        }
+
+        private Vector2 LineAndCircleIntersection(Vector2 linePoint, Vector2 lineDirection, Vector2 circleCenter, float radius)
+        {
+            Vector2 u = lineDirection;
+            Vector2 v = linePoint - circleCenter;
+
+            // t is the parameter of parametric representation of the line.
+            // At intersection, t followes the equation : t^2 * ||u||^2 + 2 * t * u.v + ||v||^2 - radius^2 = 0
+            float delta = 4f * (Mathf.Pow(Vector2.Dot(u, v), 2) - Vector2.Dot(u, u) * (Vector2.Dot(v, v) - radius * radius));
+            float t = (-2f * Vector2.Dot(u, v) - Mathf.Sqrt(delta)) / (2f * Vector2.Dot(u, u));
             return linePoint + lineDirection * t;
         }
     }
