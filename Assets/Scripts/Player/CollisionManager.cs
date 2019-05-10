@@ -7,7 +7,7 @@ namespace LightBringer.Player
         CharacterController cc;
         private float radius;
         LayerMask mask;
-        [SerializeField] private PlayerMotor motor;
+        [SerializeField] private PlayerMotor motor = null;
 
         void Start()
         {

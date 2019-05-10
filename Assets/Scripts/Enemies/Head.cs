@@ -12,7 +12,7 @@ namespace LightBringer.Enemies
         private const float LOOK_AROUND_Y_ERROR = 20f;
 
         [Header("Transforms")]
-        [SerializeField] Transform head;
+        [SerializeField] Transform head = null;
         // [SerializeField] Transform sight;
 
         [Header("Rotation bounds")]

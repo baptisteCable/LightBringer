@@ -48,11 +48,6 @@ namespace LightBringer.Enemies.Knight
         {
             BaseStart();
 
-            // Colliders
-            attack1actGO.SetActive(false);
-            attack3act1GO.SetActive(false);
-            attack3act2GO.SetActive(false);
-
             // Initial mode
             SetMode(Mode.Fight);
         }
@@ -70,6 +65,11 @@ namespace LightBringer.Enemies.Knight
         public override void StopExhaustion()
         {
             rage.StopExhaustion();
+        }
+
+        public override void Interrupt()
+        {
+            controller.Interrupt();
         }
     }
 }

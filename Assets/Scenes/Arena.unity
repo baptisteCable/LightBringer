@@ -1041,6 +1041,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 776825917}
   m_CullTransparentMesh: 0
+--- !u!1 &823456073 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1507013032133818, guid: d4ac8c112b6d7aa47836b644f3fb26d0,
+    type: 3}
+  m_PrefabInstance: {fileID: 2094301253}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &870409391
 GameObject:
   m_ObjectHideFlags: 0
@@ -1508,6 +1514,15 @@ MonoBehaviour:
   testUI: {fileID: 643621722}
   terrain: {fileID: 324036839}
   newTerrainButton: {fileID: 0}
+  NotToDestroyItems:
+  - {fileID: 763179048}
+  - {fileID: 324036837}
+  - {fileID: 823456073}
+  - {fileID: 893557071}
+  - {fileID: 643621722}
+  - {fileID: 912195128}
+  - {fileID: 870409391}
+  - {fileID: 1784187784}
 --- !u!4 &912195130
 Transform:
   m_ObjectHideFlags: 0

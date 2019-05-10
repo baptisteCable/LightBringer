@@ -160,6 +160,8 @@ namespace LightBringer.Enemies.Knight
             em.SetOverrideAgent(false);
             km.attack3ChannelingEffectRage.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             km.attack3ChannelingEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            km.attack3Slash1Effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            km.attack3Slash2Effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
     }
 }

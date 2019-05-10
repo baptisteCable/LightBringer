@@ -35,7 +35,7 @@ namespace LightBringer.Enemies
         protected virtual void StartCollisionPart(int i)
         {
             StartPart(i);
-            actGOs[i].SetActive(true);
+            //actGOs[i].SetActive(true);
             acts[i].SetAbility(this);
             cols = new Dictionary<Collider, float>();
         }
@@ -62,16 +62,16 @@ namespace LightBringer.Enemies
         protected void EndCollisionPart(int i)
         {
             EndPart(i);
-            actGOs[i].SetActive(false);
             acts[i].UnsetAbility();
+            //actGOs[i].SetActive(false);
         }
 
         public override void Abort()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                actGOs[i].SetActive(false);
                 acts[i].UnsetAbility();
+                //actGOs[i].SetActive(false);
             }
 
             base.Abort();

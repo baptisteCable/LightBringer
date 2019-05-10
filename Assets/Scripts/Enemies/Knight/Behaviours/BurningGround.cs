@@ -8,9 +8,9 @@ namespace LightBringer.Enemies.Knight
         private const float FADING_TIME = .5f;
         private const string LAYER_NAME = "Enemy";
 
-        [SerializeField] GameObject maskPrefab;
-        [SerializeField] SpriteRenderer burningGroundSprite;
-        [SerializeField] SpriteMask burningGroundMask;
+        [SerializeField] GameObject maskPrefab = null;
+        [SerializeField] SpriteRenderer burningGroundSprite = null;
+        [SerializeField] SpriteMask burningGroundMask = null;
 
         private float fadingStarting;
         private Color initialColor;

@@ -156,6 +156,12 @@ namespace LightBringer.Enemies.Knight
         public override void Abort()
         {
             base.Abort();
+
+            if (bullet != null)
+            {
+                GameObject.Destroy(bullet);
+            }
+
             em.SetOverrideAgent(false);
         }
     }

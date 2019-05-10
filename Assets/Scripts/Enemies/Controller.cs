@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace LightBringer.Enemies
 {
-    public class Controller : MonoBehaviour
+    public abstract class Controller : MonoBehaviour
     {
         protected const float TARGET_DETECTION_DISTANCE = 100f;
 
@@ -162,5 +162,7 @@ namespace LightBringer.Enemies
             return Controller.GetAccessiblePointInStraightLineWithSightLine(enemy, playerPos, minPlayerDistance, maxPlayerDistance, sightLineRequired,
                 canGoBehindPlayer, canGoBackWard, minDist, maxDist, out targetPosition);
         }
+
+        public abstract void Interrupt();
     }
 }

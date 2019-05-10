@@ -278,6 +278,11 @@ namespace LightBringer.Enemies.Knight
         public override void Abort()
         {
             base.Abort();
+
+            km.attack1RayRenderer.Abort();
+            km.attack1ChannelingEffectRage.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            km.attack1ChannelingEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
             em.SetOverrideAgent(false);
         }
     }

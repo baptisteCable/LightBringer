@@ -3,7 +3,7 @@ namespace LightBringer.Enemies
 {
     public class EnemyStatusBar : BaseStatusBar
     {
-        [SerializeField] private StatusManager statusManager;
+        [SerializeField] private StatusManager statusManager = null;
 
         void Start()
         {

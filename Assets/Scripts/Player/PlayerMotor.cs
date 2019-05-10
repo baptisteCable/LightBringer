@@ -42,7 +42,7 @@ namespace LightBringer.Player
         private Vector3 previousPosition;
 
         // Camera
-        [SerializeField] private GameObject cameraPrefab;
+        [SerializeField] private GameObject cameraPrefab = null;
         [HideInInspector] public GameObject playerCamera;
 
         // User Interface
@@ -474,7 +474,7 @@ namespace LightBringer.Player
             SetMovementMode(MovementMode.Player);
         }
 
-        private void OnDestroy()
+        public void DestroyPlayer()
         {
             Destroy(playerCamera);
             Destroy(userInterface);
@@ -484,11 +484,7 @@ namespace LightBringer.Player
                 CameraManager.singleton.DisactivatePlayerCamera();
             }
 
-            // Test Manager
-            if (TestManager.singleton != null)
-            {
-                TestManager.singleton.RemovePlayer();
-            }
+            Destroy(gameObject);
         }
 
         // Called by id

@@ -8,9 +8,9 @@ namespace LightBringer.Enemies.Knight
     {
         private const float FALLDOWN_TIME = 1f;
 
-        [SerializeField] private GameObject bullet;
-        [SerializeField] private GameObject explosion;
-        [SerializeField] private GameObject indicator;
+        [SerializeField] private GameObject bullet = null;
+        [SerializeField] private GameObject explosion = null;
+        [SerializeField] private GameObject indicator = null;
         private float startingTime;
         private bool exploded = false;
 

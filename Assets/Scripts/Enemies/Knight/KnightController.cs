@@ -514,5 +514,13 @@ namespace LightBringer.Enemies.Knight
 
             return normalized;
         }
+
+        // Interuption 
+        public override void Interrupt()
+        {
+            currentBehaviour.Abort();
+            nextActionBehaviour = null;
+            SetBehaviour(new InterruptionBehaviour(km));
+        }
     }
 }

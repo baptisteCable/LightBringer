@@ -27,7 +27,7 @@ namespace LightBringer.Enemies
         [HideInInspector]
         public NavMeshAgent agent;
 
-        [SerializeField] GameObject movementCollisionManager;
+        [SerializeField] GameObject movementCollisionManager = null;
 
         // Movement
         protected float moveSpeed;
@@ -323,5 +323,6 @@ namespace LightBringer.Enemies
         public abstract void StartExhaustion();
 
         public abstract void StopExhaustion();
+        public abstract void Interrupt();
     }
 }

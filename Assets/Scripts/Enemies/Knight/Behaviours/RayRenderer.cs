@@ -9,11 +9,11 @@ namespace LightBringer.Enemies.Knight
         private const float PARTICLE_DURATION = .5f;
         private const float LINE_WIDTH = 7f;
 
-        [SerializeField] private ParticleSystem ps1;
-        [SerializeField] private ParticleSystem ps2;
-        [SerializeField] private ParticleSystem emiter;
-        [SerializeField] private ParticleSystem ending;
-        [SerializeField] private LineRenderer line;
+        [SerializeField] private ParticleSystem ps1 = null;
+        [SerializeField] private ParticleSystem ps2 = null;
+        [SerializeField] private ParticleSystem emiter = null;
+        [SerializeField] private ParticleSystem ending = null;
+        [SerializeField] private LineRenderer line = null;
         private float spawnTime = -1;
         private float endTime = -1;
         private float selfHideTime = -1;
@@ -107,10 +107,26 @@ namespace LightBringer.Enemies.Knight
             // Self destroy
             if (selfHideTime > 0 && Time.time > selfHideTime)
             {
-                line.gameObject.SetActive(false);
-                selfHideTime = -1;
-                endTime = -1;
+                Hide();
             }
+        }
+
+        public void Abort()
+        {
+            if (ending != null)
+            {
+                ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            }
+            emiter.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+            Hide();
+        }
+
+        private void Hide()
+        {
+            line.gameObject.SetActive(false);
+            selfHideTime = -1;
+            endTime = -1;
         }
     }
 }

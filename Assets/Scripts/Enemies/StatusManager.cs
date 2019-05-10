@@ -8,31 +8,27 @@ using UnityEngine.UI;
 namespace LightBringer.Enemies
 {
     [RequireComponent(typeof(Motor)), RequireComponent(typeof(FlashEffect))]
-    public class StatusManager : MonoBehaviour
+    public abstract class StatusManager : MonoBehaviour
     {
         private const float DISPLAY_INTERVAL = .1f;
         private const float DISPLAY_DURATION = 1f;
 
-        private const float RAGE_INCREASE_WITH_MISSED = .1f;
+        private const float RAGE_INCREASE_WITH_MISSED = .13f;
         private const float RAGE_INCREASE_WITH_INTERRUPTION = .2f;
-        private const float RAGE_RATIO_WITH_DAMAGE = 1.5f; // ratio applied to % of max HP that the taken damages represent
-        private const float RAGE_DURATION = 10; // DEBUG
-        private const float EXHAUSTION_DURATION = 10; // DEBUG
-
-        // DEBUG
-        private GUIStyle frontStyle = null;
-        private GUIStyle backStyle = null;
+        private const float RAGE_RATIO_WITH_DAMAGE = 2f; // ratio applied to % of max HP that the taken damages represent
+        private const float RAGE_DURATION = 25;
+        private const float EXHAUSTION_DURATION = 10;
+        private const float INTERRUPTION_RAGE_INCREASE = .3f;
 
         // status
         public float maxHP;
         public float currentHP;
         public GameObject statusBarGO;
-        public float displayHeight;
         public bool isDead;
-        private float rageAmount;
         public Mode mode;
 
         // Rage
+        private float rageAmount;
         public Mode nextMode;
         private float rageEnd;
         private float exhaustionEnd;
@@ -40,10 +36,15 @@ namespace LightBringer.Enemies
         public bool exhaustionToBeStarted = false;
         public bool exhaustionToBeEnded = false;
 
+        // Interruption
+        private int interruptionStage = 0;
+        protected abstract float[] InterruptionThresholds { get; }
+        protected abstract float InterruptionActivationThreshold { get; }
+
         // Components
         private Motor motor;
         private FlashEffect flashEffect;
-        [SerializeField] private FlashEffect shieldFlashEffect;
+        [SerializeField] private FlashEffect shieldFlashEffect = null;
 
         // Damage
         private Dictionary<int, DamageDealer> frameDamage;
@@ -55,8 +56,7 @@ namespace LightBringer.Enemies
         public Transform lostHpPoint;
 
         // UI object
-        [SerializeField]
-        private GameObject lostHPPrefab;
+        [SerializeField] private GameObject lostHPPrefab = null;
 
         private struct DamageDealer
         {
@@ -91,7 +91,7 @@ namespace LightBringer.Enemies
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = .95f; // DEBUG
+            rageAmount = 0;
         }
 
         private void UpdateNextMode()
@@ -103,6 +103,78 @@ namespace LightBringer.Enemies
             else if (mode == Mode.Exhaustion && Time.time >= exhaustionEnd)
             {
                 nextMode = Mode.Fight;
+            }
+        }
+
+        public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
+        {
+            // If this damage id is already registered
+            if (frameDamage.ContainsKey(id))
+            {
+                // If AoE, take the highest.
+                if (dmg.type == DamageType.AreaOfEffect)
+                {
+                    if (dmg.amount > frameDamage[id].dmg.amount)
+                    {
+                        frameDamage[id] = new DamageDealer(dmg, dealer);
+                        frameDamageDistance[id] = distance;
+                    }
+                }
+                // Else, take the closest
+                else
+                {
+                    if (distance < frameDamageDistance[id])
+                    {
+                        frameDamage[id] = new DamageDealer(dmg, dealer);
+                        frameDamageDistance[id] = distance;
+                    }
+                }
+            }
+            // Else, new damage id
+            else
+            {
+                frameDamage.Add(id, new DamageDealer(dmg, dealer));
+                frameDamageDistance.Add(id, distance);
+            }
+        }
+
+        private void ApplyAllDamages()
+        {
+            float newHP = currentHP;
+
+            if (frameDamage.Count > 0)
+            {
+                foreach (KeyValuePair<int, DamageDealer> pair in frameDamage)
+                {
+                    if (pair.Value.dmg.amount > 0)
+                    {
+                        newHP -= pair.Value.dmg.amount;
+
+                        // add display only if local player, else send by message to client
+                        AddDamageToDisplay(pair.Value.dmg);
+
+                        // Try to interrupt
+                        TryToInterrupt(pair.Value.dmg);
+                    }
+                }
+
+                frameDamage.Clear();
+
+                if (newHP < currentHP)
+                {
+                    IncreaseRageDamageTaken(currentHP - newHP);
+
+                    flashEffect.Flash();
+
+                    currentHP = newHP;
+                }
+
+                if (currentHP <= 0)
+                {
+                    isDead = true;
+                    motor.Die();
+                    Destroy(statusBarGO);
+                }
             }
         }
 
@@ -159,73 +231,38 @@ namespace LightBringer.Enemies
             motor.StopExhaustion();
         }
 
-        public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
+        private void TryToInterrupt(Damage dmg)
         {
-            // If this damage id is already registered
-            if (frameDamage.ContainsKey(id))
+            while (currentHP < GetInterruptionThreshold(interruptionStage + 1))
             {
-                // If AoE, take the highest.
-                if (dmg.type == DamageType.AreaOfEffect)
-                {
-                    if (dmg.amount > frameDamage[id].dmg.amount)
-                    {
-                        frameDamage[id] = new DamageDealer(dmg, dealer);
-                        frameDamageDistance[id] = distance;
-                    }
-                }
-                // Else, take the closest
-                else
-                {
-                    if (distance < frameDamageDistance[id])
-                    {
-                        frameDamage[id] = new DamageDealer(dmg, dealer);
-                        frameDamageDistance[id] = distance;
-                    }
-                }
+                interruptionStage += 1;
             }
-            // Else, new damage id
-            else
+
+            if (dmg.amount >= InterruptionActivationThreshold
+                && currentHP < GetInterruptionThreshold(interruptionStage)
+                && mode != Mode.Rage
+                )
             {
-                frameDamage.Add(id, new DamageDealer(dmg, dealer));
-                frameDamageDistance.Add(id, distance);
+                Interrupt();
             }
         }
 
-        private void ApplyAllDamages()
+        private void Interrupt()
         {
-            float newHP = currentHP;
+            motor.Interrupt();
+            rageAmount += INTERRUPTION_RAGE_INCREASE;
+            interruptionStage += 1;
+        }
 
-            if (frameDamage.Count > 0)
+        // return the proportion of hp under which interuption can happen
+        private float GetInterruptionThreshold(int stage)
+        {
+            if (stage >= InterruptionThresholds.Length)
             {
-                foreach (KeyValuePair<int, DamageDealer> pair in frameDamage)
-                {
-                    if (pair.Value.dmg.amount > 0)
-                    {
-                        newHP -= pair.Value.dmg.amount;
-
-                        // add display only if local player, else send by message to client
-                        AddDamageToDisplay(pair.Value.dmg);
-                    }
-                }
-
-                frameDamage.Clear();
-
-                if (newHP < currentHP)
-                {
-                    IncreaseRageDamageTaken(currentHP - newHP);
-
-                    flashEffect.Flash();
-
-                    currentHP = newHP;
-                }
-
-                if (currentHP <= 0)
-                {
-                    isDead = true;
-                    motor.Die();
-                    Destroy(statusBarGO);
-                }
+                return float.NegativeInfinity;
             }
+
+            return InterruptionThresholds[stage];
         }
 
         private void AddDamageToDisplay(Damage dmg)
@@ -274,42 +311,6 @@ namespace LightBringer.Enemies
         public void ShieldFlash()
         {
             shieldFlashEffect.Flash();
-        }
-
-        void OnGUI()
-        {
-            int length = (int)(400 * rageAmount);
-
-            InitStyles();
-            GUI.Box(new Rect(20, 10, 400, 30), "", backStyle);
-            GUI.Box(new Rect(20, 10, length, 30), "", frontStyle);
-            GUILayout.BeginArea(new Rect(20, 45, 250, 120));
-            GUILayout.Label("Rage: " + rageAmount);
-            GUILayout.Label("Mode: " + mode);
-            GUILayout.EndArea();
-        }
-        private void InitStyles()
-        {
-            if (frontStyle == null)
-            {
-                frontStyle = new GUIStyle(GUI.skin.box);
-                frontStyle.normal.background = MakeTex(2, 2, new Color(.6f, .6f, 0f, 1f));
-                backStyle = new GUIStyle(GUI.skin.box);
-                backStyle.normal.background = MakeTex(2, 2, new Color(.3f, .3f, .3f, 1f));
-            }
-        }
-
-        private Texture2D MakeTex(int width, int height, Color col)
-        {
-            Color[] pix = new Color[width * height];
-            for (int i = 0; i < pix.Length; ++i)
-            {
-                pix[i] = col;
-            }
-            Texture2D result = new Texture2D(width, height);
-            result.SetPixels(pix);
-            result.Apply();
-            return result;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace LightBringer.Player.Abilities.Light
         private float destructionTime;
         private bool destructionPlanned = false;
 
-        [SerializeField] private GameObject pointLight;
+        [SerializeField] private GameObject pointLight = null;
 
         public bool canBeAbsorbed = true;
 

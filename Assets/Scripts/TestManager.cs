@@ -1,8 +1,10 @@
 ﻿using LightBringer.Enemies.Knight;
 using LightBringer.Player;
 using LightBringer.TerrainGeneration;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class TestManager : MonoBehaviour
 {
@@ -26,6 +28,8 @@ public class TestManager : MonoBehaviour
     private bool canDie = true;
 
     public GameObject newTerrainButton;
+
+    [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
     private void Start()
     {
@@ -51,33 +55,39 @@ public class TestManager : MonoBehaviour
         psm.canDie = canDie;
     }
 
-    public void RemovePlayer()
-    {
-        playerMotor = null;
-        psm = null;
-    }
-
     public void RestartFight()
     {
-        KillKnight();
-
-        // Player
-        if (playerMotor == null)
+        if (playerMotor != null)
         {
-            GameObject playerGo = Instantiate(playerPrefab);
-            playerMotor = playerGo.GetComponent<PlayerMotor>();
+            playerMotor.DestroyPlayer();
         }
 
-        playerMotor.transform.position = Vector3.zero;
-        playerMotor.Init();
+        KillKnight();
+        DestroyEverything();
+
+        // Player
+        GameObject playerGo = Instantiate(playerPrefab);
+        playerMotor = playerGo.GetComponent<PlayerMotor>();
+
+        playerMotor.transform.position = new Vector3(0, 0, 0);
 
         // Knight
-        knight = Instantiate(knightPrefab);
-        knight.transform.position = new Vector3(0, 0, 20);
-        knight.transform.rotation = Quaternion.AngleAxis(180, Vector3.up);
+        knight = Instantiate(knightPrefab, new Vector3(0, 0, 20), Quaternion.AngleAxis(180, Vector3.up));
 
         kc = knight.GetComponent<KnightController>();
         kc.passive = knightPassive;
+    }
+
+    private void DestroyEverything()
+    {
+        GameObject[] allObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+        foreach (GameObject go in allObjects)
+        {
+            if (!NotToDestroyItems.Contains(go))
+            {
+                Destroy(go);
+            }
+        }
     }
 
     public void KillKnight()

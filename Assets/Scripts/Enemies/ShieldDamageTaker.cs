@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using LightBringer.Player;
-using LightBringer.Effects;
 
 namespace LightBringer.Enemies.Knight
 {

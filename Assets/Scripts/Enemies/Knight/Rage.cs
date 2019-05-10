@@ -4,10 +4,10 @@ namespace LightBringer.Enemies.Knight
 {
     public class Rage : MonoBehaviour
     {
-        [SerializeField] SkinnedMeshRenderer[] crystals;
-        [SerializeField] ParticleSystem ragePs;
-        [SerializeField] ParticleSystem exhaustionPs;
-        [SerializeField] Light[] lights;
+        [SerializeField] SkinnedMeshRenderer[] crystals = null;
+        [SerializeField] ParticleSystem ragePs = null;
+        [SerializeField] ParticleSystem exhaustionPs = null;
+        [SerializeField] Light[] lights = null;
 
         private Color[] lightInitialColors;
         private Color[] crystalInitialColors;
