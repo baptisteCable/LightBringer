@@ -55,6 +55,7 @@ namespace LightBringer.Player.Class
         public ParticleSystem ab1bSlash;
         public ParticleSystem abOffaSlash;
         public ParticleSystem abOffbSlash;
+        public ParticleSystem UltiReadyEffect;
 
         [Header("Game Objects")]
         public GameObject swordObject;
@@ -94,6 +95,7 @@ namespace LightBringer.Player.Class
                 Destroy(sphere);
                 ultiSphereCount = sphereObjects.Count;
                 abilities[AB_ULT].available = false;
+                UltiReadyEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
             }
         }
 
@@ -145,6 +147,7 @@ namespace LightBringer.Player.Class
             if (ultiSphereCount == MAX_SPHERE_COUNT)
             {
                 abilities[AB_ULT].available = true;
+                UltiReadyEffect.Play();
             }
         }
 
@@ -185,6 +188,7 @@ namespace LightBringer.Player.Class
                 sphere.transform.parent = characterContainer;
                 sphere.GetComponent<Animator>().Play("UltSphereLoadingSword");
             }
+            UltiReadyEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
 
         public void UltLoadedEffectOn()
@@ -204,6 +208,7 @@ namespace LightBringer.Player.Class
                 sphere.transform.parent = transform;
                 sphere.GetComponent<Animator>().Play("UltSphereCancelLoadingSword");
             }
+            UltiReadyEffect.Play();
         }
 
         public void ConsumeAllSpheres()
