@@ -1,5 +1,4 @@
 Autre
-	- Enemy hors de champs
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir
 	- Passif en début de combat
 	- Descriptif des compétences

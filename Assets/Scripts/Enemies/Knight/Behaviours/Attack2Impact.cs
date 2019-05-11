@@ -11,6 +11,7 @@ namespace LightBringer.Enemies.Knight
         [SerializeField] private GameObject bullet = null;
         [SerializeField] private GameObject explosion = null;
         [SerializeField] private GameObject indicator = null;
+        [SerializeField] private GameObject indicatorPS = null;
         private float startingTime;
         private bool exploded = false;
 
@@ -24,6 +25,7 @@ namespace LightBringer.Enemies.Knight
             bullet.transform.localScale *= radius;
 
             indicator.transform.localScale *= radius;
+            indicatorPS.transform.localScale *= radius;
 
             explosion.transform.localScale *= radius;
 
@@ -44,6 +46,7 @@ namespace LightBringer.Enemies.Knight
                 exploded = true;
                 Destroy(bullet);
                 Destroy(indicator);
+                Destroy(indicatorPS);
                 explosion.SetActive(true);
                 Destroy(gameObject, .5f);
             }
