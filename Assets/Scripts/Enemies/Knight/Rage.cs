@@ -9,6 +9,9 @@ namespace LightBringer.Enemies.Knight
         [SerializeField] ParticleSystem exhaustionPs = null;
         [SerializeField] Light[] lights = null;
 
+        [SerializeField] Color rageColor = default;
+        [SerializeField] Color exhaustionColor = default;
+
         private Color[] lightInitialColors;
         private Color[] crystalInitialColors;
 
@@ -34,12 +37,12 @@ namespace LightBringer.Enemies.Knight
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystals[i].material.SetColor("_EmissionColor", new Color(1, 0, 0));
+                crystals[i].material.SetColor("_EmissionColor", rageColor);
             }
 
             for (int i = 0; i < lights.Length; i++)
             {
-                lights[i].color = new Color(1, 0, 0);
+                lights[i].color = rageColor;
             }
         }
 
@@ -50,12 +53,12 @@ namespace LightBringer.Enemies.Knight
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystals[i].material.SetColor("_EmissionColor", new Color(.25f, .125f, .06f));
+                crystals[i].material.SetColor("_EmissionColor", exhaustionColor);
             }
 
             for (int i = 0; i < lights.Length; i++)
             {
-                lights[i].color = new Color(.25f, .125f, .06f);
+                lights[i].color = exhaustionColor;
             }
         }
 
