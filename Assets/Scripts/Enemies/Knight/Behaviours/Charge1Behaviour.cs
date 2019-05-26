@@ -156,7 +156,7 @@ namespace LightBringer.Enemies.Knight
         private void ApplyDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(25f, DamageType.Melee, DamageElement.Physical);
+            Damage dmg = new Damage(25f, DamageType.Melee, DamageElement.Physical, em.transform.position);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em);

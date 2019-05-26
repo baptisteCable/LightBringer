@@ -516,11 +516,11 @@ namespace LightBringer.Enemies.Knight
         }
 
         // Interuption 
-        public override void Interrupt()
+        public override void Interrupt(Vector3 origin)
         {
             currentBehaviour.Abort();
             nextActionBehaviour = null;
-            SetBehaviour(new InterruptionBehaviour(km));
+            SetBehaviour(new InterruptionBehaviour(km, origin));
         }
     }
 }

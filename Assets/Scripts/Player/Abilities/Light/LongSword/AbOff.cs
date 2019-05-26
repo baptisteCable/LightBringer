@@ -249,7 +249,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             Vector3 impactPoint = col.ClosestPoint(origin);
 
-            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light));
+            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light, impactPoint));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, origin, id);
 
             // Impact effect

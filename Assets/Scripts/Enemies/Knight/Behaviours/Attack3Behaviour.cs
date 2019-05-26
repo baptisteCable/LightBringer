@@ -145,7 +145,7 @@ namespace LightBringer.Enemies.Knight
         private void DamagePart0(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(SPEAR_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
+            Damage dmg = new Damage(SPEAR_DMG, DamageType.AreaOfEffect, DamageElement.Physical, em.transform.position);
             if (psm.IsAffectedBy(dmg, em))
             {
                 if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
@@ -161,7 +161,7 @@ namespace LightBringer.Enemies.Knight
         private void DamagePart1(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(SHIELD_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
+            Damage dmg = new Damage(SHIELD_DMG, DamageType.AreaOfEffect, DamageElement.Physical, em.transform.position);
             if (psm.IsAffectedBy(dmg, em))
             {
                 if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))

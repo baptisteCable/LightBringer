@@ -193,7 +193,11 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 );
 
                 // effect
-                dt.TakeDamage(new Damage(DAMAGE_UNLOADED, DamageType.Melee, DamageElement.Light), playerMotor, playerMotor.transform.position, id);
+                dt.TakeDamage(
+                    new Damage(DAMAGE_UNLOADED, DamageType.Melee, DamageElement.Light, playerMotor.transform.position),
+                    playerMotor,
+                    playerMotor.transform.position,
+                    id);
 
                 if (lightMotor.sword.isLoaded)
                 {
@@ -222,7 +226,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 // damage update
                 damageAmount = DAMAGE_LOADED;
             }
-            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
+            Damage dmg = playerMotor.psm.AlterDealtDamage(
+                new Damage(damageAmount, DamageType.Melee, DamageElement.Light, playerMotor.transform.position));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
         }
 
@@ -245,7 +250,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
 
             // Apply damage
-            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(damageAmount, DamageType.Melee, DamageElement.Light));
+            Damage dmg = playerMotor.psm.AlterDealtDamage(
+                new Damage(damageAmount, DamageType.Melee, DamageElement.Light, playerMotor.transform.position));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
             // Effect

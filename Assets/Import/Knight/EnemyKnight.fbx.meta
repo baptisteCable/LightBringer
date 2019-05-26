@@ -471,6 +471,9 @@ ModelImporter:
   - first:
       74: -8754077450409780734
     second: Armature|NormalOn
+  - first:
+      74: 1327139215464856506
+    second: Armature|Cancel2
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -625,7 +628,7 @@ ModelImporter:
       takeName: Armature|Cancel
       internalID: 7400008
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -915,7 +918,7 @@ ModelImporter:
       takeName: Armature|Attack2Rage
       internalID: 5132392938009420156
       firstFrame: 0
-      lastFrame: 211
+      lastFrame: 192
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1060,7 +1063,7 @@ ModelImporter:
       takeName: Armature|RageOn
       internalID: 5887098101811204791
       firstFrame: 0
-      lastFrame: 99
+      lastFrame: 276
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -1147,7 +1150,7 @@ ModelImporter:
       takeName: Armature|Attack3Tired
       internalID: 2414105546044527646
       firstFrame: 0
-      lastFrame: 229
+      lastFrame: 189
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

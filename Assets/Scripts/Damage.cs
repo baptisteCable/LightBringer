@@ -1,16 +1,20 @@
-﻿namespace LightBringer
+﻿using UnityEngine;
+
+namespace LightBringer
 {
     public class Damage
     {
         public float amount;
         public DamageType type;
         public DamageElement element;
+        public Vector3 origin;
 
-        public Damage (float amount, DamageType type, DamageElement element)
+        public Damage (float amount, DamageType type, DamageElement element, Vector3 origin)
         {
             this.amount = amount;
             this.type = type;
             this.element = element;
+            this.origin = origin;
         }
     }
     

@@ -8,7 +8,7 @@ namespace LightBringer.Enemies.Knight
     public class Attack2Behaviour : EnemyBehaviour, CollisionAbility
     {
         private const float DURATION = 4.2f;
-        private const float DURATION_RAGE = 3.6f;
+        private const float DURATION_RAGE = 3.3f;
         private const float RANGE = 30f;
         private const float DAMAGE = 10f;
         private const float ENEMY_RAIN_RANGE = 15f;
@@ -141,7 +141,7 @@ namespace LightBringer.Enemies.Knight
             if (col.tag == "Player")
             {
                 PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                Damage dmg = new Damage(10f, DamageType.AreaOfEffect, DamageElement.Energy);
+                Damage dmg = new Damage(10f, DamageType.AreaOfEffect, DamageElement.Energy, abilityColliderTrigger.transform.position);
                 if (psm.IsAffectedBy(dmg, em))
                 {
                     psm.TakeDamage(dmg, em);

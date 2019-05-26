@@ -257,7 +257,7 @@ namespace LightBringer.Enemies.Knight
         private void ApplyRayDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(RAY_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
+            Damage dmg = new Damage(RAY_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy, em.transform.position);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
@@ -268,7 +268,7 @@ namespace LightBringer.Enemies.Knight
         private void ApplyGroundDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(GROUND_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
+            Damage dmg = new Damage(GROUND_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy, col.transform.position);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);

@@ -155,7 +155,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     );
 
                     // Effect
-                    dt.TakeDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light), playerMotor, playerMotor.transform.position, id);
+                    dt.TakeDamage(
+                        new Damage(DAMAGE, DamageType.Melee, DamageElement.Light, playerMotor.transform.position), 
+                        playerMotor, playerMotor.transform.position, 
+                        id);
                 }
                 else
                 {
@@ -171,7 +174,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             Vector3 impactPoint = col.ClosestPoint(origin);
 
-            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.Melee, DamageElement.Light));
+            Damage dmg = playerMotor.psm.AlterDealtDamage(
+                new Damage(DAMAGE, DamageType.Melee, DamageElement.Light, playerMotor.transform.position));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, origin, id);
 
             // Spawn Ulti Extra damage taker

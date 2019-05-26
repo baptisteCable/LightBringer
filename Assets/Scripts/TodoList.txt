@@ -5,13 +5,9 @@ Autre
 	- Descriptif des compétences
 	- Icones des compétences
 	- Augmenter un peu la vitesse de rotation de l'ulti pour qu'il ne soit pas bloqué (à voir selon les autres retours)
-	- interrupt :
-		* Avant le début de l'animation, le knight se retourne vers la source de dégâts
-		* Puis il recule pendant l'animation et se replace en avançant ensuite.
 	- cercle sous le personnage pour la direction ?
 	- collision avec le décor lors de courbes
 	- sortir du E avec un clic gauche
-	- Nouvelles animations à implémenter
 	- Comme dans battlerite, indicateur du cd restant pour une compétence lancée pendant son CD.
 		* Se calcule au moment du déclenchement (pas au moment de mise en fil)
 	- Charges (4 petites boules + 1 grosse boule à droite) à côté de la barre de vie

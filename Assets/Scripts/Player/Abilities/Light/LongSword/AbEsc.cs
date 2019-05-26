@@ -243,7 +243,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             foreach (KeyValuePair<Collider, Vector3> pair in encounteredCols)
             {
-                Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE, DamageType.AreaOfEffect, DamageElement.Light));
+                Damage dmg = playerMotor.psm.AlterDealtDamage(
+                    new Damage(DAMAGE, DamageType.AreaOfEffect, DamageElement.Light, playerMotor.transform.position));
                 pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, pair.Value, id);
             }
         }

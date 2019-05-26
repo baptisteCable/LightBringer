@@ -1,15 +1,17 @@
 ﻿using LightBringer.Abilities;
 using LightBringer.Player;
+using System.Collections;
 using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
     public class StartRageBehaviour : CollisionBehaviour
     {
-        private const float DURATION = 1.7f;
-        private const float SHIELD_ON_GROUND = 39f / 60f;
+        private const float DURATION = 4.62f;
+        private const float SHIELD_ON_GROUND = 57f / 60f;
         private const float PUSH_AWAY_DURATION = .2f;
         private const float STUN_DURATION = .4f;
+        private const float RAGE_EFFECT_DELAY = 2.3f;
 
         private KnightMotor km;
 
@@ -53,7 +55,7 @@ namespace LightBringer.Enemies.Knight
             if (i == 0)
             {
                 km.startRagePs.Play(true);
-                km.rage.StartRage();
+                km.rage.StartRageDelayed(RAGE_EFFECT_DELAY);
             }
         }
 

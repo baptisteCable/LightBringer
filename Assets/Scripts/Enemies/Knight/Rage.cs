@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
 {
@@ -29,6 +30,17 @@ namespace LightBringer.Enemies.Knight
             {
                 lightInitialColors[i] = lights[i].color;
             }
+        }
+
+        public void StartRageDelayed(float delay)
+        {
+            StartCoroutine(DelayedRage(delay));
+        }
+
+        IEnumerator DelayedRage(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            StartRage();
         }
 
         public void StartRage()

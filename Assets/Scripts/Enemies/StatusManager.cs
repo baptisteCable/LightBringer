@@ -91,7 +91,7 @@ namespace LightBringer.Enemies
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = 0;
+            rageAmount = 0f; 
         }
 
         private void UpdateNextMode()
@@ -150,7 +150,6 @@ namespace LightBringer.Enemies
                     {
                         newHP -= pair.Value.dmg.amount;
 
-                        // add display only if local player, else send by message to client
                         AddDamageToDisplay(pair.Value.dmg);
 
                         // Try to interrupt
@@ -243,13 +242,13 @@ namespace LightBringer.Enemies
                 && mode != Mode.Rage
                 )
             {
-                Interrupt();
+                Interrupt(dmg.origin);
             }
         }
 
-        private void Interrupt()
+        private void Interrupt(Vector3 origin)
         {
-            motor.Interrupt();
+            motor.Interrupt(origin);
             rageAmount += INTERRUPTION_RAGE_INCREASE;
             interruptionStage += 1;
         }

@@ -163,6 +163,6 @@ namespace LightBringer.Enemies
                 canGoBehindPlayer, canGoBackWard, minDist, maxDist, out targetPosition);
         }
 
-        public abstract void Interrupt();
+        public abstract void Interrupt(Vector3 origin);
     }
 }

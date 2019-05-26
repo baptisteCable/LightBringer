@@ -268,7 +268,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                     );
 
                     // effect
-                    dt.TakeDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light), playerMotor, playerMotor.transform.position, id);
+                    dt.TakeDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light, playerMotor.transform.position),
+                        playerMotor, playerMotor.transform.position, id);
                 }
                 else
                 {
@@ -282,7 +283,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             Vector3 impactPoint = col.ClosestPoint(origin);
 
-            Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light));
+            Damage dmg = playerMotor.psm.AlterDealtDamage(
+                new Damage(DAMAGE_AB, DamageType.Melee, DamageElement.Light, playerMotor.transform.position));
             col.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, playerMotor.transform.position, id);
 
             // Particle effect
@@ -297,7 +299,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             {
                 if (pair.Key.tag == "Enemy")
                 {
-                    Damage dmg = playerMotor.psm.AlterDealtDamage(new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light));
+                    Damage dmg = playerMotor.psm.AlterDealtDamage(
+                        new Damage(DAMAGE_C, DamageType.AreaOfEffect, DamageElement.Light, pair.Value));
                     pair.Key.GetComponent<DamageTaker>().TakeDamage(dmg, playerMotor, pair.Value, id);
                 }
             }

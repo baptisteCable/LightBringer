@@ -67,9 +67,9 @@ namespace LightBringer.Enemies.Knight
             rage.StopExhaustion();
         }
 
-        public override void Interrupt()
+        public override void Interrupt(Vector3 origin)
         {
-            controller.Interrupt();
+            controller.Interrupt(origin);
         }
     }
 }

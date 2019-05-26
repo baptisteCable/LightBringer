@@ -323,6 +323,6 @@ namespace LightBringer.Enemies
         public abstract void StartExhaustion();
 
         public abstract void StopExhaustion();
-        public abstract void Interrupt();
+        public abstract void Interrupt(Vector3 origin);
     }
 }

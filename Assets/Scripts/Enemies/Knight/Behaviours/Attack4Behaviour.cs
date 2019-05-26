@@ -202,7 +202,7 @@ namespace LightBringer.Enemies.Knight
                     if (Vector3.Dot(explAct.transform.forward, col.transform.position - explAct.transform.position) >= 0f)
                     {
                         explCols.Add(col, Time.time);
-                        ApplyExplosionDamage(col);
+                        ApplyExplosionDamage(abilityColliderTrigger, col);
                     }
                 }
             }
@@ -211,7 +211,7 @@ namespace LightBringer.Enemies.Knight
         private void ApplyRayDamage(Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(RAY_DAMAGE, DamageType.RangeInstant, DamageElement.Energy);
+            Damage dmg = new Damage(RAY_DAMAGE, DamageType.RangeInstant, DamageElement.Energy, em.transform.position);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
@@ -219,10 +219,11 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        private void ApplyExplosionDamage(Collider col)
+        private void ApplyExplosionDamage(AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(EXPLOSION_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy);
+            Damage dmg = new Damage(EXPLOSION_DAMAGE, DamageType.AreaOfEffect, DamageElement.Energy,
+                abilityColliderTrigger.transform.position);
             if (psm.IsAffectedBy(dmg, em, em.transform.position))
             {
                 psm.TakeDamage(dmg, em, em.transform.position);
