@@ -10,7 +10,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const bool PARALLELIZABLE = false;
 
         // const
-        private const float COOLDOWN_DURATION = 8f;
+        private const float COOLDOWN_DURATION = 16f;
         private const float CHANNELING_DURATION = 6f / 60f;
         private const float ABILITY_DURATION = 0f / 60f;
 
@@ -31,6 +31,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.abilityMoveMultiplicator = 0;
             playerMotor.abilityMaxRotation = 0;
 
+            lightMotor.animator.SetBool("isInDefPos", true);
             lightMotor.animator.Play("BotAbDef");
             lightMotor.animator.Play("TopAbDef");
         }

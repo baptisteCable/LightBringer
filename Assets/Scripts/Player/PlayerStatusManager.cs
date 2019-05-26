@@ -116,6 +116,20 @@ namespace LightBringer.Player
             return true;
         }
 
+        // return false if the damage cannot target the player
+        public bool IsAffectedByCC(CrowdControl cc)
+        {
+            foreach (State s in states)
+            {
+                if (!s.isAffectedByCC(cc))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public void TakeDamage(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
         {
             foreach (State s in states)

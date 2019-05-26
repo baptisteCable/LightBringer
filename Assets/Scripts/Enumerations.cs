@@ -4,6 +4,7 @@
     {
         Stun,
         Root,
-        Sleep
+        Sleep,
+        ForcedMove
     }
 }

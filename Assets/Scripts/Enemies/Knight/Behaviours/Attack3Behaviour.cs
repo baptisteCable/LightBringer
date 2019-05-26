@@ -148,7 +148,11 @@ namespace LightBringer.Enemies.Knight
             Damage dmg = new Damage(SPEAR_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
             if (psm.IsAffectedBy(dmg, em))
             {
-                PushAway(col);
+                if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
+                {
+                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.AreaOfEffect, DamageElement.Physical), STUN_DURATION);
+                    PushAway(col);
+                }
                 psm.TakeDamage(dmg, em);
                 missed = false;
             }
@@ -160,7 +164,11 @@ namespace LightBringer.Enemies.Knight
             Damage dmg = new Damage(SHIELD_DMG, DamageType.AreaOfEffect, DamageElement.Physical);
             if (psm.IsAffectedBy(dmg, em))
             {
-                PushAway(col);
+                if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
+                {
+                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.AreaOfEffect, DamageElement.Physical), STUN_DURATION);
+                    PushAway(col);
+                }
                 psm.TakeDamage(dmg, em);
                 missed = false;
             }

@@ -19,7 +19,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
         {
-            if (!complete && (dmg.type == DamageType.Melee || dmg.type == DamageType.RangeInstant || dmg.type == DamageType.Projectile))
+            if (!complete)
             {
                 psm.AddAndStartState(new Immaterial(IMMATERIAL_DURATION));
                 psm.AddAndStartState(new Haste(HASTE_DURATION));
@@ -64,6 +64,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             psm.playerMotor.LockAbilitiesExcept(false);
 
             // TODO Effect end
+
+            // Animator
+            psm.playerMotor.animator.SetBool("isInDefPos", false);
         }
 
         public override void Cancel()
@@ -75,7 +78,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override bool isAffectedByCC(CrowdControl cc)
         {
-            if (cc.damageType == DamageType.Melee || cc.damageType == DamageType.RangeInstant || cc.damageType == DamageType.Projectile)
+            if (!complete)
             {
                 return false;
             }

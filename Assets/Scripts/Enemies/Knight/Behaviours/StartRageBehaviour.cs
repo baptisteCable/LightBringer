@@ -69,34 +69,41 @@ namespace LightBringer.Enemies.Knight
             {
                 cols.Add(col, Time.time);
 
-                // Stun the player
+                // Stun the player and push away
                 PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), STUN_DURATION);
-
-                // Push the player away
-                Vector3 actPos = abilityColliderTrigger.transform.position;
-                SphereCollider sc = abilityColliderTrigger.GetComponent<SphereCollider>();
-
-                Vector3 position = col.transform.position;
-                Vector3 finalPosition = position + (position - actPos).normalized * (sc.radius - (position - actPos).magnitude);
-
-                // x and z
-                AnimationCurve xCurve = new AnimationCurve();
-                xCurve.AddKey(new Keyframe(0, position.x));
-                xCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.x));
-
-                AnimationCurve zCurve = new AnimationCurve();
-                zCurve.AddKey(new Keyframe(0, position.z));
-                zCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.z));
-
-                // y
-                AnimationCurve yCurve = new AnimationCurve();
-                yCurve.AddKey(new Keyframe(0, position.y));
-                yCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, position.y));
-
-                // Add curve to player movement
-                psm.playerMotor.MoveByCurve(PUSH_AWAY_DURATION, xCurve, yCurve, zCurve);
+                if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
+                {
+                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.AreaOfEffect, DamageElement.Physical), STUN_DURATION);
+                    PushAway(psm, abilityColliderTrigger, col);
+                }
             }
+        }
+
+        void PushAway(PlayerStatusManager psm, AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        {
+            // Push the player away
+            Vector3 actPos = abilityColliderTrigger.transform.position;
+            SphereCollider sc = abilityColliderTrigger.GetComponent<SphereCollider>();
+
+            Vector3 position = col.transform.position;
+            Vector3 finalPosition = position + (position - actPos).normalized * (sc.radius - (position - actPos).magnitude);
+
+            // x and z
+            AnimationCurve xCurve = new AnimationCurve();
+            xCurve.AddKey(new Keyframe(0, position.x));
+            xCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.x));
+
+            AnimationCurve zCurve = new AnimationCurve();
+            zCurve.AddKey(new Keyframe(0, position.z));
+            zCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.z));
+
+            // y
+            AnimationCurve yCurve = new AnimationCurve();
+            yCurve.AddKey(new Keyframe(0, position.y));
+            yCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, position.y));
+
+            // Add curve to player movement
+            psm.playerMotor.MoveByCurve(PUSH_AWAY_DURATION, xCurve, yCurve, zCurve);
         }
     }
 }

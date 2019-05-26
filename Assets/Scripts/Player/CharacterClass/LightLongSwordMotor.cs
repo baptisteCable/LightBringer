@@ -18,7 +18,7 @@ namespace LightBringer.Player.Class
         private const int AB_ULT = 5;
 
         public const int MAX_SPHERE_COUNT = 4;
-        private const float SPHERE_DURATION = 30f;
+        private const float SPHERE_DURATION = 35f;
 
         // Prefabs
         [Header("Abilities Prefabs")]
