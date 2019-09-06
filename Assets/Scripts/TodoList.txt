@@ -9,7 +9,7 @@ Autre
 	- collision avec le décor lors de courbes
 	- sortir du E avec un clic gauche
 	- Comme dans battlerite, indicateur du cd restant pour une compétence lancée pendant son CD.
-		* Se calcule au moment du déclenchement (pas au moment de mise en fil)
+		* Se calcule au moment du déclenchement (pas au moment de mise en file)
 	- Charges (4 petites boules + 1 grosse boule à droite) à côté de la barre de vie
 	- Changer le mode de rendu
 

@@ -139,7 +139,18 @@ namespace LightBringer.Player.Class
             }
 
             GameObject sphere = Instantiate(spherePrefab, transform);
+
+            // Set sphere effect duration and play effect
+            ParticleSystem ps = sphere.GetComponent<ParticleSystem>();
+            ParticleSystem.MainModule psMain = ps.main;
+            psMain.duration = SPHERE_DURATION;
+            psMain.startLifetime = SPHERE_DURATION;
+            ps.Play();
+
+            // Add to sphere list
             sphereObjects.Add(sphere);
+
+            // Plan destruction
             StartCoroutine(DestroySphere(sphere));
 
             ultiSphereCount = sphereObjects.Count;
