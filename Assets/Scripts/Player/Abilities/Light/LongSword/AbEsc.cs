@@ -256,5 +256,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 encounteredCols.Add(col, act.transform.position);
             }
         }
+
+        public override string GetDescription()
+        {
+            return "Un saut de folie !";
+        }
     }
 }

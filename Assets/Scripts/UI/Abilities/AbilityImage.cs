@@ -1,11 +1,15 @@
-﻿using LightBringer.Player;
+﻿using UnityEngine.EventSystems;
+using LightBringer.Player;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LightBringer.UI
 {
-    public class AbilityImage : MonoBehaviour
+    public class AbilityImage : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
+        [SerializeField] private GameObject panelPrefab;
+
+        private GameObject abilityDescriptionPanel;
 
         public int abilityIndex;
         public PlayerMotor character;
@@ -60,6 +64,17 @@ namespace LightBringer.UI
 
             // Locked
             lockedImage.SetActive(character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available);
+        }
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            abilityDescriptionPanel = Instantiate(panelPrefab, gameObject.transform);
+            string textValue = character.abilities[abilityIndex].GetDescription();
+            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetText(textValue);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            Destroy(abilityDescriptionPanel);
         }
     }
 }

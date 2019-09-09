@@ -43,5 +43,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.psm.AddAndStartState(new LightLongSwordCounter(COUNTER_DURATION, lightMotor.sword));
         }
 
+        public override string GetDescription()
+        {
+            return "Se prépare à recevoir une attaque.";
+        }
+
     }
 }

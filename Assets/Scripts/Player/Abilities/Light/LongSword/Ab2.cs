@@ -276,5 +276,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 newCols.Add(col, distance);
             }
         }
+
+        public override string GetDescription()
+        {
+            return "Attaque 2 \n\nAvec un dash...";
+        }
     }
 }

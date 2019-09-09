@@ -197,6 +197,8 @@ namespace LightBringer.Player.Abilities
 
             indicators.Clear();
         }
+
+        public abstract string GetDescription();
     }
 }
 

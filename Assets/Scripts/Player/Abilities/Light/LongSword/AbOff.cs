@@ -288,5 +288,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             StartChanneling();
         }
+
+        public override string GetDescription()
+        {
+            return "Permet de rentrer dans l'ennemi... \n\net d'en ressortir !\n\n Marche même en touchant un bouclier.";
+        }
     }
 }

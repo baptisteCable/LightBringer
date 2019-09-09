@@ -224,5 +224,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 encounteredCols.Add(col, playerMotor.transform.position + Vector3.up);
             }
         }
+
+        public override string GetDescription()
+        {
+            return "L'attaque utlime.\n\nLa flemme d'expliquer.";
+        }
     }
 }

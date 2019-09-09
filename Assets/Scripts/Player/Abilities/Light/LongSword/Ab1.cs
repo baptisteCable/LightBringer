@@ -320,5 +320,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
                 }
             }
         }
+
+        public override string GetDescription()
+        {
+            return "Attaque 1";
+        }
     }
 }
