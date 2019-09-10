@@ -199,6 +199,8 @@ namespace LightBringer.Player.Abilities
         }
 
         public abstract string GetDescription();
+
+        public abstract string GetTitle();
     }
 }
 

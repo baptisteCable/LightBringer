@@ -3,10 +3,16 @@ using UnityEngine;
 
 public class AbilityDescriptionPanel : MonoBehaviour
 {
-    [SerializeField] private Text textObject;
+    [SerializeField] private Text titleObject;
+    [SerializeField] private Text descriptionObject;
 
-    public void SetText(string textValue)
+    public void SetTitle(string textValue)
     {
-        textObject.text = textValue;
+        titleObject.text = textValue;
+    }
+
+    public void SetDescription(string textValue)
+    {
+        descriptionObject.text = textValue;
     }
 }

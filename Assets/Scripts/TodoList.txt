@@ -1,4 +1,7 @@
 Autre
+	- Finir la description des compétences avec un peu de mise en forme
+		* Une zone de titre (en plus gros, plus gras)
+		* Une zone de description
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir : vitesse angulaire moyenne sur les derniers moves.
 		* Idem pour attaque 1 ?
 	- Passif en début de combat
@@ -7,6 +10,7 @@ Autre
 	- Augmenter un peu la vitesse de rotation de l'ulti pour qu'il ne soit pas bloqué (à voir selon les autres retours)
 	- cercle sous le personnage pour la direction ?
 	- collision avec le décor lors de courbes
+		* Bug quand on se fait pousser au travers du décor, on tombe.
 	- sortir du E avec un clic gauche
 	- Comme dans battlerite, indicateur du cd restant pour une compétence lancée pendant son CD.
 		* Se calcule au moment du déclenchement (pas au moment de mise en file)

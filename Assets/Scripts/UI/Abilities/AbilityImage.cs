@@ -68,8 +68,10 @@ namespace LightBringer.UI
         public void OnPointerEnter(PointerEventData eventData)
         {
             abilityDescriptionPanel = Instantiate(panelPrefab, gameObject.transform);
-            string textValue = character.abilities[abilityIndex].GetDescription();
-            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetText(textValue);
+            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetTitle(
+                character.abilities[abilityIndex].GetTitle());
+            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetDescription(
+                character.abilities[abilityIndex].GetDescription());
         }
 
         public void OnPointerExit(PointerEventData eventData)

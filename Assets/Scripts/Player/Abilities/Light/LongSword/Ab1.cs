@@ -321,9 +321,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
+        public override string GetTitle()
+        {
+            return "Coup d'épée";
+        }
+
         public override string GetDescription()
         {
-            return "Attaque 1";
+            return "Enchaîne 2 attaques horizontale infligeant 10 points de dégâts puis plante son épée, infligeant 12 points de dégâts de zone et créant une zone de lumière.";
         }
     }
 }

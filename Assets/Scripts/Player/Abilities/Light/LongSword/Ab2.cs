@@ -277,9 +277,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
+        public override string GetTitle()
+        {
+            return "Charge";
+        }
+
         public override string GetDescription()
         {
-            return "Attaque 2 \n\nAvec un dash...";
+            return "Si lancé dans une zone de lumière, la consomme pour charger l’arme pendant la canalisation.\n\nFait une attaque en avant infligeant 10 points de dégâts.\n\nSi l’arme est chargée, la décharge en faisant 15 points de dégâts supplémentaires.\n\nLorsqu’une charge d’arme est consommée pour faire des dégâts, une boule d’énergie est créée (max 4).";
         }
     }
 }

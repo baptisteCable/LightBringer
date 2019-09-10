@@ -289,9 +289,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             StartChanneling();
         }
 
+        public override string GetTitle()
+        {
+            return "Evaporation";
+        }
+
         public override string GetDescription()
         {
-            return "Permet de rentrer dans l'ennemi... \n\net d'en ressortir !\n\n Marche même en touchant un bouclier.";
+            return "Attaque rapide infligeant 6 dégâts et faisant disparaître le personnage.\n\nAu bout d’une seconde ou lors de la réactivation, réapparaît derrière la cible et effectue une seconde attaque de 6 dégâts.";
         }
     }
 }

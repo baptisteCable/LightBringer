@@ -43,9 +43,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.psm.AddAndStartState(new LightLongSwordCounter(COUNTER_DURATION, lightMotor.sword));
         }
 
+        public override string GetTitle()
+        {
+            return "Esquive ethérée";
+        }
+
         public override string GetDescription()
         {
-            return "Se prépare à recevoir une attaque.";
+            return "Contre la prochaine attaque de mêlée ou projectile.\n\nSi une attaque est contrée, vous rend Immatériel pendant 1 seconde, charge l’arme et donne Haste.";
         }
 
     }

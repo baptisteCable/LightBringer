@@ -257,9 +257,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
+        public override string GetTitle()
+        {
+            return "Saut iridescent";
+        }
+
         public override string GetDescription()
         {
-            return "Un saut de folie !";
+            return "Saut en avant, infligeant 8 dégâts et créant une zone de lumière à l’atterrissage.";
         }
     }
 }

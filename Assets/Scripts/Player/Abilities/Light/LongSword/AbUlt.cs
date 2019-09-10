@@ -225,9 +225,14 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
+        public override string GetTitle()
+        {
+            return "Evaporation";
+        }
+
         public override string GetDescription()
         {
-            return "L'attaque utlime.\n\nLa flemme d'expliquer.";
+            return "Consomme 4 boules d’énergie.\n\nAttaque horizontale infligeant 10 points de dégâts et marquant la cible touchée. Place 4 quadrants de lumière autour de la cible pendant 10 secondes. Lorsqu’un quadrant est frappée par une attaque de lumière, elle explose infligeant 6 dégâts.\n\nSi tous les quadrants explosent en moins de 10 sec, une explosion secondaire a lieu infligeant 34 dégâts.";
         }
     }
 }
