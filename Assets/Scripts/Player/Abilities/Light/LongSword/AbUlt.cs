@@ -227,7 +227,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override string GetTitle()
         {
-            return "Evaporation";
+            return "Ulti (c'est Marco qui a choisi le nom)";
         }
 
         public override string GetDescription()
