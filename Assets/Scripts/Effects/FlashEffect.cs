@@ -14,7 +14,7 @@ namespace LightBringer.Effects
         float flashEnd = 0;
         bool flashIsOn = false;
 
-        public void Flash()
+        public virtual void Flash()
         {
             flashEnd = Time.time + duration;
         }

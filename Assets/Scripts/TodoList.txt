@@ -12,6 +12,10 @@ Autre
 	- Charges (4 petites boules + 1 grosse boule à droite) à côté de la barre de vie
 	- Changer le mode de rendu
 	- Effet sur les aptitudes qui deviennent dispo
+	- cancel du R : animation des boules
+	- indicateur compétence saut
+	
+	- Touches configurables
 
 Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
