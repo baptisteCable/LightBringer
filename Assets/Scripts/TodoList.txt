@@ -1,7 +1,7 @@
 Autre
 	- Attack4 : prédiction de mouvement pour anticiper la direction du tir : vitesse angulaire moyenne sur les derniers moves.
 		* Idem pour attaque 1 ?
-	- Passif en début de combat
+	- Passif en début de combat, se promène, et ignore le joueur.
 	- Augmenter un peu la vitesse de rotation de l'ulti pour qu'il ne soit pas bloqué (à voir selon les autres retours)
 	- cercle sous le personnage pour la direction ?
 	- collision avec le décor lors de courbes
@@ -9,11 +9,9 @@ Autre
 	- sortir du E avec un clic gauche
 	- Comme dans battlerite, indicateur du cd restant pour une compétence lancée pendant son CD.
 		* Se calcule au moment du déclenchement (pas au moment de mise en file)
-	- Charges (4 petites boules + 1 grosse boule à droite) à côté de la barre de vie
 	- Changer le mode de rendu
 	- Effet sur les aptitudes qui deviennent dispo
 	- cancel du R : animation des boules
-	- indicateur compétence saut
 	
 	- Touches configurables
 
