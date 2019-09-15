@@ -45,12 +45,10 @@ namespace LightBringer.TerrainGeneration
 
             float[,] heights = GenerateFlat();
 
-            AddIsland(ref heights, 110, 64, 10);
-            AddIsland(ref heights, 110, 192, 10);
-            AddIsland(ref heights, 166, 64, 10);
-            AddIsland(ref heights, 166, 192, 10);
-            AddIsland(ref heights, 90, 128, 10);
-            AddIsland(ref heights, 192, 128, 10);
+            AddIsland(ref heights, new Vector2(60, 54), 1);
+            AddIsland(ref heights, new Vector2(-70, 54), 2);
+            AddIsland(ref heights, new Vector2(70, -44), 3);
+            AddIsland(ref heights, new Vector2(-60, -64), 4);
 
             heights = Smooth(heights, 1);
 
@@ -101,7 +99,7 @@ namespace LightBringer.TerrainGeneration
         }
 
         private void PaintSlopes(ref float[,,] map)
-        {
+        {/*
             foreach (Island island in islands)
             {
                 foreach (Slope slope in island.slopes)
@@ -119,7 +117,7 @@ namespace LightBringer.TerrainGeneration
                         map[x, y, SLOPE_TEXTURE_ID] = 1;
                     }
                 }
-            }
+            }*/
         }
 
         private void ClearAlphaMaps(float[,,] map)
@@ -150,11 +148,10 @@ namespace LightBringer.TerrainGeneration
             return Smooth(heights, 1);
         }
 
-        private void AddIsland(ref float[,] heights, int x, int y, float size)
+        private void AddIsland(ref float[,] heights, Vector2 islandPosition, int seed)
         {
-            Island island = new Island(x, y);
-            island.GenerateIsland(ref heights);
-            island.AddIslandToMap(ref heights);
+            Island island = new Island(islandPosition);
+            island.GenerateIslandAndHeights(ref heights, new Vector2(transform.position.x, transform.position.z), width, heightPointPerUnity, seed);
             islands.Add(island);
         }
 
@@ -181,20 +178,6 @@ namespace LightBringer.TerrainGeneration
             }
 
             return smoothed;
-        }
-
-        public static Vector2 Vector2FromAngle(float a)
-        {
-            a *= Mathf.Deg2Rad;
-            return new Vector2(Mathf.Cos(a), Mathf.Sin(a));
-        }
-
-        public static Vector2 RotateVector(Vector2 v, float angle)
-        {
-            float radian = angle * Mathf.Deg2Rad;
-            float x = v.x * Mathf.Cos(radian) - v.y * Mathf.Sin(radian);
-            float y = v.x * Mathf.Sin(radian) + v.y * Mathf.Cos(radian);
-            return new Vector2(x, y);
         }
     }
 

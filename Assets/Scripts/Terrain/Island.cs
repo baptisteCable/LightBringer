@@ -5,148 +5,218 @@ namespace LightBringer.TerrainGeneration
 {
     public class Island
     {
-        private const float REQUIRED_FREE_SPACE_BRANCH = 14f;
-        private const float REQUIRED_FREE_SPACE_ACCESS = 6f;
         private const float SLOPE_LENGTH = 6f;
-        private int startSize = 192;
+        private const float RADIUS = 2.7f;
+        private const float SCALE = 10f;
 
-        private int heightPointPerUnity = 2;
-        private float[,] heights;
-        private int xCenterInTerrain;
-        private int yCenterInTerrain;
 
-        private int xLocalCenter;
-        private int yLocalCenter;
+        Vector2 centerInWorld;
 
         public List<Slope> slopes;
 
-        public Island(int xCenterInWorld, int yCenterInWorld)
+        /* -------- */
+        private List<Vector2> vertices;
+
+        public Island(Vector2 centerPosition)
         {
-            xCenterInTerrain = xCenterInWorld * heightPointPerUnity;
-            yCenterInTerrain = yCenterInWorld * heightPointPerUnity;
+            centerInWorld = centerPosition;
         }
 
-        public void GenerateIsland(ref float[,] terrainHeights)
+        public static Vector2 Vector2FromAngle(float a)
         {
-            Initialisation(ref terrainHeights);
-
-            AddCircle(xLocalCenter, yLocalCenter, 10, REQUIRED_FREE_SPACE_BRANCH);
-            AddBranch(xLocalCenter, yLocalCenter, 5, 12);
-            AddBranch(xLocalCenter, yLocalCenter, 5, 12);
-            AddBranch(xLocalCenter, yLocalCenter, 5, 12);
-
-            GenerateAccesses();
-
-            // Delete useless parts
-            SimplifyHeights();
+            return new Vector2(Mathf.Cos(a), Mathf.Sin(a));
         }
 
-        private void Initialisation(ref float[,] terrainHeights)
+        public static Vector2 RotateVector(Vector2 v, float angle)
         {
-            heights = new float[startSize, startSize];
-            xLocalCenter = startSize / 2;
-            yLocalCenter = startSize / 2;
+            float x = v.x * Mathf.Cos(angle) - v.y * Mathf.Sin(angle);
+            float y = v.x * Mathf.Sin(angle) + v.y * Mathf.Cos(angle);
+            return new Vector2(x, y);
+        }
 
-            int xCornerInTerrain = xCenterInTerrain - xLocalCenter;
-            int yCornerInTerrain = yCenterInTerrain - yLocalCenter;
+        private void GenerateIslandVertices(int seed, float radius)
+        {
+            Random.InitState(seed);
 
+            vertices = new List<Vector2>();
 
-            for (int x = 0; x < startSize; x++)
+            Vector2 vector = RotateVector(new Vector2(1, 0), Mathf.PI / 4f);
+            vertices.Add(new Vector2(radius, 0));
+
+            // Compute vertices
+            while (vertices.Count < 5 * radius || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
-                for (int y = 0; y < startSize; y++)
+                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1]);
+                vector = RotateVector(vector, angle);
+                vertices.Add(vertices[vertices.Count - 1] + vector);
+            }
+
+            // last 2 vertices
+            LastTwoVertices();
+        }
+
+        void LastTwoVertices()
+        {
+            Vector2 last = vertices[vertices.Count - 1];
+            Vector2 first = vertices[0];
+
+            Vector2 vector = first - last;
+            float distance = vector.magnitude;
+            vector /= distance;
+
+            float angle = -Mathf.Acos((distance - 1) / 2);
+
+            // add vertex 1
+            vertices.Add(vertices[vertices.Count - 1] + RotateVector(vector, angle));
+
+            // add vertex 2
+            vertices.Add(vertices[vertices.Count - 1] + vector);
+        }
+
+        private float angleDistrib(float angle)
+        {
+            return -Mathf.Abs(1 / Mathf.PI) + 1;
+        }
+
+        private float distDistrib(float angle, Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)
+        {
+            Vector2 newVector = RotateVector(vector, angle);
+
+            // 0 if going back
+            Vector2 tangent = RotateVector(previousPoint - center, Mathf.PI / 2f);
+            if (Vector2.Dot(tangent, newVector) < 0)
+            {
+                return 0;
+            }
+
+            // compute distribution
+            float dist = (center - (previousPoint + newVector)).magnitude;
+            float ratio = dist / radius - 1;
+            return Mathf.Exp(-6 * ratio * ratio);
+        }
+
+        private float randomAngle(Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)
+        {
+            float[] distributions = new float[9];
+            float sum = 0f;
+            int i;
+
+            // compute raw distributions
+            for (i = 0; i < 9; i++)
+            {
+                float angle = (i - 4) * Mathf.PI / 8f;
+                distributions[i] = angleDistrib(angle) * distDistrib(angle, center, radius, vector, previousPoint);
+                sum += distributions[i];
+            }
+
+            // normalize
+            for (i = 0; i < 9; i++)
+            {
+                distributions[i] /= sum;
+            }
+
+
+            float rnd = Random.value;
+
+            i = 0;
+            while (distributions[i] < rnd)
+            {
+                rnd -= distributions[i];
+                i++;
+            }
+
+            return (i - 4) * Mathf.PI / 8f;
+        }
+
+        private bool IsInside(Vector2 point)
+        {
+            // closest point
+            int closest = 0;
+            double minDist = double.PositiveInfinity;
+            double[] distances = new double[vertices.Count];
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                distances[i] = (point - vertices[i]).magnitude;
+                if (distances[i] < minDist)
                 {
-                    if (terrainHeights[xCornerInTerrain + x, yCornerInTerrain + y] > 0)
+                    closest = i;
+                    minDist = distances[i];
+                }
+            }
+
+            Vector2 first, second;
+
+            if (distances[(closest + 1) % vertices.Count] > distances[(closest + vertices.Count - 1) % vertices.Count])
+            {
+                first = vertices[(closest + vertices.Count - 1) % vertices.Count];
+                second = vertices[closest];
+            }
+            else
+            {
+                first = vertices[closest];
+                second = vertices[(closest + 1) % vertices.Count];
+            }
+
+            Vector2 normal = RotateVector(second - first, Mathf.PI / 2f);
+            Vector2 vect = point - first;
+
+            return Vector2.Dot(normal, vect) >= 0;
+
+        }
+
+        public void GenerateIslandAndHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity, int seed)
+        {
+            // Generate island data from seed
+            GenerateIslandVertices(seed, RADIUS);
+
+            // find bounds
+            float xMin = float.PositiveInfinity;
+            float xMax = float.NegativeInfinity;
+            float yMin = float.PositiveInfinity;
+            float yMax = float.NegativeInfinity;
+
+            foreach (Vector2 vertex in vertices)
+            {
+                if (vertex.x < xMin) xMin = vertex.x;
+                if (vertex.x > xMax) xMax = vertex.x;
+                if (vertex.y < yMin) yMin = vertex.y;
+                if (vertex.y > yMax) yMax = vertex.y;
+            }
+
+            Vector2 localIslandCenter = centerInWorld - terrainPosition;
+            Vector2 islandCenterInHeightCoord = localIslandCenter * heightPointPerUnity;
+
+            // find height points bounds
+            int uMin = Mathf.Max(0, (int)(xMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
+            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity - 1, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
+            int vMin = Mathf.Max(0, (int)(yMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
+            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity - 1, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
+
+            // For each point in the region, compute height
+            for (int u = uMin; u <= uMax; u++)
+            {
+                float x = (u - islandCenterInHeightCoord.x) / heightPointPerUnity / SCALE;
+
+                for (int v = vMin; v <= vMax; v++)
+                {
+                    float y = (v - islandCenterInHeightCoord.y) / heightPointPerUnity / SCALE;
+
+                    if (IsInside(new Vector2(x, y)))
                     {
-                        // Already used by other island
-                        heights[x, y] = -1;
-                    }
-                    else
-                    {
-                        // free spot
-                        heights[x, y] = 0;
+                        terrainHeights[u, v] = .5f;
                     }
                 }
             }
+
+
+
         }
 
-        // in height unity
-        private void AddBranch(int x, int y, float minRadius, float maxRadius)
-        {
-            Vector2 direction = TerrainGenerator.Vector2FromAngle(Random.value * 360f);
-            Vector2 position = new Vector2(x, y);
-            float radius = (minRadius + maxRadius) / 2f;
+        /*
+        
 
-            bool free = true;
-
-            for (int i = 0; i < 30; i++)
-            {
-                direction = TerrainGenerator.RotateVector(direction, Random.value * 80f - 40f);
-                ModifyRadius(ref radius, minRadius, maxRadius);
-                position += direction * heightPointPerUnity;
-                free = AddCircle((int)position.x, (int)position.y, radius, REQUIRED_FREE_SPACE_BRANCH);
-                if (!free)
-                {
-                    break;
-                }
-            }
-        }
-
-        // in height unity
-        private void ModifyRadius(ref float radius, float min, float max)
-        {
-            float range = (max - min) / 2 * .25f;
-            radius += Random.value * 2 * range - range;
-            if (radius < min)
-            {
-                radius = min;
-            }
-            if (radius > max)
-            {
-                radius = max;
-            }
-        }
-
-        // in height unity
-        private bool AddCircle(int x, int y, float radius, float requiredFreeSpace)
-        {
-            if (!diskIsFree(x, y, radius + requiredFreeSpace * heightPointPerUnity))
-            {
-                return false;
-            }
-
-            for (int i = x - (int)radius - 1; i < x + (int)radius + 1; i++)
-            {
-                for (int j = y - (int)radius - 1; j < y + (int)radius + 1; j++)
-                {
-                    if ((i - x) * (i - x) + (j - y) * (j - y) < radius * radius)
-                    {
-                        heights[i, j] = .5f;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-        // in height unity
-        private bool diskIsFree(int x, int y, float radius)
-        {
-            for (int i = x - (int)radius - 1; i < x + (int)radius + 1; i++)
-            {
-                for (int j = y - (int)radius - 1; j < y + (int)radius + 1; j++)
-                {
-                    if ((i - x) * (i - x) + (j - y) * (j - y) < radius * radius)
-                    {
-                        if (heights[i, j] < 0)
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
+        
 
         private void GenerateAccesses()
         {
@@ -300,34 +370,6 @@ namespace LightBringer.TerrainGeneration
             slopes.Add(slope);
         }
 
-        private void SimplifyHeights()
-        {
-            int xFirst = FindFirstX();
-            int xLast = FindLastX();
-            int yFirst = FindFirstY();
-            int yLast = FindLastY();
-
-            float[,] newHeights = new float[xLast + 1 - xFirst, yLast + 1 - yFirst];
-
-            for (int x = 0; x <= xLast - xFirst; x++)
-            {
-                for (int y = 0; y <= yLast - yFirst; y++)
-                {
-                    newHeights[x, y] = heights[xFirst + x, yFirst + y];
-                }
-            }
-
-            heights = newHeights;
-            xLocalCenter -= xFirst;
-            yLocalCenter -= yFirst;
-
-            foreach(Slope slope in slopes)
-            {
-                slope.topPoint -= new Vector2Int(xFirst, yFirst);
-                slope.botPoint -= new Vector2Int(xFirst, yFirst);
-            }
-        }
-
         private int FindFirstX()
         {
             for (int x = 0; x < heights.GetLength(0); x++)
@@ -396,28 +438,11 @@ namespace LightBringer.TerrainGeneration
             return -1;
         }
 
-        public void AddIslandToMap(ref float[,] terrainHeights)
-        {
-            int xCornerInTerrain = xCenterInTerrain - xLocalCenter;
-            int yCornerInTerrain = yCenterInTerrain - yLocalCenter;
-
-            for (int x = 0; x < heights.GetLength(0); x++)
-            {
-                for (int y = 0; y < heights.GetLength(1); y++)
-                {
-                    // Add the positive heights (terrain heights should be 0 at this point, because of island building method)
-                    if (heights[x, y] > 0)
-                    {
-                        terrainHeights[xCornerInTerrain + x, yCornerInTerrain + y] += heights[x, y];
-                    }
-                }
-            }
-        }
-
         public Vector2Int GetStartingCorner()
         {
             return new Vector2Int(xCenterInTerrain - xLocalCenter, yCenterInTerrain - yLocalCenter);
         }
+        */
     }
 
 }

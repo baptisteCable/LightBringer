@@ -22,7 +22,7 @@ namespace LightBringer.TerrainGeneration
         {
             float length = (botPoint - topPoint).magnitude;
             Vector2 direction = (botPoint - topPoint).normalized;
-            Vector2 normal = TerrainGenerator.RotateVector(direction, 90);
+            Vector2 normal = Island.RotateVector(direction, Mathf.PI / 2f);
             Vector2 topL = -normal * (radius + radiusExtension) + topPoint - direction * topExtension;
             Vector2 topR = normal * (radius + radiusExtension) + topPoint - direction * topExtension;
             Vector2 botL = -normal * (radius + radiusExtension) + botPoint + direction * botExtension;
