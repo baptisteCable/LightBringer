@@ -6,9 +6,10 @@ namespace LightBringer.TerrainGeneration
     public class Island
     {
         private const float SLOPE_LENGTH = 6f;
+        private const float CLIFF_LENGTH = 2f;
         private const float RADIUS = 2.3f;
         private const float SCALE = 10f;
-
+        private const int MARGIN = 5; // margin in the weightmap for the smooth
 
         int seed;
         Vector2 centerInWorld;
@@ -130,12 +131,12 @@ namespace LightBringer.TerrainGeneration
             return (i - 4) * Mathf.PI / 8f;
         }
 
-        private bool IsInside(Vector2 point)
+        private float DistanceFromIsland(Vector2 point)
         {
             // closest point
             int closest = 0;
-            double minDist = double.PositiveInfinity;
-            double[] distances = new double[vertices.Count];
+            float minDist = float.PositiveInfinity;
+            float[] distances = new float[vertices.Count];
 
             for (int i = 0; i < vertices.Count; i++)
             {
@@ -163,7 +164,22 @@ namespace LightBringer.TerrainGeneration
             Vector2 normal = RotateVector(second - first, Mathf.PI / 2f);
             Vector2 vect = point - first;
 
-            return Vector2.Dot(normal, vect) >= 0;
+            float dotProdTangent = Vector2.Dot(second - first, vect);
+            float dotProdNormal = Vector2.Dot(normal, vect);
+
+            if (dotProdNormal >= 0)
+            {
+                return 0;
+            }
+            // external angle case (circle dist)
+            else if (dotProdTangent < 0 || dotProdTangent > 1)
+            {
+                return minDist * SCALE;
+            }
+            else
+            {
+                return -dotProdNormal * SCALE;
+            }
 
         }
 
@@ -190,10 +206,10 @@ namespace LightBringer.TerrainGeneration
             Vector2 islandCenterInHeightCoord = localIslandCenter * heightPointPerUnity;
 
             // find height points bounds
-            int uMin = Mathf.Max(0, (int)(xMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
-            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
-            int vMin = Mathf.Max(0, (int)(yMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
-            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
+            int uMin = Mathf.Max(0, (int)(xMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x) - MARGIN);
+            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x) + MARGIN);
+            int vMin = Mathf.Max(0, (int)(yMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y) - MARGIN);
+            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y) + MARGIN);
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
@@ -204,10 +220,8 @@ namespace LightBringer.TerrainGeneration
                 {
                     float y = (v - islandCenterInHeightCoord.y) / heightPointPerUnity / SCALE;
 
-                    if (IsInside(new Vector2(x, y)))
-                    {
-                        terrainHeights[v, u] = .5f;
-                    }
+                    float dist = DistanceFromIsland(new Vector2(x, y));
+                    terrainHeights[v, u] = Mathf.Max(0, .5f * (1 - dist / CLIFF_LENGTH));
                 }
             }
 

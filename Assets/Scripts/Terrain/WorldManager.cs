@@ -56,7 +56,7 @@ namespace LightBringer.TerrainGeneration
             TerrainData terrainData = new TerrainData();
 
             terrainData.heightmapResolution = width * heightPointPerUnity + 1;
-            terrainData.alphamapResolution = width * 4;
+            terrainData.alphamapResolution = width * heightPointPerUnity;
             terrainData.baseMapResolution = 1024;
             terrainData.SetDetailResolution(1024, 16);
 
