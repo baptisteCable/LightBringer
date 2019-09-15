@@ -6,10 +6,11 @@ namespace LightBringer.TerrainGeneration
     public class Island
     {
         private const float SLOPE_LENGTH = 6f;
-        private const float RADIUS = 2.7f;
+        private const float RADIUS = 2.3f;
         private const float SCALE = 10f;
 
 
+        int seed;
         Vector2 centerInWorld;
 
         public List<Slope> slopes;
@@ -20,6 +21,7 @@ namespace LightBringer.TerrainGeneration
         public Island(Vector2 centerPosition)
         {
             centerInWorld = centerPosition;
+            seed = Random.Range(0, int.MaxValue);
         }
 
         public static Vector2 Vector2FromAngle(float a)
@@ -165,7 +167,7 @@ namespace LightBringer.TerrainGeneration
 
         }
 
-        public void GenerateIslandAndHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity, int seed)
+        public void GenerateIslandAndHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity)
         {
             // Generate island data from seed
             GenerateIslandVertices(seed, RADIUS);
@@ -189,9 +191,9 @@ namespace LightBringer.TerrainGeneration
 
             // find height points bounds
             int uMin = Mathf.Max(0, (int)(xMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
-            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity - 1, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
+            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x));
             int vMin = Mathf.Max(0, (int)(yMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
-            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity - 1, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
+            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y));
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
@@ -204,7 +206,7 @@ namespace LightBringer.TerrainGeneration
 
                     if (IsInside(new Vector2(x, y)))
                     {
-                        terrainHeights[u, v] = .5f;
+                        terrainHeights[v, u] = .5f;
                     }
                 }
             }

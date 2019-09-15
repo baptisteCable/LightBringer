@@ -14,8 +14,7 @@ public class TestManager : MonoBehaviour
     public GameObject playerPrefab;
     public GameObject testUI;
 
-    private TerrainGenerator tg;
-    public Terrain terrain;
+    public WorldManager wm;
     private NavMeshSurface nms;
 
     private GameObject knight;
@@ -27,24 +26,22 @@ public class TestManager : MonoBehaviour
     private bool knightPassive = true;
     private bool canDie = true;
 
-    public GameObject newTerrainButton;
-
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
     private void Start()
     {
         singleton = this;
 
-        tg = terrain.GetComponent<TerrainGenerator>();
-        nms = terrain.GetComponent<NavMeshSurface>();
+        nms = wm.GetComponent<NavMeshSurface>();
 
         testUI.SetActive(true);
     }
 
     public void GenerateNewTerrain()
     {
+        /*
         tg.GenerateTerrain();
-        nms.BuildNavMesh();
+        nms.BuildNavMesh();*/
     }
 
     public void SetPlayer(PlayerMotor pm)
@@ -83,7 +80,7 @@ public class TestManager : MonoBehaviour
         GameObject[] allObjects = SceneManager.GetActiveScene().GetRootGameObjects();
         foreach (GameObject go in allObjects)
         {
-            if (!NotToDestroyItems.Contains(go))
+            if (!NotToDestroyItems.Contains(go) && go.layer != 9)
             {
                 Destroy(go);
             }

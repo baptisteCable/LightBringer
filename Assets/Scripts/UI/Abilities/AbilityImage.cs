@@ -7,7 +7,7 @@ namespace LightBringer.UI
 {
     public class AbilityImage : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        [SerializeField] private GameObject panelPrefab;
+        [SerializeField] private GameObject panelPrefab = null;
 
         private GameObject abilityDescriptionPanel;
 

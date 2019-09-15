@@ -5,7 +5,7 @@ namespace Assets.Scripts.Enemies.Knight.Effects
 {
     class ShieldFlash : FlashEffect
     {
-        [SerializeField] private ParticleSystem ps;
+        [SerializeField] private ParticleSystem ps = null;
 
         public override void Flash()
         {
