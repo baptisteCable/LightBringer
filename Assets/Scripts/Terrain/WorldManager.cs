@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
@@ -8,6 +6,8 @@ namespace LightBringer.TerrainGeneration
     [ExecuteInEditMode]
     public class WorldManager : MonoBehaviour
     {
+        public const int SLOPE_TEXTURE_ID = 2;
+
         public bool generated = true;
 
         [SerializeField] private TerrainLayer[] terrainLayers = null;
@@ -55,7 +55,7 @@ namespace LightBringer.TerrainGeneration
             GenerateNewTerrain(0, 0);
             GenerateNewTerrain(-1, 0);
             GenerateNewTerrain(0, -1);
-            GenerateNewTerrain(-1,-1);
+            GenerateNewTerrain(-1, -1);
         }
 
         void GenerateNewTerrain(int xBase, int zBase)
@@ -83,22 +83,24 @@ namespace LightBringer.TerrainGeneration
         private TerrainData GenerateData(TerrainData terrainData, float xBase, float zBase)
         {
             float[,] heights = GenerateFlat();
+            List<Vector2Int> slopePoints = new List<Vector2Int>();
 
             // Look for islands to be added
-            foreach(Island island in islands)
+            foreach (Island island in islands)
             {
                 // TODO add a distance condition with 2d index
                 island.GenerateIslandAndHeights(
                     ref heights,
                     new Vector2(xBase, zBase),
                     width,
-                    heightPointPerUnity);
+                    heightPointPerUnity,
+                    ref slopePoints);
             }
 
             terrainData.SetHeights(0, 0, heights);
 
             // Textures
-            terrainData = GenerateAlphaMaps(terrainData);
+            terrainData = GenerateAlphaMaps(terrainData, ref slopePoints);
 
             return terrainData;
         }
@@ -118,7 +120,7 @@ namespace LightBringer.TerrainGeneration
         }
 
 
-        private TerrainData GenerateAlphaMaps(TerrainData terrainData)
+        private TerrainData GenerateAlphaMaps(TerrainData terrainData, ref List<Vector2Int> slopePoints)
         {
             float[,,] map = terrainData.GetAlphamaps(0, 0, terrainData.alphamapWidth, terrainData.alphamapHeight);
 
@@ -147,7 +149,7 @@ namespace LightBringer.TerrainGeneration
             }
 
             // Paint slopes
-            PaintSlopes(ref map);
+            PaintSlopes(ref map, ref slopePoints);
 
             // hand alpha maps back to Unity
             terrainData.SetAlphamaps(0, 0, map);
@@ -168,26 +170,16 @@ namespace LightBringer.TerrainGeneration
                 }
             }
         }
-        private void PaintSlopes(ref float[,,] map)
-        {/*
-            foreach (Island island in islands)
+        private void PaintSlopes(ref float[,,] map, ref List<Vector2Int> slopePoints)
+        {
+            foreach (Vector2Int point in slopePoints)
             {
-                foreach (Slope slope in island.slopes)
+                for (int i = 0; i < textures.Length; i++)
                 {
-                    foreach (Vector2Int point in slope.GetPointList(-2, 1, 1).Keys)
-                    {
-                        Vector2Int corner = island.GetStartingCorner();
-                        int x = point.x + corner.x;
-                        int y = point.y + corner.y;
-
-                        for (int i = 0; i < textures.Length;i++)
-                        {
-                            map[x, y, i] = 0;
-                        }
-                        map[x, y, SLOPE_TEXTURE_ID] = 1;
-                    }
+                    map[point.x, point.y, i] *= .25f;
                 }
-            }*/
+                map[point.x, point.y, SLOPE_TEXTURE_ID] = .75f;
+            }
         }
     }
 }

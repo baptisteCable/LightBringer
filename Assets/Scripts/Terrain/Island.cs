@@ -12,6 +12,7 @@ namespace LightBringer.TerrainGeneration
         private const float SLOPE_WIDTH = .7f;
         private const float SLOPE_LANDING = .5f;
         private const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
+        private const float SLOPE_WAY_WIDTH = .4f;
 
         int seed = 0;
         Vector2 centerInWorld;
@@ -203,14 +204,19 @@ namespace LightBringer.TerrainGeneration
 
         }
 
-        public void GenerateIslandAndHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity)
+        public void GenerateIslandAndHeights(
+            ref float[,] terrainHeights,
+            Vector2 terrainPosition,
+            int terrainWidth,
+            int heightPointPerUnity,
+            ref List<Vector2Int> slopePoints)
         {
             // Generate island data from seed
             GenerateIslandVertices(seed, RADIUS);
 
             GenerateSlopes();
 
-            GenerateHeights(ref terrainHeights, terrainPosition, terrainWidth, heightPointPerUnity);
+            GenerateHeights(ref terrainHeights, terrainPosition, terrainWidth, heightPointPerUnity, ref slopePoints);
 
         }
 
@@ -280,8 +286,10 @@ namespace LightBringer.TerrainGeneration
         }
 
         // returns 0 if not in slope. Height between 0 and 1
-        private float SlopPointHeight(Vector2 coord)
+        private float SlopPointHeight(Vector2 coord, out bool isOnSlopeWay)
         {
+            isOnSlopeWay = false;
+
             for (int i = 0; i < 2; i++)
             {
                 Vector2 vec = coord - vertices[slopes[i]];
@@ -310,24 +318,53 @@ namespace LightBringer.TerrainGeneration
                 // slope
                 if (dotNorm1 >= 0 && dotNorm1 <= SLOPE_WIDTH)
                 {
+                    // Top landing
                     if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
                     {
+                        if ((
+                                dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
+                                dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
+                                dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
+                            ) || (
+                                dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
+                                dot1 >= (1 - SLOPE_WAY_WIDTH) / 2f &&
+                                dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
+                            ))
+                        {
+                            isOnSlopeWay = true;
+                        }
                         return 1f;
                     }
+                    // First slope part
                     else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
+                        if (dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                        {
+                            isOnSlopeWay = true;
+                        }
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1);
                     }
+                    // turn
                     else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH)
                     {
+                        if (vec.magnitude > (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && vec.magnitude < (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                        {
+                            isOnSlopeWay = true;
+                        }
                         return SlopeEquation((1 - SLOPE_LANDING) / 2f);
                     }
                 }
 
+                // second slope part
                 if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH)
                 {
                     if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
                     {
+                        if (dotNorm2 - dot2 * .3f >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
+                            dotNorm2 - dot2 * .3f <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                        {
+                            isOnSlopeWay = true;
+                        }
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2);
                     }
                 }
@@ -387,7 +424,12 @@ namespace LightBringer.TerrainGeneration
             return Mathf.Max(0, 1 - dist * CLIFF_SLOPE);
         }
 
-        private void GenerateHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity)
+        private void GenerateHeights(
+            ref float[,] terrainHeights,
+            Vector2 terrainPosition,
+            int terrainWidth,
+            int heightPointPerUnity,
+            ref List<Vector2Int> slopePoints)
         {
             // find bounds
             float xMin = float.PositiveInfinity;
@@ -424,7 +466,13 @@ namespace LightBringer.TerrainGeneration
 
                     Vector2 coord = new Vector2(x, y);
                     float height = TopOrCliffPointHeight(coord);
-                    float slopeHeight = SlopPointHeight(coord);
+                    float slopeHeight = SlopPointHeight(coord, out bool isOnSlopeWay);
+
+                    // add to slope points
+                    if (isOnSlopeWay && slopeHeight > height && v < terrainWidth * heightPointPerUnity && u < terrainWidth * heightPointPerUnity)
+                    {
+                        slopePoints.Add(new Vector2Int(v, u));
+                    }
 
                     terrainHeights[v, u] = .5f * Mathf.Max(height, slopeHeight);
                 }
