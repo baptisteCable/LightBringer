@@ -5,24 +5,38 @@ namespace LightBringer.TerrainGeneration
 {
     public class Island
     {
-        private const float SLOPE_LENGTH = 6f;
-        private const float CLIFF_LENGTH = 2f;
+        private const float CLIFF_SLOPE = 3.5f;
         private const float RADIUS = 2.3f;
-        private const float SCALE = 10f;
-        private const int MARGIN = 5; // margin in the weightmap for the smooth
+        private const float SCALE = 7f;
+        private const int MARGIN = 12; // margin in the weightmap for the smooth and slope
+        private const float SLOPE_WIDTH = .7f;
+        private const float SLOPE_LANDING = .5f;
+        private const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
 
-        int seed;
+        int seed = 0;
         Vector2 centerInWorld;
 
-        public List<Slope> slopes;
+        // Index of the segment of the first slope. The second one is on the opposite side
+        private int[] slopes = null;
+        private bool[] slopeTopOnRight = null;
 
-        /* -------- */
-        private List<Vector2> vertices;
+        private List<Vector2> vertices = null;
 
-        public Island(Vector2 centerPosition)
+        public Island(Vector2 centerPosition, int newSeed = 0)
         {
             centerInWorld = centerPosition;
-            seed = Random.Range(0, int.MaxValue);
+
+            if (newSeed == 0)
+            {
+                if (this.seed == 0)
+                {
+                    newSeed = Random.Range(0, int.MaxValue);
+                }
+            }
+            else
+            {
+                seed = newSeed;
+            }
         }
 
         public static Vector2 Vector2FromAngle(float a)
@@ -39,6 +53,11 @@ namespace LightBringer.TerrainGeneration
 
         private void GenerateIslandVertices(int seed, float radius)
         {
+            if (vertices != null)
+            {
+                return;
+            }
+
             Random.InitState(seed);
 
             vertices = new List<Vector2>();
@@ -58,7 +77,7 @@ namespace LightBringer.TerrainGeneration
             LastTwoVertices();
         }
 
-        void LastTwoVertices()
+        private void LastTwoVertices()
         {
             Vector2 last = vertices[vertices.Count - 1];
             Vector2 first = vertices[0];
@@ -131,6 +150,7 @@ namespace LightBringer.TerrainGeneration
             return (i - 4) * Mathf.PI / 8f;
         }
 
+        // return the distanc eto the island in island unit (1f is segment length)
         private float DistanceFromIsland(Vector2 point)
         {
             // closest point
@@ -174,11 +194,11 @@ namespace LightBringer.TerrainGeneration
             // external angle case (circle dist)
             else if (dotProdTangent < 0 || dotProdTangent > 1)
             {
-                return minDist * SCALE;
+                return minDist;
             }
             else
             {
-                return -dotProdNormal * SCALE;
+                return -dotProdNormal;
             }
 
         }
@@ -188,6 +208,187 @@ namespace LightBringer.TerrainGeneration
             // Generate island data from seed
             GenerateIslandVertices(seed, RADIUS);
 
+            GenerateSlopes();
+
+            GenerateHeights(ref terrainHeights, terrainPosition, terrainWidth, heightPointPerUnity);
+
+        }
+
+        private void GenerateSlopes()
+        {
+            if (slopes != null)
+            {
+                return;
+            }
+
+            slopes = new int[2];
+            slopeTopOnRight = new bool[2];
+
+            // slopes[0]
+            int index = Random.Range(0, vertices.Count);
+            DetermineSlope(0, index);
+            DetermineSlope(1, (slopes[0] - 1 + vertices.Count / 2) % vertices.Count);
+        }
+
+        private void DetermineSlope(int slopeIndex, int vertexIndex)
+        {
+            bool nextConvex = false;
+            bool previousConvex = false;
+
+            while (true)
+            {
+                while (!IsConvexVertex(vertexIndex))
+                {
+                    vertexIndex++;
+                }
+
+                nextConvex = IsConvexVertex((vertexIndex + 1) % vertices.Count);
+                previousConvex = IsConvexVertex((vertexIndex - 1 + vertices.Count) % vertices.Count);
+
+                if (nextConvex || previousConvex)
+                {
+                    slopes[slopeIndex] = vertexIndex;
+                    break;
+                }
+
+                vertexIndex++;
+            }
+
+
+
+            if (nextConvex && !previousConvex)
+            {
+                slopeTopOnRight[slopeIndex] = true;
+            }
+            else if (!nextConvex && previousConvex)
+            {
+                slopeTopOnRight[slopeIndex] = false;
+            }
+            else
+            {
+                slopeTopOnRight[slopeIndex] = Random.value < .5f;
+            }
+        }
+
+        private bool IsConvexVertex(int vertexIndex)
+        {
+            Vector2 vec1 = vertices[(vertexIndex + 1) % vertices.Count] - vertices[vertexIndex];
+            Vector2 vec2 = vertices[(vertexIndex - 1 + vertices.Count) % vertices.Count] - vertices[vertexIndex];
+            Vector2 norm1 = RotateVector(vec1, Mathf.PI / 2f);
+
+            return Vector2.Dot(vec2, norm1) >= 0;
+        }
+
+        // returns 0 if not in slope. Height between 0 and 1
+        private float SlopPointHeight(Vector2 coord)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                Vector2 vec = coord - vertices[slopes[i]];
+
+                Vector2 vec1 = vertices[(slopes[i] + 1) % vertices.Count] - vertices[slopes[i]];
+                Vector2 vec2 = vertices[(slopes[i] - 1 + vertices.Count) % vertices.Count] - vertices[slopes[i]];
+                Vector2 norm1 = RotateVector(vec1, -Mathf.PI / 2f);
+                Vector2 norm2 = RotateVector(vec2, Mathf.PI / 2f);
+
+                if (slopeTopOnRight[i])
+                {
+                    Vector2 temp = vec1;
+                    vec1 = vec2;
+                    vec2 = temp;
+                    temp = norm1;
+                    norm1 = norm2;
+                    norm2 = temp;
+                }
+
+
+                float dot1 = Vector2.Dot(vec1, vec);
+                float dot2 = Vector2.Dot(vec2, vec);
+                float dotNorm1 = Vector2.Dot(norm1, vec);
+                float dotNorm2 = Vector2.Dot(norm2, vec);
+
+                // slope
+                if (dotNorm1 >= 0 && dotNorm1 <= SLOPE_WIDTH)
+                {
+                    if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
+                    {
+                        return 1f;
+                    }
+                    else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
+                    {
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1);
+                    }
+                    else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH)
+                    {
+                        return SlopeEquation((1 - SLOPE_LANDING) / 2f);
+                    }
+                }
+
+                if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH)
+                {
+                    if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
+                    {
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2);
+                    }
+                }
+
+                // slope cliff
+                if (dotNorm1 >= 0 && dotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
+                {
+                    if (dot1 >= (1 + SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f + 1 / CLIFF_SLOPE)
+                    {
+                        if (dotNorm1 <= SLOPE_WIDTH)
+                        {
+                            return 1f - (dot1 - (1 + SLOPE_LANDING) / 2f) * CLIFF_SLOPE;
+                        }
+                        else
+                        {
+                            Vector2 corner = vertices[slopes[i]] + vec1 * (1 + SLOPE_LANDING) / 2f + norm1 * SLOPE_WIDTH;
+                            float cornerDist = (coord - corner).magnitude;
+                            return 1f - cornerDist * CLIFF_SLOPE;
+                        }
+                    }
+                    else if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
+                    {
+                        return 1f - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    }
+                    else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
+                    {
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1) - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    }
+                    else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
+                    {
+                        return SlopeEquation((1 - SLOPE_LANDING) / 2f) - (vec.magnitude - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    }
+                }
+
+                if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
+                {
+                    if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
+                    {
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2) - (dotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    }
+                }
+
+            }
+
+            return 0;
+        }
+
+        private float SlopeEquation(float x)
+        {
+            return 1 - 1f / (SLOPE_DESCENT + (1f - SLOPE_LANDING) / 2f) * x;
+        }
+
+        // height between 0 and 1
+        private float TopOrCliffPointHeight(Vector2 coord)
+        {
+            float dist = DistanceFromIsland(coord);
+            return Mathf.Max(0, 1 - dist * CLIFF_SLOPE);
+        }
+
+        private void GenerateHeights(ref float[,] terrainHeights, Vector2 terrainPosition, int terrainWidth, int heightPointPerUnity)
+        {
             // find bounds
             float xMin = float.PositiveInfinity;
             float xMax = float.NegativeInfinity;
@@ -218,247 +419,19 @@ namespace LightBringer.TerrainGeneration
 
                 for (int v = vMin; v <= vMax; v++)
                 {
+                    // convert to island unit (/SCALE)
                     float y = (v - islandCenterInHeightCoord.y) / heightPointPerUnity / SCALE;
 
-                    float dist = DistanceFromIsland(new Vector2(x, y));
-                    terrainHeights[v, u] = Mathf.Max(0, .5f * (1 - dist / CLIFF_LENGTH));
+                    Vector2 coord = new Vector2(x, y);
+                    float height = TopOrCliffPointHeight(coord);
+                    float slopeHeight = SlopPointHeight(coord);
+
+                    terrainHeights[v, u] = .5f * Mathf.Max(height, slopeHeight);
                 }
             }
-
-
-
         }
 
-        /*
-        
 
-        
-
-        private void GenerateAccesses()
-        {
-            // clear the slope list
-            slopes = new List<Slope>();
-
-            int[] xBorder = new int[6];
-            int[] yBorder = new int[6];
-            Vector2 direction = new Vector2(0, 1);
-
-            // find 6 border points and find the farthest from the center
-            float maxDist = 0;
-            int maxI = 0;
-            for (int i = 0; i < 6; i++)
-            {
-                FindBorderPoint(xLocalCenter, yLocalCenter, TerrainGenerator.RotateVector(direction, i * 60), out xBorder[i], out yBorder[i]);
-                float dist = (xLocalCenter - xBorder[i]) * (xLocalCenter - xBorder[i]) + (yLocalCenter - yBorder[i]) * (yLocalCenter - yBorder[i]);
-                if (dist > maxDist)
-                {
-                    maxDist = dist;
-                    maxI = i;
-                }
-            }
-            CreateAccess(xBorder[maxI], yBorder[maxI], TerrainGenerator.RotateVector(direction, maxI * 60), 4f);
-
-
-            // find farthest between the 3 opposite border points
-            maxDist = 0;
-            int newIStart = maxI + 2;
-            for (int i = newIStart; i < newIStart + 3; i++)
-            {
-                float dist = (xLocalCenter - xBorder[i % 6]) * (xLocalCenter - xBorder[i % 6]) + (yLocalCenter - yBorder[i % 6]) * (yLocalCenter - yBorder[i % 6]);
-                if (dist > maxDist)
-                {
-                    maxDist = dist;
-                    maxI = i % 6;
-                }
-            }
-            CreateAccess(xBorder[maxI], yBorder[maxI], TerrainGenerator.RotateVector(direction, maxI * 60), 4f);
-        }
-
-        // in height unity
-        private void FindBorderPoint(int xOrigin, int yOrigin, Vector2 direction, out int xBorder, out int yBorder)
-        {
-            xBorder = xOrigin;
-            yBorder = yOrigin;
-
-            float xNext = xOrigin;
-            float yNext = yOrigin;
-            int xNextInt = xOrigin;
-            int yNextInt = yOrigin;
-
-            while (xNextInt >= 0 && xNextInt < heights.GetLength(0) && yNextInt >= 0 && yNextInt < heights.GetLength(1))
-            {
-                if (heights[xNextInt, yNextInt] > 0)
-                {
-                    xBorder = xNextInt;
-                    yBorder = yNextInt;
-                }
-
-                xNext += direction.x;
-                yNext += direction.y;
-                xNextInt = (int)Mathf.Round(xNext);
-                yNextInt = (int)Mathf.Round(yNext);
-            }
-        }
-
-        // in height unity
-        private void CreateAccess(int xBorder, int yBorder, Vector2 comingDirection, float radius)
-        {
-            int startingX = (int)(xBorder + radius * comingDirection.x);
-            int startingY = (int)(yBorder + radius * comingDirection.y);
-
-            Vector2 slopeDirection = FindSlopeDirection(startingX, startingY, comingDirection, radius, false);
-
-            if (slopeDirection == Vector2.zero)
-            {
-                Debug.LogError("No possible slope");
-                return;
-            }
-
-            float x = xBorder;
-            float y = yBorder;
-
-            for (int i = 0; i < (int)radius; i++)
-            {
-                x -= slopeDirection.x;
-                y -= slopeDirection.y;
-                AddCircle((int)x, (int)y, radius * 2, REQUIRED_FREE_SPACE_ACCESS);
-            }
-
-            CreateSlope(startingX, startingY, slopeDirection, radius);
-        }
-
-        private Vector2 FindSlopeDirection(int x, int y, Vector2 direction, float radius, bool trigo)
-        {
-            float angleDiff = 10f;
-            float angle = -270f;
-            if (!trigo)
-            {
-                angleDiff *= -1;
-                angle *= -1;
-            }
-
-            float length = SLOPE_LENGTH * heightPointPerUnity;
-            direction.Normalize();
-
-            direction = TerrainGenerator.RotateVector(direction, angle);
-            while (Mathf.Abs(angle) <= 270)
-            {
-                direction = TerrainGenerator.RotateVector(direction, angleDiff);
-                angle += angleDiff;
-                Vector2 normal = TerrainGenerator.RotateVector(direction, 90);
-                Vector2 nearL = -normal * radius + new Vector2(x, y) + direction * length;
-                Vector2 nearR = normal * radius + new Vector2(x, y) + direction * length;
-                Vector2 farL = nearL + radius * 2 * direction;
-                Vector2 farR = nearR + radius * 2 * direction;
-
-                if (FreePlace(nearL) && FreePlace(nearR) && FreePlace(farL) && FreePlace(farR))
-                {
-                    return direction;
-                }
-            }
-
-            return Vector2.zero;
-        }
-
-        private bool FreePlace(Vector2 pointInHeights)
-        {
-            int x = (int)Mathf.Round(pointInHeights.x);
-            int y = (int)Mathf.Round(pointInHeights.y);
-
-            return heights[x, y] > -.01 && heights[x, y] < .01;
-        }
-
-        private void CreateSlope(int x, int y, Vector2 direction, float radius)
-        {
-            float length = SLOPE_LENGTH * heightPointPerUnity;
-            direction.Normalize();
-
-            Vector2Int botPoint = new Vector2Int((int)Mathf.Round(x + direction.x * length), (int)Mathf.Round(y + direction.y * length));
-            Slope slope = new Slope(new Vector2Int(x, y), botPoint, radius);
-
-            Dictionary<Vector2Int, Vector2> points = slope.GetPointList();
-
-            foreach (KeyValuePair<Vector2Int, Vector2> pair in points)
-            {
-                heights[pair.Key.x, pair.Key.y] = pair.Value.x * .5f;
-            }
-
-            slopes.Add(slope);
-        }
-
-        private int FindFirstX()
-        {
-            for (int x = 0; x < heights.GetLength(0); x++)
-            {
-                for (int y = 0; y < heights.GetLength(1); y++)
-                {
-                    if (heights[x, y] > 0f)
-                    {
-                        return x;
-                    }
-                }
-            }
-
-            // Error, no positive height found
-            return -1;
-        }
-
-        private int FindFirstY()
-        {
-            for (int y = 0; y < heights.GetLength(1); y++)
-            {
-                for (int x = 0; x < heights.GetLength(0); x++)
-                {
-                    if (heights[x, y] > 0f)
-                    {
-                        return y;
-                    }
-                }
-            }
-
-            // Error, no positive height found
-            return -1;
-        }
-
-        private int FindLastX()
-        {
-            for (int x = heights.GetLength(0) - 1; x >= 0; x--)
-            {
-                for (int y = 0; y < heights.GetLength(1); y++)
-                {
-                    if (heights[x, y] > 0f)
-                    {
-                        return x;
-                    }
-                }
-            }
-
-            // Error, no positive height found
-            return -1;
-        }
-
-        private int FindLastY()
-        {
-            for (int y = heights.GetLength(1) - 1; y >= 0; y--)
-            {
-                for (int x = 0; x < heights.GetLength(0); x++)
-                {
-                    if (heights[x, y] > 0f)
-                    {
-                        return y;
-                    }
-                }
-            }
-
-            // Error, no positive height found
-            return -1;
-        }
-
-        public Vector2Int GetStartingCorner()
-        {
-            return new Vector2Int(xCenterInTerrain - xLocalCenter, yCenterInTerrain - yLocalCenter);
-        }
-        */
     }
 
 }

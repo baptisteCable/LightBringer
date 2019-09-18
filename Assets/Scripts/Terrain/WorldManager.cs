@@ -19,6 +19,8 @@ namespace LightBringer.TerrainGeneration
 
         [SerializeField] public ConditionnedTexture[] textures;
 
+
+
         private List<Island> islands;
 
         // Update is called once per frame
@@ -37,10 +39,15 @@ namespace LightBringer.TerrainGeneration
         void InitList()
         {
             islands = new List<Island>();
-            islands.Add(new Island(new Vector2(-70, -64)));
-            islands.Add(new Island(new Vector2(-70, 0)));
-            islands.Add(new Island(new Vector2(-70, 64)));
-            islands.Add(new Island(new Vector2(70, 64)));
+            islands.Add(new Island(new Vector2(-75, -64), 141));
+            islands.Add(new Island(new Vector2(-75, 0), 142));
+            islands.Add(new Island(new Vector2(-75, 64), 143));
+            islands.Add(new Island(new Vector2(0, -64), 144));
+            islands.Add(new Island(new Vector2(0, 0), 145));
+            islands.Add(new Island(new Vector2(0, 64), 146));
+            islands.Add(new Island(new Vector2(75, -64), 147));
+            islands.Add(new Island(new Vector2(75, 0), 148));
+            islands.Add(new Island(new Vector2(75, 64), 149));
         }
 
         void LoadArround(float x, float z)

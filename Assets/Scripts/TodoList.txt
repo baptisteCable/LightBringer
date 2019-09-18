@@ -17,3 +17,17 @@ Autre
 
 Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
+
+Retours :
+	- Crash sur "ignore CD", sur premier lancement ?
+	- Surcharge CPU sur premier lancement.
+	- Bien voir les impacts de l'attaque 2 même s'il y a plein de zones de lumière
+	- Tourbillon qui ne repousse pas jusqu'au bout (très rare)
+	- Soleil qui ne tourne plus l'épée
+	- animation de stun ?
+	- interruption du contre (pendant la phase d'attente) sur clic gauche mais le contre reste effectif
+	- réduire clic gauche à 8/8/10 et monter clic droit à 30 si chargé.
+		* Si pas suffisant, augmenter le CD après l'attaque chargée
+	- tourbillon : augmenter fortement les dégats. Il faut forcer à l'éviter.
+	- Augmenter le CD du A
+	- Expliciter la rage et la fatigue
