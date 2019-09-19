@@ -43,7 +43,6 @@ namespace LightBringer.TerrainGeneration
             islands.Add(new Island(new Vector2(-75, 0), 142));
             islands.Add(new Island(new Vector2(-75, 64), 143));
             islands.Add(new Island(new Vector2(0, -64), 144));
-            islands.Add(new Island(new Vector2(0, 0), 145));
             islands.Add(new Island(new Vector2(0, 64), 146));
             islands.Add(new Island(new Vector2(75, -64), 147));
             islands.Add(new Island(new Vector2(75, 0), 148));

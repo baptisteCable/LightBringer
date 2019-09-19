@@ -1,26 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace LightBringer.TerrainGeneration
 {
+    [Serializable]
     public class Island
     {
         private const float CLIFF_SLOPE = 3.5f;
         private const float RADIUS = 2.3f;
         private const float SCALE = 7f;
         private const int MARGIN = 12; // margin in the weightmap for the smooth and slope
-        private const float SLOPE_WIDTH = .7f;
+        private const float SLOPE_WIDTH = .5f;
         private const float SLOPE_LANDING = .5f;
         private const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
-        private const float SLOPE_WAY_WIDTH = .4f;
+        private const float SLOPE_WAY_WIDTH = .3f;
 
         int seed = 0;
+
         Vector2 centerInWorld;
 
         // Index of the segment of the first slope. The second one is on the opposite side
         private int[] slopes = null;
         private bool[] slopeTopOnRight = null;
 
+        [NonSerialized]
         private List<Vector2> vertices = null;
 
         public Island(Vector2 centerPosition, int newSeed = 0)
@@ -29,9 +34,9 @@ namespace LightBringer.TerrainGeneration
 
             if (newSeed == 0)
             {
-                if (this.seed == 0)
+                if (seed == 0)
                 {
-                    newSeed = Random.Range(0, int.MaxValue);
+                    seed = Random.Range(0, int.MaxValue);
                 }
             }
             else
