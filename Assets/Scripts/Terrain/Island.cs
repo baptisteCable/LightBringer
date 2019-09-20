@@ -84,6 +84,9 @@ namespace LightBringer.TerrainGeneration
 
             // last 2 vertices
             LastTwoVertices();
+
+            // slopes
+            GenerateSlopes();
         }
 
         private void LastTwoVertices()
@@ -227,7 +230,6 @@ namespace LightBringer.TerrainGeneration
             // Generate island data from seed
             GenerateIslandVertices();
 
-            GenerateSlopes();
 
             GenerateHeights(ref terrainHeights, terrainPosition, terrainWidth, heightPointPerUnity, ref slopePoints);
 
