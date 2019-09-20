@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SpatialDicTest
+namespace LightBringer.TerrainGeneration
 {
 
     [Serializable]
@@ -36,6 +36,16 @@ namespace SpatialDicTest
         // Ex: 8 means that contains x and y beteween 0 in [-256 ; -1] or [0 ; 255]
         private int scale;
 
+        protected int count;
+
+        public int Count
+        {
+            get
+            {
+                return count;
+            }
+        }
+
         // sub parts
         protected SpatialDictionary<T> topLeft;
         protected SpatialDictionary<T> topRight;
@@ -48,6 +58,7 @@ namespace SpatialDicTest
         public SpatialDictionary(int scale = MIN_SCALE + 1)
         {
             this.scale = scale;
+            count = 0;
 
             if (IsLeaf())
             {
@@ -62,6 +73,8 @@ namespace SpatialDicTest
 
         public void Add(int x, int y, T value)
         {
+            count++;
+
             int fullScale = PowerOfTwo(scale);
             while (x >= fullScale || x < -fullScale || y >= fullScale || y < -fullScale)
             {
@@ -249,6 +262,7 @@ namespace SpatialDicTest
             if (topLeft != null)
             {
                 SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                newDic.count = topLeft.count;
                 newDic.botRight = topLeft;
                 topLeft = newDic;
             }
@@ -256,6 +270,7 @@ namespace SpatialDicTest
             if (topRight != null)
             {
                 SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                newDic.count = topRight.count;
                 newDic.botLeft = topRight;
                 topRight = newDic;
             }
@@ -263,6 +278,7 @@ namespace SpatialDicTest
             if (botLeft != null)
             {
                 SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                newDic.count = botLeft.count;
                 newDic.topRight = botLeft;
                 botLeft = newDic;
             }
@@ -270,6 +286,7 @@ namespace SpatialDicTest
             if (botRight != null)
             {
                 SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                newDic.count = botRight.count;
                 newDic.topLeft = botRight;
                 botRight = newDic;
             }
@@ -287,6 +304,5 @@ namespace SpatialDicTest
 
             return val;
         }
-
     }
 }

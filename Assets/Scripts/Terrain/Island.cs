@@ -9,17 +9,19 @@ namespace LightBringer.TerrainGeneration
     public class Island
     {
         private const float CLIFF_SLOPE = 3.5f;
-        private const float RADIUS = 2.3f;
-        private const float SCALE = 7f;
         private const int MARGIN = 12; // margin in the weightmap for the smooth and slope
         private const float SLOPE_WIDTH = .5f;
         private const float SLOPE_LANDING = .5f;
         private const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
         private const float SLOPE_WAY_WIDTH = .3f;
 
+        public const float SCALE = 7f; // scale from island units to world units
+        public const float MAX_POSSIBLE_RADIUS = 2.3f; // Used for rejection sampling
+
         int seed = 0;
 
-        Vector2 centerInWorld;
+        public Vector2 centerInWorld;
+        public float radius { get; }
 
         // Index of the segment of the first slope. The second one is on the opposite side
         private int[] slopes = null;
@@ -28,9 +30,10 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private List<Vector2> vertices = null;
 
-        public Island(Vector2 centerPosition, int newSeed = 0)
+        public Island(Vector2 centerPosition, float radius, int newSeed = 0)
         {
             centerInWorld = centerPosition;
+            this.radius = radius;
 
             if (newSeed == 0)
             {
@@ -57,7 +60,7 @@ namespace LightBringer.TerrainGeneration
             return new Vector2(x, y);
         }
 
-        private void GenerateIslandVertices(int seed, float radius)
+        public void GenerateIslandVertices()
         {
             if (vertices != null)
             {
@@ -156,9 +159,14 @@ namespace LightBringer.TerrainGeneration
             return (i - 4) * Mathf.PI / 8f;
         }
 
-        // return the distanc eto the island in island unit (1f is segment length)
-        private float DistanceFromIsland(Vector2 point)
+        // return the distance to the island in island unit (1f is segment length)
+        public float DistanceFromIsland(Vector2 point)
         {
+            if (vertices == null)
+            {
+                GenerateIslandVertices();
+            }
+
             // closest point
             int closest = 0;
             float minDist = float.PositiveInfinity;
@@ -217,7 +225,7 @@ namespace LightBringer.TerrainGeneration
             ref List<Vector2Int> slopePoints)
         {
             // Generate island data from seed
-            GenerateIslandVertices(seed, RADIUS);
+            GenerateIslandVertices();
 
             GenerateSlopes();
 
@@ -483,9 +491,6 @@ namespace LightBringer.TerrainGeneration
                 }
             }
         }
-
-
     }
-
 }
 
