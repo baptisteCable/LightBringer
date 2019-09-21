@@ -48,7 +48,7 @@ namespace LightBringer.Enemies
             if (target == null || target.tag != "Player")
             {
                 target = null;
-                Debug.Log("No target found");
+                // Debug.Log("No target found");
             }
         }
 

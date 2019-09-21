@@ -1,4 +1,5 @@
 ﻿using LightBringer.Player.Abilities;
+using LightBringer.TerrainGeneration;
 using LightBringer.UI;
 using UnityEngine;
 
@@ -78,6 +79,12 @@ namespace LightBringer.Player
             if (TestManager.singleton != null)
             {
                 TestManager.singleton.SetPlayer(this);
+            }
+
+            // World manager
+            if (WorldManager.singleton != null)
+            {
+                WorldManager.singleton.SetPlayerTransform(transform);
             }
 
             // Camera

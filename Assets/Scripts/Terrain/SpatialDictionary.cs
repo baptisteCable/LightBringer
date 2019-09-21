@@ -3,34 +3,33 @@ using System.Collections.Generic;
 
 namespace LightBringer.TerrainGeneration
 {
+    [Serializable]
+    public struct Dic2DKey
+    {
+        public int x;
+        public int y;
+
+        public Dic2DKey(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return ((Dic2DKey)obj).x == x && ((Dic2DKey)obj).y == y;
+        }
+
+        public override int GetHashCode()
+        {
+            return 32768 * x + y;
+        }
+    }
 
     [Serializable]
     public class SpatialDictionary<T>
     {
         private const int MIN_SCALE = 6;
-
-        [Serializable]
-        private struct Key
-        {
-            public int x;
-            public int y;
-
-            public Key(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-
-            public override bool Equals(object obj)
-            {
-                return ((Key)obj).x == x && ((Key)obj).y == y;
-            }
-
-            public override int GetHashCode()
-            {
-                return PowerOfTwo(MIN_SCALE) * x + y;
-            }
-        }
 
         // power of 2 giving the width
         // Ex: 8 means that contains x and y beteween 0 in [-256 ; -1] or [0 ; 255]
@@ -53,7 +52,7 @@ namespace LightBringer.TerrainGeneration
         protected SpatialDictionary<T> botRight;
 
         // values
-        private Dictionary<Key, T> dic;
+        private Dictionary<Dic2DKey, T> dic;
 
         public SpatialDictionary(int scale = MIN_SCALE + 1)
         {
@@ -62,7 +61,7 @@ namespace LightBringer.TerrainGeneration
 
             if (IsLeaf())
             {
-                dic = new Dictionary<Key, T>();
+                dic = new Dictionary<Dic2DKey, T>();
             }
         }
 
@@ -84,7 +83,7 @@ namespace LightBringer.TerrainGeneration
 
             if (IsLeaf())
             {
-                dic[new Key(x, y)] = value;
+                dic[new Dic2DKey(x, y)] = value;
             }
             else
             {
@@ -147,7 +146,7 @@ namespace LightBringer.TerrainGeneration
         {
             if (IsLeaf())
             {
-                return dic[new Key(x, y)];
+                return dic[new Dic2DKey(x, y)];
             }
             else
             {
@@ -212,7 +211,7 @@ namespace LightBringer.TerrainGeneration
 
             if (IsLeaf())
             {
-                foreach (KeyValuePair<Key, T> pair in dic)
+                foreach (KeyValuePair<Dic2DKey, T> pair in dic)
                 {
                     if (
                             pair.Key.x - x < distance &&

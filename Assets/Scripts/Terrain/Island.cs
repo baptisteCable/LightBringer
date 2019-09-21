@@ -223,15 +223,13 @@ namespace LightBringer.TerrainGeneration
         public void GenerateIslandAndHeights(
             ref float[,] terrainHeights,
             Vector2 terrainPosition,
-            int terrainWidth,
-            int heightPointPerUnity,
             ref List<Vector2Int> slopePoints)
         {
             // Generate island data from seed
             GenerateIslandVertices();
 
 
-            GenerateHeights(ref terrainHeights, terrainPosition, terrainWidth, heightPointPerUnity, ref slopePoints);
+            GenerateHeights(ref terrainHeights, terrainPosition, ref slopePoints);
 
         }
 
@@ -442,8 +440,6 @@ namespace LightBringer.TerrainGeneration
         private void GenerateHeights(
             ref float[,] terrainHeights,
             Vector2 terrainPosition,
-            int terrainWidth,
-            int heightPointPerUnity,
             ref List<Vector2Int> slopePoints)
         {
             // find bounds
@@ -461,30 +457,30 @@ namespace LightBringer.TerrainGeneration
             }
 
             Vector2 localIslandCenter = centerInWorld - terrainPosition;
-            Vector2 islandCenterInHeightCoord = localIslandCenter * heightPointPerUnity;
+            Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT;
 
             // find height points bounds
-            int uMin = Mathf.Max(0, (int)(xMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x) - MARGIN);
-            int uMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(xMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.x) + MARGIN);
-            int vMin = Mathf.Max(0, (int)(yMin * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y) - MARGIN);
-            int vMax = Mathf.Min(terrainWidth * heightPointPerUnity, (int)(yMax * heightPointPerUnity * SCALE + islandCenterInHeightCoord.y) + MARGIN);
+            int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - MARGIN);
+            int uMax = Mathf.Min(WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
+            int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - MARGIN);
+            int vMax = Mathf.Min(WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
             {
-                float x = (u - islandCenterInHeightCoord.x) / heightPointPerUnity / SCALE;
+                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                 for (int v = vMin; v <= vMax; v++)
                 {
                     // convert to island unit (/SCALE)
-                    float y = (v - islandCenterInHeightCoord.y) / heightPointPerUnity / SCALE;
+                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                     Vector2 coord = new Vector2(x, y);
                     float height = TopOrCliffPointHeight(coord);
                     float slopeHeight = SlopPointHeight(coord, out bool isOnSlopeWay);
 
                     // add to slope points
-                    if (isOnSlopeWay && slopeHeight > height && v < terrainWidth * heightPointPerUnity && u < terrainWidth * heightPointPerUnity)
+                    if (isOnSlopeWay && slopeHeight > height && v < WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT && u < WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT)
                     {
                         slopePoints.Add(new Vector2Int(v, u));
                     }
