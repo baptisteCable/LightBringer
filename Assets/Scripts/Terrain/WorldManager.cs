@@ -394,10 +394,8 @@ namespace LightBringer.TerrainGeneration
                         j++
                     )
                     {
-                        Debug.Log("i: " + i + " ; j: " + j);
                         if (!loadedTiles.ContainsKey(new Dic2DKey(i, j)))
                         {
-                            Debug.Log("    -> Creation...");
                             GenerateNewTerrain(i, j);
                         }
                     }
