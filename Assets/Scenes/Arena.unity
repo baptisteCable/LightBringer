@@ -1751,7 +1751,6 @@ MonoBehaviour:
   - minHeight: 0.49
     maxHeight: 0.51
     groundTexIndex: 0
-  generateTerrain: 1
   createWorldMap: 1
   createWorldMapAndSaveBin: 1
   createWorldMapFromBin: 1

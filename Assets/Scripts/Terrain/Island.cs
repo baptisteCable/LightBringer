@@ -39,7 +39,7 @@ namespace LightBringer.TerrainGeneration
             {
                 if (seed == 0)
                 {
-                    seed = Random.Range(0, int.MaxValue);
+                    seed = new System.Random().Next();
                 }
             }
             else
@@ -62,13 +62,16 @@ namespace LightBringer.TerrainGeneration
 
         public void GenerateIslandVertices()
         {
+            Debug.Log("GenerateIslandVertices: " + centerInWorld);
             if (vertices != null)
             {
                 return;
             }
 
-            Random.InitState(seed);
+            Debug.Log("GenerateIslandVertices bis : " + centerInWorld);
+            System.Random rdm = new System.Random(seed);
 
+            Debug.Log("GenerateIslandVertices ter : " + centerInWorld);
             vertices = new List<Vector2>();
 
             Vector2 vector = RotateVector(new Vector2(1, 0), Mathf.PI / 4f);
@@ -77,7 +80,7 @@ namespace LightBringer.TerrainGeneration
             // Compute vertices
             while (vertices.Count < 5 * radius || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
-                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1]);
+                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1], rdm);
                 vector = RotateVector(vector, angle);
                 vertices.Add(vertices[vertices.Count - 1] + vector);
             }
@@ -129,7 +132,7 @@ namespace LightBringer.TerrainGeneration
             return Mathf.Exp(-6 * ratio * ratio);
         }
 
-        private float randomAngle(Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)
+        private float randomAngle(Vector2 center, float radius, Vector2 vector, Vector2 previousPoint, System.Random rdm)
         {
             float[] distributions = new float[9];
             float sum = 0f;
@@ -150,7 +153,7 @@ namespace LightBringer.TerrainGeneration
             }
 
 
-            float rnd = Random.value;
+            float rnd = (float)rdm.NextDouble();
 
             i = 0;
             while (distributions[i] < rnd)
@@ -225,9 +228,9 @@ namespace LightBringer.TerrainGeneration
             Vector2 terrainPosition,
             ref List<Vector2Int> slopePoints)
         {
+            Debug.Log("GenerateIslandAndHeights: " + terrainPosition);
             // Generate island data from seed
             GenerateIslandVertices();
-
 
             GenerateHeights(ref terrainHeights, terrainPosition, ref slopePoints);
 
@@ -244,7 +247,8 @@ namespace LightBringer.TerrainGeneration
             slopeTopOnRight = new bool[2];
 
             // slopes[0]
-            int index = Random.Range(0, vertices.Count);
+            System.Random rdm = new System.Random();
+            int index = rdm.Next() % vertices.Count;
             DetermineSlope(0, index);
             DetermineSlope(1, (slopes[0] - 1 + vertices.Count / 2) % vertices.Count);
         }
@@ -285,7 +289,7 @@ namespace LightBringer.TerrainGeneration
             }
             else
             {
-                slopeTopOnRight[slopeIndex] = Random.value < .5f;
+                slopeTopOnRight[slopeIndex] = new System.Random().NextDouble() < .5f;
             }
         }
 
