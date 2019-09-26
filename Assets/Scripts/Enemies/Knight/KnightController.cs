@@ -266,7 +266,7 @@ namespace LightBringer.Enemies.Knight
             }
             else
             {
-                Debug.Log("Invalid next action behaviour");
+                Debug.LogError("Invalid next action behaviour");
                 return new Dictionary<EnemyBehaviour, float>();
             }
         }
@@ -487,7 +487,7 @@ namespace LightBringer.Enemies.Knight
                 }
             }
 
-            Debug.Log("No behaviour selected");
+            Debug.LogError("No behaviour selected");
             return new WaitBehaviour(km);
         }
 

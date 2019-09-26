@@ -62,16 +62,13 @@ namespace LightBringer.TerrainGeneration
 
         public void GenerateIslandVertices()
         {
-            Debug.Log("GenerateIslandVertices: " + centerInWorld);
             if (vertices != null)
             {
                 return;
             }
 
-            Debug.Log("GenerateIslandVertices bis : " + centerInWorld);
             System.Random rdm = new System.Random(seed);
 
-            Debug.Log("GenerateIslandVertices ter : " + centerInWorld);
             vertices = new List<Vector2>();
 
             Vector2 vector = RotateVector(new Vector2(1, 0), Mathf.PI / 4f);
@@ -228,7 +225,6 @@ namespace LightBringer.TerrainGeneration
             Vector2 terrainPosition,
             ref List<Vector2Int> slopePoints)
         {
-            Debug.Log("GenerateIslandAndHeights: " + terrainPosition);
             // Generate island data from seed
             GenerateIslandVertices();
 
