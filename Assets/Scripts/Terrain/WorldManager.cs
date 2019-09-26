@@ -145,7 +145,7 @@ namespace LightBringer.TerrainGeneration
                     }
                 }
                 MapPainter mp = new MapPainter();
-                mp.Draw(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
+                mp.DrawIslands(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
             }
 
             if (!createWorldMapAndSaveBin)
@@ -204,7 +204,7 @@ namespace LightBringer.TerrainGeneration
                 {
                     SpatialDictionary<Island> islands = (SpatialDictionary<Island>)bf.Deserialize(fs);
                     MapPainter mp = new MapPainter();
-                    mp.Draw(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
+                    mp.DrawIslands(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
                 }
                 catch (SerializationException e)
                 {

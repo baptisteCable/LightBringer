@@ -8,7 +8,7 @@ public class MapPainter
     private static Bitmap bmp;
 
 
-    public void Draw(ref SpatialDictionary<Island> islands, int xCenter, int yCenter, int mapRadius)
+    public void DrawIslands(ref SpatialDictionary<Island> islands, int xCenter, int yCenter, int mapRadius)
     {
         bmp = new Bitmap(mapRadius * 2, mapRadius * 2);
         for (int i = 0; i < mapRadius * 2; i++)
@@ -21,14 +21,14 @@ public class MapPainter
 
         foreach (Island island in islands.GetAround(xCenter, yCenter, mapRadius + (int)(Island.MAX_POSSIBLE_RADIUS * Island.SCALE * 2)))
         {
-            DrawIsland(island, bmp, xCenter, yCenter, mapRadius);
+            DrawIsland(island, ref bmp, xCenter, yCenter, mapRadius);
         }
 
         Debug.Log("Save to: " + Application.persistentDataPath + "/WorldMap.png");
         bmp.Save(Application.persistentDataPath + "/WorldMap.png");
     }
 
-    void DrawIsland(Island island, Bitmap bmp, int xCenter, int yCenter, int mapRadius)
+    void DrawIsland(Island island, ref Bitmap bmp, int xCenter, int yCenter, int mapRadius)
     {
         float sqRadius = Island.MAX_POSSIBLE_RADIUS * Island.SCALE * 2;
         int iMin = Mathf.Max(0, (int)(island.centerInWorld.x - xCenter + mapRadius - sqRadius));
@@ -52,6 +52,50 @@ public class MapPainter
                 {
                     bmp.SetPixel(i, j, SColor.Gray);
                 }
+            }
+        }
+    }
+
+    public void DrawBiomes(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter, int mapRadius)
+    {
+        bmp = new Bitmap(mapRadius * 2, mapRadius * 2);
+        SColor[] biomeColors = { SColor.Yellow, SColor.Purple, SColor.Red, SColor.LightBlue, SColor.Green, SColor.LightGray };
+
+        for (int i = 0; i < mapRadius * 2; i++)
+        {
+            for (int j = 0; j < mapRadius * 2; j++)
+            {
+                Vector2 point = new Vector2(i + xCenter - mapRadius, -(j + yCenter - mapRadius));
+                Biome biome = Biome.GetBiome(biomes, point);
+                bmp.SetPixel(i, j, biomeColors[(int)biome.type]);
+            }
+        }
+
+        foreach (Biome biome in biomes.GetAround(xCenter, yCenter, mapRadius))
+        {
+            DrawBiome(biome, ref bmp, xCenter, yCenter, mapRadius);
+        }
+
+        string path = Application.persistentDataPath + "/BiomeMap.png";
+        Debug.Log("Save to: " + path);
+        bmp.Save(path);
+    }
+
+    void DrawBiome(Biome biome, ref Bitmap bmp, int xCenter, int yCenter, int mapRadius)
+    {
+        Pen blackPen = new Pen(System.Drawing.Color.Black, 4);
+
+        for (int i = 0; i < 4; i++)
+        {
+            int x1 = (int)biome.vertices[i].x + mapRadius - xCenter;
+            int y1 = -(int)biome.vertices[i].y + mapRadius - yCenter;
+            int x2 = (int)biome.vertices[(i + 1) % 4].x + mapRadius - xCenter;
+            int y2 = -(int)biome.vertices[(i + 1) % 4].y + mapRadius - yCenter;
+
+            // Draw line to bitmap.
+            using (var graphics = System.Drawing.Graphics.FromImage(bmp))
+            {
+                graphics.DrawLine(blackPen, x1, y1, x2, y2);
             }
         }
     }

@@ -30,6 +30,9 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private List<Vector2> vertices = null;
 
+        [NonSerialized]
+        private static System.Random rnd;
+
         public Island(Vector2 centerPosition, float radius, int newSeed = 0)
         {
             centerInWorld = centerPosition;
@@ -37,10 +40,11 @@ namespace LightBringer.TerrainGeneration
 
             if (newSeed == 0)
             {
-                if (seed == 0)
+                if (rnd == null)
                 {
-                    seed = new System.Random().Next();
+                    rnd = new System.Random();
                 }
+                seed = rnd.Next();
             }
             else
             {
@@ -53,6 +57,7 @@ namespace LightBringer.TerrainGeneration
             return new Vector2(Mathf.Cos(a), Mathf.Sin(a));
         }
 
+        // radian angle
         public static Vector2 RotateVector(Vector2 v, float angle)
         {
             float x = v.x * Mathf.Cos(angle) - v.y * Mathf.Sin(angle);
