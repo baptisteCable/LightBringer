@@ -24,6 +24,11 @@ namespace LightBringer.TerrainGeneration
         {
             return 32768 * x + y;
         }
+
+        public override string ToString()
+        {
+            return "(" + x + "; " + y + ")";
+        }
     }
 
     [Serializable]

@@ -23,6 +23,8 @@ namespace LightBringer.TerrainGeneration
         public const float SQUARE_RADIUS = 100;
         public const float MAX_DEFORMATION_RATIO = 2.5f;
 
+        public Dic2DKey coord;
+
         public Vector2[] vertices;
         private float rotation; // between 0 and pi
 
@@ -31,12 +33,15 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private static System.Random rnd;
 
-        public Biome(Vector2 center)
+        public Biome(int x, int y)
         {
             if (rnd == null)
             {
                 rnd = new System.Random();
             }
+
+            coord = new Dic2DKey(x, y);
+            Vector2 center = new Vector2(x, y);
 
             type = (Type)rnd.Next(Enum.GetNames(typeof(Type)).Length);
 
@@ -136,6 +141,50 @@ namespace LightBringer.TerrainGeneration
             }
 
             return closest;
+
+        }
+
+        static public List<Dic2DKey> Get4ClosestBiomes(SpatialDictionary<Biome> biomes, Vector2 position,
+            out List<float> minDists, int searchingDistance = (int)(5 * WorldCreator.MIN_DISTANCE_BETWEEN_BIOMES_POLY))
+        {
+            List<Biome> allCloseBiomes = biomes.GetAround((int)position.x, (int)position.y, searchingDistance);
+
+            if (allCloseBiomes.Count < 4)
+            {
+                if (searchingDistance > 1000000)
+                {
+                    throw new Exception("No biomes found");
+                }
+
+                return Get4ClosestBiomes(biomes, position, out minDists, searchingDistance * 2);
+            }
+
+            List<Dic2DKey> fourClosest = new List<Dic2DKey>();
+            minDists = new List<float>();
+
+            foreach (Biome biome in allCloseBiomes)
+            {
+                float dist = biome.Distance(position);
+
+                for (int i = 0; i < minDists.Count + 1; i++)
+                {
+                    if (i == minDists.Count || minDists[i] > dist)
+                    {
+                        minDists.Insert(i, dist);
+                        fourClosest.Insert(i, biome.coord);
+
+                        if (minDists.Count > 4)
+                        {
+                            minDists.RemoveAt(4);
+                            fourClosest.RemoveAt(4);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            return fourClosest;
 
         }
 

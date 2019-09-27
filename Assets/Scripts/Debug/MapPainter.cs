@@ -1,4 +1,5 @@
 ﻿using LightBringer.TerrainGeneration;
+using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine;
 using SColor = System.Drawing.Color;
@@ -67,13 +68,13 @@ public class MapPainter
             {
                 Vector2 point = new Vector2(i + xCenter - mapRadius, -(j + yCenter - mapRadius));
                 Biome biome = Biome.GetBiome(biomes, point);
-                bmp.SetPixel(i, j, biomeColors[(int)biome.type]);
+                bmp.SetPixel(i, j, BiomeColor(biome));
             }
         }
 
         foreach (Biome biome in biomes.GetAround(xCenter, yCenter, mapRadius))
         {
-            DrawBiome(biome, ref bmp, xCenter, yCenter, mapRadius);
+            DrawBiomePoly(biome, ref bmp, xCenter, yCenter, mapRadius);
         }
 
         string path = Application.persistentDataPath + "/BiomeMap.png";
@@ -81,7 +82,7 @@ public class MapPainter
         bmp.Save(path);
     }
 
-    void DrawBiome(Biome biome, ref Bitmap bmp, int xCenter, int yCenter, int mapRadius)
+    void DrawBiomePoly(Biome biome, ref Bitmap bmp, int xCenter, int yCenter, int mapRadius)
     {
         Pen blackPen = new Pen(System.Drawing.Color.Black, 4);
 
@@ -98,5 +99,64 @@ public class MapPainter
                 graphics.DrawLine(blackPen, x1, y1, x2, y2);
             }
         }
+    }
+
+    private SColor BiomeColor(Biome biome)
+    {
+        int r = (int)Mathf.Abs(biome.vertices[0].x * 100000) % 255;
+        int g = (int)Mathf.Abs(biome.vertices[0].y * 100000) % 255;
+        int b = (int)Mathf.Abs(biome.vertices[1].x * 100000) % 255;
+
+        int sum = r + g + b;
+
+        if (sum < 255 / 3)
+        {
+            float ratio = 255f / (3f * sum);
+            r = (int)(r * ratio);
+            g = (int)(g * ratio);
+            b = (int)(b * ratio);
+        }
+        else if (sum > 2 * 255 / 3)
+        {
+            float ratio = 2f * 255f / (3f * sum);
+            r = (int)(r * ratio);
+            g = (int)(g * ratio);
+            b = (int)(b * ratio);
+        }
+
+        return SColor.FromArgb(r, g, b);
+    }
+
+    public void DrawNeighbourhoodLines(ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbours, 
+        int xCenter, int yCenter, int mapRadius)
+    {
+        // load the existing picture
+        string imageToLoad = Application.persistentDataPath + "/BiomeMap.png";
+        Bitmap bmp = new Bitmap(imageToLoad);
+
+        // draw all the neighbourhood lines
+        Pen pen = new Pen(SColor.LightCyan, 4);
+
+        foreach (KeyValuePair<Dic2DKey, List<Dic2DKey>> biomePair in neighbours)
+        {
+            foreach (Dic2DKey neighbour in biomePair.Value)
+            {
+                int x1 = biomePair.Key.x + mapRadius - xCenter;
+                int y1 = -biomePair.Key.y + mapRadius - yCenter;
+                int x2 = neighbour.x + mapRadius - xCenter;
+                int y2 = -neighbour.y + mapRadius - yCenter;
+
+                // Draw line to bitmap.
+                using (var graphics = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    graphics.DrawLine(pen, x1, y1, x2, y2);
+                }
+            }
+        } 
+
+        // save in a new picture
+        string path = Application.persistentDataPath + "/BiomeMapNeighbours.png";
+        Debug.Log("Save to: " + path);
+        bmp.Save(path);
     }
 }

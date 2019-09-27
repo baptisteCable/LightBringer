@@ -35,6 +35,7 @@ namespace LightBringer.TerrainGeneration
         public bool createWorldMapFromBin = true;
 
         public bool createBiomeMapAndSaveBin = true;
+        public bool drawNeighbours = true;
 
         // Update is called once per frame
         void Update()
@@ -50,7 +51,7 @@ namespace LightBringer.TerrainGeneration
             {
                 createWorldMapAndSaveBin = true;
 
-                CreateWorldAndSaveToBinary();
+                CreateIslandsAndSaveToBinary();
             }
 
             if (!createWorldMapFromBin)
@@ -64,33 +65,17 @@ namespace LightBringer.TerrainGeneration
             {
                 createBiomeMapAndSaveBin = true;
 
-                CreateAndPrintBiomeMap();
+                CreateBiomesAndSaveToBinary();
+            }
 
-                /*
-                Biome biome = new Biome(new Vector2(0, 0));
-
-                int mapRadius = 512;
-
-                System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(mapRadius * 2, mapRadius * 2);
-
-                for (int i = 0; i < mapRadius * 2; i++)
-                {
-                    for (int j = 0; j < mapRadius * 2; j++)
-                    {
-                        Vector2 point = new Vector2(i - mapRadius, -(j - mapRadius));
-                        float dist = biome.Distance(point);
-                        bmp.SetPixel(i, j, System.Drawing.Color.FromArgb((int)dist * 5 %255, ((int)dist * 5 + 90) % 255 , ((int)dist * 5 + 180)% 255));
-                    }
-                }
-
-                string path = Application.persistentDataPath + "/BiomeMap.png";
-                Debug.Log("Save to: " + path);
-                bmp.Save(path);
-                */
+            if (!drawNeighbours)
+            {
+                drawNeighbours = true;
+                LoadAndDrawNeighbours();
             }
         }
 
-        private void CreateWorldAndSaveToBinary()
+        private void CreateIslandsAndSaveToBinary()
         {
             SpatialDictionary<Island> islands = CreateAndPrintMap();
 
@@ -145,13 +130,13 @@ namespace LightBringer.TerrainGeneration
 
         private void LoadAndPrintMap()
         {
-            SpatialDictionary<Island> islands = LoadFromBinary();
+            SpatialDictionary<Island> islands = LoadIslandsFromBinary();
 
             MapPainter mp = new MapPainter();
             mp.DrawIslands(ref islands, 0, 0, 3 * ISLAND_GEN_SQUARE_RADIUS);
         }
 
-        private SpatialDictionary<Island> LoadFromBinary()
+        private SpatialDictionary<Island> LoadIslandsFromBinary()
         {
             // load from binary
             FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Open);
@@ -231,6 +216,34 @@ namespace LightBringer.TerrainGeneration
 
             return false;
         }
+        private void CreateBiomesAndSaveToBinary()
+        {
+            SpatialDictionary<Biome> biomes = CreateAndPrintBiomeMap();
+
+            // save to binary
+            FileStream fs = new FileStream(Application.persistentDataPath + "/biomes.dat", FileMode.Create);
+
+            // Binary formatter with vector 2
+            BinaryFormatter bf = new BinaryFormatter();
+            SurrogateSelector surrogateSelector = new SurrogateSelector();
+            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
+            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
+            bf.SurrogateSelector = surrogateSelector;
+
+            try
+            {
+                bf.Serialize(fs, biomes);
+            }
+            catch (SerializationException e)
+            {
+                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                throw;
+            }
+            finally
+            {
+                fs.Close();
+            }
+        }
 
         private SpatialDictionary<Biome> CreateAndPrintBiomeMap()
         {
@@ -266,8 +279,8 @@ namespace LightBringer.TerrainGeneration
                     // Rejection
                     if (!IsRejectedBiome(ref biomes, x, y))
                     {
-                        // Add Island
-                        Biome biome = new Biome(new Vector2(x, y));
+                        // Add Biome
+                        Biome biome = new Biome(x, y);
                         biomes.Add(x, y, biome);
                         break;
                     }
@@ -299,6 +312,102 @@ namespace LightBringer.TerrainGeneration
             }
 
             return false;
+        }
+
+        private SpatialDictionary<Biome> LoadBiomesFromBinary()
+        {
+            // load from binary
+            FileStream fs = new FileStream(Application.persistentDataPath + "/biomes.dat", FileMode.Open);
+
+            // Binary formatter with vector 2
+            BinaryFormatter bf = new BinaryFormatter();
+            SurrogateSelector surrogateSelector = new SurrogateSelector();
+            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
+            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
+            bf.SurrogateSelector = surrogateSelector;
+
+            SpatialDictionary<Biome> biomes;
+
+            try
+            {
+                biomes = (SpatialDictionary<Biome>)bf.Deserialize(fs);
+            }
+            catch (SerializationException e)
+            {
+                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
+                throw;
+            }
+            finally
+            {
+                fs.Close();
+            }
+
+            return biomes;
+        }
+
+        private void LoadAndDrawNeighbours()
+        {
+            SpatialDictionary<Biome> biomes = LoadBiomesFromBinary();
+            DrawNeighbours(biomes, 0, 0, BIOME_GEN_SQUARE_RADIUS);
+        }
+
+        private void DrawNeighbours(SpatialDictionary<Biome> biomes, int xCenter, int yCenter, int squareRadius)
+        {
+            Dictionary<Dic2DKey, List<Dic2DKey>> neighbours = new Dictionary<Dic2DKey, List<Dic2DKey>>();
+            FindNeighbours(biomes, ref neighbours, xCenter, yCenter, squareRadius);
+
+            MapPainter mp = new MapPainter();
+            mp.DrawNeighbourhoodLines(ref neighbours, 0, 0, squareRadius);
+        }
+
+        private static void FindNeighbours(
+            SpatialDictionary<Biome> biomes,
+            ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbours,
+            int xCenter, int yCenter, int squareRadius, int step = 32)
+        {
+            for (int i = xCenter - squareRadius; i < xCenter + squareRadius; i += step)
+            {
+                for (int j = yCenter - squareRadius; j < yCenter + squareRadius; j += step)
+                {
+                    // Find the 4 closest biomes
+                    List<Dic2DKey> fourClosest = Biome.Get4ClosestBiomes(biomes, new Vector2(i, j), out List<float> minDists);
+
+                    if (Math.Abs(minDists[0] - minDists[3]) < step * 2 && step > 1)
+                    {
+                        // Look carefully at this zone
+                        FindNeighbours(biomes, ref neighbours, i, j, step / 2, step / 4);
+                    }
+                    else
+                    {
+                        if (Math.Abs(minDists[0] - minDists[1]) < step * 2)
+                        {
+                            // 0 and 1 are neighbours
+                            AddNeighbours(ref neighbours, fourClosest[0], fourClosest[1]);
+                            AddNeighbours(ref neighbours, fourClosest[1], fourClosest[0]);
+                        }
+
+                        if (Math.Abs(minDists[0] - minDists[2]) < step * 2)
+                        {
+                            // 0 and 2 are neighbours
+                            AddNeighbours(ref neighbours, fourClosest[0], fourClosest[2]);
+                            AddNeighbours(ref neighbours, fourClosest[2], fourClosest[0]);
+                        }
+                    }
+                }
+            }
+        }
+
+        static private void AddNeighbours(ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbours, Dic2DKey key1, Dic2DKey key2)
+        {
+            if (!neighbours.ContainsKey(key1))
+            {
+                neighbours[key1] = new List<Dic2DKey>();
+            }
+
+            if (!neighbours[key1].Contains(key2))
+            {
+                neighbours[key1].Add(key2);
+            }
         }
     }
 }
