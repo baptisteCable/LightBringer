@@ -20,6 +20,8 @@ namespace LightBringer.TerrainGeneration
 
         int seed = 0;
 
+        public Biome.Type biomeType;
+
         public Vector2 centerInWorld;
         public float radius { get; }
 
@@ -33,10 +35,12 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private static System.Random rnd;
 
-        public Island(Vector2 centerPosition, float radius, int newSeed = 0)
+        public Island(Vector2 centerPosition, float radius, Biome.Type bt, int newSeed = 0)
         {
             centerInWorld = centerPosition;
             this.radius = radius;
+
+            biomeType = bt;
 
             if (newSeed == 0)
             {

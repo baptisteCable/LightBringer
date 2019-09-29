@@ -147,6 +147,11 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
+        public T Get(Dic2DKey key)
+        {
+            return Get(key.x, key.y);
+        }
+
         public T Get(int x, int y)
         {
             if (IsLeaf())

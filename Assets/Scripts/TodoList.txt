@@ -18,6 +18,13 @@ Autre
 Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
 
+Terrain :
+	- SpatialDictionary : IsEmpty(zone)
+	- Créer biomes et iles en runtime
+	- Nouvelles formes d'îles
+	- Centrer une ile de pylone pour chaque biome
+	- Biome de lumière en 0, 0
+
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?
 	- Surcharge CPU sur premier lancement.

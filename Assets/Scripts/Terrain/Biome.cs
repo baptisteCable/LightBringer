@@ -4,20 +4,19 @@ using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
 {
-
-
     [Serializable]
     public class Biome
     {
         [Serializable]
         public enum Type
         {
-            Light = 0,
-            Darkness = 1,
-            Fire = 2,
-            Ice = 3,
-            Earth = 4,
-            Air = 5
+            Undefined = 0,
+            Light = 1,
+            Darkness = 2,
+            Fire = 3,
+            Ice = 4,
+            Earth = 5,
+            Air = 6
         }
 
         public const float SQUARE_RADIUS = 100;
@@ -43,7 +42,7 @@ namespace LightBringer.TerrainGeneration
             coord = new Dic2DKey(x, y);
             Vector2 center = new Vector2(x, y);
 
-            type = (Type)rnd.Next(Enum.GetNames(typeof(Type)).Length);
+            type = Type.Undefined;
 
             rotation = (float)(rnd.NextDouble() % Math.PI);
             float ratio = (float)(rnd.NextDouble()) * (MAX_DEFORMATION_RATIO - 1) + 1;
@@ -53,6 +52,11 @@ namespace LightBringer.TerrainGeneration
             vertices[1] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + (float)Math.PI / 2f);
             vertices[2] = center + Island.RotateVector(Vector2.right * ratio * SQUARE_RADIUS, rotation + (float)Math.PI);
             vertices[3] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + (float)Math.PI * 3f / 2f);
+        }
+
+        public override string ToString()
+        {
+            return "Center: " + coord + " ; Type: " + type;
         }
 
         public float Distance(Vector2 point)

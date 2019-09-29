@@ -7,8 +7,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Profiling;
-using Random = UnityEngine.Random;
 
 namespace LightBringer.TerrainGeneration
 {
@@ -129,91 +127,6 @@ namespace LightBringer.TerrainGeneration
                 if (newTilesExpected == 0)
                 {
                     UpdateMesh();
-                }
-            }
-
-            if (!createWorldMap)
-            {
-                createWorldMap = true;
-
-                SpatialDictionary<Island> islands = new SpatialDictionary<Island>();
-                for (int i = -2 * GEN_SQUARE_RADIUS; i <= 2 * GEN_SQUARE_RADIUS; i += 2 * GEN_SQUARE_RADIUS)
-                {
-                    for (int j = -2 * GEN_SQUARE_RADIUS; j <= 2 * GEN_SQUARE_RADIUS; j += 2 * GEN_SQUARE_RADIUS)
-                    {
-                        generateIslandsInSquare(ref islands, i, j);
-                    }
-                }
-                MapPainter mp = new MapPainter();
-                mp.DrawIslands(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
-            }
-
-            if (!createWorldMapAndSaveBin)
-            {
-                createWorldMapAndSaveBin = true;
-
-                for (int i = -2 * GEN_SQUARE_RADIUS; i <= 2 * GEN_SQUARE_RADIUS; i += 2 * GEN_SQUARE_RADIUS)
-                {
-                    for (int j = -2 * GEN_SQUARE_RADIUS; j <= 2 * GEN_SQUARE_RADIUS; j += 2 * GEN_SQUARE_RADIUS)
-                    {
-                        generateIslandsInSquare(ref islands, i, j);
-                    }
-                }
-
-                // save to binary
-                FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Create);
-
-                // Binary formatter with vector 2
-                BinaryFormatter bf = new BinaryFormatter();
-                SurrogateSelector surrogateSelector = new SurrogateSelector();
-                Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-                surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-                bf.SurrogateSelector = surrogateSelector;
-
-                try
-                {
-                    bf.Serialize(fs, islands);
-                }
-                catch (SerializationException e)
-                {
-                    Console.WriteLine("Failed to serialize. Reason: " + e.Message);
-                    throw;
-                }
-                finally
-                {
-                    fs.Close();
-                }
-            }
-
-
-            if (!createWorldMapFromBin)
-            {
-                createWorldMapFromBin = true;
-
-                // load from binary
-                FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Open);
-
-                // Binary formatter with vector 2
-                BinaryFormatter bf = new BinaryFormatter();
-                SurrogateSelector surrogateSelector = new SurrogateSelector();
-                Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-                surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-                bf.SurrogateSelector = surrogateSelector;
-
-                try
-                {
-                    SpatialDictionary<Island> islands = (SpatialDictionary<Island>)bf.Deserialize(fs);
-                    MapPainter mp = new MapPainter();
-                    mp.DrawIslands(ref islands, 0, 0, 3 * GEN_SQUARE_RADIUS);
-                }
-                catch (SerializationException e)
-                {
-                    Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
-                    throw;
-                }
-                finally
-                {
-                    fs.Close();
                 }
             }
         }
@@ -355,51 +268,6 @@ namespace LightBringer.TerrainGeneration
                 }
                 map[point.x, point.y, SLOPE_TEXTURE_ID] = .75f;
             }
-        }
-
-        public void generateIslandsInSquare(ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
-        {
-            Random.InitState((int)DateTime.Now.Ticks & 0x0000FFFF);
-
-            for (int i = 0; i < NUMBER_OF_ISLAND_PER_SQUARE; i++)
-            {
-                int tryCount = 0;
-
-                while (tryCount < MAX_TRY)
-                {
-                    int x = Random.Range(xCenter - GEN_SQUARE_RADIUS, xCenter + GEN_SQUARE_RADIUS - 1);
-                    int y = Random.Range(yCenter - GEN_SQUARE_RADIUS, yCenter + GEN_SQUARE_RADIUS - 1);
-
-                    // Rejection
-                    if (!IsRejected(ref islands, x, y, ISLAND_RADIUS))
-                    {
-                        // Add Island
-                        Island island = new Island(new Vector2(x, y), ISLAND_RADIUS);
-                        islands.Add(x, y, island);
-                        break;
-                    }
-
-                    tryCount++;
-                }
-            }
-        }
-
-        private bool IsRejected(ref SpatialDictionary<Island> islands, int x, int y, float radius)
-        {
-            Vector2 islandCenter = new Vector2(x, y);
-            float minDistance = MIN_DISTANCE_BETWEEN_ISLANDS + (radius + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
-
-            List<Island> possibleCollidings = islands.GetAround(x, y, (int)Mathf.Ceil(minDistance));
-
-            foreach (Island pc in possibleCollidings)
-            {
-                if ((islandCenter - pc.centerInWorld).magnitude < minDistance)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public void SetPlayerTransform(Transform t)
