@@ -111,8 +111,7 @@ namespace LightBringer.TerrainGeneration
             return true;
         }
 
-        static public Biome GetBiome(SpatialDictionary<Biome> biomes, Vector2 position,
-            int searchingDistance = (int)(5 * WorldCreator.MIN_DISTANCE_BETWEEN_BIOMES_POLY))
+        static public Biome GetBiome(SpatialDictionary<Biome> biomes, Vector2 position, int searchingDistance = 600)
         {
             List<Biome> closeBiomes = biomes.GetAround((int)position.x, (int)position.y, searchingDistance);
 
@@ -149,7 +148,7 @@ namespace LightBringer.TerrainGeneration
         }
 
         static public List<Dic2DKey> Get4ClosestBiomes(SpatialDictionary<Biome> biomes, Vector2 position,
-            out List<float> minDists, int searchingDistance = (int)(5 * WorldCreator.MIN_DISTANCE_BETWEEN_BIOMES_POLY))
+            out List<float> minDists, int searchingDistance = 1000)
         {
             List<Biome> allCloseBiomes = biomes.GetAround((int)position.x, (int)position.y, searchingDistance);
 

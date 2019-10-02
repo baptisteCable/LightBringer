@@ -7,25 +7,21 @@ using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
 {
-    [ExecuteInEditMode]
-    public class WorldCreator : MonoBehaviour
+    public class WorldCreator
     {
+        // General data
+        public int generationSquareRadius = 1024;
+
         // Biome constants
-        private const int BIOME_GEN_SQUARE_RADIUS = 2048;
-        private const int NUMBER_OF_BIOMES_PER_SQUARE = 150;
-        public const float MIN_DISTANCE_BETWEEN_BIOMES_POLY = 150;
-        private const int BIOME_MAX_TRY = 500;
+        private int nbBiomesPerSquare = 60;
+        public float minDistanceBetweenBiomePolygones = 150;
+        public int biomeMaxTry = 500;
 
         // Island constants
-        private const float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
-        private const int ISLAND_GEN_SQUARE_RADIUS = 512;
-        private const int NUMBER_OF_ISLANDS_PER_SQUARE = 150;
-        private const float MIN_DISTANCE_BETWEEN_ISLANDS = 40;
-        private const int ISLAND_MAX_TRY = 200;
-
-        // Loading distances
-        private const float MIN_LOADED_TILE_DISTANCE = 192;
-        private const float MAX_LOADED_TILE_DISTANCE = 384;
+        public float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
+        private int nbIslandsPerSquare = 600;
+        public float minDistanceBetwwenIslands = 40;
+        public int islandsMaxTry = 200;
 
         // Debug checkBoxed
         public bool createBiomeMapAndSaveBin = true;
@@ -35,130 +31,45 @@ namespace LightBringer.TerrainGeneration
         // random
         static System.Random rnd;
 
-        // Update is called once per frame
-        void Update()
+        // File path
+        string path;
+
+        public WorldCreator(string path, int genRadius, float biomeDensity, float islandDensity)
         {
-            if (!createBiomeMapAndSaveBin)
-            {
-                createBiomeMapAndSaveBin = true;
-                CreateBiomesAndSaveToBinary(0, 0, NUMBER_OF_BIOMES_PER_SQUARE, BIOME_GEN_SQUARE_RADIUS);
-            }
-
-            if (!createWorldMapAndSaveBin)
-            {
-                createWorldMapAndSaveBin = true;
-                CreateIslandsAndSaveToBinary();
-            }
-
-            if (!loadAndPrintMap)
-            {
-                loadAndPrintMap = true;
-                LoadAndPrintMap();
-            }
+            this.path = path;
+            generationSquareRadius = genRadius;
+            nbBiomesPerSquare = (int)(genRadius * genRadius * biomeDensity);
+            nbIslandsPerSquare = (int)(genRadius * genRadius * islandDensity);
         }
 
-        private void CreateIslandsAndSaveToBinary()
+        public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
-            SpatialDictionary<Island> islands = CreateMap();
+            // create biomes
+            GenerateBiomesInSquareAndNeighbourSquares(ref biomes, xCenter, yCenter);
 
-            // save to binary
-            FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Create);
-
-            // Binary formatter with vector 2
-            BinaryFormatter bf = new BinaryFormatter();
-            SurrogateSelector surrogateSelector = new SurrogateSelector();
-            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-            bf.SurrogateSelector = surrogateSelector;
-
-            try
-            {
-                bf.Serialize(fs, islands);
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
-            }
+            // create islands
+            GenerateIslandsInSquare(ref biomes, ref islands, xCenter, yCenter);
         }
 
-        private SpatialDictionary<Island> CreateMap()
-        {
-            SpatialDictionary<Biome> biomes = LoadBiomesFromBinary();
-            SpatialDictionary<Island> islands = new SpatialDictionary<Island>();
-            for (int i = -2 * ISLAND_GEN_SQUARE_RADIUS; i <= 2 * ISLAND_GEN_SQUARE_RADIUS; i += 2 * ISLAND_GEN_SQUARE_RADIUS)
-            {
-                for (int j = -2 * ISLAND_GEN_SQUARE_RADIUS; j <= 2 * ISLAND_GEN_SQUARE_RADIUS; j += 2 * ISLAND_GEN_SQUARE_RADIUS)
-                {
-                    generateIslandsInSquare(ref biomes, ref islands, i, j);
-                }
-            }
-
-            return islands;
-        }
-
-        private SpatialDictionary<Island> LoadAndPrintMap()
-        {
-            SpatialDictionary<Island> islands = LoadIslandsFromBinary();
-            SpatialDictionary<Biome> biomes = LoadBiomesFromBinary();
-
-            MapPainter mp = new MapPainter();
-            mp.DrawIslands(ref biomes, ref islands, 0, 0, 3 * ISLAND_GEN_SQUARE_RADIUS, 1);
-
-            return islands;
-        }
-
-        private SpatialDictionary<Island> LoadIslandsFromBinary()
-        {
-            // load from binary
-            FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Open);
-
-            // Binary formatter with vector 2
-            BinaryFormatter bf = new BinaryFormatter();
-            SurrogateSelector surrogateSelector = new SurrogateSelector();
-            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-            bf.SurrogateSelector = surrogateSelector;
-
-            SpatialDictionary<Island> islands;
-
-            try
-            {
-                islands = (SpatialDictionary<Island>)bf.Deserialize(fs);
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
-            }
-
-            return islands;
-        }
-
-        private void generateIslandsInSquare(ref SpatialDictionary<Biome> biomes,
+        public void GenerateIslandsInSquare(ref SpatialDictionary<Biome> biomes,
             ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
             rnd = new System.Random();
 
-            for (int i = 0; i < NUMBER_OF_ISLANDS_PER_SQUARE; i++)
+            Debug.Log("Generate Islands in : [" + (xCenter - generationSquareRadius) + ";" + (xCenter + generationSquareRadius) + "] x ["
+                + (yCenter - generationSquareRadius) + ";" + (yCenter + generationSquareRadius) + "]");
+
+            for (int i = 0; i < nbIslandsPerSquare; i++)
             {
                 int tryCount = 0;
 
-                while (tryCount < ISLAND_MAX_TRY)
+                while (tryCount < islandsMaxTry)
                 {
-                    int x = rnd.Next(xCenter - ISLAND_GEN_SQUARE_RADIUS, xCenter + ISLAND_GEN_SQUARE_RADIUS - 1);
-                    int y = rnd.Next(yCenter - ISLAND_GEN_SQUARE_RADIUS, yCenter + ISLAND_GEN_SQUARE_RADIUS - 1);
+                    int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
+                    int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
 
                     // Rejection
-                    if (!IsRejectedIsland(ref islands, x, y, ISLAND_RADIUS))
+                    if (!IsRejectedIsland(ref islands, x, y))
                     {
                         // Add Island
                         Biome.Type bt = Biome.GetBiome(biomes, new Vector2(x, y)).type;
@@ -169,20 +80,15 @@ namespace LightBringer.TerrainGeneration
 
                     tryCount++;
                 }
-
-                if (tryCount == ISLAND_MAX_TRY)
-                {
-                    print("Max try");
-                }
             }
         }
 
-        private bool IsRejectedIsland(ref SpatialDictionary<Island> islands, int x, int y, float radius)
+        private bool IsRejectedIsland(ref SpatialDictionary<Island> islands, int x, int y)
         {
             Vector2 islandCenter = new Vector2(x, y);
-            float minDistance = MIN_DISTANCE_BETWEEN_ISLANDS + (radius + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
+            float minDistance = minDistanceBetwwenIslands + (ISLAND_RADIUS + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
 
-            List<Island> possibleCollidings = islands.GetAround(x, y, (int)Mathf.Ceil(minDistance));
+            List<Island> possibleCollidings = islands.GetAround(x, y, (int)Math.Ceiling(minDistance));
 
             foreach (Island pc in possibleCollidings)
             {
@@ -195,12 +101,16 @@ namespace LightBringer.TerrainGeneration
             return false;
         }
 
-        private void CreateBiomesAndSaveToBinary(int xCenter, int yCenter, int nbBiomesPerSquare, int squareRadius)
+        public void SaveData(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands)
         {
-            SpatialDictionary<Biome> biomes = CreateAndPrintBiomeMaps(xCenter, yCenter, nbBiomesPerSquare, squareRadius);
+            SaveSpDic(biomes, "biomes.dat");
+            SaveSpDic(islands, "islands.dat");
+        }
 
+        public void SaveSpDic(object spDic, string fileName)
+        {
             // save to binary
-            FileStream fs = new FileStream(Application.persistentDataPath + "/biomes.dat", FileMode.Create);
+            FileStream fs = new FileStream(path + fileName, FileMode.Create);
 
             // Binary formatter with vector 2
             BinaryFormatter bf = new BinaryFormatter();
@@ -211,7 +121,8 @@ namespace LightBringer.TerrainGeneration
 
             try
             {
-                bf.Serialize(fs, biomes);
+                bf.Serialize(fs, spDic);
+                Debug.Log("File saved to " + path + fileName);
             }
             catch (SerializationException e)
             {
@@ -224,29 +135,63 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private SpatialDictionary<Biome> CreateAndPrintBiomeMaps(int xCenter, int yCenter, int nbBiomesPerSquare, int squareRadius)
+        public void LoadData(out SpatialDictionary<Biome> biomes, out SpatialDictionary<Island> islands)
         {
-            // create biomes
-            SpatialDictionary<Biome> biomes = new SpatialDictionary<Biome>();
-            generateBiomessInSquare(ref biomes, nbBiomesPerSquare, xCenter, yCenter, squareRadius);
-
-            // typing biomes
-            Dictionary<Dic2DKey, List<Dic2DKey>> keyNeighbours = BiomeDetermineType(ref biomes,
-                out List<Biome> typingBiomeList,
-                out List<List<Biome>> orderList,
-                xCenter, yCenter, squareRadius);
-
-            MapPainter mp = new MapPainter();
-            mp.DrawBiomes(ref biomes, xCenter, yCenter, squareRadius, 4);
-            mp.DrawBiomesPoly(ref biomes, xCenter, yCenter, squareRadius);
-            mp.DrawNeighbourhoodLines(ref keyNeighbours, xCenter, yCenter, squareRadius);
-            mp.DrawBiomeTypingOrder(typingBiomeList, xCenter, yCenter, squareRadius);
-            mp.DrawBiomeOrder(orderList, xCenter, yCenter, squareRadius);
-
-            return biomes;
+            biomes = (SpatialDictionary<Biome>)LoadSpDic("biomes.dat");
+            islands = (SpatialDictionary<Island>)LoadSpDic("islands.dat");
         }
 
-        private void generateBiomessInSquare(ref SpatialDictionary<Biome> biomes, int nbBiomesPerSquare, int xCenter, int yCenter, int squareRadius)
+        public object LoadSpDic(string fileName)
+        {
+            // save to binary
+            FileStream fs = new FileStream(path + fileName, FileMode.Open);
+
+            Debug.Log("Load file from " + path + fileName);
+
+            // Binary formatter with vector 2
+            BinaryFormatter bf = new BinaryFormatter();
+            SurrogateSelector surrogateSelector = new SurrogateSelector();
+            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
+            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
+            bf.SurrogateSelector = surrogateSelector;
+
+            object spDic = null;
+
+            try
+            {
+                spDic = bf.Deserialize(fs);
+            }
+            catch (SerializationException e)
+            {
+                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
+                throw;
+            }
+            finally
+            {
+                fs.Close();
+            }
+
+            return spDic;
+        }
+
+
+        // Generate biomes in 9 squares centered on this one
+        public void GenerateBiomesInSquareAndNeighbourSquares(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
+        {
+            for (int i = xCenter - generationSquareRadius * 2; i <= xCenter + generationSquareRadius * 2; i += generationSquareRadius * 2)
+            {
+                for (int j = yCenter - generationSquareRadius * 2; j <= yCenter + generationSquareRadius * 2; j += generationSquareRadius * 2)
+                {
+                    if (biomes.IsEmpty(i, j, generationSquareRadius))
+                    {
+                        GenerateBiomesInSquare(ref biomes, i, j);
+                        BiomeDetermineType(ref biomes, i, j);
+                    }
+                }
+            }
+        }
+
+        private void GenerateBiomesInSquare(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
         {
             rnd = new System.Random();
 
@@ -254,10 +199,10 @@ namespace LightBringer.TerrainGeneration
             {
                 int tryCount = 0;
 
-                while (tryCount < BIOME_MAX_TRY)
+                while (tryCount < biomeMaxTry)
                 {
-                    int x = rnd.Next(xCenter - squareRadius, xCenter + squareRadius - 1);
-                    int y = rnd.Next(yCenter - squareRadius, yCenter + squareRadius - 1);
+                    int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
+                    int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
 
                     // Rejection
                     if (!IsRejectedBiome(ref biomes, x, y))
@@ -270,24 +215,19 @@ namespace LightBringer.TerrainGeneration
 
                     tryCount++;
                 }
-
-                if (tryCount == BIOME_MAX_TRY)
-                {
-                    print("Max try");
-                }
             }
         }
 
         private bool IsRejectedBiome(ref SpatialDictionary<Biome> biomes, int x, int y)
         {
             Vector2 biomeCenter = new Vector2(x, y);
-            float minDistance = MIN_DISTANCE_BETWEEN_BIOMES_POLY + Biome.SQUARE_RADIUS * Biome.MAX_DEFORMATION_RATIO * 2;
+            float minDistance = minDistanceBetweenBiomePolygones + Biome.SQUARE_RADIUS * Biome.MAX_DEFORMATION_RATIO * 2;
 
-            List<Biome> possibleCollidings = biomes.GetAround(x, y, (int)Mathf.Ceil(minDistance));
+            List<Biome> possibleCollidings = biomes.GetAround(x, y, (int)Math.Ceiling(minDistance));
 
             foreach (Biome pc in possibleCollidings)
             {
-                if (pc.Distance(biomeCenter) < MIN_DISTANCE_BETWEEN_BIOMES_POLY + Biome.SQUARE_RADIUS * Biome.MAX_DEFORMATION_RATIO)
+                if (pc.Distance(biomeCenter) < minDistanceBetweenBiomePolygones + Biome.SQUARE_RADIUS * Biome.MAX_DEFORMATION_RATIO)
                 {
                     return true;
                 }
@@ -296,45 +236,12 @@ namespace LightBringer.TerrainGeneration
             return false;
         }
 
-        private SpatialDictionary<Biome> LoadBiomesFromBinary()
-        {
-            // load from binary
-            FileStream fs = new FileStream(Application.persistentDataPath + "/biomes.dat", FileMode.Open);
-
-            // Binary formatter with vector 2
-            BinaryFormatter bf = new BinaryFormatter();
-            SurrogateSelector surrogateSelector = new SurrogateSelector();
-            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-            bf.SurrogateSelector = surrogateSelector;
-
-            SpatialDictionary<Biome> biomes;
-
-            try
-            {
-                biomes = (SpatialDictionary<Biome>)bf.Deserialize(fs);
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
-            }
-
-            return biomes;
-        }
-
         private Dictionary<Dic2DKey, List<Dic2DKey>> BiomeDetermineType(
             ref SpatialDictionary<Biome> biomes,
-            out List<Biome> typingBiomeList,
-            out List<List<Biome>> orderList,
-            int xCenter, int yCenter, int squareRadius)
+            int xCenter, int yCenter)
         {
             Dictionary<Dic2DKey, List<Dic2DKey>> keyNeighbours = new Dictionary<Dic2DKey, List<Dic2DKey>>();
-            FindNeighbours(biomes, ref keyNeighbours, xCenter, yCenter, squareRadius);
+            FindNeighbours(biomes, ref keyNeighbours, xCenter, yCenter, generationSquareRadius + (int)minDistanceBetweenBiomePolygones * 2);
 
             // Biome neighbourhood
             Dictionary<Dic2DKey, Neighbourhood> biomeNeighbours = new Dictionary<Dic2DKey, Neighbourhood>();
@@ -343,11 +250,11 @@ namespace LightBringer.TerrainGeneration
                 biomeNeighbours.Add(pair.Key, new Neighbourhood(biomes, pair.Value));
             }
 
-            orderList = BuildOrderList(biomes, biomeNeighbours);
+            List<List<Biome>> orderList = BuildOrderList(biomes, biomeNeighbours);
 
             // Set biome types
             rnd = new System.Random();
-            typingBiomeList = new List<Biome>();
+            List<Biome> typingBiomeList = new List<Biome>();
 
             foreach (List<Biome> biomeList in orderList)
             {

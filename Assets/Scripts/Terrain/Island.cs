@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace LightBringer.TerrainGeneration
 {
@@ -251,17 +250,16 @@ namespace LightBringer.TerrainGeneration
             slopes = new int[2];
             slopeTopOnRight = new bool[2];
 
-            // slopes[0]
             System.Random rdm = new System.Random();
-            int index = rdm.Next() % vertices.Count;
+            int index = rdm.Next(vertices.Count) ;
             DetermineSlope(0, index);
             DetermineSlope(1, (slopes[0] - 1 + vertices.Count / 2) % vertices.Count);
         }
 
         private void DetermineSlope(int slopeIndex, int vertexIndex)
         {
-            bool nextConvex = false;
-            bool previousConvex = false;
+            bool nextConvex;
+            bool previousConvex;
 
             while (true)
             {
@@ -281,7 +279,6 @@ namespace LightBringer.TerrainGeneration
 
                 vertexIndex++;
             }
-
 
 
             if (nextConvex && !previousConvex)

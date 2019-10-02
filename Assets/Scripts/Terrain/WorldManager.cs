@@ -48,7 +48,8 @@ namespace LightBringer.TerrainGeneration
         // Tiles dictionary
         Dictionary<Dic2DKey, GameObject> loadedTiles;
 
-        // Islands
+        // Biomes, islands
+        SpatialDictionary<Biome> biomes;
         SpatialDictionary<Island> islands;
 
         // Debug checkBoxed
