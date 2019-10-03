@@ -10,16 +10,16 @@ namespace LightBringer.TerrainGeneration
     public class WorldCreator
     {
         // General data
-        public int generationSquareRadius = 1024;
+        public int generationSquareRadius;
 
         // Biome constants
-        private int nbBiomesPerSquare = 60;
+        private int nbBiomesPerSquare;
         public float minDistanceBetweenBiomePolygones = 150;
         public int biomeMaxTry = 500;
 
         // Island constants
         public float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
-        private int nbIslandsPerSquare = 600;
+        private int nbIslandsPerSquare;
         public float minDistanceBetwwenIslands = 40;
         public int islandsMaxTry = 200;
 
@@ -34,7 +34,7 @@ namespace LightBringer.TerrainGeneration
         // File path
         string path;
 
-        public WorldCreator(string path, int genRadius, float biomeDensity, float islandDensity)
+        public WorldCreator(string path, int genRadius = 512, float biomeDensity = .00003f, float islandDensity = .0006f)
         {
             this.path = path;
             generationSquareRadius = genRadius;
@@ -143,8 +143,17 @@ namespace LightBringer.TerrainGeneration
 
         public object LoadSpDic(string fileName)
         {
-            // save to binary
-            FileStream fs = new FileStream(path + fileName, FileMode.Open);
+            FileStream fs;
+
+            // load from binary
+            try
+            {
+                fs = new FileStream(path + fileName, FileMode.Open);
+            }
+            catch 
+            {
+                return null;
+            }
 
             Debug.Log("Load file from " + path + fileName);
 
@@ -163,8 +172,7 @@ namespace LightBringer.TerrainGeneration
             }
             catch (SerializationException e)
             {
-                Console.WriteLine("Failed to serialize. Reason: " + e.Message);
-                throw;
+                Debug.LogError("Failed to serialize. Reason: " + e.Message);
             }
             finally
             {
@@ -300,7 +308,7 @@ namespace LightBringer.TerrainGeneration
 
                     if (availableTypes.Count == 0)
                     {
-                        moreConstrainedBiome.type = Biome.Type.Light;
+                        moreConstrainedBiome.type = Biome.Type.Darkness;
                     }
                     else
                     {

@@ -39,7 +39,7 @@ namespace LightBringer.TerrainGeneration
 
         private void SetWC()
         {
-            wc = new WorldCreator(Application.persistentDataPath + "/", GEN_SQUARE_RADIUS, .00003f, .0006f);
+            wc = new WorldCreator(Application.persistentDataPath + "/");
         }
 
         private void CreateMapAndSaveToBinary()

@@ -2386,7 +2386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GEN_SQUARE_RADIUS: 512
-  NB_SQUARE_RADIUS: 15
+  NB_SQUARE_RADIUS: 5
   UPP: 16
   createMapAndSaveBin: 1
   loadAndPrintMap: 1

@@ -467,9 +467,9 @@ namespace LightBringer.TerrainGeneration
 
             // find height points bounds
             int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - MARGIN);
-            int uMax = Mathf.Min(WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
+            int uMax = Mathf.Min(WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
             int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - MARGIN);
-            int vMax = Mathf.Min(WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
+            int vMax = Mathf.Min(WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
@@ -486,7 +486,7 @@ namespace LightBringer.TerrainGeneration
                     float slopeHeight = SlopPointHeight(coord, out bool isOnSlopeWay);
 
                     // add to slope points
-                    if (isOnSlopeWay && slopeHeight > height && v < WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT && u < WorldManager.WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT)
+                    if (isOnSlopeWay && slopeHeight > height && v < WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT && u < WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT)
                     {
                         slopePoints.Add(new Vector2Int(v, u));
                     }

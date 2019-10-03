@@ -23,6 +23,7 @@ Terrain :
 	- Nouvelles formes d'îles
 	- Centrer une ile de pylone pour chaque biome
 	- Biome de lumière en 0, 0
+	- largeur pentes
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?

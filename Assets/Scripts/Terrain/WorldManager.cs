@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,31 +10,23 @@ namespace LightBringer.TerrainGeneration
     public class WorldManager : MonoBehaviour
     {
         private const float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
-        public const int WIDTH = 128;
+        public const int TERRAIN_WIDTH = 128;
         private const float DEPTH = 8f;
         public const int HEIGHT_POINT_PER_UNIT = 2;
-
-        private const int MAX_TRY = 200;
-
-        private const int NUMBER_OF_ISLAND_PER_SQUARE = 50;
-        private const float MIN_DISTANCE_BETWEEN_ISLANDS = 70;
-        private const int GEN_SQUARE_RADIUS = 512;
 
         public const int SLOPE_TEXTURE_ID = 2;
 
         // Loading distances
         private const float MIN_LOADED_TILE_DISTANCE = 192;
         private const float MAX_LOADED_TILE_DISTANCE = 384;
-
+        private const float MIN_GENERATED_REGION_DISTANCE = 384;
 
         public static WorldManager singleton; // Singleton
 
         private Transform playerTransform;
 
+        // Terrain painting
         [SerializeField] private TerrainLayer[] terrainLayers = null;
-
-
-
         [SerializeField] public ConditionnedTexture[] textures;
 
         // Nav mesh
@@ -51,6 +40,7 @@ namespace LightBringer.TerrainGeneration
         // Biomes, islands
         SpatialDictionary<Biome> biomes;
         SpatialDictionary<Island> islands;
+        WorldCreator wc;
 
         // Debug checkBoxed
         public bool createWorldMap = true;
@@ -61,8 +51,12 @@ namespace LightBringer.TerrainGeneration
         Dictionary<Dic2DKey, float[,]> heightsToAdd;
         Dictionary<Dic2DKey, float[,,]> mapsToAdd;
         int newTilesExpected = 0;
-        int workDone = 0;
-        object counterLock = new object();
+        int tileWorkDone = 0;
+        object tileCounterLock = new object();
+        object regionBoolLock = new object();
+        object biomeIslandLock = new object();
+        bool newRegionsExpected = false;
+        bool regionWorkDone = false;
 
         private void Start()
         {
@@ -73,41 +67,32 @@ namespace LightBringer.TerrainGeneration
 
             singleton = this;
 
-            // Data
+            // Tile Data
             loadedTiles = new Dictionary<Dic2DKey, GameObject>();
             heightsToAdd = new Dictionary<Dic2DKey, float[,]>();
             mapsToAdd = new Dictionary<Dic2DKey, float[,,]>();
-            islands = new SpatialDictionary<Island>();
 
+            // World Data
+            InitWorldData();
 
-            // Nav mesh
-            navSources = new List<NavMeshBuildSource>();
-            navMeshBuildSettings = new NavMeshBuildSettings();
-            navMeshBuildSettings.agentClimb = .4f;
-            navMeshBuildSettings.agentHeight = 7;
-            navMeshBuildSettings.agentRadius = 2.3f;
-            navMeshBuildSettings.agentSlope = 14;
-            navMeshBuildSettings.agentTypeID = 1;
-
-            // DEBUG
-            InitList();
+            // Init 4 first tiles
             for (int u = -1; u <= 0; u++)
             {
                 for (int v = -1; v <= 0; v++)
                 {
-                    GenerateData(u, v, out float[,] heights, out float[,,] map);
+                    GenerateTerrainData(u, v, out float[,] heights, out float[,,] map);
                     GenerateNewTerrain(u, v, heights, map);
                 }
             }
 
-            navMeshSurface.BuildNavMesh();
-
+            // Nav mesh
+            CreateNavMesh();
         }
 
         // Update is called once per frame
         void Update()
         {
-            if (newTilesExpected > 0 && workDone > 0)
+            if (newTilesExpected > 0 && tileWorkDone > 0)
             {
                 lock (heightsToAdd)
                 {
@@ -115,13 +100,14 @@ namespace LightBringer.TerrainGeneration
                     {
                         GenerateNewTerrain(pair.Key.x, pair.Key.y, pair.Value, mapsToAdd[pair.Key]);
 
-                        lock(counterLock)
+                        lock(tileCounterLock)
                         {
-                            workDone--;
+                            tileWorkDone--;
                             newTilesExpected--;
                         }
                     }
                     heightsToAdd.Clear();
+                    mapsToAdd.Clear();
                 }
 
                 // if all work done, bake nav mesh
@@ -130,12 +116,30 @@ namespace LightBringer.TerrainGeneration
                     UpdateMesh();
                 }
             }
+
+            if (newRegionsExpected && regionWorkDone)
+            {
+                // TODO
+
+                newRegionsExpected = false;
+                regionWorkDone = false;
+            }
+        }
+
+        private void CreateNavMesh()
+        {
+            navSources = new List<NavMeshBuildSource>();
+            navMeshBuildSettings = new NavMeshBuildSettings();
+            navMeshBuildSettings.agentClimb = .4f;
+            navMeshBuildSettings.agentHeight = 7;
+            navMeshBuildSettings.agentRadius = 2.3f;
+            navMeshBuildSettings.agentSlope = 14;
+            navMeshBuildSettings.agentTypeID = 1;
+            navMeshSurface.BuildNavMesh();
         }
 
         private void UpdateMesh()
         {
-            // navMeshSurface.UpdateNavMesh(navMeshSurface.navMeshData);
-
             navSources.Clear();
 
             foreach (GameObject go in loadedTiles.Values)
@@ -150,7 +154,6 @@ namespace LightBringer.TerrainGeneration
                 navSources.Add(s);
             }
 
-
             NavMeshBuilder.UpdateNavMeshDataAsync(
                     navMeshSurface.navMeshData,
                     navMeshBuildSettings,
@@ -159,30 +162,16 @@ namespace LightBringer.TerrainGeneration
                 );
         }
 
-        void InitList()
+        void InitWorldData()
         {
-            // load from binary
-            FileStream fs = new FileStream(Application.persistentDataPath + "/islands.dat", FileMode.Open);
+            wc = new WorldCreator(Application.persistentDataPath + "/");
+            wc.LoadData(out biomes, out islands);
 
-            // Binary formatter with vector 2
-            BinaryFormatter bf = new BinaryFormatter();
-            SurrogateSelector surrogateSelector = new SurrogateSelector();
-            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
-            bf.SurrogateSelector = surrogateSelector;
-
-            try
+            if (biomes == null || islands == null)
             {
-                islands = (SpatialDictionary<Island>)bf.Deserialize(fs);
-            }
-            catch (SerializationException e)
-            {
-                Console.WriteLine("Failed to deserialize. Reason: " + e.Message);
-                throw;
-            }
-            finally
-            {
-                fs.Close();
+                biomes = new SpatialDictionary<Biome>();
+                islands = new SpatialDictionary<Island>();
+                wc.CreateMapSector(ref biomes, ref islands, 0, 0);
             }
         }
 
@@ -190,12 +179,12 @@ namespace LightBringer.TerrainGeneration
         {
             // Terrain data
             TerrainData terrainData = new TerrainData();
-            terrainData.heightmapResolution = WIDTH * HEIGHT_POINT_PER_UNIT + 1;
-            terrainData.alphamapResolution = WIDTH * HEIGHT_POINT_PER_UNIT;
+            terrainData.heightmapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1;
+            terrainData.alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT;
             terrainData.baseMapResolution = 1024;
             terrainData.SetDetailResolution(1024, 16);
             terrainData.terrainLayers = terrainLayers;
-            terrainData.size = new Vector3(WIDTH, DEPTH, WIDTH);
+            terrainData.size = new Vector3(TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH);
 
             terrainData.SetHeights(0, 0, heights);
             terrainData.SetAlphamaps(0, 0, map);
@@ -203,7 +192,7 @@ namespace LightBringer.TerrainGeneration
             // Game objet creation
             GameObject terrainGO = Terrain.CreateTerrainGameObject(terrainData);
             terrainGO.name = "Terrain_" + xBase + "_" + zBase;
-            terrainGO.transform.position = new Vector3(WIDTH * xBase, 0, WIDTH * zBase);
+            terrainGO.transform.position = new Vector3(TERRAIN_WIDTH * xBase, 0, TERRAIN_WIDTH * zBase);
 
             // layer and tag
             terrainGO.tag = "Terrain";
@@ -213,20 +202,25 @@ namespace LightBringer.TerrainGeneration
             loadedTiles.Add(new Dic2DKey(xBase, zBase), terrainGO);
         }
 
-        private void GenerateData(int xBase, int zBase, out float[,] heights, out float[,,] map)
+        private void GenerateTerrainData(int xBase, int zBase, out float[,] heights, out float[,,] map)
         {
-            xBase *= WIDTH;
-            zBase *= WIDTH;
+            xBase *= TERRAIN_WIDTH;
+            zBase *= TERRAIN_WIDTH;
 
-            heights = new float[WIDTH * HEIGHT_POINT_PER_UNIT + 1, WIDTH * HEIGHT_POINT_PER_UNIT + 1];
+            heights = new float[TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1, TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1];
             List<Vector2Int> slopePoints = new List<Vector2Int>();
 
+            List<Island> islandList;
+
             // Look for islands to be added
-            List<Island> islandList = islands.GetAround(
-                    xBase + WIDTH / 2,
-                    zBase + WIDTH / 2,
-                    WIDTH / 2 + (int)((Island.MAX_POSSIBLE_RADIUS + 1) * Island.SCALE * 2)
+            lock (biomeIslandLock)
+            {
+                islandList = islands.GetAround(
+                    xBase + TERRAIN_WIDTH / 2,
+                    zBase + TERRAIN_WIDTH / 2,
+                    TERRAIN_WIDTH / 2 + (int)((Island.MAX_POSSIBLE_RADIUS + 1) * Island.SCALE * 2)
                 );
+            }
 
             foreach (Island island in islandList)
             {
@@ -239,14 +233,13 @@ namespace LightBringer.TerrainGeneration
                 }
             }
 
-
             // Textures. Initialized with zeros
-            map = new float[WIDTH * HEIGHT_POINT_PER_UNIT, WIDTH * HEIGHT_POINT_PER_UNIT, 3];
+            map = new float[TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT, TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT, 3];
 
             // for all positions in the alpha maps
-            for (int x = 0; x < WIDTH * HEIGHT_POINT_PER_UNIT; x++)
+            for (int x = 0; x < TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT; x++)
             {
-                for (int y = 0; y < WIDTH * HEIGHT_POINT_PER_UNIT; y++)
+                for (int y = 0; y < TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT; y++)
                 {
                     foreach (ConditionnedTexture texture in textures)
                     {
@@ -275,6 +268,7 @@ namespace LightBringer.TerrainGeneration
         {
             playerTransform = t;
             StartCoroutine(LoadedTilesCheck());
+            StartCoroutine(GeneratedRegionsCheck());
         }
 
         /*
@@ -285,43 +279,43 @@ namespace LightBringer.TerrainGeneration
         {
             while (playerTransform != null)
             {
-                Vector3 pos = playerTransform.position - new Vector3(WIDTH / 2, 0, WIDTH / 2);
+                Vector3 pos = playerTransform.position - new Vector3(TERRAIN_WIDTH / 2, 0, TERRAIN_WIDTH / 2);
 
                 // Check for the tiles that should be loaded
                 if (newTilesExpected == 0)
                 {
                     for (
-                           int i = (int)((pos.x - MIN_LOADED_TILE_DISTANCE) / WIDTH);
-                           i * WIDTH - pos.x <= MIN_LOADED_TILE_DISTANCE;
+                           int i = (int)((pos.x - MIN_LOADED_TILE_DISTANCE) / TERRAIN_WIDTH);
+                           i * TERRAIN_WIDTH - pos.x <= MIN_LOADED_TILE_DISTANCE;
                            i++
                        )
                     {
                         for (
-                            int j = (int)((pos.z - MIN_LOADED_TILE_DISTANCE) / WIDTH);
-                            j * WIDTH - pos.z <= MIN_LOADED_TILE_DISTANCE;
+                            int j = (int)((pos.z - MIN_LOADED_TILE_DISTANCE) / TERRAIN_WIDTH);
+                            j * TERRAIN_WIDTH - pos.z <= MIN_LOADED_TILE_DISTANCE;
                             j++
                         )
                         {
                             if (!loadedTiles.ContainsKey(new Dic2DKey(i, j)))
                             {
                                 // Call for thread
-                                lock (counterLock)
+                                lock (tileCounterLock)
                                 {
                                     newTilesExpected++;
                                 }
 
-                                ThreadPool.QueueUserWorkItem(GenerateDataThreaded, new object[] { i, j });
+                                ThreadPool.QueueUserWorkItem(GenerateTerrainDataThreaded, new object[] { i, j });
                             }
                         }
                     }
                 }
 
-                // TODO check for tiles that should be unloaded
+                // Check for tiles that should be unloaded
                 List<Dic2DKey> keyToRemove = new List<Dic2DKey>();
 
                 foreach (Dic2DKey key in loadedTiles.Keys)
                 {
-                    if (Mathf.Max(Mathf.Abs(key.x * WIDTH - pos.x), Mathf.Abs(key.y * WIDTH - pos.z)) > MAX_LOADED_TILE_DISTANCE)
+                    if (Mathf.Max(Mathf.Abs(key.x * TERRAIN_WIDTH - pos.x), Mathf.Abs(key.y * TERRAIN_WIDTH - pos.z)) > MAX_LOADED_TILE_DISTANCE)
                     {
                         keyToRemove.Add(key);
                     }
@@ -333,11 +327,56 @@ namespace LightBringer.TerrainGeneration
                     loadedTiles.Remove(key);
                 }
 
-
-
                 yield return new WaitForSeconds(5);
             }
+        }
 
+        IEnumerator GeneratedRegionsCheck()
+        {
+            while (playerTransform != null)
+            {
+                Vector3 pos = playerTransform.position;
+
+                // Check for the tiles that should be loaded
+                if (!newRegionsExpected)
+                {
+                    List<int[]> regions = new List<int[]>();
+
+                    for (
+                           int i = (int)Math.Round((pos.x - MIN_GENERATED_REGION_DISTANCE) / (2 * wc.generationSquareRadius))
+                                    * 2 * wc.generationSquareRadius;
+                           i <= pos.x + MIN_GENERATED_REGION_DISTANCE + wc.generationSquareRadius;
+                           i += 2 * wc.generationSquareRadius
+                       )
+                    {
+                        for (
+                            int j = (int)Math.Round((pos.z - MIN_GENERATED_REGION_DISTANCE) / (2 * wc.generationSquareRadius))
+                                    * 2 * wc.generationSquareRadius;
+                           j <= pos.z + MIN_GENERATED_REGION_DISTANCE + wc.generationSquareRadius;
+                           j += 2 * wc.generationSquareRadius
+                        )
+                        {
+                            if (islands.IsEmpty(i, j, wc.generationSquareRadius))
+                            {
+                                regions.Add(new int[] { i, j });
+                            }
+                        }
+                    }
+
+                    if (regions.Count > 0)
+                    {
+                        lock (regionBoolLock)
+                        {
+                            newRegionsExpected = true;
+                        }
+                        // Call for thread
+                        ThreadPool.QueueUserWorkItem(GenerateRegionDataThreaded, regions);
+                    }
+                    
+                }
+
+                yield return new WaitForSeconds(4.77f);
+            }
         }
         #endregion
 
@@ -346,26 +385,50 @@ namespace LightBringer.TerrainGeneration
          */
         #region Threads
 
-        private void GenerateDataThreaded(object xzBase)
+        private void GenerateTerrainDataThreaded(object xzBase)
         {
             object[] array = xzBase as object[];
             int xBase = Convert.ToInt32(array[0]);
             int zBase = Convert.ToInt32(array[1]);
 
-            GenerateData(xBase, zBase, out float[,] heights, out float[,,] map);
+            GenerateTerrainData(xBase, zBase, out float[,] heights, out float[,,] map);
 
             lock (heightsToAdd)
             {
-                heightsToAdd.Add(new Dic2DKey((int)xBase, (int)zBase), heights);
-                mapsToAdd.Add(new Dic2DKey((int)xBase, (int)zBase), map);
+                heightsToAdd.Add(new Dic2DKey(xBase, zBase), heights);
+                mapsToAdd.Add(new Dic2DKey(xBase, zBase), map);
             }
 
-            lock (counterLock)
+            lock (tileCounterLock)
             {
-                workDone++;
+                tileWorkDone++;
             }
         }
 
+        private void GenerateRegionDataThreaded(object regions)
+        {
+            List<int[]> coords = regions as List<int[]>;
+
+            SpatialDictionary<Biome> biomesCopy = biomes.Copy();
+            SpatialDictionary<Island> islandsCopy = islands.Copy();
+
+            for (int i = 0; i < coords.Count; i++)
+            {
+                wc.CreateMapSector(ref biomesCopy, ref islandsCopy, coords[i][0], coords[i][1]);
+            }
+
+            lock (biomeIslandLock)
+            {
+                islands = islandsCopy;
+                biomes = biomesCopy;
+            }
+
+            lock (regionBoolLock)
+            {
+                regionWorkDone = true;
+            }
+
+        }
         #endregion
     }
 }

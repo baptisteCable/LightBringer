@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
 {
@@ -375,6 +379,27 @@ namespace LightBringer.TerrainGeneration
             }
 
             return val;
+        }
+
+        public SpatialDictionary<T> Copy()
+        {
+            if (!typeof(T).IsSerializable)
+            {
+                throw new SerializationException("The type must be serializable.");
+            }
+
+            IFormatter formatter = new BinaryFormatter(); SurrogateSelector surrogateSelector = new SurrogateSelector();
+            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
+            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
+            formatter.SurrogateSelector = surrogateSelector;
+
+            Stream stream = new MemoryStream();
+            using (stream)
+            {
+                formatter.Serialize(stream, this);
+                stream.Seek(0, SeekOrigin.Begin);
+                return (SpatialDictionary<T>)formatter.Deserialize(stream);
+            }
         }
     }
 }
