@@ -125,6 +125,11 @@ namespace LightBringer.TerrainGeneration
                 return GetBiome(biomes, position, searchingDistance * 2);
             }
 
+            return GetBiome(closeBiomes, position);
+        }
+
+        static public Biome GetBiome(List<Biome> closeBiomes, Vector2 position)
+        {
             Biome closest = null;
             float minDist = float.PositiveInfinity;
 
@@ -144,7 +149,6 @@ namespace LightBringer.TerrainGeneration
             }
 
             return closest;
-
         }
 
         static public List<Dic2DKey> Get4ClosestBiomes(SpatialDictionary<Biome> biomes, Vector2 position,

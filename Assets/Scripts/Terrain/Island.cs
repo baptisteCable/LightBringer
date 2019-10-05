@@ -171,7 +171,7 @@ namespace LightBringer.TerrainGeneration
         }
 
         // return the distance to the island in island unit (1f is segment length)
-        public float DistanceFromIsland(Vector2 point)
+        public float DistanceFromIslandInIslandUnit(Vector2 point)
         {
             if (vertices == null)
             {
@@ -225,19 +225,93 @@ namespace LightBringer.TerrainGeneration
             {
                 return -dotProdNormal;
             }
-
         }
 
-        public void GenerateIslandAndHeights(
+        public float DistanceFromIslandInWorldUnit(Vector2 worldPos)
+        {
+            Vector2 point = (worldPos - centerInWorld) / SCALE;
+            return SCALE * DistanceFromIslandInIslandUnit(point);
+        }
+
+        public void GenerateIslandHeightsAndAlphaMap(
             ref float[,] terrainHeights,
-            Vector2 terrainPosition,
-            ref List<Vector2Int> slopePoints)
+            ref float[,,] map,
+            Vector2 terrainPosition)
         {
             // Generate island data from seed
             GenerateIslandVertices();
+            GenerateHeightsAndAlphaMap(ref terrainHeights, ref map, terrainPosition);
+        }
+        private void GenerateHeightsAndAlphaMap(
+            ref float[,] terrainHeights,
+            ref float[,,] map,
+            Vector2 terrainPosition)
+        {
+            int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
+            // find bounds
+            float xMin = float.PositiveInfinity;
+            float xMax = float.NegativeInfinity;
+            float yMin = float.PositiveInfinity;
+            float yMax = float.NegativeInfinity;
 
-            GenerateHeights(ref terrainHeights, terrainPosition, ref slopePoints);
+            foreach (Vector2 vertex in vertices)
+            {
+                if (vertex.x < xMin) xMin = vertex.x;
+                if (vertex.x > xMax) xMax = vertex.x;
+                if (vertex.y < yMin) yMin = vertex.y;
+                if (vertex.y > yMax) yMax = vertex.y;
+            }
 
+            Vector2 localIslandCenter = centerInWorld - terrainPosition;
+            Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT;
+
+            // find height points bounds
+            int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - MARGIN);
+            int uMax = Mathf.Min(mapSize, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
+            int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - MARGIN);
+            int vMax = Mathf.Min(mapSize, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
+
+            // For each point in the region, compute height
+            for (int u = uMin; u <= uMax; u++)
+            {
+                // convert to island unit (/SCALE)
+                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+
+                for (int v = vMin; v <= vMax; v++)
+                {
+                    // convert to island unit (/SCALE)
+                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+
+                    Vector2 coord = new Vector2(x, y);
+                    float height = TopOrCliffPointHeight(coord, out GroundType gType, out bool isIslandBiome);
+                    if (isIslandBiome)
+                    {
+                        float slopeHeight = 0;
+
+                        // if not on top, test slope
+                        if (height != 1)
+                        {
+                            slopeHeight = SlopPointHeight(coord, ref gType, ref isIslandBiome);
+                        }
+
+                        // write heightmap
+                        terrainHeights[v, u] = .5f * Mathf.Max(height, slopeHeight);
+
+                        // Alpha map is smaller than height map
+                        if (u < mapSize && v < mapSize)
+                        {
+                            // write alphaMap
+                            map[v, u, GetLayerIndex(gType, biomeType)] = 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        // works for 6 biomes
+        static private int GetLayerIndex(GroundType type, Biome.Type biome)
+        {
+            return WorldManager.NB_BIOME_TYPE * (int)type + (int)biome - 1;
         }
 
         private void GenerateSlopes()
@@ -251,7 +325,7 @@ namespace LightBringer.TerrainGeneration
             slopeTopOnRight = new bool[2];
 
             System.Random rdm = new System.Random();
-            int index = rdm.Next(vertices.Count) ;
+            int index = rdm.Next(vertices.Count);
             DetermineSlope(0, index);
             DetermineSlope(1, (slopes[0] - 1 + vertices.Count / 2) % vertices.Count);
         }
@@ -305,10 +379,8 @@ namespace LightBringer.TerrainGeneration
         }
 
         // returns 0 if not in slope. Height between 0 and 1
-        private float SlopPointHeight(Vector2 coord, out bool isOnSlopeWay)
+        private float SlopPointHeight(Vector2 coord, ref GroundType gType, ref bool isIslandBiome)
         {
-            isOnSlopeWay = false;
-
             for (int i = 0; i < 2; i++)
             {
                 Vector2 vec = coord - vertices[slopes[i]];
@@ -350,17 +422,30 @@ namespace LightBringer.TerrainGeneration
                                 dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
                             ))
                         {
-                            isOnSlopeWay = true;
+                            gType = GroundType.Path;
                         }
+                        else
+                        {
+                            gType = GroundType.Top;
+                        }
+
+                        isIslandBiome = true;
                         return 1f;
                     }
+
                     // First slope part
                     else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
                         if (dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                         {
-                            isOnSlopeWay = true;
+                            gType = GroundType.Path;
                         }
+                        else
+                        {
+                            gType = GroundType.Top;
+                        }
+
+                        isIslandBiome = true;
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1);
                     }
                     // turn
@@ -368,8 +453,14 @@ namespace LightBringer.TerrainGeneration
                     {
                         if (vec.magnitude > (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && vec.magnitude < (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                         {
-                            isOnSlopeWay = true;
+                            gType = GroundType.Path;
                         }
+                        else
+                        {
+                            gType = GroundType.Top;
+                        }
+
+                        isIslandBiome = true;
                         return SlopeEquation((1 - SLOPE_LANDING) / 2f);
                     }
                 }
@@ -382,8 +473,14 @@ namespace LightBringer.TerrainGeneration
                         if (dotNorm2 - dot2 * .3f >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
                             dotNorm2 - dot2 * .3f <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                         {
-                            isOnSlopeWay = true;
+                            gType = GroundType.Path;
                         }
+                        else
+                        {
+                            gType = GroundType.Top;
+                        }
+
+                        isIslandBiome = true;
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2);
                     }
                 }
@@ -393,27 +490,37 @@ namespace LightBringer.TerrainGeneration
                 {
                     if (dot1 >= (1 + SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f + 1 / CLIFF_SLOPE)
                     {
+                        isIslandBiome = true;
+
                         if (dotNorm1 <= SLOPE_WIDTH)
                         {
+                            gType = GroundType.Cliff;
                             return 1f - (dot1 - (1 + SLOPE_LANDING) / 2f) * CLIFF_SLOPE;
                         }
                         else
                         {
                             Vector2 corner = vertices[slopes[i]] + vec1 * (1 + SLOPE_LANDING) / 2f + norm1 * SLOPE_WIDTH;
                             float cornerDist = (coord - corner).magnitude;
+                            gType = GroundType.Cliff;
                             return 1f - cornerDist * CLIFF_SLOPE;
                         }
                     }
                     else if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
                     {
+                        isIslandBiome = true;
+                        gType = GroundType.Cliff;
                         return 1f - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
                     }
                     else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
+                        isIslandBiome = true;
+                        gType = GroundType.Cliff;
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1) - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
                     }
                     else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                     {
+                        isIslandBiome = true;
+                        gType = GroundType.Cliff;
                         return SlopeEquation((1 - SLOPE_LANDING) / 2f) - (vec.magnitude - SLOPE_WIDTH) * CLIFF_SLOPE;
                     }
                 }
@@ -422,10 +529,11 @@ namespace LightBringer.TerrainGeneration
                 {
                     if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
                     {
+                        isIslandBiome = true;
+                        gType = GroundType.Cliff;
                         return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2) - (dotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
                     }
                 }
-
             }
 
             return 0;
@@ -437,64 +545,34 @@ namespace LightBringer.TerrainGeneration
         }
 
         // height between 0 and 1
-        private float TopOrCliffPointHeight(Vector2 coord)
+        private float TopOrCliffPointHeight(Vector2 coord, out GroundType gType, out bool inIslandBiome)
         {
-            float dist = DistanceFromIsland(coord);
+            float dist = DistanceFromIslandInIslandUnit(coord);
+            if (dist == 0)
+            {
+                gType = GroundType.Top;
+                inIslandBiome = true;
+            }
+            else if (dist <= 1 / CLIFF_SLOPE)
+            {
+                gType = GroundType.Cliff;
+                inIslandBiome = true;
+            }
+            else if (dist <= 1f)
+            {
+                gType = GroundType.Ground1;
+                inIslandBiome = true;
+            }
+            else
+            {
+                gType = GroundType.Ground2;
+                inIslandBiome = false;
+            }
+
             return Mathf.Max(0, 1 - dist * CLIFF_SLOPE);
         }
 
-        private void GenerateHeights(
-            ref float[,] terrainHeights,
-            Vector2 terrainPosition,
-            ref List<Vector2Int> slopePoints)
-        {
-            // find bounds
-            float xMin = float.PositiveInfinity;
-            float xMax = float.NegativeInfinity;
-            float yMin = float.PositiveInfinity;
-            float yMax = float.NegativeInfinity;
 
-            foreach (Vector2 vertex in vertices)
-            {
-                if (vertex.x < xMin) xMin = vertex.x;
-                if (vertex.x > xMax) xMax = vertex.x;
-                if (vertex.y < yMin) yMin = vertex.y;
-                if (vertex.y > yMax) yMax = vertex.y;
-            }
-
-            Vector2 localIslandCenter = centerInWorld - terrainPosition;
-            Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT;
-
-            // find height points bounds
-            int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - MARGIN);
-            int uMax = Mathf.Min(WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
-            int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - MARGIN);
-            int vMax = Mathf.Min(WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
-
-            // For each point in the region, compute height
-            for (int u = uMin; u <= uMax; u++)
-            {
-                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
-
-                for (int v = vMin; v <= vMax; v++)
-                {
-                    // convert to island unit (/SCALE)
-                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
-
-                    Vector2 coord = new Vector2(x, y);
-                    float height = TopOrCliffPointHeight(coord);
-                    float slopeHeight = SlopPointHeight(coord, out bool isOnSlopeWay);
-
-                    // add to slope points
-                    if (isOnSlopeWay && slopeHeight > height && v < WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT && u < WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT)
-                    {
-                        slopePoints.Add(new Vector2Int(v, u));
-                    }
-
-                    terrainHeights[v, u] = .5f * Mathf.Max(height, slopeHeight);
-                }
-            }
-        }
     }
 }
 

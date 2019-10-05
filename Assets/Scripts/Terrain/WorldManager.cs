@@ -9,7 +9,6 @@ namespace LightBringer.TerrainGeneration
 {
     public class WorldManager : MonoBehaviour
     {
-        private const float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
         public const int TERRAIN_WIDTH = 128;
         private const float DEPTH = 8f;
         public const int HEIGHT_POINT_PER_UNIT = 2;
@@ -21,13 +20,16 @@ namespace LightBringer.TerrainGeneration
         private const float MAX_LOADED_TILE_DISTANCE = 384;
         private const float MIN_GENERATED_REGION_DISTANCE = 384;
 
+        // Map painting
+        public const int NB_BIOME_TYPE = 6;
+        public const int NB_GROUND_TYPE = 5;
+
         public static WorldManager singleton; // Singleton
 
         private Transform playerTransform;
 
         // Terrain painting
         [SerializeField] private TerrainLayer[] terrainLayers = null;
-        [SerializeField] public ConditionnedTexture[] textures;
 
         // Nav mesh
         [SerializeField] private NavMeshSurface navMeshSurface = null;
@@ -60,6 +62,11 @@ namespace LightBringer.TerrainGeneration
 
         private void Start()
         {
+            ThreadPool.SetMinThreads(2, 2);
+            ThreadPool.SetMaxThreads(12, 12);
+            ThreadPool.GetMaxThreads(out int workerT, out int completionPortThreads);
+            Debug.Log(workerT + " " + completionPortThreads);
+            Debug.Log(Environment.ProcessorCount);
             if (singleton != null)
             {
                 throw new Exception("World manager singleton already exists.");
@@ -100,7 +107,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         GenerateNewTerrain(pair.Key.x, pair.Key.y, pair.Value, mapsToAdd[pair.Key]);
 
-                        lock(tileCounterLock)
+                        lock (tileCounterLock)
                         {
                             tileWorkDone--;
                             newTilesExpected--;
@@ -207,8 +214,27 @@ namespace LightBringer.TerrainGeneration
             xBase *= TERRAIN_WIDTH;
             zBase *= TERRAIN_WIDTH;
 
-            heights = new float[TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1, TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1];
-            List<Vector2Int> slopePoints = new List<Vector2Int>();
+            // Find impacting biomes
+            List<Biome> impactingBiomes = new List<Biome>();
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    foreach (Dic2DKey key in Biome.Get4ClosestBiomes(biomes, 
+                        new Vector2(xBase + i * TERRAIN_WIDTH / 2, zBase + j * TERRAIN_WIDTH / 2), out List<float> minDist))
+                    {
+                        Biome biome = biomes.Get(key);
+                        if (!impactingBiomes.Contains(biome))
+                        {
+                            impactingBiomes.Add(biome);
+                        }
+                    }
+                }
+            }
+
+            int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
+            map = new float[mapSize, mapSize, NB_GROUND_TYPE * NB_BIOME_TYPE];
+            heights = new float[mapSize + 1, mapSize + 1];
 
             List<Island> islandList;
 
@@ -224,43 +250,13 @@ namespace LightBringer.TerrainGeneration
 
             foreach (Island island in islandList)
             {
-                lock(island)
+                lock (island)
                 {
-                    island.GenerateIslandAndHeights(
+                    island.GenerateIslandHeightsAndAlphaMap(
                         ref heights,
-                        new Vector2(xBase, zBase),
-                        ref slopePoints);
+                        ref map,
+                        new Vector2(xBase, zBase));
                 }
-            }
-
-            // Textures. Initialized with zeros
-            map = new float[TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT, TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT, 3];
-
-            // for all positions in the alpha maps
-            for (int x = 0; x < TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT; x++)
-            {
-                for (int y = 0; y < TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT; y++)
-                {
-                    foreach (ConditionnedTexture texture in textures)
-                    {
-                        // does it fit?
-                        if (texture.Fits(heights[x, y]))
-                        {
-                            // Write a 1 into the alpha map 
-                            map[x, y, texture.groundTexIndex] = 1;
-                        }
-                    }
-                }
-            }
-
-            // Paint slopes
-            foreach (Vector2Int point in slopePoints)
-            {
-                for (int i = 0; i < textures.Length; i++)
-                {
-                    map[point.x, point.y, i] *= .25f;
-                }
-                map[point.x, point.y, SLOPE_TEXTURE_ID] = .75f;
             }
         }
 
@@ -372,7 +368,7 @@ namespace LightBringer.TerrainGeneration
                         // Call for thread
                         ThreadPool.QueueUserWorkItem(GenerateRegionDataThreaded, regions);
                     }
-                    
+
                 }
 
                 yield return new WaitForSeconds(4.77f);

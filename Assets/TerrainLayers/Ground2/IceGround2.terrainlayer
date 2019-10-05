@@ -6,16 +6,16 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrassLayer
-  m_DiffuseTexture: {fileID: 2800000, guid: 00f8eeee134cd4a42a32c67372689546, type: 3}
+  m_Name: IceGround2
+  m_DiffuseTexture: {fileID: 2800000, guid: cf706f00b74949c4988862b315c6ba8b, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 2f510e5778cf21f47861c7a9bbea97cb, type: 3}
   m_MaskMapTexture: {fileID: 0}
-  m_TileSize: {x: 32, y: 32}
+  m_TileSize: {x: 64, y: 64}
   m_TileOffset: {x: 0, y: 0}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
   m_Metallic: 0
   m_Smoothness: 0
-  m_NormalScale: 0.13
+  m_NormalScale: 0.06
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}

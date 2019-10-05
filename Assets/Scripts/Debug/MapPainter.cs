@@ -61,7 +61,7 @@ public class MapPainter
                 float x = (i * meterPerPix - mapRadius + xCenter - island.centerInWorld.x) / Island.SCALE;
                 float y = (j * meterPerPix - mapRadius + yCenter + island.centerInWorld.y) / Island.SCALE;
 
-                float dist = island.DistanceFromIsland(new Vector2(x, y));
+                float dist = island.DistanceFromIslandInIslandUnit(new Vector2(x, y));
                 if (dist == 0)
                 {
                     // Color depends on island biome type
