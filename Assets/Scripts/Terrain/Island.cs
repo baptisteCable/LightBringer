@@ -244,16 +244,18 @@ namespace LightBringer.TerrainGeneration
 
         public void GenerateIslandHeightsAndAlphaMap(
             ref float[,] terrainHeights,
-            ref float[,,] map,
+            ref Biome.Type[,] biomeMap,
+            ref GroundType[,] groundMap,
             Vector2 terrainPosition)
         {
             // Generate island data from seed
             GenerateIslandVertices();
-            GenerateHeightsAndAlphaMap(ref terrainHeights, ref map, terrainPosition);
+            GenerateHeightsAndAlphaMap(ref terrainHeights, ref biomeMap, ref groundMap, terrainPosition);
         }
         private void GenerateHeightsAndAlphaMap(
             ref float[,] terrainHeights,
-            ref float[,,] map,
+            ref Biome.Type[,] biomeMap,
+            ref GroundType[,] groundMap,
             Vector2 terrainPosition)
         {
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
@@ -312,17 +314,12 @@ namespace LightBringer.TerrainGeneration
                         if (u < mapSize && v < mapSize)
                         {
                             // write alphaMap
-                            map[v, u, GetLayerIndex(gType, biomeType)] = 1;
+                            groundMap[v, u] = gType;
+                            biomeMap[v, u] = biomeType;
                         }
                     }
                 }
             }
-        }
-
-        // works for 6 biomes
-        static private int GetLayerIndex(GroundType type, Biome.Type biome)
-        {
-            return WorldManager.NB_BIOME_TYPE * (int)type + (int)biome - 1;
         }
 
         private void GenerateSlopes()

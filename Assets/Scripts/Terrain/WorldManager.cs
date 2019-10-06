@@ -23,6 +23,7 @@ namespace LightBringer.TerrainGeneration
         // Map painting
         public const int NB_BIOME_TYPE = 6;
         public const int NB_GROUND_TYPE = 5;
+        private const int BIOME_APPROX = 8;
 
         public static WorldManager singleton; // Singleton
 
@@ -215,7 +216,7 @@ namespace LightBringer.TerrainGeneration
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    foreach (Dic2DKey key in Biome.Get4ClosestBiomes(biomes, 
+                    foreach (Dic2DKey key in Biome.Get4ClosestBiomes(biomes,
                         new Vector2(xBase + i * TERRAIN_WIDTH / 2, zBase + j * TERRAIN_WIDTH / 2), out List<float> minDist))
                     {
                         Biome biome = biomes.Get(key);
@@ -230,6 +231,12 @@ namespace LightBringer.TerrainGeneration
             int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
             map = new float[mapSize, mapSize, NB_GROUND_TYPE * NB_BIOME_TYPE];
             heights = new float[mapSize + 1, mapSize + 1];
+
+            Biome.Type[,] biomeMap = new Biome.Type[mapSize + 1, mapSize + 1];
+            GroundType[,] groundMap = new GroundType[mapSize, mapSize];
+
+            FillBiomeMap(impactingBiomes, ref biomeMap, xBase, zBase, mapSize, 0, 0);
+            FillGroundMap(ref groundMap);
 
             List<Island> islandList;
 
@@ -249,10 +256,109 @@ namespace LightBringer.TerrainGeneration
                 {
                     island.GenerateIslandHeightsAndAlphaMap(
                         ref heights,
-                        ref map,
+                        ref biomeMap,
+                        ref groundMap,
                         new Vector2(xBase, zBase));
                 }
             }
+
+            PaintMap(ref map, ref biomeMap, ref groundMap);
+        }
+
+        private void FillBiomeMap(List<Biome> biomes, ref Biome.Type[,] biomeMap,
+            int xBase, int zBase, int size, int xStart, int yStart)
+        {
+            int i, j;
+
+            if (size >= BIOME_APPROX)
+            {
+                bool diff = false;
+                i = xStart;
+                while (i < xStart + size + 1 && !diff)
+                {
+                    j = yStart;
+                    while (j < yStart + size + 1 && !diff)
+                    {
+                        if (biomeMap[i, j] == Biome.Type.Undefined)
+                        {
+                            biomeMap[i, j] = Biome.GetBiome(biomes, new Vector2(xBase + j / 2f, zBase + i / 2f)).type;
+                        }
+
+                        if (biomeMap[i, j] != biomeMap[xStart, yStart])
+                        {
+                            diff = true;
+                        }
+
+                        j += BIOME_APPROX;
+                    }
+
+                    i += BIOME_APPROX;
+                }
+
+                if (diff)
+                {
+                    FillBiomeMap(biomes, ref biomeMap, xBase, zBase, size / 2, xStart, yStart);
+                    FillBiomeMap(biomes, ref biomeMap, xBase, zBase, size / 2, xStart + size / 2, yStart);
+                    FillBiomeMap(biomes, ref biomeMap, xBase, zBase, size / 2, xStart, yStart + size / 2);
+                    FillBiomeMap(biomes, ref biomeMap, xBase, zBase, size / 2, xStart + size / 2, yStart + size / 2);
+                }
+                else
+                {
+                    // All the same biome
+                    for (i = xStart; i < xStart + size; i++)
+                    {
+                        for (j = yStart; j < yStart + size; j++)
+                        {
+                            biomeMap[i, j] = biomeMap[xStart, yStart];
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (i = xStart; i < xStart + size; i++)
+                {
+                    for (j = yStart; j < yStart + size; j++)
+                    {
+                        if (biomeMap[i, j] == Biome.Type.Undefined)
+                        {
+                            biomeMap[i, j] = Biome.GetBiome(biomes, new Vector2(xBase + j / 2f, zBase + i / 2f)).type;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FillGroundMap(ref GroundType[,] groundMap)
+        {
+            int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
+
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
+                    groundMap[i, j] = GroundType.Ground2;
+                }
+            }
+        }
+
+        private void PaintMap(ref float[,,] map, ref Biome.Type[,] biomeMap, ref GroundType[,] groundMap)
+        {
+            int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
+
+            for (int i = 0; i < mapSize; i++)
+            {
+                for (int j = 0; j < mapSize; j++)
+                {
+                    map[i, j, GetLayerIndex(groundMap[i, j], biomeMap[i, j])] = 1;
+                }
+            }
+        }
+
+        // works for 6 biomes
+        static private int GetLayerIndex(GroundType type, Biome.Type biome)
+        {
+            return NB_BIOME_TYPE * (int)type + (int)biome - 1;
         }
 
         public void SetPlayerTransform(Transform t)

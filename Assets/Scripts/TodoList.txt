@@ -24,6 +24,8 @@ Terrain :
 	- Centrer une ile de pylone pour chaque biome
 	- Biome de lumière en 0, 0
 	- largeur pentes
+	- Faire plus large pour faire un flou
+	- Generer le sol par carré de 64, sinon 32, sinon 16, etc.
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?
