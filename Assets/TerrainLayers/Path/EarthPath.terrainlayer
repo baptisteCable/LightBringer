@@ -6,8 +6,8 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FireSlope
-  m_DiffuseTexture: {fileID: 2800000, guid: 6ac4cae514b4c9842ba638f6231c95a6, type: 3}
+  m_Name: EarthPath
+  m_DiffuseTexture: {fileID: 2800000, guid: 00f8eeee134cd4a42a32c67372689546, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 2f510e5778cf21f47861c7a9bbea97cb, type: 3}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 16, y: 16}

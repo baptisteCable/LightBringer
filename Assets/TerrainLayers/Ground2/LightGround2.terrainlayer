@@ -7,7 +7,7 @@ TerrainLayer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LightGround2
-  m_DiffuseTexture: {fileID: 2800000, guid: 0192b7e7487140145abb36de43dc616d, type: 3}
+  m_DiffuseTexture: {fileID: 2800000, guid: 4df3556f13eb8f4429afb29a0f14b31c, type: 3}
   m_NormalMapTexture: {fileID: 2800000, guid: 2f510e5778cf21f47861c7a9bbea97cb, type: 3}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 64, y: 64}

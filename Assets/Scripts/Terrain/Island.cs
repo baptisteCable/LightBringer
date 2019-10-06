@@ -18,6 +18,10 @@ namespace LightBringer.TerrainGeneration
         public const float SCALE = 7f; // scale from island units to world units
         public const float MAX_POSSIBLE_RADIUS = 2.3f; // Used for rejection sampling
 
+        private const int GROUND_1_FUNCTION_PARTS = 12;
+        private const float GROUND_1_MIN = 4f;
+        private const float GROUND_1_MAX = 8f;
+
         int seed = 0;
 
         public Biome.Type biomeType;
@@ -33,10 +37,13 @@ namespace LightBringer.TerrainGeneration
         private List<Vector2> vertices = null;
 
         [NonSerialized]
-        private static System.Random rnd;
+        private System.Random rnd;
 
         [NonSerialized]
         private SlopeData[] slopeData;
+
+        [NonSerialized]
+        private float[] ground1Zone;
 
         public Island(Vector2 centerPosition, Biome.Type bt, int newSeed = 0)
         {
@@ -84,7 +91,9 @@ namespace LightBringer.TerrainGeneration
                 return;
             }
 
-            System.Random rdm = new System.Random(seed);
+            rnd = new System.Random(seed);
+
+            InitGround1Function();
 
             vertices = new List<Vector2>();
 
@@ -94,7 +103,7 @@ namespace LightBringer.TerrainGeneration
             // Compute vertices
             while (vertices.Count < 5 * radius || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
-                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1], rdm);
+                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1], rnd);
                 vector = RotateVector(vector, angle);
                 vertices.Add(vertices[vertices.Count - 1] + vector);
             }
@@ -249,9 +258,14 @@ namespace LightBringer.TerrainGeneration
             Vector2 terrainPosition)
         {
             // Generate island data from seed
-            GenerateIslandVertices();
+            if (vertices == null)
+            {
+                GenerateIslandVertices();
+            }
+
             GenerateHeightsAndAlphaMap(ref terrainHeights, ref biomeMap, ref groundMap, terrainPosition);
         }
+
         private void GenerateHeightsAndAlphaMap(
             ref float[,] terrainHeights,
             ref Biome.Type[,] biomeMap,
@@ -603,7 +617,69 @@ namespace LightBringer.TerrainGeneration
             return Mathf.Max(0, 1 - dist * CLIFF_SLOPE);
         }
 
+        private void InitGround1Function()
+        {
+            ground1Zone = new float[GROUND_1_FUNCTION_PARTS];
+            for (int i = 0; i < GROUND_1_FUNCTION_PARTS; i++)
+            {
+                ground1Zone[i] = (float)rnd.NextDouble() * (GROUND_1_MAX - GROUND_1_MIN) + GROUND_1_MIN;
+            }
+        }
 
+        private float Ground1Dist(float angle)
+        {
+            angle = (angle + 2 * (float)Math.PI) % (2 * (float)Math.PI);
+            float sectorLength = 2 * (float)Math.PI / GROUND_1_FUNCTION_PARTS;
+            int i = (int)(angle / sectorLength);
+            float t = (angle - i * sectorLength) / sectorLength;
+            float prop = (1 - (float)Math.Cos(t * Math.PI)) * .5f;
+            return ground1Zone[i] * (1 - prop) + ground1Zone[(i + 1) % GROUND_1_FUNCTION_PARTS] * prop;
+
+        }
+
+        // coord in island units
+        public bool IsInGround1(Vector2 pos)
+        {
+            if (vertices == null)
+            {
+                GenerateIslandVertices();
+            }
+
+            return pos.magnitude < Ground1Dist(Vector2.SignedAngle(Vector2.left, pos) / 180 * (float)Math.PI);
+        }
+
+        public void GenerateGround1(ref GroundType[,] groundMap, Vector2 terrainPosition)
+        {
+            int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
+
+            Vector2 islandCenterInHeightCoord = (centerInWorld - terrainPosition) * WorldManager.HEIGHT_POINT_PER_UNIT;
+
+            int margin = (int)(GROUND_1_MAX * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT);
+
+            // find height points bounds
+            int uMin = Mathf.Max(0, (int)(islandCenterInHeightCoord.x - margin));
+            int uMax = Mathf.Min(mapSize - 1, (int)(islandCenterInHeightCoord.x + margin));
+            int vMin = Mathf.Max(0, (int)(islandCenterInHeightCoord.y - margin));
+            int vMax = Mathf.Min(mapSize - 1, (int)(islandCenterInHeightCoord.y + margin));
+
+            // For each point in the region
+            for (int u = uMin; u <= uMax; u++)
+            {
+                // convert to island unit (/SCALE)
+                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+
+                for (int v = vMin; v <= vMax; v++)
+                {
+                    // convert to island unit (/SCALE)
+                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+
+                    if (IsInGround1(new Vector2(x, y)))
+                    {
+                        groundMap[v, u] = GroundType.Ground1;
+                    }
+                }
+            }
+        }
     }
 }
 

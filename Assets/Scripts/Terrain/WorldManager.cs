@@ -122,8 +122,6 @@ namespace LightBringer.TerrainGeneration
 
             if (newRegionsExpected && regionWorkDone)
             {
-                // TODO
-
                 newRegionsExpected = false;
                 regionWorkDone = false;
             }
@@ -236,7 +234,6 @@ namespace LightBringer.TerrainGeneration
             GroundType[,] groundMap = new GroundType[mapSize, mapSize];
 
             FillBiomeMap(impactingBiomes, ref biomeMap, xBase, zBase, mapSize, 0, 0);
-            FillGroundMap(ref groundMap);
 
             List<Island> islandList;
 
@@ -250,15 +247,20 @@ namespace LightBringer.TerrainGeneration
                 );
             }
 
+            Vector2 terrainPosition = new Vector2(xBase, zBase);
+
+            FillGroundMap(islandList, ref groundMap, terrainPosition);
+
             foreach (Island island in islandList)
             {
                 lock (island)
                 {
                     island.GenerateIslandHeightsAndAlphaMap(
-                        ref heights,
-                        ref biomeMap,
-                        ref groundMap,
-                        new Vector2(xBase, zBase));
+                            ref heights,
+                            ref biomeMap,
+                            ref groundMap,
+                            terrainPosition
+                        );
                 }
             }
 
@@ -329,15 +331,13 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void FillGroundMap(ref GroundType[,] groundMap)
+        private void FillGroundMap(List<Island> islandList, ref GroundType[,] groundMap, Vector2 terrainPosition)
         {
-            int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
-
-            for (int i = 0; i < mapSize; i++)
+            foreach (Island island in islandList)
             {
-                for (int j = 0; j < mapSize; j++)
+                lock (island)
                 {
-                    groundMap[i, j] = GroundType.Ground2;
+                    island.GenerateGround1(ref groundMap, terrainPosition);
                 }
             }
         }

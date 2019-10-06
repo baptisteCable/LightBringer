@@ -47,6 +47,12 @@ namespace LightBringer.TerrainGeneration
         private void Test()
         {
             Debug.Log("Test");
+
+            SpatialDictionary<Biome> biomes = new SpatialDictionary<Biome>();
+            SpatialDictionary<Island> islands = new SpatialDictionary<Island>();
+
+            biomes.Add(0, 0, new Biome(0, 0));
+            islands.Add(0, 0, new Island(Vector2.zero, Biome.Type.Air, 4));
         }
 
         private void SetWC()

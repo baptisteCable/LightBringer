@@ -2,10 +2,11 @@
 {
     public enum GroundType
     {
-        Cliff = 0,
-        Path = 1,
+        Ground2 = 0,
+        Ground1 = 1,
         Top = 2,
-        Ground1 = 3,
-        Ground2 = 4
+        Cliff = 3,
+        Path = 4
+
     }
 }
