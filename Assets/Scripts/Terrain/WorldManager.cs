@@ -62,11 +62,6 @@ namespace LightBringer.TerrainGeneration
 
         private void Start()
         {
-            ThreadPool.SetMinThreads(2, 2);
-            ThreadPool.SetMaxThreads(12, 12);
-            ThreadPool.GetMaxThreads(out int workerT, out int completionPortThreads);
-            Debug.Log(workerT + " " + completionPortThreads);
-            Debug.Log(Environment.ProcessorCount);
             if (singleton != null)
             {
                 throw new Exception("World manager singleton already exists.");

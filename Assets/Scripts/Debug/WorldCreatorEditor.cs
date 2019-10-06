@@ -13,6 +13,7 @@ namespace LightBringer.TerrainGeneration
         // Debug checkBoxed
         public bool createMapAndSaveBin = true;
         public bool loadAndPrintMap = true;
+        public bool test = true;
 
         // random
         static System.Random rnd;
@@ -35,6 +36,22 @@ namespace LightBringer.TerrainGeneration
                 loadAndPrintMap = true;
                 LoadAndPrintMap();
             }
+
+            if (!test)
+            {
+                test = true;
+                Test();
+            }
+        }
+
+        private void Test()
+        {
+            Debug.Log("Test");
+
+            Island island = new Island(Vector2.zero, Biome.Type.Light, 2);
+            float[,] heights = new float[257, 257];
+            float[,,] map = new float[256, 256, 30];
+            island.GenerateIslandHeightsAndAlphaMap(ref heights, ref map, new Vector2(-64, -64));
         }
 
         private void SetWC()

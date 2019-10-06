@@ -7,12 +7,13 @@ namespace LightBringer.TerrainGeneration
     [Serializable]
     public class Island
     {
-        private const float CLIFF_SLOPE = 3.5f;
-        private const int MARGIN = 12; // margin in the weightmap for the smooth and slope
-        private const float SLOPE_WIDTH = .5f;
-        private const float SLOPE_LANDING = .5f;
-        private const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
+        public const float CLIFF_SLOPE = 3.5f;
+        public const float SLOPE_WIDTH = .5f;
+        public const float SLOPE_LANDING = .5f;
+        public const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
         private const float SLOPE_WAY_WIDTH = .3f;
+        public const float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
+        private const float BIOME_GROUND_DIST = 1.5f;
 
         public const float SCALE = 7f; // scale from island units to world units
         public const float MAX_POSSIBLE_RADIUS = 2.3f; // Used for rejection sampling
@@ -34,10 +35,13 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private static System.Random rnd;
 
-        public Island(Vector2 centerPosition, float radius, Biome.Type bt, int newSeed = 0)
+        [NonSerialized]
+        private SlopeData[] slopeData;
+
+        public Island(Vector2 centerPosition, Biome.Type bt, int newSeed = 0)
         {
             centerInWorld = centerPosition;
-            this.radius = radius;
+            radius = ISLAND_RADIUS;
 
             biomeType = bt;
 
@@ -63,9 +67,14 @@ namespace LightBringer.TerrainGeneration
         // radian angle
         public static Vector2 RotateVector(Vector2 v, float angle)
         {
-            float x = v.x * Mathf.Cos(angle) - v.y * Mathf.Sin(angle);
-            float y = v.x * Mathf.Sin(angle) + v.y * Mathf.Cos(angle);
-            return new Vector2(x, y);
+            return RotateVector(v, (double)angle);
+        }
+
+        public static Vector2 RotateVector(Vector2 v, double angle)
+        {
+            double x = v.x * Math.Cos(angle) - v.y * Math.Sin(angle);
+            double y = v.x * Math.Sin(angle) + v.y * Math.Cos(angle);
+            return new Vector2((float)x, (float)y);
         }
 
         public void GenerateIslandVertices()
@@ -158,7 +167,7 @@ namespace LightBringer.TerrainGeneration
             }
 
 
-            float rnd = (float)rdm.NextDouble();
+            double rnd = rdm.NextDouble();
 
             i = 0;
             while (distributions[i] < rnd)
@@ -265,11 +274,13 @@ namespace LightBringer.TerrainGeneration
             Vector2 localIslandCenter = centerInWorld - terrainPosition;
             Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT;
 
+            int margin = (int)(BIOME_GROUND_DIST * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT) + 1;
+
             // find height points bounds
-            int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - MARGIN);
-            int uMax = Mathf.Min(mapSize, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + MARGIN);
-            int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - MARGIN);
-            int vMax = Mathf.Min(mapSize, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + MARGIN);
+            int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - margin);
+            int uMax = Mathf.Min(mapSize, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + margin);
+            int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - margin);
+            int vMax = Mathf.Min(mapSize, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + margin);
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
@@ -381,45 +392,42 @@ namespace LightBringer.TerrainGeneration
         // returns 0 if not in slope. Height between 0 and 1
         private float SlopPointHeight(Vector2 coord, ref GroundType gType, ref bool isIslandBiome)
         {
+            // Create slope data if not done
+            if (slopeData == null)
+            {
+                slopeData = new SlopeData[2];
+                for (int i = 0; i < 2; i++)
+                {
+                    slopeData[i] = new SlopeData(
+                           vertices[slopes[i]],
+                           vertices[(slopes[i] + 1) % vertices.Count],
+                           vertices[(slopes[i] + vertices.Count - 1) % vertices.Count],
+                           slopeTopOnRight[i]
+                       );
+
+                    // Debug.Log(slopeData[i]);
+                }
+            }
+
             for (int i = 0; i < 2; i++)
             {
-                Vector2 vec = coord - vertices[slopes[i]];
-
-                Vector2 vec1 = vertices[(slopes[i] + 1) % vertices.Count] - vertices[slopes[i]];
-                Vector2 vec2 = vertices[(slopes[i] - 1 + vertices.Count) % vertices.Count] - vertices[slopes[i]];
-                Vector2 norm1 = RotateVector(vec1, -Mathf.PI / 2f);
-                Vector2 norm2 = RotateVector(vec2, Mathf.PI / 2f);
-
-                if (slopeTopOnRight[i])
-                {
-                    Vector2 temp = vec1;
-                    vec1 = vec2;
-                    vec2 = temp;
-                    temp = norm1;
-                    norm1 = norm2;
-                    norm2 = temp;
-                }
-
-
-                float dot1 = Vector2.Dot(vec1, vec);
-                float dot2 = Vector2.Dot(vec2, vec);
-                float dotNorm1 = Vector2.Dot(norm1, vec);
-                float dotNorm2 = Vector2.Dot(norm2, vec);
+                SlopeData sd = slopeData[i];
+                sd.SetPoint(coord);
 
                 // slope
-                if (dotNorm1 >= 0 && dotNorm1 <= SLOPE_WIDTH)
+                if (sd.altDotNorm1 >= 0 && sd.altDotNorm1 <= SLOPE_WIDTH)
                 {
                     // Top landing
-                    if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
+                    if (sd.dot1 >= (1 - SLOPE_LANDING) / 2f && sd.dot1 <= (1 + SLOPE_LANDING) / 2f)
                     {
                         if ((
-                                dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
-                                dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
-                                dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
+                                sd.dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
+                                sd.dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
+                                sd.dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
                             ) || (
-                                dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
-                                dot1 >= (1 - SLOPE_WAY_WIDTH) / 2f &&
-                                dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
+                                sd.dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f &&
+                                sd.dot1 >= (1 - SLOPE_WAY_WIDTH) / 2f &&
+                                sd.dot1 <= (1 + SLOPE_WAY_WIDTH) / 2f
                             ))
                         {
                             gType = GroundType.Path;
@@ -434,9 +442,9 @@ namespace LightBringer.TerrainGeneration
                     }
 
                     // First slope part
-                    else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
+                    else if (sd.dot1 >= 0 && sd.dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
-                        if (dotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && dotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                        if (sd.altDotNorm1 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && sd.altDotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                         {
                             gType = GroundType.Path;
                         }
@@ -446,32 +454,35 @@ namespace LightBringer.TerrainGeneration
                         }
 
                         isIslandBiome = true;
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1);
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - sd.dot1);
                     }
-                    // turn
-                    else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH)
-                    {
-                        if (vec.magnitude > (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && vec.magnitude < (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
-                        {
-                            gType = GroundType.Path;
-                        }
-                        else
-                        {
-                            gType = GroundType.Top;
-                        }
 
-                        isIslandBiome = true;
-                        return SlopeEquation((1 - SLOPE_LANDING) / 2f);
+                }
+
+                // turn
+                if (sd.dot1 < 0 && sd.dot2 < 0 && sd.baseDistance >= sd.pathDistInTurn
+                    && sd.baseDistance <= sd.pathDistInTurn + SLOPE_WIDTH)
+                {
+                    if (sd.baseDistance > (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f && sd.baseDistance < (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                    {
+                        gType = GroundType.Path;
                     }
+                    else
+                    {
+                        gType = GroundType.Top;
+                    }
+
+                    isIslandBiome = true;
+                    return SlopeEquation((1 - SLOPE_LANDING) / 2f);
                 }
 
                 // second slope part
-                if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH)
+                if (sd.altDotNorm2 >= 0 && sd.altDotNorm2 <= SLOPE_WIDTH)
                 {
-                    if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
+                    if (sd.dot2 >= 0 && sd.dot2 <= SLOPE_DESCENT)
                     {
-                        if (dotNorm2 - dot2 * .3f >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
-                            dotNorm2 - dot2 * .3f <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
+                        if (sd.altDotNorm2 >= (SLOPE_WIDTH - SLOPE_WAY_WIDTH) / 2f &&
+                            sd.altDotNorm2 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                         {
                             gType = GroundType.Path;
                         }
@@ -481,65 +492,88 @@ namespace LightBringer.TerrainGeneration
                         }
 
                         isIslandBiome = true;
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2);
+                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + sd.dot2);
                     }
                 }
 
                 // slope cliff
-                if (dotNorm1 >= 0 && dotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
+                if (sd.altDotNorm1 >= 0 && sd.altDotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                 {
-                    if (dot1 >= (1 + SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f + 1 / CLIFF_SLOPE)
+                    if (sd.dot1 >= (1 + SLOPE_LANDING) / 2f && sd.dot1 <= (1 + SLOPE_LANDING) / 2f + 1 / CLIFF_SLOPE)
                     {
                         isIslandBiome = true;
 
-                        if (dotNorm1 <= SLOPE_WIDTH)
+                        if (sd.altDotNorm1 <= SLOPE_WIDTH)
                         {
-                            gType = GroundType.Cliff;
-                            return 1f - (dot1 - (1 + SLOPE_LANDING) / 2f) * CLIFF_SLOPE;
+                            float height = 1f - (sd.dot1 - (1 + SLOPE_LANDING) / 2f) * CLIFF_SLOPE;
+                            if (height > 0)
+                            {
+                                gType = GroundType.Cliff;
+                            }
+                            return height;
                         }
                         else
                         {
-                            Vector2 corner = vertices[slopes[i]] + vec1 * (1 + SLOPE_LANDING) / 2f + norm1 * SLOPE_WIDTH;
-                            float cornerDist = (coord - corner).magnitude;
-                            gType = GroundType.Cliff;
-                            return 1f - cornerDist * CLIFF_SLOPE;
+                            float height = 1f - sd.cornerDistance * CLIFF_SLOPE;
+                            if (height > 0)
+                            {
+                                gType = GroundType.Cliff;
+                            }
+                            return height;
                         }
                     }
-                    else if (dot1 >= (1 - SLOPE_LANDING) / 2f && dot1 <= (1 + SLOPE_LANDING) / 2f)
+                    else if (sd.dot1 >= (1 - SLOPE_LANDING) / 2f && sd.dot1 <= (1 + SLOPE_LANDING) / 2f)
                     {
                         isIslandBiome = true;
-                        gType = GroundType.Cliff;
-                        return 1f - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                        float height = 1f - (sd.altDotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                        if (height > 0)
+                        {
+                            gType = GroundType.Cliff;
+                        }
+                        return height;
                     }
-                    else if (dot1 >= 0 && dot1 <= (1 - SLOPE_LANDING) / 2f)
+                    else if (sd.dot1 >= 0 && sd.dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
                         isIslandBiome = true;
-                        gType = GroundType.Cliff;
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - dot1) - (dotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
-                    }
-                    else if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE && dot2 < 0 && vec.magnitude <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
-                    {
-                        isIslandBiome = true;
-                        gType = GroundType.Cliff;
-                        return SlopeEquation((1 - SLOPE_LANDING) / 2f) - (vec.magnitude - SLOPE_WIDTH) * CLIFF_SLOPE;
+                        float height = SlopeEquation((1f - SLOPE_LANDING) / 2f - sd.dot1) - (sd.altDotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                        if (height > 0)
+                        {
+                            gType = GroundType.Cliff;
+                        }
+                        return height;
                     }
                 }
 
-                if (dotNorm2 >= 0 && dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
+                // turn
+                if (sd.dot1 < 0 && sd.dot2 < 0 && sd.baseDistance >= sd.pathDistInTurn + SLOPE_WIDTH
+                    && sd.baseDistance <= sd.pathDistInTurn + SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                 {
-                    if (dot2 >= 0 && dot2 <= SLOPE_DESCENT)
+                    isIslandBiome = true;
+                    float height = SlopeEquation((1 - SLOPE_LANDING) / 2f) - (sd.baseDistance - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    if (height > 0)
+                    {
+                        gType = GroundType.Cliff;
+                    }
+                    return height;
+                }
+
+                if (sd.altDotNorm2 >= SLOPE_WIDTH && sd.altDotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE
+                    && sd.dot2 >= 0 && sd.dot2 <= Island.SLOPE_DESCENT)
+                {
+                    float height = SlopeEquation((1f - SLOPE_LANDING) / 2f + sd.dot2) - (sd.altDotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    if (height > 0)
                     {
                         isIslandBiome = true;
                         gType = GroundType.Cliff;
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + dot2) - (dotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
                     }
+                    return height;
                 }
             }
 
             return 0;
         }
 
-        private float SlopeEquation(float x)
+        public static float SlopeEquation(float x)
         {
             return 1 - 1f / (SLOPE_DESCENT + (1f - SLOPE_LANDING) / 2f) * x;
         }
@@ -558,7 +592,7 @@ namespace LightBringer.TerrainGeneration
                 gType = GroundType.Cliff;
                 inIslandBiome = true;
             }
-            else if (dist <= 1f)
+            else if (dist <= BIOME_GROUND_DIST)
             {
                 gType = GroundType.Ground1;
                 inIslandBiome = true;

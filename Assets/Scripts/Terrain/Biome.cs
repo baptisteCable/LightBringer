@@ -25,7 +25,7 @@ namespace LightBringer.TerrainGeneration
         public Dic2DKey coord;
 
         public Vector2[] vertices;
-        private float rotation; // between 0 and pi
+        private double rotation; // between 0 and pi
 
         public Type type;
 
@@ -44,14 +44,14 @@ namespace LightBringer.TerrainGeneration
 
             type = Type.Undefined;
 
-            rotation = (float)(rnd.NextDouble() % Math.PI);
+            rotation = rnd.NextDouble() % Math.PI;
             float ratio = (float)(rnd.NextDouble()) * (MAX_DEFORMATION_RATIO - 1) + 1;
 
             vertices = new Vector2[4];
             vertices[0] = center + Island.RotateVector(Vector2.right * ratio * SQUARE_RADIUS, rotation);
-            vertices[1] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + (float)Math.PI / 2f);
-            vertices[2] = center + Island.RotateVector(Vector2.right * ratio * SQUARE_RADIUS, rotation + (float)Math.PI);
-            vertices[3] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + (float)Math.PI * 3f / 2f);
+            vertices[1] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + Math.PI / 2f);
+            vertices[2] = center + Island.RotateVector(Vector2.right * ratio * SQUARE_RADIUS, rotation + Math.PI);
+            vertices[3] = center + Island.RotateVector(Vector2.right / ratio * SQUARE_RADIUS, rotation + Math.PI * 3f / 2f);
         }
 
         public override string ToString()
@@ -85,7 +85,7 @@ namespace LightBringer.TerrainGeneration
             // if closer to a segment inner point
             if (Vector2.Dot(b - a, point - a) > 0 && Vector2.Dot(a - b, point - b) > 0)
             {
-                return Math.Abs(Vector2.Dot(Island.RotateVector(b - a, (float)Math.PI / 2f).normalized, point - a));
+                return Math.Abs(Vector2.Dot(Island.RotateVector(b - a, Math.PI / 2f).normalized, point - a));
             }
             // else, closer to a vertex
             else
@@ -99,7 +99,7 @@ namespace LightBringer.TerrainGeneration
             for (int i = 0; i < 4; i++)
             {
                 if (Vector2.Dot(
-                            Island.RotateVector(vertices[(i + 1) % 4] - vertices[i], (float)Math.PI / 2f),
+                            Island.RotateVector(vertices[(i + 1) % 4] - vertices[i], Math.PI / 2f),
                             point - vertices[i]
                         ) < 0
                     )

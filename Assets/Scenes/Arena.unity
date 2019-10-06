@@ -1825,6 +1825,12 @@ MonoBehaviour:
   - {fileID: 8574412962073106934, guid: ba251fbecb59fcd43bd1b1350ac3da84, type: 2}
   - {fileID: 8574412962073106934, guid: 70c0eccaffe15d14fa47e4cbbb67f9ce, type: 2}
   - {fileID: 8574412962073106934, guid: ccd72ea884b0d884b8e88c34be1d4913, type: 2}
+  - {fileID: 8574412962073106934, guid: 6ec54760141f498428bb9e9aca70d23f, type: 2}
+  - {fileID: 8574412962073106934, guid: 24b7d209dbff68f4db3dee9244e6c4be, type: 2}
+  - {fileID: 8574412962073106934, guid: 575cc035a3415b34ebfb67781c835c10, type: 2}
+  - {fileID: 8574412962073106934, guid: 1b68001323227fa45a578020d24ca362, type: 2}
+  - {fileID: 8574412962073106934, guid: 7e2e4e38c7e9fe24cbb442460defe834, type: 2}
+  - {fileID: 8574412962073106934, guid: f0a5a46bb69199a4dbf4008e7ec98d33, type: 2}
   - {fileID: 8574412962073106934, guid: 80603b192a5558b4b9dcff39f1425860, type: 2}
   - {fileID: 8574412962073106934, guid: 6c19cc255d975744298705971f81bef4, type: 2}
   - {fileID: 8574412962073106934, guid: bd9bfd6f7c33c1e42a7fbb1eaa3e5ad3, type: 2}
@@ -1837,16 +1843,6 @@ MonoBehaviour:
   - {fileID: 8574412962073106934, guid: bb8736ce0fe203246a68b3d8ecfd0ee6, type: 2}
   - {fileID: 8574412962073106934, guid: eeb13933fdbb1cc40a07cfea5a1f840a, type: 2}
   - {fileID: 8574412962073106934, guid: dda1cbbd1dea011408e62f5f0788e361, type: 2}
-  textures:
-  - minHeight: -0.01
-    maxHeight: 0.01
-    groundTexIndex: 0
-  - minHeight: 0.01
-    maxHeight: 0.49
-    groundTexIndex: 1
-  - minHeight: 0.49
-    maxHeight: 0.51
-    groundTexIndex: 0
   navMeshSurface: {fileID: 1463274854}
   createWorldMap: 1
   createWorldMapAndSaveBin: 1

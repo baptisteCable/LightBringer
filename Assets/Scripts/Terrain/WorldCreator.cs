@@ -18,7 +18,6 @@ namespace LightBringer.TerrainGeneration
         public int biomeMaxTry = 500;
 
         // Island constants
-        public float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
         private int nbIslandsPerSquare;
         public float minDistanceBetwwenIslands = 40;
         public int islandsMaxTry = 200;
@@ -73,7 +72,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         // Add Island
                         Biome.Type bt = Biome.GetBiome(biomes, new Vector2(x, y)).type;
-                        Island island = new Island(new Vector2(x, y), ISLAND_RADIUS, bt);
+                        Island island = new Island(new Vector2(x, y), bt);
                         islands.Add(x, y, island);
                         break;
                     }
@@ -86,7 +85,7 @@ namespace LightBringer.TerrainGeneration
         private bool IsRejectedIsland(ref SpatialDictionary<Island> islands, int x, int y)
         {
             Vector2 islandCenter = new Vector2(x, y);
-            float minDistance = minDistanceBetwwenIslands + (ISLAND_RADIUS + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
+            float minDistance = minDistanceBetwwenIslands + (Island.ISLAND_RADIUS + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
 
             List<Island> possibleCollidings = islands.GetAround(x, y, (int)Math.Ceiling(minDistance));
 
