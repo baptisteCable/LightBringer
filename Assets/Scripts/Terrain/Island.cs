@@ -273,6 +273,7 @@ namespace LightBringer.TerrainGeneration
             Vector2 terrainPosition)
         {
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
+
             // find bounds
             float xMin = float.PositiveInfinity;
             float xMax = float.NegativeInfinity;
@@ -288,26 +289,27 @@ namespace LightBringer.TerrainGeneration
             }
 
             Vector2 localIslandCenter = centerInWorld - terrainPosition;
-            Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT;
+            Vector2 islandCenterInHeightCoord = localIslandCenter * WorldManager.HEIGHT_POINT_PER_UNIT
+                + WorldManager.BLUR_RADIUS * Vector2.one;
 
             int margin = (int)(BIOME_GROUND_DIST * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT) + 1;
 
             // find height points bounds
             int uMin = Mathf.Max(0, (int)(xMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) - margin);
-            int uMax = Mathf.Min(mapSize, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + margin);
+            int uMax = Mathf.Min(mapSize + 2 * WorldManager.BLUR_RADIUS, (int)(xMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.x) + margin);
             int vMin = Mathf.Max(0, (int)(yMin * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) - margin);
-            int vMax = Mathf.Min(mapSize, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + margin);
+            int vMax = Mathf.Min(mapSize + 2 * WorldManager.BLUR_RADIUS, (int)(yMax * WorldManager.HEIGHT_POINT_PER_UNIT * SCALE + islandCenterInHeightCoord.y) + margin);
 
             // For each point in the region, compute height
             for (int u = uMin; u <= uMax; u++)
             {
                 // convert to island unit (/SCALE)
-                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+                float x = (u - islandCenterInHeightCoord.x - WorldManager.BLUR_RADIUS) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                 for (int v = vMin; v <= vMax; v++)
                 {
                     // convert to island unit (/SCALE)
-                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+                    float y = (v - islandCenterInHeightCoord.y - WorldManager.BLUR_RADIUS) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                     Vector2 coord = new Vector2(x, y);
                     float height = TopOrCliffPointHeight(coord, out GroundType gType, out bool isIslandBiome);
@@ -322,10 +324,14 @@ namespace LightBringer.TerrainGeneration
                         }
 
                         // write heightmap
-                        terrainHeights[v, u] = .5f * Mathf.Max(height, slopeHeight);
+                        if (u >= WorldManager.BLUR_RADIUS && v >= WorldManager.BLUR_RADIUS
+                            && u <= mapSize + WorldManager.BLUR_RADIUS && v <= mapSize + WorldManager.BLUR_RADIUS)
+                        {
+                            terrainHeights[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS] = .5f * Mathf.Max(height, slopeHeight);
+                        }
 
                         // Alpha map is smaller than height map
-                        if (u < mapSize && v < mapSize)
+                        if (u < mapSize + 2 * WorldManager.BLUR_RADIUS && v < mapSize + 2 * WorldManager.BLUR_RADIUS)
                         {
                             // write alphaMap
                             groundMap[v, u] = gType;
@@ -652,26 +658,27 @@ namespace LightBringer.TerrainGeneration
         {
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
 
-            Vector2 islandCenterInHeightCoord = (centerInWorld - terrainPosition) * WorldManager.HEIGHT_POINT_PER_UNIT;
+            Vector2 islandCenterInHeightCoord = (centerInWorld - terrainPosition) * WorldManager.HEIGHT_POINT_PER_UNIT
+                + WorldManager.BLUR_RADIUS * Vector2.one;
 
             int margin = (int)(GROUND_1_MAX * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT);
 
             // find height points bounds
             int uMin = Mathf.Max(0, (int)(islandCenterInHeightCoord.x - margin));
-            int uMax = Mathf.Min(mapSize - 1, (int)(islandCenterInHeightCoord.x + margin));
+            int uMax = Mathf.Min(mapSize - 1 + 2 * WorldManager.BLUR_RADIUS, (int)(islandCenterInHeightCoord.x + margin));
             int vMin = Mathf.Max(0, (int)(islandCenterInHeightCoord.y - margin));
-            int vMax = Mathf.Min(mapSize - 1, (int)(islandCenterInHeightCoord.y + margin));
+            int vMax = Mathf.Min(mapSize - 1 + 2 * WorldManager.BLUR_RADIUS, (int)(islandCenterInHeightCoord.y + margin));
 
             // For each point in the region
             for (int u = uMin; u <= uMax; u++)
             {
                 // convert to island unit (/SCALE)
-                float x = (u - islandCenterInHeightCoord.x) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+                float x = (u - islandCenterInHeightCoord.x - WorldManager.BLUR_RADIUS) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                 for (int v = vMin; v <= vMax; v++)
                 {
                     // convert to island unit (/SCALE)
-                    float y = (v - islandCenterInHeightCoord.y) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
+                    float y = (v - islandCenterInHeightCoord.y - WorldManager.BLUR_RADIUS) / WorldManager.HEIGHT_POINT_PER_UNIT / SCALE;
 
                     if (IsInGround1(new Vector2(x, y)))
                     {

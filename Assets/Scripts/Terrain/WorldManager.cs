@@ -25,6 +25,9 @@ namespace LightBringer.TerrainGeneration
         public const int NB_GROUND_TYPE = 5;
         private const int BIOME_APPROX = 8;
 
+        // Blur
+        public const int BLUR_RADIUS = 2;
+
         public static WorldManager singleton; // Singleton
 
         private Transform playerTransform;
@@ -230,10 +233,22 @@ namespace LightBringer.TerrainGeneration
             map = new float[mapSize, mapSize, NB_GROUND_TYPE * NB_BIOME_TYPE];
             heights = new float[mapSize + 1, mapSize + 1];
 
-            Biome.Type[,] biomeMap = new Biome.Type[mapSize + 1, mapSize + 1];
-            GroundType[,] groundMap = new GroundType[mapSize, mapSize];
+            Biome.Type[,] biomeMap = new Biome.Type[mapSize + 2 * BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS];
+            GroundType[,] groundMap = new GroundType[mapSize + 2 * BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS];
 
-            FillBiomeMap(impactingBiomes, ref biomeMap, xBase, zBase, mapSize, 0, 0);
+            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
+                0, mapSize + 2 * BLUR_RADIUS,
+                0, BLUR_RADIUS);
+            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
+                0, mapSize + 2 * BLUR_RADIUS,
+                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS);
+            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
+                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS,
+                BLUR_RADIUS, mapSize + BLUR_RADIUS);
+            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
+                0, BLUR_RADIUS,
+                BLUR_RADIUS, mapSize + BLUR_RADIUS);
+            FillBiomeMap(impactingBiomes, ref biomeMap, xBase, zBase, mapSize, BLUR_RADIUS, BLUR_RADIUS);
 
             List<Island> islandList;
 
@@ -283,7 +298,8 @@ namespace LightBringer.TerrainGeneration
                     {
                         if (biomeMap[i, j] == Biome.Type.Undefined)
                         {
-                            biomeMap[i, j] = Biome.GetBiome(biomes, new Vector2(xBase + j / 2f, zBase + i / 2f)).type;
+                            biomeMap[i, j] = Biome.GetBiome(biomes, 
+                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
                         }
 
                         if (biomeMap[i, j] != biomeMap[xStart, yStart])
@@ -324,9 +340,23 @@ namespace LightBringer.TerrainGeneration
                     {
                         if (biomeMap[i, j] == Biome.Type.Undefined)
                         {
-                            biomeMap[i, j] = Biome.GetBiome(biomes, new Vector2(xBase + j / 2f, zBase + i / 2f)).type;
+                            biomeMap[i, j] = Biome.GetBiome(biomes,
+                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
                         }
                     }
+                }
+            }
+        }
+
+        private void FillBiomeMapBorder(List<Biome> biomes, ref Biome.Type[,] biomeMap,
+            int xBase, int zBase, int xMin, int xMax, int yMin, int yMax)
+        {
+            for (int i = xMin; i<xMax; i++)
+            {
+                for (int j = yMin; j < yMax; j++)
+                {
+                    biomeMap[i, j] = Biome.GetBiome(biomes,
+                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
                 }
             }
         }
@@ -346,15 +376,99 @@ namespace LightBringer.TerrainGeneration
         {
             int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
 
-            for (int i = 0; i < mapSize; i++)
+            for (int i = 0; i < mapSize; i+= 8)
             {
-                for (int j = 0; j < mapSize; j++)
+                int xMin = i;
+                int xMax = i + 8;
+                if (xMax > mapSize)
                 {
-                    map[i, j, GetLayerIndex(groundMap[i, j], biomeMap[i, j])] = 1;
+                    xMax = mapSize;
+                }
+
+                for (int j = 0; j < mapSize; j += 8)
+                {
+                    int yMin = j;
+                    int yMax = j + 8;
+                    if (yMax > mapSize)
+                    {
+                        yMax = mapSize;
+                    }
+
+                    // if a square of the same type, no blur
+                    Biome.Type bType = biomeMap[xMin, yMin];
+                    GroundType gType = groundMap[xMin, yMin];
+                    if (
+                            bType == biomeMap[xMin, yMax + 2 * BLUR_RADIUS - 1] &&
+                            bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMin] &&
+                            bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMax + 2 * BLUR_RADIUS - 1] &&
+                            gType == groundMap[xMin, yMax + 2 * BLUR_RADIUS - 1] &&
+                            gType == groundMap[xMax + 2 * BLUR_RADIUS - 1, yMin] &&
+                            gType == groundMap[xMax + 2 * BLUR_RADIUS - 1, yMax + 2 * BLUR_RADIUS - 1]
+                        )
+                    {
+                        PaintSquareNoBlur(ref map, xMin, xMax, yMin, yMax, bType, gType);
+                    }
+                    else
+                    {
+                        PaintSquareWithBlur(ref map, xMin, xMax, yMin, yMax, ref biomeMap, ref groundMap);
+                    }
                 }
             }
         }
 
+        private void PaintSquareNoBlur(ref float[,,] map, int iMin, int iMax,int jMin,int jMax, Biome.Type bType, GroundType gType)
+        {
+            for (int i = iMin; i < iMax; i++)
+            {
+                for (int j = jMin; j < jMax; j++)
+                {
+                    map[i, j, GetLayerIndex(gType, bType)] = 1;
+                }
+            }
+        }
+
+        private void PaintSquareWithBlur(ref float[,,] map, int iMin, int iMax, int jMin, int jMax,
+            ref Biome.Type[,] biomeMap, ref GroundType[,] groundMap)
+        {
+            for (int i = iMin; i < iMax; i++)
+            {
+                for (int j = jMin; j < jMax; j++)
+                {
+                    GroundType gType = groundMap[i + BLUR_RADIUS, j + BLUR_RADIUS];
+                    // if not ground, no blur
+                    if (gType == GroundType.Cliff || gType == GroundType.Path || gType == GroundType.Top)
+                    {
+                        map[i, j, GetLayerIndex(gType, biomeMap[i + BLUR_RADIUS, j + BLUR_RADIUS])] = 1;
+                    }
+                    else
+                    {
+                        // count the ground ones and sum in map
+                        int count = 0;
+                        for (int u = i; u <= i + BLUR_RADIUS * 2; u++)
+                        {
+                            for (int v = j; v <= j + BLUR_RADIUS * 2; v++)
+                            {
+                                gType = groundMap[u, v];
+                                if (gType == GroundType.Ground1 || gType == GroundType.Ground2)
+                                {
+                                    map[i, j, GetLayerIndex(gType, biomeMap[u, v])] += 1;
+                                    count++;
+                                }
+                            }
+                        }
+
+                        // divide by count in all ground ones
+                        for (int h = 0; h < 2 * NB_BIOME_TYPE; h++)
+                        {
+                            map[i, j, h] /= count;
+                        }
+                    }
+
+
+                }
+            }
+        }
+        
         // works for 6 biomes
         static private int GetLayerIndex(GroundType type, Biome.Type biome)
         {

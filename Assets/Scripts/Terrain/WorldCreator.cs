@@ -55,8 +55,8 @@ namespace LightBringer.TerrainGeneration
         {
             rnd = new System.Random();
 
-            Debug.Log("Generate Islands in : [" + (xCenter - generationSquareRadius) + ";" + (xCenter + generationSquareRadius) + "] x ["
-                + (yCenter - generationSquareRadius) + ";" + (yCenter + generationSquareRadius) + "]");
+            //Debug.Log("Generate Islands in : [" + (xCenter - generationSquareRadius) + ";" + (xCenter + generationSquareRadius) + "] x ["
+            //    + (yCenter - generationSquareRadius) + ";" + (yCenter + generationSquareRadius) + "]");
 
             for (int i = 0; i < nbIslandsPerSquare; i++)
             {
