@@ -39,6 +39,8 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private System.Random rnd;
 
+        private static System.Random staticRnd;
+
         [NonSerialized]
         private SlopeData[] slopeData;
 
@@ -54,11 +56,11 @@ namespace LightBringer.TerrainGeneration
 
             if (newSeed == 0)
             {
-                if (rnd == null)
+                if (staticRnd == null)
                 {
-                    rnd = new System.Random();
+                    staticRnd = new System.Random();
                 }
-                seed = rnd.Next();
+                seed = staticRnd.Next();
             }
             else
             {
