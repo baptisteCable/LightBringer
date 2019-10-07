@@ -26,7 +26,7 @@ namespace LightBringer.TerrainGeneration
         private const int BIOME_APPROX = 8;
 
         // Blur
-        public const int BLUR_RADIUS = 2;
+        public const int BLUR_RADIUS = 6;
 
         public static WorldManager singleton; // Singleton
 
@@ -236,18 +236,7 @@ namespace LightBringer.TerrainGeneration
             Biome.Type[,] biomeMap = new Biome.Type[mapSize + 2 * BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS];
             GroundType[,] groundMap = new GroundType[mapSize + 2 * BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS];
 
-            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
-                0, mapSize + 2 * BLUR_RADIUS,
-                0, BLUR_RADIUS);
-            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
-                0, mapSize + 2 * BLUR_RADIUS,
-                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS);
-            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
-                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS,
-                BLUR_RADIUS, mapSize + BLUR_RADIUS);
-            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase,
-                0, BLUR_RADIUS,
-                BLUR_RADIUS, mapSize + BLUR_RADIUS);
+            FillBiomeMapBorder(impactingBiomes, ref biomeMap, xBase, zBase);
             FillBiomeMap(impactingBiomes, ref biomeMap, xBase, zBase, mapSize, BLUR_RADIUS, BLUR_RADIUS);
 
             List<Island> islandList;
@@ -296,11 +285,8 @@ namespace LightBringer.TerrainGeneration
                     j = yStart;
                     while (j < yStart + size + 1 && !diff)
                     {
-                        if (biomeMap[i, j] == Biome.Type.Undefined)
-                        {
-                            biomeMap[i, j] = Biome.GetBiome(biomes, 
-                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
-                        }
+
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, i, j);
 
                         if (biomeMap[i, j] != biomeMap[xStart, yStart])
                         {
@@ -338,26 +324,190 @@ namespace LightBringer.TerrainGeneration
                 {
                     for (j = yStart; j < yStart + size; j++)
                     {
-                        if (biomeMap[i, j] == Biome.Type.Undefined)
-                        {
-                            biomeMap[i, j] = Biome.GetBiome(biomes,
-                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
-                        }
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, i, j);
                     }
                 }
             }
         }
 
-        private void FillBiomeMapBorder(List<Biome> biomes, ref Biome.Type[,] biomeMap,
+        private void FillBiomeMapBorder(List<Biome> biomes, ref Biome.Type[,] biomeMap, int xBase, int zBase)
+        {
+            int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
+
+            FillBiomeMapBorderH(biomes, ref biomeMap, xBase, zBase,
+                0, mapSize + 2 * BLUR_RADIUS,
+                0, BLUR_RADIUS);
+            FillBiomeMapBorderH(biomes, ref biomeMap, xBase, zBase,
+                0, mapSize + 2 * BLUR_RADIUS,
+                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS);
+            FillBiomeMapBorderV(biomes, ref biomeMap, xBase, zBase,
+                mapSize + BLUR_RADIUS, mapSize + 2 * BLUR_RADIUS,
+                BLUR_RADIUS, mapSize + BLUR_RADIUS);
+            FillBiomeMapBorderV(biomes, ref biomeMap, xBase, zBase,
+                0, BLUR_RADIUS,
+                BLUR_RADIUS, mapSize + BLUR_RADIUS);
+        }
+
+        private void FillBiomeMapBorderH(List<Biome> biomes, ref Biome.Type[,] biomeMap,
             int xBase, int zBase, int xMin, int xMax, int yMin, int yMax)
         {
-            for (int i = xMin; i<xMax; i++)
+            if (xMin - xMax < BIOME_APPROX)
             {
-                for (int j = yMin; j < yMax; j++)
+                for (int i = xMin; i < xMax; i++)
                 {
-                    biomeMap[i, j] = Biome.GetBiome(biomes,
-                                new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
+                    for (int j = yMin; j < yMax; j++)
+                    {
+                        biomeMap[i, j] = Biome.GetBiome(biomes,
+                                    new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
+                    }
                 }
+            }
+            else
+            {
+                FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMin, yMin);
+                FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMin, yMax - 1);
+
+                // if both first different, do not continue
+                if (biomeMap[xMin, yMin] != biomeMap[xMin, yMax - 1])
+                {
+                    FillBiomeMapBorderH(biomes, ref biomeMap, xBase, zBase, xMin, xMin + BIOME_APPROX, yMin, yMax);
+                    if (xMin + BIOME_APPROX < xMax)
+                    {
+                        FillBiomeMapBorderH(biomes, ref biomeMap, xBase, zBase, xMin + BIOME_APPROX, xMax, yMin, yMax);
+                    }
+                }
+                // continue as they are identical
+                else
+                {
+                    int max = xMin + BIOME_APPROX;
+                    bool identical = true;
+
+                    while (identical && max < xMax + BIOME_APPROX - 1)
+                    {
+                        if (max >= xMax)
+                        {
+                            max = xMax - 1;
+                        }
+
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, max, yMin);
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, max, yMax - 1);
+
+                        if (biomeMap[xMin, yMin] != biomeMap[max, yMin] || biomeMap[xMin, yMin] != biomeMap[max, yMax - 1])
+                        {
+                            identical = false;
+                        }
+                        else
+                        {
+                            max += BIOME_APPROX;
+                        }
+                    }
+
+                    if (max == xMax - 1)
+                    {
+                        max = xMax;
+                    }
+
+                    if (!identical)
+                    {
+                        max -= BIOME_APPROX;
+                    }
+
+                    for (int i = xMin; i < max; i++)
+                    {
+                        for (int j = yMin; j < yMax; j++)
+                        {
+                            biomeMap[i, j] = biomeMap[xMin, yMin];
+                        }
+                    }
+
+                    FillBiomeMapBorderH(biomes, ref biomeMap, xBase, zBase, max, xMax, yMin, yMax);
+                }
+            }
+        }
+
+        private void FillBiomeMapBorderV(List<Biome> biomes, ref Biome.Type[,] biomeMap,
+            int xBase, int zBase, int xMin, int xMax, int yMin, int yMax)
+        {
+            if (yMin - yMax < 8)
+            {
+                for (int i = xMin; i < xMax; i++)
+                {
+                    for (int j = yMin; j < yMax; j++)
+                    {
+                        biomeMap[i, j] = Biome.GetBiome(biomes,
+                                    new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
+                    }
+                }
+            }
+            else
+            {
+                FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMin, yMin);
+                FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMax - 1, yMin);
+
+                // if both first different, do not continue
+                if (biomeMap[xMin, yMin] != biomeMap[xMax - 1, yMin])
+                {
+                    FillBiomeMapBorderV(biomes, ref biomeMap, xBase, zBase, xMin, xMax, yMin, yMin + BIOME_APPROX);
+                    if (yMin + BIOME_APPROX < yMax)
+                    {
+                        FillBiomeMapBorderV(biomes, ref biomeMap, xBase, zBase, xMin, xMax, yMin + BIOME_APPROX, yMax);
+                    }
+                }
+                // continue as they are identical
+                else
+                {
+                    int max = yMin + BIOME_APPROX;
+                    bool identical = true;
+
+                    while (identical && max < yMax + BIOME_APPROX - 1)
+                    {
+                        if (max >= yMax)
+                        {
+                            max = yMax - 1;
+                        }
+
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMin, max);
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, xMax - 1, max);
+
+                        if (biomeMap[xMin, yMin] != biomeMap[xMin, max] || biomeMap[xMin, yMin] != biomeMap[xMax - 1, max])
+                        {
+                            identical = false;
+                        }
+                        else
+                        {
+                            max += BIOME_APPROX;
+                        }
+                    }
+
+                    if (max == yMax - 1)
+                    {
+                        max = yMax;
+                    }
+
+                    if (!identical)
+                    {
+                        max -= BIOME_APPROX;
+                    }
+
+                    for (int i = xMin; i < xMax; i++)
+                    {
+                        for (int j = yMin; j < max; j++)
+                        {
+                            biomeMap[i, j] = biomeMap[xMin, yMin];
+                        }
+                    }
+
+                    FillBiomeMapBorderV(biomes, ref biomeMap, xBase, zBase, xMin, xMax, max, yMax);
+                }
+            }
+        }
+
+        private void FillBiomeMapElement(List<Biome> biomes, ref Biome.Type[,] biomeMap, int xBase, int zBase, int x, int y)
+        {
+            if (biomeMap[x, y] == Biome.Type.Undefined)
+            {
+                biomeMap[x, y] = Biome.GetBiome(biomes,
+                    new Vector2(xBase + (y - 1 - BLUR_RADIUS) / 2f, zBase + (x - BLUR_RADIUS) / 2f)).type;
             }
         }
 
@@ -376,7 +526,7 @@ namespace LightBringer.TerrainGeneration
         {
             int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
 
-            for (int i = 0; i < mapSize; i+= 8)
+            for (int i = 0; i < mapSize; i += 8)
             {
                 int xMin = i;
                 int xMax = i + 8;
@@ -416,7 +566,7 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void PaintSquareNoBlur(ref float[,,] map, int iMin, int iMax,int jMin,int jMax, Biome.Type bType, GroundType gType)
+        private void PaintSquareNoBlur(ref float[,,] map, int iMin, int iMax, int jMin, int jMax, Biome.Type bType, GroundType gType)
         {
             for (int i = iMin; i < iMax; i++)
             {
@@ -435,6 +585,7 @@ namespace LightBringer.TerrainGeneration
                 for (int j = jMin; j < jMax; j++)
                 {
                     GroundType gType = groundMap[i + BLUR_RADIUS, j + BLUR_RADIUS];
+                    
                     // if not ground, no blur
                     if (gType == GroundType.Cliff || gType == GroundType.Path || gType == GroundType.Top)
                     {
@@ -464,11 +615,10 @@ namespace LightBringer.TerrainGeneration
                         }
                     }
 
-
                 }
             }
         }
-        
+
         // works for 6 biomes
         static private int GetLayerIndex(GroundType type, Biome.Type biome)
         {
