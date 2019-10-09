@@ -176,7 +176,7 @@ namespace LightBringer.TerrainGeneration
             {
                 biomes = new SpatialDictionary<Biome>();
                 islands = new SpatialDictionary<Island>();
-                wc.CreateMapSector(ref biomes, ref islands, 0, 0, 1);
+                wc.CreateMapSector(ref biomes, ref islands, 0, 0);
             }
         }
 

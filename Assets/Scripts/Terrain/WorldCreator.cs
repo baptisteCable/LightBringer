@@ -41,8 +41,7 @@ namespace LightBringer.TerrainGeneration
             nbIslandsPerSquare = (int)(genRadius * genRadius * islandDensity);
         }
 
-        public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter,
-            int seed = 0)
+        public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
             rnd = new System.Random();
 
@@ -201,6 +200,13 @@ namespace LightBringer.TerrainGeneration
 
         private void GenerateBiomesInSquare(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
         {
+            if (xCenter == 0 && yCenter == 0)
+            {
+                Biome biome = new Biome(0, 0);
+                biome.type = Biome.Type.Light;
+                biomes.Add(0, 0, biome);
+            }
+
             for (int i = 0; i < nbBiomesPerSquare; i++)
             {
                 int tryCount = 0;
