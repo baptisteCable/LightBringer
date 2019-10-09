@@ -80,6 +80,7 @@ namespace LightBringer.TerrainGeneration
 
             // World Data
             InitWorldData();
+            //InitDebugWorldData();
 
             // Init 4 first tiles
             for (int u = -1; u <= 0; u++)
@@ -175,8 +176,30 @@ namespace LightBringer.TerrainGeneration
             {
                 biomes = new SpatialDictionary<Biome>();
                 islands = new SpatialDictionary<Island>();
-                wc.CreateMapSector(ref biomes, ref islands, 0, 0);
+                wc.CreateMapSector(ref biomes, ref islands, 0, 0, 1);
             }
+        }
+
+        void InitDebugWorldData()
+        {
+            wc = new WorldCreator(Application.persistentDataPath + "/");
+
+            biomes = new SpatialDictionary<Biome>();
+            islands = new SpatialDictionary<Island>();
+
+            Biome b = new Biome(500, 0);
+            b.type = Biome.Type.Light;
+            biomes.Add(500, 0, b);
+            b = new Biome(-500, 0);
+            b.type = Biome.Type.Darkness;
+            biomes.Add(-500, 0, b);
+            b = new Biome(1280, 1280);
+            b.type = Biome.Type.Earth;
+            biomes.Add(1280, 1280, b);
+            b = new Biome(1280, -1280);
+            b.type = Biome.Type.Fire;
+            biomes.Add(1280, -1280, b);
+
         }
 
         void GenerateNewTerrain(int xBase, int zBase, float[,] heights, float[,,] map)
@@ -185,10 +208,11 @@ namespace LightBringer.TerrainGeneration
             TerrainData terrainData = new TerrainData();
             terrainData.heightmapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1;
             terrainData.alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT;
-            terrainData.baseMapResolution = 1024;
+            terrainData.baseMapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT;
             terrainData.SetDetailResolution(1024, 16);
             terrainData.terrainLayers = terrainLayers;
             terrainData.size = new Vector3(TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH);
+            terrainData.thickness = 2;
 
             terrainData.SetHeights(0, 0, heights);
             terrainData.SetAlphamaps(0, 0, map);
@@ -357,8 +381,7 @@ namespace LightBringer.TerrainGeneration
                 {
                     for (int j = yMin; j < yMax; j++)
                     {
-                        biomeMap[i, j] = Biome.GetBiome(biomes,
-                                    new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, i, j);
                     }
                 }
             }
@@ -428,14 +451,13 @@ namespace LightBringer.TerrainGeneration
         private void FillBiomeMapBorderV(List<Biome> biomes, ref Biome.Type[,] biomeMap,
             int xBase, int zBase, int xMin, int xMax, int yMin, int yMax)
         {
-            if (yMin - yMax < 8)
+            if (yMin - yMax < BIOME_APPROX)
             {
                 for (int i = xMin; i < xMax; i++)
                 {
                     for (int j = yMin; j < yMax; j++)
                     {
-                        biomeMap[i, j] = Biome.GetBiome(biomes,
-                                    new Vector2(xBase + (j - BLUR_RADIUS) / 2f, zBase + (i - BLUR_RADIUS) / 2f)).type;
+                        FillBiomeMapElement(biomes, ref biomeMap, xBase, zBase, i, j);
                     }
                 }
             }
@@ -502,12 +524,12 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void FillBiomeMapElement(List<Biome> biomes, ref Biome.Type[,] biomeMap, int xBase, int zBase, int x, int y)
+        private void FillBiomeMapElement(List<Biome> biomes, ref Biome.Type[,] biomeMap, int xBase, int zBase, int i, int j)
         {
-            if (biomeMap[x, y] == Biome.Type.Undefined)
+            if (biomeMap[i, j] == Biome.Type.Undefined)
             {
-                biomeMap[x, y] = Biome.GetBiome(biomes,
-                    new Vector2(xBase + (y - 1 - BLUR_RADIUS) / 2f, zBase + (x - BLUR_RADIUS) / 2f)).type;
+                float r = (HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH + 1) / (float)(HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT);
+                biomeMap[i, j] = Biome.GetBiome(biomes,new Vector2(xBase + (j - BLUR_RADIUS) * r, zBase + (i - BLUR_RADIUS) * r)).type;
             }
         }
 
@@ -548,6 +570,7 @@ namespace LightBringer.TerrainGeneration
                     Biome.Type bType = biomeMap[xMin, yMin];
                     GroundType gType = groundMap[xMin, yMin];
                     if (
+                            xMin != 0 && xMax != mapSize && yMin != 0 && yMax != mapSize &&
                             bType == biomeMap[xMin, yMax + 2 * BLUR_RADIUS - 1] &&
                             bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMin] &&
                             bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMax + 2 * BLUR_RADIUS - 1] &&
@@ -585,7 +608,7 @@ namespace LightBringer.TerrainGeneration
                 for (int j = jMin; j < jMax; j++)
                 {
                     GroundType gType = groundMap[i + BLUR_RADIUS, j + BLUR_RADIUS];
-                    
+
                     // if not ground, no blur
                     if (gType == GroundType.Cliff || gType == GroundType.Path || gType == GroundType.Top)
                     {
@@ -595,9 +618,35 @@ namespace LightBringer.TerrainGeneration
                     {
                         // count the ground ones and sum in map
                         int count = 0;
-                        for (int u = i; u <= i + BLUR_RADIUS * 2; u++)
+                        int uMin = i;
+                        int uMax = i + 2 * BLUR_RADIUS;
+                        int vMin = j;
+                        int vMax = j + 2 * BLUR_RADIUS;
+
+                        // Border value must be the same than on neighbor biomes
+                        // Reduce the width of the blur near edges to get same value.
+                        int mapSize = HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH;
+
+                        if (i >= mapSize - BLUR_RADIUS)
                         {
-                            for (int v = j; v <= j + BLUR_RADIUS * 2; v++)
+                            uMin++;
+                        }
+                        else if (i <= BLUR_RADIUS)
+                        {
+                            uMax--;
+                        }
+                        if (j >= mapSize - BLUR_RADIUS)
+                        {
+                            vMin++;
+                        }
+                        else if (j <= BLUR_RADIUS)
+                        {
+                            vMax--;
+                        }
+
+                        for (int u = uMin; u <= uMax; u++)
+                        {
+                            for (int v = vMin; v <= vMax; v++)
                             {
                                 gType = groundMap[u, v];
                                 if (gType == GroundType.Ground1 || gType == GroundType.Ground2)
@@ -614,7 +663,6 @@ namespace LightBringer.TerrainGeneration
                             map[i, j, h] /= count;
                         }
                     }
-
                 }
             }
         }

@@ -41,10 +41,13 @@ namespace LightBringer.TerrainGeneration
             nbIslandsPerSquare = (int)(genRadius * genRadius * islandDensity);
         }
 
-        public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
+        public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter,
+            int seed = 0)
         {
+            rnd = new System.Random();
+
             // create biomes
-            GenerateBiomesInSquareAndNeighbourSquares(ref biomes, xCenter, yCenter);
+            GenerateBiomesInSquareAndNeighborSquares(ref biomes, xCenter, yCenter);
 
             // create islands
             GenerateIslandsInSquare(ref biomes, ref islands, xCenter, yCenter);
@@ -53,8 +56,6 @@ namespace LightBringer.TerrainGeneration
         public void GenerateIslandsInSquare(ref SpatialDictionary<Biome> biomes,
             ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
-            rnd = new System.Random();
-
             //Debug.Log("Generate Islands in : [" + (xCenter - generationSquareRadius) + ";" + (xCenter + generationSquareRadius) + "] x ["
             //    + (yCenter - generationSquareRadius) + ";" + (yCenter + generationSquareRadius) + "]");
 
@@ -149,7 +150,7 @@ namespace LightBringer.TerrainGeneration
             {
                 fs = new FileStream(path + fileName, FileMode.Open);
             }
-            catch 
+            catch
             {
                 return null;
             }
@@ -183,7 +184,7 @@ namespace LightBringer.TerrainGeneration
 
 
         // Generate biomes in 9 squares centered on this one
-        public void GenerateBiomesInSquareAndNeighbourSquares(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
+        public void GenerateBiomesInSquareAndNeighborSquares(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
         {
             for (int i = xCenter - generationSquareRadius * 2; i <= xCenter + generationSquareRadius * 2; i += generationSquareRadius * 2)
             {
@@ -200,8 +201,6 @@ namespace LightBringer.TerrainGeneration
 
         private void GenerateBiomesInSquare(ref SpatialDictionary<Biome> biomes, int xCenter, int yCenter)
         {
-            rnd = new System.Random();
-
             for (int i = 0; i < nbBiomesPerSquare; i++)
             {
                 int tryCount = 0;
@@ -247,20 +246,19 @@ namespace LightBringer.TerrainGeneration
             ref SpatialDictionary<Biome> biomes,
             int xCenter, int yCenter)
         {
-            Dictionary<Dic2DKey, List<Dic2DKey>> keyNeighbours = new Dictionary<Dic2DKey, List<Dic2DKey>>();
-            FindNeighbours(biomes, ref keyNeighbours, xCenter, yCenter, generationSquareRadius + (int)minDistanceBetweenBiomePolygones * 2);
+            Dictionary<Dic2DKey, List<Dic2DKey>> keyNeighbors = new Dictionary<Dic2DKey, List<Dic2DKey>>();
+            FindNeighbors(biomes, ref keyNeighbors, xCenter, yCenter, generationSquareRadius + (int)minDistanceBetweenBiomePolygones * 2);
 
-            // Biome neighbourhood
-            Dictionary<Dic2DKey, Neighbourhood> biomeNeighbours = new Dictionary<Dic2DKey, Neighbourhood>();
-            foreach (KeyValuePair<Dic2DKey, List<Dic2DKey>> pair in keyNeighbours)
+            // Biome neighborhood
+            Dictionary<Dic2DKey, Neighborhood> biomeNeighbors = new Dictionary<Dic2DKey, Neighborhood>();
+            foreach (KeyValuePair<Dic2DKey, List<Dic2DKey>> pair in keyNeighbors)
             {
-                biomeNeighbours.Add(pair.Key, new Neighbourhood(biomes, pair.Value));
+                biomeNeighbors.Add(pair.Key, new Neighborhood(biomes, pair.Value));
             }
 
-            List<List<Biome>> orderList = BuildOrderList(biomes, biomeNeighbours);
+            List<List<Biome>> orderList = BuildOrderList(biomes, biomeNeighbors);
 
             // Set biome types
-            rnd = new System.Random();
             List<Biome> typingBiomeList = new List<Biome>();
 
             foreach (List<Biome> biomeList in orderList)
@@ -273,9 +271,9 @@ namespace LightBringer.TerrainGeneration
 
                     foreach (Biome biome in biomeList)
                     {
-                        if (biome.type == Biome.Type.Undefined && biomeNeighbours[biome.coord].typedNeighbourCount > maxConstraints)
+                        if (biome.type == Biome.Type.Undefined && biomeNeighbors[biome.coord].typedNeighborCount > maxConstraints)
                         {
-                            maxConstraints = biomeNeighbours[biome.coord].typedNeighbourCount;
+                            maxConstraints = biomeNeighbors[biome.coord].typedNeighborCount;
                             moreConstrainedBiome = biome;
                         }
                     }
@@ -297,7 +295,7 @@ namespace LightBringer.TerrainGeneration
                         }
                     }
 
-                    foreach (Biome b in biomeNeighbours[moreConstrainedBiome.coord].neighbours)
+                    foreach (Biome b in biomeNeighbors[moreConstrainedBiome.coord].neighbors)
                     {
                         if (availableTypes.Contains(b.type))
                         {
@@ -315,17 +313,17 @@ namespace LightBringer.TerrainGeneration
                         moreConstrainedBiome.type = availableTypes[type];
                     }
 
-                    foreach (Dic2DKey key in keyNeighbours[moreConstrainedBiome.coord])
+                    foreach (Dic2DKey key in keyNeighbors[moreConstrainedBiome.coord])
                     {
-                        biomeNeighbours[key].typedNeighbourCount++;
+                        biomeNeighbors[key].typedNeighborCount++;
                     }
                 }
             }
 
-            return keyNeighbours;
+            return keyNeighbors;
         }
 
-        private static List<List<Biome>> BuildOrderList(SpatialDictionary<Biome> biomes, Dictionary<Dic2DKey, Neighbourhood> biomeNeighbours)
+        private static List<List<Biome>> BuildOrderList(SpatialDictionary<Biome> biomes, Dictionary<Dic2DKey, Neighborhood> biomeNeighbors)
         {
             // build order lists
             List<List<Biome>> orderList = new List<List<Biome>>();
@@ -333,11 +331,11 @@ namespace LightBringer.TerrainGeneration
             // order zero is the more constrained biome
             int maxConstraints = int.MinValue;
             Biome orderZeroBiome = null;
-            foreach (KeyValuePair<Dic2DKey, Neighbourhood> pair in biomeNeighbours)
+            foreach (KeyValuePair<Dic2DKey, Neighborhood> pair in biomeNeighbors)
             {
-                if (pair.Value.typedNeighbourCount > maxConstraints)
+                if (pair.Value.typedNeighborCount > maxConstraints)
                 {
-                    maxConstraints = pair.Value.typedNeighbourCount;
+                    maxConstraints = pair.Value.typedNeighborCount;
                     orderZeroBiome = biomes.Get(pair.Key);
                 }
             }
@@ -355,22 +353,22 @@ namespace LightBringer.TerrainGeneration
 
                 foreach (Biome previousBiome in orderList[order - 1])
                 {
-                    foreach (Biome neighbour in biomeNeighbours[previousBiome.coord].neighbours)
+                    foreach (Biome neighbor in biomeNeighbors[previousBiome.coord].neighbors)
                     {
                         bool previousOrder = false;
 
                         foreach (List<Biome> biomeList in orderList)
                         {
-                            if (biomeList.Contains(neighbour))
+                            if (biomeList.Contains(neighbor))
                             {
                                 previousOrder = true;
                                 break;
                             }
                         }
 
-                        if (!previousOrder && !currentOrder.Contains(neighbour))
+                        if (!previousOrder && !currentOrder.Contains(neighbor))
                         {
-                            currentOrder.Add(neighbour);
+                            currentOrder.Add(neighbor);
                         }
                     }
                 }
@@ -386,9 +384,9 @@ namespace LightBringer.TerrainGeneration
             return orderList;
         }
 
-        private static void FindNeighbours(
+        private static void FindNeighbors(
             SpatialDictionary<Biome> biomes,
-            ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbours,
+            ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbors,
             int xCenter, int yCenter, int squareRadius, int step = 32)
         {
             for (int i = xCenter - squareRadius; i < xCenter + squareRadius; i += step)
@@ -401,38 +399,38 @@ namespace LightBringer.TerrainGeneration
                     if (Math.Abs(minDists[0] - minDists[3]) < step * 2 && step > 1)
                     {
                         // Look carefully at this zone
-                        FindNeighbours(biomes, ref neighbours, i, j, step / 2, Math.Max(1, step / 4));
+                        FindNeighbors(biomes, ref neighbors, i, j, step / 2, Math.Max(1, step / 4));
                     }
                     else
                     {
                         if (Math.Abs(minDists[0] - minDists[1]) < step * 2)
                         {
-                            // 0 and 1 are neighbours
-                            AddNeighbours(ref neighbours, fourClosest[0], fourClosest[1]);
-                            AddNeighbours(ref neighbours, fourClosest[1], fourClosest[0]);
+                            // 0 and 1 are neighbors
+                            AddNeighbors(ref neighbors, fourClosest[0], fourClosest[1]);
+                            AddNeighbors(ref neighbors, fourClosest[1], fourClosest[0]);
                         }
 
                         if (Math.Abs(minDists[0] - minDists[2]) < step * 2)
                         {
-                            // 0 and 2 are neighbours
-                            AddNeighbours(ref neighbours, fourClosest[0], fourClosest[2]);
-                            AddNeighbours(ref neighbours, fourClosest[2], fourClosest[0]);
+                            // 0 and 2 are neighbors
+                            AddNeighbors(ref neighbors, fourClosest[0], fourClosest[2]);
+                            AddNeighbors(ref neighbors, fourClosest[2], fourClosest[0]);
                         }
                     }
                 }
             }
         }
 
-        static private void AddNeighbours(ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbours, Dic2DKey key1, Dic2DKey key2)
+        static private void AddNeighbors(ref Dictionary<Dic2DKey, List<Dic2DKey>> neighbors, Dic2DKey key1, Dic2DKey key2)
         {
-            if (!neighbours.ContainsKey(key1))
+            if (!neighbors.ContainsKey(key1))
             {
-                neighbours[key1] = new List<Dic2DKey>();
+                neighbors[key1] = new List<Dic2DKey>();
             }
 
-            if (!neighbours[key1].Contains(key2))
+            if (!neighbors[key1].Contains(key2))
             {
-                neighbours[key1].Add(key2);
+                neighbors[key1].Add(key2);
             }
         }
     }

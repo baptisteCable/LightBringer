@@ -67,7 +67,7 @@ namespace LightBringer.TerrainGeneration
 
             if (NB_SQUARE_RADIUS == 0)
             {
-                wc.GenerateBiomesInSquareAndNeighbourSquares(ref biomes, 0, 0);
+                wc.GenerateBiomesInSquareAndNeighborSquares(ref biomes, 0, 0);
                 wc.GenerateIslandsInSquare(ref biomes, ref islands, 0, 0);
             }
             else
@@ -76,7 +76,7 @@ namespace LightBringer.TerrainGeneration
                 {
                     for (int j = -NB_SQUARE_RADIUS * GEN_SQUARE_RADIUS * 2; j <= NB_SQUARE_RADIUS * GEN_SQUARE_RADIUS * 2; j += GEN_SQUARE_RADIUS * 2)
                     {
-                        wc.GenerateBiomesInSquareAndNeighbourSquares(ref biomes, i, j);
+                        wc.GenerateBiomesInSquareAndNeighborSquares(ref biomes, i, j);
                         wc.GenerateIslandsInSquare(ref biomes, ref islands, i, j);
                     }
                 }

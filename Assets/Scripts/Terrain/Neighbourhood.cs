@@ -2,26 +2,26 @@
 
 namespace LightBringer.TerrainGeneration
 {
-    public class Neighbourhood
+    public class Neighborhood
     {
-        public List<Biome> neighbours;
-        public int typedNeighbourCount;
+        public List<Biome> neighbors;
+        public int typedNeighborCount;
 
-        public Neighbourhood(SpatialDictionary<Biome> biomes, List<Dic2DKey> neighbourList)
+        public Neighborhood(SpatialDictionary<Biome> biomes, List<Dic2DKey> neighborList)
         {
-            neighbours = new List<Biome>();
-            typedNeighbourCount = 0;
+            neighbors = new List<Biome>();
+            typedNeighborCount = 0;
 
-            foreach (Dic2DKey neighbourKey in neighbourList)
+            foreach (Dic2DKey neighborKey in neighborList)
             {
-                Biome biome = biomes.Get(neighbourKey);
+                Biome biome = biomes.Get(neighborKey);
 
                 if (biome.type != Biome.Type.Undefined)
                 {
-                    typedNeighbourCount++;
+                    typedNeighborCount++;
                 }
 
-                neighbours.Add(biome);
+                neighbors.Add(biome);
             }
         }
     }
