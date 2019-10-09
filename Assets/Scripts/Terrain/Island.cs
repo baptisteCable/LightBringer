@@ -24,10 +24,11 @@ namespace LightBringer.TerrainGeneration
 
         int seed = 0;
 
+        int type;
+
         public Biome.Type biomeType;
 
         public Vector2 centerInWorld;
-        public float radius { get; }
 
         // Index of the segment of the first slope. The second one is on the opposite side
         private int[] slopes = null;
@@ -35,6 +36,15 @@ namespace LightBringer.TerrainGeneration
 
         [NonSerialized]
         private List<Vector2> vertices = null;
+
+        [NonSerialized]
+        private Vector2[] circleCenters;
+
+        [NonSerialized]
+        private float[] circleRadius;
+
+        [NonSerialized]
+        private int[] circleOrder;
 
         [NonSerialized]
         private System.Random rnd;
@@ -47,13 +57,13 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private float[] ground1Zone;
 
-        public Island(Vector2 centerPosition, Biome.Type bt, int newSeed = 0)
+        public Island(Vector2 centerPosition, Biome.Type bt, int type, int newSeed = 0)
         {
             centerInWorld = centerPosition;
-            radius = ISLAND_RADIUS;
+            this.type = type;
 
             biomeType = bt;
-
+            
             if (newSeed == 0)
             {
                 if (staticRnd == null)
@@ -97,15 +107,25 @@ namespace LightBringer.TerrainGeneration
 
             InitGround1Function();
 
+            InitCircles();
+
             vertices = new List<Vector2>();
 
+            int c = 0;
             Vector2 vector = RotateVector(new Vector2(1, 0), Mathf.PI / 4f);
-            vertices.Add(new Vector2(radius, 0));
+            vertices.Add(circleCenters[circleOrder[c]] + new Vector2(circleRadius[circleOrder[c]], 0));
 
             // Compute vertices
-            while (vertices.Count < 5 * radius || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
+            while (vertices.Count < 10 || c < circleOrder.Length - 1 || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
-                float angle = randomAngle(new Vector2(0, 0), radius, vector, vertices[vertices.Count - 1], rnd);
+                DetermineCurrentCircleOrder(ref c);
+                
+                float angle = randomAngle(
+                    circleCenters[circleOrder[c]], 
+                    circleRadius[circleOrder[c]], 
+                    vector, 
+                    vertices[vertices.Count - 1],
+                    rnd);
                 vector = RotateVector(vector, angle);
                 vertices.Add(vertices[vertices.Count - 1] + vector);
             }
@@ -113,8 +133,73 @@ namespace LightBringer.TerrainGeneration
             // last 2 vertices
             LastTwoVertices();
 
+            // Rotate island
+            RotateIsland(rnd);
+
             // slopes
             GenerateSlopes();
+        }
+
+        private void RotateIsland(System.Random rnd)
+        {
+            double angle = rnd.NextDouble() * Math.PI * 2;
+            // TODO
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                vertices[i] = RotateVector(vertices[i], angle);
+            }
+        }
+
+        private void DetermineCurrentCircleOrder(ref int c)
+        {
+            while (c + 1 < circleOrder.Length)
+            {
+                float distToCurrent = (vertices[vertices.Count - 1] - circleCenters[circleOrder[c]]).magnitude / circleRadius[circleOrder[c]];
+                float distToNext = (vertices[vertices.Count - 1] - circleCenters[circleOrder[c + 1]]).magnitude / circleRadius[circleOrder[c + 1]];
+
+                if (distToNext <= distToCurrent)
+                {
+                    c++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        private void InitCircles()
+        {
+            switch (type)
+            {
+                case 0:
+                    circleCenters = new Vector2[1];
+                    circleCenters[0] = Vector2.zero;
+                    circleRadius = new float[1];
+                    circleRadius[0] = 2.3f;
+                    circleOrder = new int[1];
+                    circleOrder[0] = 0;
+                    break;
+                case 1:
+                    circleCenters = new Vector2[3];
+                    circleCenters[0] = new Vector2(1.15f, 0);
+                    circleCenters[1] = new Vector2(0, 0);
+                    circleCenters[2] = new Vector2(-1.15f, 0);
+                    circleRadius = new float[3];
+                    circleRadius[0] = 2.3f;
+                    circleRadius[1] = 2.3f;
+                    circleRadius[2] = 2.3f;
+                    circleOrder = new int[5];
+                    circleOrder[0] = 0;
+                    circleOrder[1] = 1;
+                    circleOrder[2] = 2;
+                    circleOrder[3] = 1;
+                    circleOrder[4] = 0;
+                    break;
+                default:
+                    throw new Exception("Invalid Island type : " + type);
+
+            }
         }
 
         private void LastTwoVertices()
@@ -137,7 +222,7 @@ namespace LightBringer.TerrainGeneration
 
         private float angleDistrib(float angle)
         {
-            return -Mathf.Abs(1 / Mathf.PI) + 1;
+            return 3 - Mathf.Abs(angle);
         }
 
         private float distDistrib(float angle, Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)

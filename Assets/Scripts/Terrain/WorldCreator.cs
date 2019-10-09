@@ -72,7 +72,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         // Add Island
                         Biome.Type bt = Biome.GetBiome(biomes, new Vector2(x, y)).type;
-                        Island island = new Island(new Vector2(x, y), bt);
+                        Island island = new Island(new Vector2(x, y), bt, 1);
                         islands.Add(x, y, island);
                         break;
                     }
