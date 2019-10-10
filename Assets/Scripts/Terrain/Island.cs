@@ -22,7 +22,7 @@ namespace LightBringer.TerrainGeneration
         private const float GROUND_1_MIN = 4f;
         private const float GROUND_1_MAX = 8f;
 
-        int seed = 0;
+        int seed;
 
         int type;
 
@@ -30,8 +30,10 @@ namespace LightBringer.TerrainGeneration
 
         public Vector2 centerInWorld;
 
-        // Index of the segment of the first slope. The second one is on the opposite side
+        // Index of the segment of the slopes
+        [NonSerialized]
         private int[] slopes = null;
+        [NonSerialized]
         private bool[] slopeTopOnRight = null;
 
         [NonSerialized]
@@ -51,6 +53,7 @@ namespace LightBringer.TerrainGeneration
 
         private static System.Random staticRnd;
 
+        // Optimize the slope computation for heights and alphaMap
         [NonSerialized]
         private SlopeData[] slopeData;
 
@@ -63,7 +66,7 @@ namespace LightBringer.TerrainGeneration
             this.type = type;
 
             biomeType = bt;
-            
+
             if (newSeed == 0)
             {
                 if (staticRnd == null)
@@ -119,11 +122,11 @@ namespace LightBringer.TerrainGeneration
             while (vertices.Count < 10 || c < circleOrder.Length - 1 || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
                 DetermineCurrentCircleOrder(ref c);
-                
+
                 float angle = randomAngle(
-                    circleCenters[circleOrder[c]], 
-                    circleRadius[circleOrder[c]], 
-                    vector, 
+                    circleCenters[circleOrder[c]],
+                    circleRadius[circleOrder[c]],
+                    vector,
                     vertices[vertices.Count - 1],
                     rnd);
                 vector = RotateVector(vector, angle);
@@ -179,6 +182,7 @@ namespace LightBringer.TerrainGeneration
                     circleRadius[0] = 2.3f;
                     circleOrder = new int[1];
                     circleOrder[0] = 0;
+                    slopes = new int[2];
                     break;
                 case 1:
                     circleCenters = new Vector2[3];
@@ -195,6 +199,7 @@ namespace LightBringer.TerrainGeneration
                     circleOrder[2] = 2;
                     circleOrder[3] = 1;
                     circleOrder[4] = 0;
+                    slopes = new int[3];
                     break;
                 default:
                     throw new Exception("Invalid Island type : " + type);
@@ -238,6 +243,12 @@ namespace LightBringer.TerrainGeneration
 
             // compute distribution
             float dist = (center - (previousPoint + newVector)).magnitude;
+
+            if (dist < radius / 2)
+            {
+                return 0;
+            }
+
             float ratio = dist / radius - 1;
             return Mathf.Exp(-6 * ratio * ratio);
         }
@@ -429,59 +440,111 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
+        // TODO : en cours
         private void GenerateSlopes()
         {
-            if (slopes != null)
+            slopeTopOnRight = new bool[slopes.Length];
+
+            // Find all good vertex for slopes (convex)
+            // List
+            List<int> goodVertices = new List<int>();
+            for (int i = 0; i < vertices.Count; i++)
             {
-                return;
+                if (
+                    IsConvexVertex(i) &&
+                    (
+                        IsConvexVertex((i + 1) % vertices.Count) ||
+                        IsConvexVertex((i - 1 + vertices.Count) % vertices.Count)
+                    )
+                )
+                {
+                    goodVertices.Add(i);
+                }
             }
 
-            slopes = new int[2];
-            slopeTopOnRight = new bool[2];
+            int largestStep = 0;
+            int largestStepIndex = 0;
+            for (int i = 0; i < goodVertices.Count; i++)
+            {
+                int step = (goodVertices[i] - goodVertices[(i - 1 + goodVertices.Count) % goodVertices.Count] + vertices.Count)
+                    % vertices.Count;
+                if (step > largestStep)
+                {
+                    largestStep = step;
+                    largestStepIndex = i;
+                }
+            }
 
-            System.Random rdm = new System.Random();
-            int index = rdm.Next(vertices.Count);
-            DetermineSlope(0, index);
-            DetermineSlope(1, (slopes[0] - 1 + vertices.Count / 2) % vertices.Count);
+            // In this list, find a good equirepartition of all the slopes (middle of each part)
+            // first is after largest step
+            slopes[0] = goodVertices[largestStepIndex];
+
+            // Next are dispatched around the island
+            int index = largestStepIndex + 1;
+            int lastSlope = 0;
+            float partWidth = vertices.Count / (float)slopes.Length;
+
+            while (index - largestStepIndex < goodVertices.Count)
+            {
+                int vertexIndex = goodVertices[index % goodVertices.Count];
+
+                int part = (int)((vertexIndex - slopes[0] + vertices.Count + partWidth / 2f) 
+                    % vertices.Count / partWidth);
+
+                if (part == 0)
+                {
+                    index++;
+                    continue;
+                }
+
+                // add a new slope
+                // include the case where the previous parts were not satisfied
+                // prevent 2 consecutive slopes
+                if (part > lastSlope && (vertexIndex - slopes[lastSlope] + vertices.Count) % vertices.Count > 2)
+                {
+                    lastSlope++;
+                    slopes[lastSlope] = vertexIndex;
+                }
+                // move last slope if closer to ideal position
+                else 
+                {
+                    float d1 = ModuloDistance(vertexIndex, slopes[0] + part * partWidth, vertices.Count);
+                    float d2 = ModuloDistance(slopes[part], slopes[0] + part * partWidth, vertices.Count);
+
+                    if (d1<d2)
+                    {
+                        slopes[part] = vertexIndex;
+                    }
+                }
+
+                index++;
+            }
+
+            // Create slopes in a random direction at these points
+            for (int i = 0; i < slopes.Length; i++)
+            {
+                bool nextConvex = IsConvexVertex((slopes[i] + 1) % vertices.Count);
+                bool previousConvex = IsConvexVertex((slopes[i] - 1 + vertices.Count) % vertices.Count);
+
+                if (!previousConvex)
+                {
+                    slopeTopOnRight[i] = true;
+                }
+                else if (!nextConvex)
+                {
+                    slopeTopOnRight[i] = false;
+                }
+                else
+                {
+                    slopeTopOnRight[i] = rnd.NextDouble() < .5f;
+                }
+            }
         }
 
-        private void DetermineSlope(int slopeIndex, int vertexIndex)
+        private float ModuloDistance(float a, float b, float modulo)
         {
-            bool nextConvex;
-            bool previousConvex;
-
-            while (true)
-            {
-                while (!IsConvexVertex(vertexIndex))
-                {
-                    vertexIndex++;
-                }
-
-                nextConvex = IsConvexVertex((vertexIndex + 1) % vertices.Count);
-                previousConvex = IsConvexVertex((vertexIndex - 1 + vertices.Count) % vertices.Count);
-
-                if (nextConvex || previousConvex)
-                {
-                    slopes[slopeIndex] = vertexIndex;
-                    break;
-                }
-
-                vertexIndex++;
-            }
-
-
-            if (nextConvex && !previousConvex)
-            {
-                slopeTopOnRight[slopeIndex] = true;
-            }
-            else if (!nextConvex && previousConvex)
-            {
-                slopeTopOnRight[slopeIndex] = false;
-            }
-            else
-            {
-                slopeTopOnRight[slopeIndex] = new System.Random().NextDouble() < .5f;
-            }
+            float dist = (a - b + 2 * modulo) % modulo;
+            return Math.Min(dist, modulo - dist);
         }
 
         private bool IsConvexVertex(int vertexIndex)
@@ -499,8 +562,8 @@ namespace LightBringer.TerrainGeneration
             // Create slope data if not done
             if (slopeData == null)
             {
-                slopeData = new SlopeData[2];
-                for (int i = 0; i < 2; i++)
+                slopeData = new SlopeData[slopes.Length];
+                for (int i = 0; i < slopes.Length; i++)
                 {
                     slopeData[i] = new SlopeData(
                            vertices[slopes[i]],
@@ -508,12 +571,10 @@ namespace LightBringer.TerrainGeneration
                            vertices[(slopes[i] + vertices.Count - 1) % vertices.Count],
                            slopeTopOnRight[i]
                        );
-
-                    // Debug.Log(slopeData[i]);
                 }
             }
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < slopes.Length; i++)
             {
                 SlopeData sd = slopeData[i];
                 sd.SetPoint(coord);

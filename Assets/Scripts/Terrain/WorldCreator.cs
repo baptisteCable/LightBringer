@@ -55,8 +55,7 @@ namespace LightBringer.TerrainGeneration
         public void GenerateIslandsInSquare(ref SpatialDictionary<Biome> biomes,
             ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
-            //Debug.Log("Generate Islands in : [" + (xCenter - generationSquareRadius) + ";" + (xCenter + generationSquareRadius) + "] x ["
-            //    + (yCenter - generationSquareRadius) + ";" + (yCenter + generationSquareRadius) + "]");
+            // TODO: Add a special island in the center of each biome centered in the square
 
             for (int i = 0; i < nbIslandsPerSquare; i++)
             {
