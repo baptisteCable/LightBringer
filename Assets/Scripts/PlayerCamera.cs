@@ -28,7 +28,6 @@ public class PlayerCamera : MonoBehaviour
 
         ComputeCurves();
 
-        camPositionFromPlayer = transform.position;
         currentPosition = 0f;
         currentXRotation = 70f;
         ChangeTargetFromCurrent();
@@ -42,18 +41,21 @@ public class PlayerCamera : MonoBehaviour
         xRot = new AnimationCurve();
         fieldOfView = new AnimationCurve();
 
-        xPos.AddKey(new Keyframe(0f, -6.38f));
-        yPos.AddKey(new Keyframe(0f, 25.2f, 0f, -20f));
-        zPos.AddKey(new Keyframe(0f, -6.38f));
+        // top position
+        xPos.AddKey(new Keyframe(0f, -12f, 0, 18));
+        yPos.AddKey(new Keyframe(0f, 40f, 0, -60));
+        zPos.AddKey(new Keyframe(0f, -12f, 0, 18));
         xRot.AddKey(new Keyframe(0f, 70f));
         fieldOfView.AddKey(new Keyframe(0, 41f));
 
+        // bot position
         xPos.AddKey(new Keyframe(.5f, -2.26f));
         yPos.AddKey(new Keyframe(.5f, 9.2f, 0f, 0f));
         zPos.AddKey(new Keyframe(.5f, -2.26f));
         xRot.AddKey(new Keyframe(.5f, 70f));
         fieldOfView.AddKey(new Keyframe(0, 41f));
 
+        // bot horizontal position
         xPos.AddKey(new Keyframe(1f, -2.5f));
         yPos.AddKey(new Keyframe(1f, 5f, 0f, 0f));
         zPos.AddKey(new Keyframe(1f, -2.5f));

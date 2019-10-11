@@ -12,7 +12,7 @@ namespace LightBringer.Player
     {
         // constants
         private const float ROTATION_SPEED = 24f;
-        private const float MOVE_SPEED = 8f;
+        private const float MOVE_SPEED = 25f; // 8f in fight
 
         private float moveSpeed = MOVE_SPEED;
         private float rotationSpeed = ROTATION_SPEED;

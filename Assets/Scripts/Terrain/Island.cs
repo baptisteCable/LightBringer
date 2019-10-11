@@ -12,11 +12,11 @@ namespace LightBringer.TerrainGeneration
         public const float SLOPE_LANDING = .5f;
         public const float SLOPE_DESCENT = .75f; // proportion of the second segment used for going down
         private const float SLOPE_WAY_WIDTH = .3f;
-        public const float ISLAND_RADIUS = 2.3f; // TODO --> new shapes of islands
         private const float BIOME_GROUND_DIST = 1.5f;
 
+        public const float MAX_RADIUS = 3.75f; // Update with new types of islands
+
         public const float SCALE = 7f; // scale from island units to world units
-        public const float MAX_POSSIBLE_RADIUS = 2.3f; // Used for rejection sampling
 
         private const int GROUND_1_FUNCTION_PARTS = 12;
         private const float GROUND_1_MIN = 4f;
@@ -79,6 +79,22 @@ namespace LightBringer.TerrainGeneration
             {
                 seed = newSeed;
             }
+        }
+
+        public float GetAvgRadius()
+        {
+            return GetAvgRadius(type);
+        }
+
+        static public float GetAvgRadius(int type)
+        {
+            switch (type)
+            {
+                case 0: return 2.1f;
+                case 1: return 3.75f;
+            }
+
+            throw new Exception("No valid type");
         }
 
         public static Vector2 Vector2FromAngle(float a)
@@ -179,20 +195,20 @@ namespace LightBringer.TerrainGeneration
                     circleCenters = new Vector2[1];
                     circleCenters[0] = Vector2.zero;
                     circleRadius = new float[1];
-                    circleRadius[0] = 2.3f;
+                    circleRadius[0] = 2.1f;
                     circleOrder = new int[1];
                     circleOrder[0] = 0;
                     slopes = new int[2];
                     break;
                 case 1:
                     circleCenters = new Vector2[3];
-                    circleCenters[0] = new Vector2(1.15f, 0);
+                    circleCenters[0] = new Vector2(1.25f, 0);
                     circleCenters[1] = new Vector2(0, 0);
-                    circleCenters[2] = new Vector2(-1.15f, 0);
+                    circleCenters[2] = new Vector2(-1.25f, 0);
                     circleRadius = new float[3];
-                    circleRadius[0] = 2.3f;
-                    circleRadius[1] = 2.3f;
-                    circleRadius[2] = 2.3f;
+                    circleRadius[0] = 2.5f;
+                    circleRadius[1] = 2.5f;
+                    circleRadius[2] = 2.5f;
                     circleOrder = new int[5];
                     circleOrder[0] = 0;
                     circleOrder[1] = 1;

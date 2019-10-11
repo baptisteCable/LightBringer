@@ -271,7 +271,7 @@ namespace LightBringer.TerrainGeneration
                 islandList = islands.GetAround(
                     xBase + TERRAIN_WIDTH / 2,
                     zBase + TERRAIN_WIDTH / 2,
-                    TERRAIN_WIDTH / 2 + (int)((Island.MAX_POSSIBLE_RADIUS + 1) * Island.SCALE * 2)
+                    TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)
                 );
             }
 
@@ -713,6 +713,7 @@ namespace LightBringer.TerrainGeneration
                                     newTilesExpected++;
                                 }
 
+                                //GenerateTerrainDataThreaded(new object[] { i, j }); // DEBUG
                                 ThreadPool.QueueUserWorkItem(GenerateTerrainDataThreaded, new object[] { i, j });
                             }
                         }
@@ -736,7 +737,7 @@ namespace LightBringer.TerrainGeneration
                     loadedTiles.Remove(key);
                 }
 
-                yield return new WaitForSeconds(5);
+                yield return new WaitForSeconds(3);
             }
         }
 
@@ -765,7 +766,7 @@ namespace LightBringer.TerrainGeneration
                            j += 2 * wc.generationSquareRadius
                         )
                         {
-                            if (islands.IsEmpty(i, j, wc.generationSquareRadius))
+                            if (islands.CountAround(i, j, wc.generationSquareRadius) < wc.avgNbIslandsPerSquare / 4)
                             {
                                 regions.Add(new int[] { i, j });
                             }
@@ -779,12 +780,13 @@ namespace LightBringer.TerrainGeneration
                             newRegionsExpected = true;
                         }
                         // Call for thread
+                        //GenerateRegionDataThreaded(regions); // DEBUG
                         ThreadPool.QueueUserWorkItem(GenerateRegionDataThreaded, regions);
                     }
 
                 }
 
-                yield return new WaitForSeconds(4.77f);
+                yield return new WaitForSeconds(2.9999f);
             }
         }
         #endregion

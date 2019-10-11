@@ -33,6 +33,10 @@ namespace LightBringer.TerrainGeneration
         {
             return "(" + x + "; " + y + ")";
         }
+        public Vector2 ToVector2()
+        {
+            return new Vector2(x, y);
+        }
     }
 
     [Serializable]
@@ -270,6 +274,107 @@ namespace LightBringer.TerrainGeneration
             return list;
         }
 
+        public int CountAround(int x, int y, int distance)
+        {
+            int count = 0;
+
+            if (IsLeaf())
+            {
+                foreach (KeyValuePair<Dic2DKey, T> pair in dic)
+                {
+                    if (
+                            pair.Key.x - x < distance &&
+                            pair.Key.x - x > -distance &&
+                            pair.Key.y - y < distance &&
+                            pair.Key.y - y > -distance
+                        )
+                    {
+                        count++;
+                    }
+                }
+            }
+            else
+            {
+                int halfFullScale = PowerOfTwo(scale - 1);
+
+                if (x - distance < 0)
+                {
+                    if (botLeft != null && y - distance < 0)
+                    {
+                        count += botLeft.CountAround(x + halfFullScale, y + halfFullScale, distance);
+                    }
+                    if (topLeft != null && y + distance > 0)
+                    {
+                        count += topLeft.CountAround(x + halfFullScale, y - halfFullScale, distance);
+                    }
+                }
+                if (x + distance > 0)
+                {
+                    if (botRight != null && y - distance < 0)
+                    {
+                        count += botRight.CountAround(x - halfFullScale, y + halfFullScale, distance);
+                    }
+                    if (topRight != null && y + distance > 0)
+                    {
+                        count += topRight.CountAround(x - halfFullScale, y - halfFullScale, distance);
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        public bool IsEmpty(int x, int y, int distance)
+        {
+            if (IsLeaf())
+            {
+                foreach (KeyValuePair<Dic2DKey, T> pair in dic)
+                {
+                    if (
+                            pair.Key.x - x < distance &&
+                            pair.Key.x - x > -distance &&
+                            pair.Key.y - y < distance &&
+                            pair.Key.y - y > -distance
+                        )
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            else
+            {
+                int halfFullScale = PowerOfTwo(scale - 1);
+
+                if (x - distance < 0)
+                {
+                    if (botLeft != null && y - distance < 0 && !botLeft.IsEmpty(x + halfFullScale, y + halfFullScale, distance))
+                    {
+                        return false;
+                    }
+                    if (topLeft != null && y + distance > 0 && !topLeft.IsEmpty(x + halfFullScale, y - halfFullScale, distance))
+                    {
+                        return false;
+                    }
+                }
+
+                if (x + distance > 0)
+                {
+                    if (botRight != null && y - distance < 0 && !botRight.IsEmpty(x - halfFullScale, y + halfFullScale, distance))
+                    {
+                        return false;
+                    }
+                    if (topRight != null && y + distance > 0 && !topRight.IsEmpty(x - halfFullScale, y - halfFullScale, distance))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
         private void Expand()
         {
             if (topLeft != null)
@@ -305,69 +410,6 @@ namespace LightBringer.TerrainGeneration
             }
 
             scale++;
-        }
-
-        public bool IsEmpty(int x, int y, int distance)
-        {
-            if (IsLeaf())
-            {
-                foreach (KeyValuePair<Dic2DKey, T> pair in dic)
-                {
-                    if (
-                            pair.Key.x - x < distance &&
-                            pair.Key.x - x > -distance &&
-                            pair.Key.y - y < distance &&
-                            pair.Key.y - y > -distance
-                        )
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-            else
-            {
-                int halfFullScale = PowerOfTwo(scale - 1);
-
-                if (x - distance < 0)
-                {
-                    if (botLeft != null && y - distance < 0)
-                    {
-                        if (!botLeft.IsEmpty(x + halfFullScale, y + halfFullScale, distance))
-                        {
-                            return false;
-                        }
-                    }
-                    if (topLeft != null && y + distance > 0)
-                    {
-                        if (!topLeft.IsEmpty(x + halfFullScale, y - halfFullScale, distance))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                if (x + distance > 0)
-                {
-                    if (botRight != null && y - distance < 0)
-                    {
-                        if (!botRight.IsEmpty(x - halfFullScale, y + halfFullScale, distance))
-                        {
-                            return false;
-                        }
-                    }
-                    if (topRight != null && y + distance > 0)
-                    {
-                        if (!topRight.IsEmpty(x - halfFullScale, y - halfFullScale, distance))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                return true;
-            }
         }
 
         public static int PowerOfTwo(int n)

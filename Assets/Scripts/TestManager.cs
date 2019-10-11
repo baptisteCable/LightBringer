@@ -66,7 +66,7 @@ public class TestManager : MonoBehaviour
         GameObject playerGo = Instantiate(playerPrefab);
         playerMotor = playerGo.GetComponent<PlayerMotor>();
 
-        playerMotor.transform.position = new Vector3(0, 0, 0);
+        playerMotor.transform.position = new Vector3(0, 6, 0);
 
         // Knight
         knight = Instantiate(knightPrefab, new Vector3(0, 0, 20), Quaternion.AngleAxis(180, Vector3.up));

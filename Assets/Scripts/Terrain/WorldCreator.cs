@@ -13,14 +13,13 @@ namespace LightBringer.TerrainGeneration
         public int generationSquareRadius;
 
         // Biome constants
-        private int nbBiomesPerSquare;
         public float minDistanceBetweenBiomePolygones = 150;
-        public int biomeMaxTry = 500;
+        public int biomeMaxTry = 1500;
 
         // Island constants
-        private int nbIslandsPerSquare;
-        public float minDistanceBetwwenIslands = 40;
-        public int islandsMaxTry = 200;
+        public int avgNbIslandsPerSquare;
+        public float minDistanceBetwwenIslands = 35;
+        public int islandsMaxTry = 2500;
 
         // Debug checkBoxed
         public bool createBiomeMapAndSaveBin = true;
@@ -33,12 +32,11 @@ namespace LightBringer.TerrainGeneration
         // File path
         string path;
 
-        public WorldCreator(string path, int genRadius = 512, float biomeDensity = .00003f, float islandDensity = .0006f)
+        public WorldCreator(string path, int genRadius = 512)
         {
             this.path = path;
             generationSquareRadius = genRadius;
-            nbBiomesPerSquare = (int)(genRadius * genRadius * biomeDensity);
-            nbIslandsPerSquare = (int)(genRadius * genRadius * islandDensity);
+            avgNbIslandsPerSquare = (int)(170 / 512f / 512f * generationSquareRadius * generationSquareRadius);
         }
 
         public void CreateMapSector(ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
@@ -55,41 +53,46 @@ namespace LightBringer.TerrainGeneration
         public void GenerateIslandsInSquare(ref SpatialDictionary<Biome> biomes,
             ref SpatialDictionary<Island> islands, int xCenter, int yCenter)
         {
-            // TODO: Add a special island in the center of each biome centered in the square
-
-            for (int i = 0; i < nbIslandsPerSquare; i++)
+            // Special islands
+            foreach (Biome b in biomes.GetAround(xCenter, yCenter, generationSquareRadius))
             {
-                int tryCount = 0;
+                Island island = new Island(b.coord.ToVector2(), b.type, 1);
+                islands.Add(b.coord.x, b.coord.y, island);
+            }
 
-                while (tryCount < islandsMaxTry)
+            int tryCount = 0;
+            int isCount = 0;
+
+            while (tryCount < islandsMaxTry)
+            {
+                int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
+                int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
+
+                // Rejection
+                if (!IsRejectedIsland(ref islands, x, y, 0))
                 {
-                    int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
-                    int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
-
-                    // Rejection
-                    if (!IsRejectedIsland(ref islands, x, y))
-                    {
-                        // Add Island
-                        Biome.Type bt = Biome.GetBiome(biomes, new Vector2(x, y)).type;
-                        Island island = new Island(new Vector2(x, y), bt, 1);
-                        islands.Add(x, y, island);
-                        break;
-                    }
-
-                    tryCount++;
+                    // Add Island
+                    Biome.Type bt = Biome.GetBiome(biomes, new Vector2(x, y)).type;
+                    Island island = new Island(new Vector2(x, y), bt, 0);
+                    islands.Add(x, y, island);
+                    tryCount = -1;
+                    isCount++;
                 }
+
+                tryCount++;
             }
         }
 
-        private bool IsRejectedIsland(ref SpatialDictionary<Island> islands, int x, int y)
+        private bool IsRejectedIsland(ref SpatialDictionary<Island> islands, int x, int y, int type)
         {
             Vector2 islandCenter = new Vector2(x, y);
-            float minDistance = minDistanceBetwwenIslands + (Island.ISLAND_RADIUS + Island.MAX_POSSIBLE_RADIUS) * Island.SCALE;
 
+            float minDistance = minDistanceBetwwenIslands + (Island.MAX_RADIUS + Island.GetAvgRadius(type)) * Island.SCALE;
             List<Island> possibleCollidings = islands.GetAround(x, y, (int)Math.Ceiling(minDistance));
 
             foreach (Island pc in possibleCollidings)
             {
+                minDistance = minDistanceBetwwenIslands + (pc.GetAvgRadius() + Island.GetAvgRadius(type)) * Island.SCALE;
                 if ((islandCenter - pc.centerInWorld).magnitude < minDistance)
                 {
                     return true;
@@ -206,26 +209,23 @@ namespace LightBringer.TerrainGeneration
                 biomes.Add(0, 0, biome);
             }
 
-            for (int i = 0; i < nbBiomesPerSquare; i++)
+            int tryCount = 0;
+
+            while (tryCount < biomeMaxTry)
             {
-                int tryCount = 0;
+                int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
+                int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
 
-                while (tryCount < biomeMaxTry)
+                // Rejection
+                if (!IsRejectedBiome(ref biomes, x, y))
                 {
-                    int x = rnd.Next(xCenter - generationSquareRadius, xCenter + generationSquareRadius);
-                    int y = rnd.Next(yCenter - generationSquareRadius, yCenter + generationSquareRadius);
-
-                    // Rejection
-                    if (!IsRejectedBiome(ref biomes, x, y))
-                    {
-                        // Add Biome
-                        Biome biome = new Biome(x, y);
-                        biomes.Add(x, y, biome);
-                        break;
-                    }
-
-                    tryCount++;
+                    // Add Biome
+                    Biome biome = new Biome(x, y);
+                    biomes.Add(x, y, biome);
+                    tryCount = -1;
                 }
+
+                tryCount++;
             }
         }
 

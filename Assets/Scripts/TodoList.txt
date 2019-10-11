@@ -20,9 +20,7 @@ Bugs :
 	- pente d'ile générée dans une tuile (haut de pente) mais suite de la pente non généré (tuile contenant la majorité de l'île, mais pas le haut de pente)
 
 Terrain :
-	- Nouvelles formes d'îles
-	- Centrer une ile de pylone pour chaque biome
-	- Biome de lumière en 0, 0
+	- 
 
 
 Retours :

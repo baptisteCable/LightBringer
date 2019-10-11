@@ -16,7 +16,7 @@ public class MapPainter
         bmp = new Bitmap(mapRadius * 2 / meterPerPix, mapRadius * 2 / meterPerPix);
         BiomeBmp(ref bmp, ref biomes, xCenter, yCenter, mapRadius, meterPerPix);
 
-        foreach (Island island in islands.GetAround(xCenter, yCenter, mapRadius + (int)(Island.MAX_POSSIBLE_RADIUS * Island.SCALE * 2)))
+        foreach (Island island in islands.GetAround(xCenter, yCenter, mapRadius + (int)(Island.MAX_RADIUS * Island.SCALE * 2)))
         {
             DrawIsland(island, ref bmp, xCenter, yCenter, mapRadius, meterPerPix);
         }
@@ -48,7 +48,7 @@ public class MapPainter
 
     void DrawIsland(Island island, ref Bitmap bmp, int xCenter, int yCenter, int mapRadius, int meterPerPix)
     {
-        float sqRadius = Island.MAX_POSSIBLE_RADIUS * Island.SCALE * 2;
+        float sqRadius = Island.MAX_RADIUS * Island.SCALE * 2;
         int iMin = Mathf.Max(0, (int)(island.centerInWorld.x - xCenter + mapRadius - sqRadius)) / meterPerPix;
         int iMax = Mathf.Min(2 * mapRadius - 1, (int)(island.centerInWorld.x - xCenter + mapRadius + sqRadius)) / meterPerPix;
         int jMin = Mathf.Max(0, (int)(-island.centerInWorld.y - yCenter + mapRadius - sqRadius)) / meterPerPix;
