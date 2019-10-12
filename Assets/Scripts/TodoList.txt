@@ -19,8 +19,13 @@ Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
 	- pente d'ile générée dans une tuile (haut de pente) mais suite de la pente non généré (tuile contenant la majorité de l'île, mais pas le haut de pente)
 
-Terrain :
-	- 
+Monde :
+	- gérer les différentes altitudes du perso :
+		* jump (visée de la camera sur l'environement)
+		* camera
+	- anti chutes sous le terrain
+	- génération, sauvegarde et chargement du décor
+	- shader pour vent et explosions
 
 
 Retours :
