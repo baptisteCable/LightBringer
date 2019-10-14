@@ -227,5 +227,4 @@ Shader "Effects/CrackedGround" {
 				ENDCG
 			}
 		}
-			CustomEditor "ShaderForgeMaterialInspector"
 }

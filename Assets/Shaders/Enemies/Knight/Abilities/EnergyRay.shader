@@ -74,5 +74,4 @@ Shader "Shader Forge/EnergyRay" {
             ENDCG
         }
     }
-    CustomEditor "ShaderForgeMaterialInspector"
 }

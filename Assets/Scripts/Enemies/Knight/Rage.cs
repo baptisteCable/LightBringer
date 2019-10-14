@@ -8,17 +8,16 @@ namespace LightBringer.Enemies.Knight
         [SerializeField] SkinnedMeshRenderer[] crystals = null;
         [SerializeField] ParticleSystem ragePs = null;
         [SerializeField] ParticleSystem exhaustionPs = null;
-        [SerializeField] Light[] lights = null;
+        [SerializeField] Light pointLight = null;
 
         [SerializeField] Color rageColor = default;
         [SerializeField] Color exhaustionColor = default;
 
-        private Color[] lightInitialColors;
+        private Color lightInitialColor;
         private Color[] crystalInitialColors;
 
         private void Start()
         {
-            lightInitialColors = new Color[lights.Length];
             crystalInitialColors = new Color[crystals.Length];
 
             for (int i = 0; i < crystals.Length; i++)
@@ -26,10 +25,7 @@ namespace LightBringer.Enemies.Knight
                 crystalInitialColors[i] = crystals[i].material.GetColor("_EmissionColor");
             }
 
-            for (int i = 0; i < lights.Length; i++)
-            {
-                lightInitialColors[i] = lights[i].color;
-            }
+            lightInitialColor = pointLight.color;
         }
 
         public void StartRageDelayed(float delay)
@@ -52,10 +48,8 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", rageColor);
             }
 
-            for (int i = 0; i < lights.Length; i++)
-            {
-                lights[i].color = rageColor;
-            }
+            pointLight.color = rageColor;
+            pointLight.intensity = 2;
         }
 
         public void StartExhaustion()
@@ -68,10 +62,7 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", exhaustionColor);
             }
 
-            for (int i = 0; i < lights.Length; i++)
-            {
-                lights[i].color = exhaustionColor;
-            }
+            pointLight.color = exhaustionColor;
         }
 
         public void StopExhaustion()
@@ -83,10 +74,8 @@ namespace LightBringer.Enemies.Knight
                 crystals[i].material.SetColor("_EmissionColor", crystalInitialColors[i]);
             }
 
-            for (int i = 0; i < lights.Length; i++)
-            {
-                lights[i].color = lightInitialColors[i];
-            }
+            pointLight.color = lightInitialColor;
+            pointLight.intensity = 1;
         }
     }
 }

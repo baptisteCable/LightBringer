@@ -25,6 +25,7 @@ public class TestManager : MonoBehaviour
 
     private bool knightPassive = true;
     private bool canDie = true;
+    private bool highSpeed = true;
 
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
@@ -32,7 +33,10 @@ public class TestManager : MonoBehaviour
     {
         singleton = this;
 
-        nms = wm.GetComponent<NavMeshSurface>();
+        if (nms != null)
+        {
+            nms = wm.GetComponent<NavMeshSurface>();
+        }
 
         testUI.SetActive(true);
     }
@@ -65,11 +69,12 @@ public class TestManager : MonoBehaviour
         // Player
         GameObject playerGo = Instantiate(playerPrefab);
         playerMotor = playerGo.GetComponent<PlayerMotor>();
+        SetHighSpeed(highSpeed);
 
         playerMotor.transform.position = new Vector3(0, 6, 0);
 
         // Knight
-        knight = Instantiate(knightPrefab, new Vector3(0, 0, 20), Quaternion.AngleAxis(180, Vector3.up));
+        knight = Instantiate(knightPrefab, new Vector3(-45, 0, -10), Quaternion.AngleAxis(180, Vector3.up));
 
         kc = knight.GetComponent<KnightController>();
         kc.passive = knightPassive;
@@ -118,6 +123,22 @@ public class TestManager : MonoBehaviour
         if (GameManager.gm != null)
         {
             GameManager.gm.ignoreCD = noCD;
+        }
+    }
+
+    public void SetHighSpeed(bool hs)
+    {
+        highSpeed = hs;
+        if (playerMotor != null)
+        {
+            if (hs)
+            {
+                playerMotor.moveSpeed = 25f;
+            }
+            else
+            {
+                playerMotor.moveSpeed = 8f;
+            }
         }
     }
 

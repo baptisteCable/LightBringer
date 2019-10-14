@@ -11,8 +11,6 @@ Shader "Effect/ShockWave" {
             "RenderType"="Transparent"
         }
 
-
-
 		// Grab the screen behind the object into _BackgroundTexture
 		GrabPass
 		{
@@ -85,5 +83,4 @@ Shader "Effect/ShockWave" {
             ENDCG
         }
     }
-    CustomEditor "ShaderForgeMaterialInspector"
 }

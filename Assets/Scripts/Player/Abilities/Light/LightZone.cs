@@ -47,5 +47,4 @@ namespace LightBringer.Player.Abilities.Light
             DestroyLZ();
         }
     }
-
 }
