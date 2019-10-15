@@ -37,8 +37,6 @@ namespace LightBringer.TerrainGeneration
 
         // Nav mesh
         [SerializeField] private NavMeshSurface navMeshSurface = null;
-        private List<NavMeshBuildSource> navSources;
-        private NavMeshBuildSettings navMeshBuildSettings;
 
         // Tiles dictionary
         Dictionary<Dic2DKey, GameObject> loadedTiles;
@@ -133,19 +131,12 @@ namespace LightBringer.TerrainGeneration
 
         private void CreateNavMesh()
         {
-            navSources = new List<NavMeshBuildSource>();
-            navMeshBuildSettings = new NavMeshBuildSettings();
-            navMeshBuildSettings.agentClimb = .4f;
-            navMeshBuildSettings.agentHeight = 7;
-            navMeshBuildSettings.agentRadius = 2.3f;
-            navMeshBuildSettings.agentSlope = 14;
-            navMeshBuildSettings.agentTypeID = 1;
             navMeshSurface.BuildNavMesh();
         }
 
         private void UpdateMesh()
         {
-            navSources.Clear();
+            List<NavMeshBuildSource> navSources = new List<NavMeshBuildSource>();
 
             foreach (GameObject go in loadedTiles.Values)
             {
@@ -153,17 +144,16 @@ namespace LightBringer.TerrainGeneration
                 var s = new NavMeshBuildSource();
                 s.shape = NavMeshBuildSourceShape.Terrain;
                 s.sourceObject = t.terrainData;
-                // Terrain system only supports translation - so we pass translation only to back-end
-                s.transform = Matrix4x4.TRS(go.transform.position, Quaternion.identity, Vector3.one);
+                s.transform = go.transform.localToWorldMatrix;
                 s.area = 0;
                 navSources.Add(s);
             }
 
             NavMeshBuilder.UpdateNavMeshDataAsync(
                     navMeshSurface.navMeshData,
-                    navMeshBuildSettings,
+                    navMeshSurface.GetBuildSettings(),
                     navSources,
-                    new Bounds(playerTransform.position, new Vector3(768, 768, 768))
+                    new Bounds(playerTransform.position, new Vector3(2000, 2000, 2000))
                 );
         }
 
@@ -529,7 +519,7 @@ namespace LightBringer.TerrainGeneration
             if (biomeMap[i, j] == Biome.Type.Undefined)
             {
                 float r = (HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH + 1) / (float)(HEIGHT_POINT_PER_UNIT * TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT);
-                biomeMap[i, j] = Biome.GetBiome(biomes,new Vector2(xBase + (j - BLUR_RADIUS) * r, zBase + (i - BLUR_RADIUS) * r)).type;
+                biomeMap[i, j] = Biome.GetBiome(biomes, new Vector2(xBase + (j - BLUR_RADIUS) * r, zBase + (i - BLUR_RADIUS) * r)).type;
             }
         }
 
