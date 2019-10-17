@@ -21,12 +21,11 @@ namespace LightBringer.Enemies.Knight
         public const float CONE_ANGLE = 70.8f;
         public const float CONE_STARTING = -18.8f;
 
-        private const float RAYCAST_HEIGHT = 2f;
+        private const float RAYCAST_HEIGHT = 1f;
         public const float MAX_DISTANCE = 29f;
-        private const float DIST_FROM_CENTER_COLLIDER = 2f;
+        public const float DIST_FROM_CENTER_COLLIDER = 2f;
 
-        private const float ANGLE_SPACING = 3f;
-        private const float SAFETY_OVERLAP = .5f;
+        public const int NB_SECTORS = 24;
 
         private Transform target;
         private Vector3 targetPosition;
@@ -34,7 +33,6 @@ namespace LightBringer.Enemies.Knight
         private GameObject groundActPrefab;
         private GameObject groundRendererPrefab;
         private GameObject groundRenderer;
-        private ConeMesh groundConeMesh;
         private BurningGround burningGround;
 
         private KnightMotor km;
@@ -46,7 +44,7 @@ namespace LightBringer.Enemies.Knight
         // Ground collider list
         protected Dictionary<Collider, float> groundCols;
 
-        private float nextAngle;
+        private int currentSector;
 
         public Attack1Behaviour(KnightMotor enemyMotor, Transform target, GameObject groundActPrefab, GameObject groundRendererPrefab) : base(enemyMotor)
         {
@@ -130,9 +128,7 @@ namespace LightBringer.Enemies.Knight
                     em.transform.rotation, null);
                 burningGround = groundRenderer.GetComponent<BurningGround>();
                 GameObject.Destroy(groundRenderer, GROUND_DURATION);
-
-                // First angle
-                nextAngle = CONE_STARTING + (ANGLE_SPACING - SAFETY_OVERLAP) / 2f;
+                currentSector = -1;
             }
 
             base.StartCollisionPart(part);
@@ -151,7 +147,9 @@ namespace LightBringer.Enemies.Knight
                 LayerMask mask = LayerMask.GetMask("Environment");
 
                 // If environment contact, shorter ray and explosion
-                if (Physics.Raycast(groundRenderer.transform.position + km.attack1Container.transform.forward * DIST_FROM_CENTER_COLLIDER,
+                if (Physics.Raycast(groundRenderer.transform.position
+                    + km.attack1Container.transform.forward * DIST_FROM_CENTER_COLLIDER
+                    + RAYCAST_HEIGHT * Vector3.up,
                     Quaternion.Euler(0, angle, 0) * km.transform.forward, out hit, MAX_DISTANCE, mask))
                 {
                     // ray length (collider)
@@ -165,12 +163,12 @@ namespace LightBringer.Enemies.Knight
                 burningGround.SetAngle(angle);
 
                 // Next sector
-                if (angle > nextAngle)
+                if (angle > CONE_STARTING + (currentSector + 1) * CONE_ANGLE / NB_SECTORS && currentSector + 1 < NB_SECTORS)
                 {
-                    nextAngle = angle + ANGLE_SPACING - SAFETY_OVERLAP;
+                    currentSector++;
 
                     // Ground renderer
-                    burningGround.addAngle3d(angle, length + DIST_FROM_CENTER_COLLIDER);
+                    burningGround.setSector(currentSector, length + DIST_FROM_CENTER_COLLIDER);
 
                     // new ground collider trigger for this sector
                     GameObject groundActGO = GameObject.Instantiate(groundActPrefab, groundRenderer.transform.position,
@@ -191,7 +189,6 @@ namespace LightBringer.Enemies.Knight
         protected override void EndPart(int part)
         {
             base.EndPart(part);
-            burningGround.EndRotation();
         }
 
         public override void End()

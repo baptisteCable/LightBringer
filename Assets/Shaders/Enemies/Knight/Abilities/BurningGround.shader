@@ -29,6 +29,8 @@ Shader "Effects/KnightBurningGround" {
 		_IntensityMovement("IntensityMovement", Float) = 1
 		_IntensityLatency("IntensityLatency", Range(1, 100)) = 2
 		_IntensityTimeMod("IntensityTimeMod", Float) = 0.001
+
+		_Angle("Angle", float) = -30
 	}
 	SubShader{
 		Tags {
@@ -68,6 +70,8 @@ Shader "Effects/KnightBurningGround" {
 			float _Height;
 			float _StepDistance;
 			int _Steps;
+			float _Angle;
+			float _Sectors[24];
 
 			// Intensity of lava
 			uniform sampler2D _NoiseTexture; uniform float4 _NoiseTexture_ST;
@@ -89,8 +93,6 @@ Shader "Effects/KnightBurningGround" {
 			};
 
 			struct VertexOutput {
-				//float2 uv_NoiseTex;
-
 				float4 pos : SV_POSITION;
 				float2 uv0 : TEXCOORD0;
 				float4 vertexColor : COLOR;
@@ -99,7 +101,6 @@ Shader "Effects/KnightBurningGround" {
 
 			void vert(VertexInput v, out VertexOutput o) {
 				// Base
-				
 				UNITY_INITIALIZE_OUTPUT(VertexOutput, o);
 				
 				o.uv0 = v.texcoord0;
@@ -125,7 +126,7 @@ Shader "Effects/KnightBurningGround" {
 
 
 			//Get the height from a uv position
-			float getHeight(float2 texturePos /*, float2 realTexPos*/)
+			float getHeight(float2 texturePos)
 			{
 				// Height from texture
 				float4 colorNoise = tex2Dlod(_DepthTex, float4(texturePos * _TexScale, 0, 0));
@@ -206,12 +207,12 @@ Shader "Effects/KnightBurningGround" {
 				//Move one step back to the position before we hit terrain
 				float3 oldPos = rayPos - stepDistance * rayDir;
 
-				float oldHeight = getHeight(oldPos.xz/*, realTexPos*/);
+				float oldHeight = getHeight(oldPos.xz);
 
 				//Always positive
 				float oldDistToTerrain = abs(oldHeight - oldPos.y);
 
-				float currentHeight = getHeight(rayPos.xz/*, realTexPos*/);
+				float currentHeight = getHeight(rayPos.xz);
 
 				//Always negative
 				float currentDistToTerrain = rayPos.y - currentHeight;
@@ -227,47 +228,99 @@ Shader "Effects/KnightBurningGround" {
 			}
 
 			float4 frag(VertexOutput i) : COLOR {
+				//return float4(1, 1, 1, 1);
+				// Mask
+				float x = i.uv0.x;
+				float y = i.uv0.y;
+				float dist = sqrt(x * x + y * y);
+				float angle = asin(x / dist) * 57.2957795 - 28.4; // 28.4 is the sprite rotation
 
-				//Where is the ray starting? y is up and we always start at the surface
-				float3 realTexPos = float3(i.uv0.x, 0, i.uv0.y);
-				float3 rayPos = realTexPos;
+				float minDist = .02;
+				float blurSize = .01;
 
-				//What's the direction of the ray?
-				float3 rayDir = normalize(i.tangentViewDir);
+				float startAngle = -18.8;
+				float coneAngle = 70.8;
 
-				//Find where the ray is intersecting with the terrain with a raymarch algorithm
-				
+				int prop = floor((angle - startAngle) / coneAngle * 24);
 
-				//The default color used if the ray doesnt hit anything
-				float4 finalColor = 0;
+				// main sector part
+				float alpha = (minDist <= dist) * (dist <= _Sectors[prop]);
 
-				for (int k = 0; k < _Steps; k++)
-				{
-					//Get the current height at this uv coordinate
-					float height = getHeight(rayPos.xz/*, realTexPos.xz*/);
+				// max dist blur
+				alpha += (_Sectors[prop] <= dist) * clamp(1 - (dist - _Sectors[prop]) / blurSize, 0, 1);
 
-					//If the ray is below the surface
-					if (rayPos.y < height)
+				// min dist blur
+				alpha += (dist < minDist) * clamp((dist - minDist + blurSize) / blurSize, 0, 1);
+
+				// left side blur
+				float sideAngle = 28.4 + startAngle + prop * coneAngle / 24.0;
+				float2 sideDir = float2(sin(sideAngle / 57.2957795), cos(sideAngle / 57.2957795));
+				float2 normal = float2(sideDir.y, -sideDir.x);
+				float normalDot = dot(i.uv0, normal) / blurSize;
+				float normalAlphaSub = (1 - normalDot) * (normalDot >= 0) * (normalDot <= 1) * (prop == 0 || _Sectors[prop - 1] <= dist);
+				alpha = clamp(alpha - normalAlphaSub, 0, 1);
+
+				// right side blur
+				sideAngle = 28.4 + startAngle + (prop + 1) * coneAngle / 24.0;
+				sideDir = float2(sin(sideAngle / 57.2957795), cos(sideAngle / 57.2957795));
+				normal = float2(-sideDir.y, sideDir.x);
+				normalDot = dot(i.uv0, normal) / blurSize;
+				normalAlphaSub = (1 - normalDot) * (normalDot >= 0) * (normalDot <= 1) * (prop == 23 || _Sectors[prop + 1] <= dist);
+				alpha = clamp(alpha - normalAlphaSub, 0, 1);
+
+				// is in cone angle?
+				alpha *= (0 <= prop) * (prop < 24) * (angle < _Angle);
+
+				if (alpha > 0) {
+					//Where is the ray starting? y is up and we always start at the surface
+					float3 realTexPos = float3(i.uv0.x, 0, i.uv0.y);
+					float3 rayPos = realTexPos;
+
+					//What's the direction of the ray?
+					float3 rayDir = normalize(i.tangentViewDir);
+
+					//Find where the ray is intersecting with the terrain with a raymarch algorithm
+					//The default color used if the ray doesnt hit anything
+					float4 finalColor = 0;
+
+					for (int k = 0; k < _Steps; k++)
 					{
-						//Get the texture position by interpolation between the position where we hit terrain and the position before
-						float2 weightedTex = getWeightedTexPos(rayPos, rayDir, _StepDistance, realTexPos);
+						//Get the current height at this uv coordinate
+						float height = getHeight(rayPos.xz);
 
-						float height = getHeight(weightedTex/*, realTexPos*/);
+						//If the ray is below the surface
+						if (rayPos.y < height)
+						{
+							//Get the texture position by interpolation between the position where we hit terrain and the position before
+							float2 weightedTex = getWeightedTexPos(rayPos, rayDir, _StepDistance, realTexPos);
 
-						finalColor = getBlendTexture(weightedTex, height);
+							float height = getHeight(weightedTex);
 
-						//We have hit the terrain so we dont need to loop anymore	
-						break;
+							finalColor = getBlendTexture(weightedTex, height);
+
+							//We have hit the terrain so we dont need to loop anymore	
+							break;
+						}
+
+						//Move along the ray
+						rayPos += _StepDistance * rayDir;
 					}
 
-					//Move along the ray
-					rayPos += _StepDistance * rayDir;
+					float4 _MainTex_var = tex2D(_MainTex, TRANSFORM_TEX(i.uv0, _MainTex));
+					finalColor.a *= _MainTex_var.a;
+
+					
+					finalColor.a *= alpha;
+					return finalColor * _Color;
+				}
+				else
+				{
+					return float4 (0, 0, 0, 0);
 				}
 
-				float4 _MainTex_var = tex2D(_MainTex, TRANSFORM_TEX(i.uv0, _MainTex));
-				finalColor.a *= _MainTex_var.a;
+				
 
-				return finalColor * _Color;
+				
 			}
 			ENDCG
 		}

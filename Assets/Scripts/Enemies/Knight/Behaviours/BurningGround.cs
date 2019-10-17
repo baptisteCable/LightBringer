@@ -6,22 +6,18 @@ namespace LightBringer.Enemies.Knight
     public class BurningGround : MonoBehaviour
     {
         private const float FADING_TIME = .5f;
-        private const string LAYER_NAME = "Enemy";
 
-        [SerializeField] GameObject maskPrefab = null;
         [SerializeField] SpriteRenderer burningGroundSprite = null;
-        [SerializeField] SpriteMask burningGroundMask = null;
 
         private float fadingStarting;
         private Color initialColor;
 
-        private List<SpriteRenderer> cones;
+        private float[] sectors = new float[Attack1Behaviour.NB_SECTORS];
 
         void Start()
         {
             fadingStarting = Time.time + Attack1Behaviour.GROUND_DURATION - FADING_TIME;
-            Material mat = burningGroundSprite.material;
-            initialColor = mat.GetColor("_Color");
+            initialColor = burningGroundSprite.material.GetColor("_Color");
         }
 
         // Update is called once per frame
@@ -32,30 +28,19 @@ namespace LightBringer.Enemies.Knight
                 float alpha = Mathf.Max(initialColor.a * (1 - (Time.time - fadingStarting) / FADING_TIME), 0);
                 Color col = initialColor;
                 col.a = alpha;
-                Material mat = burningGroundSprite.material;
-                mat.SetColor("_Color", col);
+                burningGroundSprite.material.SetColor("_Color", col);
             }
         }
 
-        public void addAngle3d(float angle, float length)
+        public void setSector(int index, float length)
         {
-            if (length < Attack1Behaviour.MAX_DISTANCE)
-            {
-                GameObject newMask = Instantiate(maskPrefab, burningGroundSprite.transform);
-                newMask.transform.localPosition = new Vector3(.051f, -.142f, 0);
-                newMask.transform.localRotation = Quaternion.Euler(0, 0, -angle);
-                newMask.transform.localScale = Vector3.one * length;
-            }
+            sectors[index] = length / (Attack1Behaviour.MAX_DISTANCE + Attack1Behaviour.DIST_FROM_CENTER_COLLIDER) * .95f;
+            burningGroundSprite.material.SetFloatArray("_Sectors", sectors);
         }
 
         public void SetAngle(float angle)
         {
-            burningGroundMask.alphaCutoff = .1f + (angle - Attack1Behaviour.CONE_STARTING) / 360f;
-        }
-
-        public void EndRotation()
-        {
-            burningGroundMask.gameObject.SetActive(false);
+            burningGroundSprite.material.SetFloat("_Angle", angle);
         }
     }
 }

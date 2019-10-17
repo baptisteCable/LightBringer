@@ -24,7 +24,15 @@ Monde :
 		* jump (visée de la camera sur l'environement)
 		* camera
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
-	- ground caché par soft particles
+	- décor qui disparait : monobehavior + transparence (seulement la première couche rencontrée dans l'objet, cf ghost effect)
+	- lisser les textures au bord des iles
+	- bien aligner les textures et les altitudes (pas la même résolution)
+	- Supprimer les masques et tout faire dans le shader
+		* calculer l'image
+		* cutoff selon masque circulaire
+		* longueur de chaque secteur
+		* permet de faire des flous partout <3
+		* pas d'interaction entre une zone ou une autre !
 
 
 Retours :

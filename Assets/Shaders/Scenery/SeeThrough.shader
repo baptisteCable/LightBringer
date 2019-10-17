@@ -28,7 +28,7 @@
 				#pragma vertex vert
 				#pragma fragment frag
 				// make fog work
-				#pragma multi_compile_fog
+				//#pragma multi_compile_fog
 
 				#include "UnityCG.cginc"
 
@@ -41,9 +41,8 @@
 				struct v2f
 				{
 					float2 uv : TEXCOORD0;
-					UNITY_FOG_COORDS(1)
+					//UNITY_FOG_COORDS(1)
 					float4 vertex : SV_POSITION;
-					float4 ObjectSpace : TEXCOORD2;
 				};
 
 				sampler2D _MainTex;
@@ -59,7 +58,7 @@
 
 					o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
-					UNITY_TRANSFER_FOG(o,o.vertex);
+					//UNITY_TRANSFER_FOG(o,o.vertex);
 					return o;
 				}
 
@@ -70,9 +69,6 @@
 					// apply fog
 					//UNITY_APPLY_FOG(i.fogCoord, col);
 					float dissolve = step(col,_CutOff);
-					float circle = distance(i.uv,0.5);
-					circle = step(circle,_Radius);
-					//clip((col.a-_CutOff));
 					clip(_CutOff - dissolve);
 					return float4(1,1,1,1) * dissolve;
 				}

@@ -74,7 +74,7 @@ public class TestManager : MonoBehaviour
         playerMotor.transform.position = new Vector3(0, 6, 0);
 
         // Knight
-        knight = Instantiate(knightPrefab, new Vector3(-45, 0, -10), Quaternion.AngleAxis(180, Vector3.up));
+        knight = Instantiate(knightPrefab, new Vector3(20, 0, 0), Quaternion.AngleAxis(180, Vector3.up));
 
         kc = knight.GetComponent<KnightController>();
         kc.passive = knightPassive;

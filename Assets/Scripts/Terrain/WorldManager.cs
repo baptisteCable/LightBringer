@@ -46,11 +46,6 @@ namespace LightBringer.TerrainGeneration
         SpatialDictionary<Island> islands;
         WorldCreator wc;
 
-        // Debug checkBoxed
-        public bool createWorldMap = true;
-        public bool createWorldMapAndSaveBin = true;
-        public bool createWorldMapFromBin = true;
-
         // Thread messages
         Dictionary<Dic2DKey, float[,]> heightsToAdd;
         Dictionary<Dic2DKey, float[,,]> mapsToAdd;
