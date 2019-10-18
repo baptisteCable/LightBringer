@@ -1,4 +1,8 @@
-﻿Shader "Scenery/WindShaderSeeThrough"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Scenery/WindShaderSeeThrough"
 {
     Properties
     {
@@ -16,20 +20,75 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
         LOD 200
 
-		Stencil {
-			Ref 1
-			Comp NotEqual
+		Pass
+		{
+			ZWrite On
+			ColorMask 0
+
+			CGPROGRAM
+			#pragma vertex vert
+			#pragma fragment frag
+			#include "UnityCG.cginc"
+			#include "Assets/Shaders/Functions/windFunctions.cginc"
+
+			struct appdata
+			{
+				float4 vertex : POSITION;
+			};
+
+			struct v2f
+			{
+				float4 vertex : SV_POSITION;
+			};
+
+			/*
+			v2f vert(appdata v)
+			{
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				return o;
+			}
+			*/
+
+			float _Radius;
+			float _XCenter[20];
+			float _ZCenter[20];
+			float _Amplitude[20];
+			int _ExplosionCount;
+			// float _Amplitude1;
+			// float4 _Center1;
+			float _Height;
+			float4 _WindDir;
+			float _WindStrength;
+			float _WindFrequency;
+
+			v2f vert(appdata v) {
+				float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
+				worldPos.xyz += windMovement(worldPos, _WindDir, _WindFrequency, _WindStrength, _Height);
+				for (int i = 0; i < _ExplosionCount; i++) {
+					worldPos.xyz += explosionMovement(worldPos, float2(_XCenter[i], _ZCenter[i]), _Amplitude[i], _Radius, _Height);
+				}
+				v2f o;
+				o.vertex = UnityObjectToClipPos(mul(unity_WorldToObject, worldPos));
+				return o;
+			}
+
+			fixed4 frag(v2f i) : SV_Target
+			{
+					return 0;
+			}
+			ENDCG
 		}
 
         CGPROGRAM
 		#pragma vertex vert
 
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard addshadow 
-
+        #pragma surface surf Standard addshadow alpha
+	
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
@@ -73,7 +132,7 @@
 			}
 			v.vertex = mul(unity_WorldToObject, worldPos);
 		}
-
+		
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color

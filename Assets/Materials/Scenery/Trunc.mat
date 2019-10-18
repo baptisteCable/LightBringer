@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Trunc
-  m_Shader: {fileID: 4800000, guid: 8b53ced7d13aa284a84610dbf9ebdd3a, type: 3}
+  m_Shader: {fileID: 4800000, guid: 49b1df23460e6a8499191b66fb766668, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0

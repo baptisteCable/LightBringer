@@ -15,6 +15,7 @@ TagManager:
   - EnemyHitbox
   - NoFlash
   - Terrain
+  - ViewLine
   layers:
   - Default
   - TransparentFX
@@ -33,7 +34,7 @@ TagManager:
   - NoCollision
   - PayerDetection
   - Scenery
-  - 
+  - ViewLine
   - 
   - 
   - 
