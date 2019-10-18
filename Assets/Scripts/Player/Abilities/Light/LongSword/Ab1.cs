@@ -158,7 +158,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void SpawnLight()
         {
-            Vector3 pos = new Vector3(lightMotor.sword.transform.position.x, .2f, lightMotor.sword.transform.position.z);
+            Vector3 pos = new Vector3(lightMotor.sword.transform.position.x, .02f, lightMotor.sword.transform.position.z);
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;

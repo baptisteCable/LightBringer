@@ -41,7 +41,6 @@ namespace LightBringer.Player.Class
         public GameObject lightSpawnEffetPrefab;
         public GameObject impactEffetPrefab;
         public GameObject loadedImpactEffetPrefab;
-        public GameObject escTrailEffectPrefab;
         public GameObject fadeOutEffetPrefab;
         public GameObject fadeInEffetPrefab;
 
@@ -56,6 +55,7 @@ namespace LightBringer.Player.Class
         public ParticleSystem abOffaSlash;
         public ParticleSystem abOffbSlash;
         public ParticleSystem UltiReadyEffect;
+        public ParticleSystem jumpTrails;
 
         [Header("Game Objects")]
         public GameObject swordObject;

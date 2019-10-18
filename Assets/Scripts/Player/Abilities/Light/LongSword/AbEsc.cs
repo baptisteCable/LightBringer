@@ -118,7 +118,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             landingTime = Time.time + LANDING_TIME;
             damageTime = Time.time + DAMAGE_TIME;
 
-            EscTrails();
+            lightMotor.jumpTrails.Play(true);
 
             // No movement
             playerMotor.abilityMoveMultiplicator = 0f;
@@ -127,16 +127,6 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             playerMotor.SetMovementMode(MovementMode.Ability);
 
             ComputeOriginAndDestination();
-        }
-
-        private void EscTrails()
-        {
-            GameObject trailEffect1 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
-            trailEffect1.transform.localPosition = new Vector3(-0.473f, 0.089f, 0f);
-            GameObject.Destroy(trailEffect1, castDuration);
-            GameObject trailEffect2 = GameObject.Instantiate(lightMotor.escTrailEffectPrefab, lightMotor.sword.transform);
-            trailEffect1.transform.localPosition = new Vector3(0.177f, 0.094f, 0f);
-            GameObject.Destroy(trailEffect2, castDuration);
         }
 
         private void ComputeOriginAndDestination()
@@ -193,7 +183,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void SpawnLight()
         {
             Vector3 pos = playerMotor.transform.position + playerMotor.characterContainer.forward;
-            pos.y = .2f;
+            pos.y = .02f;
 
             GameObject lightZone = GameObject.Instantiate(lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
