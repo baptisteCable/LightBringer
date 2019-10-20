@@ -26,10 +26,6 @@ Monde :
 		* Knight : zone posée à altitude fixée
 		* camera
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
-	- lisser les textures au bord des iles
-		* Calculer le mélange de cliff à la création de l'île (alphaMap en param ref)
-		* Ecrire la groundMap en cliff pour indiquer qu'il ne faut plus toucher à ces pixels lors du flou final
-
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?

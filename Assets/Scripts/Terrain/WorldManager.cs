@@ -39,23 +39,23 @@ namespace LightBringer.TerrainGeneration
         [SerializeField] private NavMeshSurface navMeshSurface = null;
 
         // Tiles dictionary
-        Dictionary<Dic2DKey, GameObject> loadedTiles;
+        private Dictionary<Dic2DKey, GameObject> loadedTiles;
 
         // Biomes, islands
-        SpatialDictionary<Biome> biomes;
-        SpatialDictionary<Island> islands;
-        WorldCreator wc;
+        private SpatialDictionary<Biome> biomes;
+        private SpatialDictionary<Island> islands;
+        private WorldCreator wc;
 
         // Thread messages
-        Dictionary<Dic2DKey, float[,]> heightsToAdd;
-        Dictionary<Dic2DKey, float[,,]> mapsToAdd;
-        int newTilesExpected = 0;
-        int tileWorkDone = 0;
-        object tileCounterLock = new object ();
-        object regionBoolLock = new object ();
-        object biomeIslandLock = new object ();
-        bool newRegionsExpected = false;
-        bool regionWorkDone = false;
+        private Dictionary<Dic2DKey, float[,]> heightsToAdd;
+        private Dictionary<Dic2DKey, float[,,]> mapsToAdd;
+        private int newTilesExpected = 0;
+        private int tileWorkDone = 0;
+        private readonly object tileCounterLock = new object ();
+        private readonly object regionBoolLock = new object ();
+        private readonly object biomeIslandLock = new object ();
+        private bool newRegionsExpected = false;
+        private bool regionWorkDone = false;
 
         private void Start ()
         {
@@ -136,11 +136,13 @@ namespace LightBringer.TerrainGeneration
             foreach (GameObject go in loadedTiles.Values)
             {
                 Terrain t = go.GetComponent<Terrain> ();
-                var s = new NavMeshBuildSource ();
-                s.shape = NavMeshBuildSourceShape.Terrain;
-                s.sourceObject = t.terrainData;
-                s.transform = go.transform.localToWorldMatrix;
-                s.area = 0;
+                var s = new NavMeshBuildSource
+                {
+                    shape = NavMeshBuildSourceShape.Terrain,
+                    sourceObject = t.terrainData,
+                    transform = go.transform.localToWorldMatrix,
+                    area = 0
+                };
                 navSources.Add (s);
             }
 
@@ -164,7 +166,7 @@ namespace LightBringer.TerrainGeneration
                 wc.CreateMapSector (ref biomes, ref islands, 0, 0);
             }
         }
-
+        /*
         void InitDebugWorldData ()
         {
             wc = new WorldCreator (Application.persistentDataPath + "/");
@@ -186,21 +188,22 @@ namespace LightBringer.TerrainGeneration
             biomes.Add (1280, -1280, b);
 
             islands.Add (0, 0, new Island (new Vector2 (0, 0), Biome.Type.Light, 1, 5));
-
         }
+        */
 
         void GenerateNewTerrain (int xBase, int zBase, float[,] heights, float[,,] map)
         {
             // Terrain data
-            TerrainData terrainData = new TerrainData ();
-            terrainData.heightmapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1;
-            terrainData.alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT;
-            terrainData.baseMapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT;
+            TerrainData terrainData = new TerrainData
+            {
+                heightmapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT + 1,
+                alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
+                baseMapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
+                terrainLayers = terrainLayers,
+                thickness = 2,
+                size = new Vector3 (TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH)
+            };
             terrainData.SetDetailResolution (1024, 16);
-            terrainData.terrainLayers = terrainLayers;
-            terrainData.size = new Vector3 (TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH);
-            terrainData.thickness = 2;
-
             terrainData.SetHeights (0, 0, heights);
             terrainData.SetAlphamaps (0, 0, map);
 
@@ -229,7 +232,7 @@ namespace LightBringer.TerrainGeneration
                 for (int j = 0; j < 3; j++)
                 {
                     foreach (Dic2DKey key in Biome.Get4ClosestBiomes (biomes,
-                        new Vector2 (xBase + i * TERRAIN_WIDTH / 2, zBase + j * TERRAIN_WIDTH / 2), out List<float> minDist))
+                        new Vector2 (xBase + i * TERRAIN_WIDTH / 2, zBase + j * TERRAIN_WIDTH / 2), out _))
                     {
                         Biome biome = biomes.Get (key);
                         if (!impactingBiomes.Contains (biome))
