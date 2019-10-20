@@ -14,12 +14,12 @@ namespace LightBringer
         public Material PureMaterial;
         public Material PhysicalMaterial;
 
-        void Start()
+        void Start ()
         {
             dm = this;
         }
 
-        public Material ElementMaterial(DamageElement element)
+        public Material ElementMaterial (DamageElement element)
         {
             switch (element)
             {

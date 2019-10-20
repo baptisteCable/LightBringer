@@ -5,23 +5,23 @@ namespace LightBringer.Enemies
     {
         [SerializeField] private StatusManager statusManager = null;
 
-        void Start()
+        void Start ()
         {
-            Transform hpBG = transform.Find("BackGround").Find("HPBackGroung");
-            hpImage = hpBG.Find("HPContent").GetComponent<UnityEngine.UI.Image>();
-            deleteHPdImage = hpBG.Find("Deleted").GetComponent<UnityEngine.UI.Image>();
+            Transform hpBG = transform.Find ("BackGround").Find ("HPBackGroung");
+            hpImage = hpBG.Find ("HPContent").GetComponent<UnityEngine.UI.Image> ();
+            deleteHPdImage = hpBG.Find ("Deleted").GetComponent<UnityEngine.UI.Image> ();
 
             deleteHPdImage.fillAmount = statusManager.currentHP / statusManager.maxHP;
             lastHP = statusManager.currentHP;
             timeSinceDmg = 10f;
         }
 
-        void Update()
+        void Update ()
         {
 
-            LookAtCamera(Camera.main);
+            LookAtCamera (Camera.main);
 
-            ComputeHPBar(statusManager.currentHP, statusManager.maxHP);
+            ComputeHPBar (statusManager.currentHP, statusManager.maxHP);
         }
     }
 }

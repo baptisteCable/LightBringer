@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class IndicatorLoader : MonoBehaviour {
+public class IndicatorLoader : MonoBehaviour
+{
     [HideInInspector]
     public float duration;
     private float beginning;
@@ -9,13 +10,13 @@ public class IndicatorLoader : MonoBehaviour {
 
     public SpriteMask mask;
 
-    public void Load(float dur)
+    public void Load (float dur)
     {
         duration = dur - .05f;
-        StartCoroutine(RunLoading());
+        StartCoroutine (RunLoading ());
     }
-	
-	private IEnumerator RunLoading()
+
+    private IEnumerator RunLoading ()
     {
         beginning = Time.time;
         filling = 0f;

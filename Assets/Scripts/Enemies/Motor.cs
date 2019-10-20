@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 namespace LightBringer.Enemies
 {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent (typeof (CharacterController))]
     public abstract class Motor : MonoBehaviour
     {
         public const float MAX_RTT_COMPENSATION_INDICATOR = .3f;
@@ -43,7 +43,7 @@ namespace LightBringer.Enemies
             public float time;
             public Vector3 point;
 
-            public TimePoint(float time, Vector3 point)
+            public TimePoint (float time, Vector3 point)
             {
                 this.time = time;
                 this.point = point;
@@ -63,15 +63,15 @@ namespace LightBringer.Enemies
         protected Vector2 smoothDeltaPosition = Vector2.zero;
 
         // Indicators
-        [Header("Indicators")]
+        [Header ("Indicators")]
         [SerializeField] public GameObject[] indicators;
 
-        protected void BaseStart()
+        protected void BaseStart ()
         {
-            controller = GetComponent<Controller>();
-            
+            controller = GetComponent<Controller> ();
+
             // Agent
-            agent = GetComponent<NavMeshAgent>();
+            agent = GetComponent<NavMeshAgent> ();
             agent.enabled = true;
             agent.updatePosition = false;
             overrideAgent = false;
@@ -80,23 +80,23 @@ namespace LightBringer.Enemies
             lastPosition = transform.position;
 
             // Rotations
-            delayedRotations = new List<TimePoint>();
+            delayedRotations = new List<TimePoint> ();
 
             // Character controller
-            cc = GetComponent<CharacterController>();
-            
+            cc = GetComponent<CharacterController> ();
+
             // Status manager
-            statusManager = GetComponent<StatusManager>();
-            statusManager.Init();
+            statusManager = GetComponent<StatusManager> ();
+            statusManager.Init ();
 
             // Mode
-            SetMode(Mode.Fight);
+            SetMode (Mode.Fight);
 
             // Movement collisions
-            SetMovementCollisonActive(false);
+            SetMovementCollisonActive (false);
         }
 
-        protected void BaseUpdate()
+        protected void BaseUpdate ()
         {
             if (!statusManager.isDead)
             {
@@ -104,13 +104,13 @@ namespace LightBringer.Enemies
                 lastPosition = transform.position;
 
                 // Map 'worldDeltaPosition' to local space
-                float dx = Vector3.Dot(transform.right, worldDeltaPosition);
-                float dy = Vector3.Dot(transform.forward, worldDeltaPosition);
-                Vector2 deltaPosition = new Vector2(dx, dy);
+                float dx = Vector3.Dot (transform.right, worldDeltaPosition);
+                float dy = Vector3.Dot (transform.forward, worldDeltaPosition);
+                Vector2 deltaPosition = new Vector2 (dx, dy);
 
                 // Low-pass filter the deltaMove
-                float smooth = Mathf.Min(1.0f, Time.deltaTime / 0.15f);
-                smoothDeltaPosition = Vector2.Lerp(smoothDeltaPosition, deltaPosition, smooth);
+                float smooth = Mathf.Min (1.0f, Time.deltaTime / 0.15f);
+                smoothDeltaPosition = Vector2.Lerp (smoothDeltaPosition, deltaPosition, smooth);
 
                 // Update velocity if delta time is safe
                 Vector2 velocity = smoothDeltaPosition / Time.deltaTime;
@@ -118,30 +118,30 @@ namespace LightBringer.Enemies
                 bool shouldMove = velocity.magnitude > 0.5f && agent.remainingDistance > agent.radius;
 
                 // Update animation parameters
-                anim.SetBool("isMoving", shouldMove);
-                anim.SetFloat("VelX", velocity.x);
-                anim.SetFloat("VelY", velocity.y);
+                anim.SetBool ("isMoving", shouldMove);
+                anim.SetFloat ("VelX", velocity.x);
+                anim.SetFloat ("VelY", velocity.y);
 
                 if (agent.velocity.magnitude > 0 && !overrideAgent)
                 {
-                    Move(agent.velocity);
+                    Move (agent.velocity);
                 }
 
-                ApplyDelayedRotations();
+                ApplyDelayedRotations ();
             }
         }
 
-        public void EnableAgentRotation()
+        public void EnableAgentRotation ()
         {
             agent.angularSpeed = maxRotationSpeed;
         }
 
-        public void DisableAgentRotation()
+        public void DisableAgentRotation ()
         {
             agent.angularSpeed = 0;
         }
 
-        public void SetOverrideAgent(bool oa)
+        public void SetOverrideAgent (bool oa)
         {
             if (statusManager.isDead)
             {
@@ -157,70 +157,70 @@ namespace LightBringer.Enemies
             else
             {
                 agent.nextPosition = transform.position;
-                agent.SetDestination(transform.position);
+                agent.SetDestination (transform.position);
                 overrideAgent = false;
             }
         }
 
-        public void MoveInDirection(Vector3 direction)
+        public void MoveInDirection (Vector3 direction)
         {
-            Move(direction.normalized * moveSpeed);
+            Move (direction.normalized * moveSpeed);
         }
 
-        public void Move(Vector3 velocity)
+        public void Move (Vector3 velocity)
         {
             velocity.y = velocity.y - GameManager.GRAVITY;
-            cc.Move(velocity * Time.deltaTime);
+            cc.Move (velocity * Time.deltaTime);
             if (overrideAgent)
             {
                 agent.nextPosition = transform.position + velocity * Time.deltaTime;
             }
         }
 
-        public void SetMode(Mode mode)
+        public void SetMode (Mode mode)
         {
             statusManager.mode = mode;
             statusManager.nextMode = mode;
 
-            anim.SetInteger("Mode", (int)mode);
+            anim.SetInteger ("Mode", (int)mode);
 
             switch (mode)
             {
                 case Mode.Passive:
-                    SetMovementParameters(MaxMoveSpeedPassive, AccelerationPassive);
-                    SetRotationParameters(MaxRotationSpeedPassive);
+                    SetMovementParameters (MaxMoveSpeedPassive, AccelerationPassive);
+                    SetRotationParameters (MaxRotationSpeedPassive);
                     break;
                 case Mode.Fight:
-                    SetMovementParameters(MaxMoveSpeedFight, AccelerationFight);
-                    SetRotationParameters(MaxRotationSpeedFight);
+                    SetMovementParameters (MaxMoveSpeedFight, AccelerationFight);
+                    SetRotationParameters (MaxRotationSpeedFight);
                     break;
                 case Mode.Rage:
-                    SetMovementParameters(MaxMoveSpeedRage, AccelerationRage);
-                    SetRotationParameters(MaxRotationSpeedRage);
+                    SetMovementParameters (MaxMoveSpeedRage, AccelerationRage);
+                    SetRotationParameters (MaxRotationSpeedRage);
                     break;
                 case Mode.Exhaustion:
-                    SetMovementParameters(MaxMoveSpeedExhaustion, AccelerationExhaustion);
-                    SetRotationParameters(MaxRotationSpeedExhaustion);
+                    SetMovementParameters (MaxMoveSpeedExhaustion, AccelerationExhaustion);
+                    SetRotationParameters (MaxRotationSpeedExhaustion);
                     break;
-                default: throw new System.Exception("Invalid Enemy Mode");
+                default: throw new System.Exception ("Invalid Enemy Mode");
             }
         }
 
-        private void SetMovementParameters(float ms, float acc)
+        private void SetMovementParameters (float ms, float acc)
         {
             moveSpeed = ms;
             acceleration = acc;
             agent.speed = ms;
-            SetProximityMovement(agent.autoBraking);
+            SetProximityMovement (agent.autoBraking);
         }
 
-        private void SetRotationParameters(float rs)
+        private void SetRotationParameters (float rs)
         {
             maxRotationSpeed = rs;
             agent.angularSpeed = rs;
         }
 
-        public void SetProximityMovement(bool proximity)
+        public void SetProximityMovement (bool proximity)
         {
             if (proximity)
             {
@@ -234,7 +234,7 @@ namespace LightBringer.Enemies
             }
         }
 
-        private void ApplyDelayedRotations()
+        private void ApplyDelayedRotations ()
         {
             Vector3 target = Vector3.zero;
             bool rotate = false;
@@ -243,57 +243,57 @@ namespace LightBringer.Enemies
             {
                 target = delayedRotations[0].point;
                 rotate = true;
-                delayedRotations.RemoveAt(0);
+                delayedRotations.RemoveAt (0);
             }
 
             if (rotate)
             {
-                RotateTowards(target);
+                RotateTowards (target);
             }
         }
 
-        public void DelayedRotateTowards(Vector3 point, float delay)
+        public void DelayedRotateTowards (Vector3 point, float delay)
         {
-            TimePoint timeRot = new TimePoint(Time.time + delay, point);
-            delayedRotations.Add(timeRot);
+            TimePoint timeRot = new TimePoint (Time.time + delay, point);
+            delayedRotations.Add (timeRot);
         }
 
-        public void RotateTowards(Vector3 point)
+        public void RotateTowards (Vector3 point)
         {
             Vector3 direction = point - transform.position;
-            float angle = Vector3.SignedAngle(transform.forward, direction, Vector3.up);
+            float angle = Vector3.SignedAngle (transform.forward, direction, Vector3.up);
             float rotationSpeed;
 
-            rotationSpeed = Mathf.Min(
-                        Mathf.Abs(angle) / 10 / Time.deltaTime,
+            rotationSpeed = Mathf.Min (
+                        Mathf.Abs (angle) / 10 / Time.deltaTime,
                         maxRotationSpeed
                     );
-            currentRotationSpeed = Mathf.Sign(angle) * rotationSpeed;
+            currentRotationSpeed = Mathf.Sign (angle) * rotationSpeed;
 
-            if (Mathf.Abs(currentRotationSpeed * Time.deltaTime) < .1f)
+            if (Mathf.Abs (currentRotationSpeed * Time.deltaTime) < .1f)
             {
                 currentRotationSpeed = 0;
             }
 
-            transform.Rotate(Vector3.up, currentRotationSpeed * Time.deltaTime);
+            transform.Rotate (Vector3.up, currentRotationSpeed * Time.deltaTime);
         }
 
-        public void SetMovementCollisonActive(bool active)
+        public void SetMovementCollisonActive (bool active)
         {
-            movementCollisionManager.SetActive(active);
+            movementCollisionManager.SetActive (active);
         }
 
-        public virtual void Die()
+        public virtual void Die ()
         {
-            disableColliders(transform);
+            disableColliders (transform);
             agent.enabled = false;
-            Destroy(gameObject, 10f);
-            anim.Play("Die");
+            Destroy (gameObject, 10f);
+            anim.Play ("Die");
         }
 
-        private void disableColliders(Transform t)
+        private void disableColliders (Transform t)
         {
-            Component[] colliders = t.GetComponents(typeof(Collider));
+            Component[] colliders = t.GetComponents (typeof (Collider));
 
             foreach (Collider coll in colliders)
             {
@@ -302,27 +302,27 @@ namespace LightBringer.Enemies
 
             foreach (Transform child in t)
             {
-                disableColliders(child);
+                disableColliders (child);
             }
         }
-        
-        public void HideIndicator(int id)
+
+        public void HideIndicator (int id)
         {
-            indicators[id].SetActive(false);
+            indicators[id].SetActive (false);
         }
 
-        public void DisplayIndicator(int id, float loadingTime)
+        public void DisplayIndicator (int id, float loadingTime)
         {
             if (!statusManager.isDead)
             {
-                indicators[id].SetActive(true);
-                indicators[id].GetComponent<IndicatorLoader>().Load(loadingTime);
+                indicators[id].SetActive (true);
+                indicators[id].GetComponent<IndicatorLoader> ().Load (loadingTime);
             }
         }
 
-        public abstract void StartExhaustion();
+        public abstract void StartExhaustion ();
 
-        public abstract void StopExhaustion();
-        public abstract void Interrupt(Vector3 origin);
+        public abstract void StopExhaustion ();
+        public abstract void Interrupt (Vector3 origin);
     }
 }

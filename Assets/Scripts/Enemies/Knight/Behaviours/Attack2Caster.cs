@@ -17,27 +17,27 @@ namespace LightBringer.Enemies.Knight
 
         public CollisionAbility ability;
 
-        void Update()
+        void Update ()
         {
             if (Time.time >= nextShotTime)
             {
                 nextShotTime = Time.time + Random.value * (MAX_TIME - MIN_TIME) + MIN_TIME;
-                CreateImpactZone();
+                CreateImpactZone ();
             }
 
             if (remainingShots == 0)
             {
-                Destroy(gameObject, 2f);
-            } 
+                Destroy (gameObject, 2f);
+            }
         }
 
-        private void CreateImpactZone()
+        private void CreateImpactZone ()
         {
             remainingShots -= 1;
-            Vector3 relativePosition = Quaternion.AngleAxis(Random.value * 360, Vector3.up) * Vector3.forward * Random.value * range;
-            
-            GameObject impact = Instantiate(ImpactPrefab, transform.position + relativePosition, Quaternion.identity);
-            Attack2Impact a2i = impact.GetComponent<Attack2Impact>();
+            Vector3 relativePosition = Quaternion.AngleAxis (Random.value * 360, Vector3.up) * Vector3.forward * Random.value * range;
+
+            GameObject impact = Instantiate (ImpactPrefab, transform.position + relativePosition, Quaternion.identity);
+            Attack2Impact a2i = impact.GetComponent<Attack2Impact> ();
             a2i.radius = radius;
             a2i.ability = ability;
         }

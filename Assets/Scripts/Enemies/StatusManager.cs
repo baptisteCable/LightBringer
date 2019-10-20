@@ -1,13 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using LightBringer.Effects;
+﻿using LightBringer.Effects;
 using LightBringer.Player;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LightBringer.Enemies
 {
-    [RequireComponent(typeof(Motor)), RequireComponent(typeof(FlashEffect))]
+    [RequireComponent (typeof (Motor)), RequireComponent (typeof (FlashEffect))]
     public abstract class StatusManager : MonoBehaviour
     {
         private const float DISPLAY_INTERVAL = .1f;
@@ -63,38 +63,38 @@ namespace LightBringer.Enemies
             public Damage dmg;
             public PlayerMotor dealer;
 
-            public DamageDealer(Damage dmg, PlayerMotor dealer)
+            public DamageDealer (Damage dmg, PlayerMotor dealer)
             {
                 this.dmg = dmg;
                 this.dealer = dealer;
             }
         }
 
-        void Start()
+        void Start ()
         {
-            motor = GetComponent<Motor>();
-            flashEffect = GetComponent<FlashEffect>();
+            motor = GetComponent<Motor> ();
+            flashEffect = GetComponent<FlashEffect> ();
 
-            frameDamage = new Dictionary<int, DamageDealer>();
-            frameDamageDistance = new Dictionary<int, float>();
+            frameDamage = new Dictionary<int, DamageDealer> ();
+            frameDamageDistance = new Dictionary<int, float> ();
 
-            damageToDisplay = new Dictionary<DamageElement, float>();
+            damageToDisplay = new Dictionary<DamageElement, float> ();
         }
 
-        private void Update()
+        private void Update ()
         {
-            ApplyAllDamages();
-            UpdateNextMode();
+            ApplyAllDamages ();
+            UpdateNextMode ();
         }
 
-        public void Init()
+        public void Init ()
         {
             currentHP = maxHP;
             isDead = false;
-            rageAmount = 0f; 
+            rageAmount = 0f;
         }
 
-        private void UpdateNextMode()
+        private void UpdateNextMode ()
         {
             if (mode == Mode.Rage && Time.time >= rageEnd)
             {
@@ -106,17 +106,17 @@ namespace LightBringer.Enemies
             }
         }
 
-        public void TakeDamage(Damage dmg, PlayerMotor dealer, int id, float distance)
+        public void TakeDamage (Damage dmg, PlayerMotor dealer, int id, float distance)
         {
             // If this damage id is already registered
-            if (frameDamage.ContainsKey(id))
+            if (frameDamage.ContainsKey (id))
             {
                 // If AoE, take the highest.
                 if (dmg.type == DamageType.AreaOfEffect)
                 {
                     if (dmg.amount > frameDamage[id].dmg.amount)
                     {
-                        frameDamage[id] = new DamageDealer(dmg, dealer);
+                        frameDamage[id] = new DamageDealer (dmg, dealer);
                         frameDamageDistance[id] = distance;
                     }
                 }
@@ -125,7 +125,7 @@ namespace LightBringer.Enemies
                 {
                     if (distance < frameDamageDistance[id])
                     {
-                        frameDamage[id] = new DamageDealer(dmg, dealer);
+                        frameDamage[id] = new DamageDealer (dmg, dealer);
                         frameDamageDistance[id] = distance;
                     }
                 }
@@ -133,12 +133,12 @@ namespace LightBringer.Enemies
             // Else, new damage id
             else
             {
-                frameDamage.Add(id, new DamageDealer(dmg, dealer));
-                frameDamageDistance.Add(id, distance);
+                frameDamage.Add (id, new DamageDealer (dmg, dealer));
+                frameDamageDistance.Add (id, distance);
             }
         }
 
-        private void ApplyAllDamages()
+        private void ApplyAllDamages ()
         {
             float newHP = currentHP;
 
@@ -150,20 +150,20 @@ namespace LightBringer.Enemies
                     {
                         newHP -= pair.Value.dmg.amount;
 
-                        AddDamageToDisplay(pair.Value.dmg);
+                        AddDamageToDisplay (pair.Value.dmg);
 
                         // Try to interrupt
-                        TryToInterrupt(pair.Value.dmg);
+                        TryToInterrupt (pair.Value.dmg);
                     }
                 }
 
-                frameDamage.Clear();
+                frameDamage.Clear ();
 
                 if (newHP < currentHP)
                 {
-                    IncreaseRageDamageTaken(currentHP - newHP);
+                    IncreaseRageDamageTaken (currentHP - newHP);
 
-                    flashEffect.Flash();
+                    flashEffect.Flash ();
 
                     currentHP = newHP;
                 }
@@ -171,28 +171,28 @@ namespace LightBringer.Enemies
                 if (currentHP <= 0)
                 {
                     isDead = true;
-                    motor.Die();
-                    Destroy(statusBarGO);
+                    motor.Die ();
+                    Destroy (statusBarGO);
                 }
             }
         }
 
-        public void IncreaseRageMissedAttack()
+        public void IncreaseRageMissedAttack ()
         {
-            RageIncrease(RAGE_INCREASE_WITH_MISSED);
+            RageIncrease (RAGE_INCREASE_WITH_MISSED);
         }
 
-        public void IncreaseRageInterruption()
+        public void IncreaseRageInterruption ()
         {
-            RageIncrease(RAGE_INCREASE_WITH_INTERRUPTION);
+            RageIncrease (RAGE_INCREASE_WITH_INTERRUPTION);
         }
 
-        public void IncreaseRageDamageTaken(float damage)
+        public void IncreaseRageDamageTaken (float damage)
         {
-            RageIncrease(damage / maxHP * RAGE_RATIO_WITH_DAMAGE);
+            RageIncrease (damage / maxHP * RAGE_RATIO_WITH_DAMAGE);
         }
 
-        private void RageIncrease(float amount)
+        private void RageIncrease (float amount)
         {
             if (mode == Mode.Exhaustion || mode == Mode.Rage)
             {
@@ -207,54 +207,54 @@ namespace LightBringer.Enemies
             }
         }
 
-        public void RageStart()
+        public void RageStart ()
         {
-            motor.SetMode(Mode.Rage);
+            motor.SetMode (Mode.Rage);
             rageEnd = Time.time + RAGE_DURATION;
             rageToBeStarted = true;
         }
 
-        public void ExhaustionStart()
+        public void ExhaustionStart ()
         {
-            motor.SetMode(Mode.Exhaustion);
+            motor.SetMode (Mode.Exhaustion);
             exhaustionEnd = Time.time + EXHAUSTION_DURATION;
             exhaustionToBeStarted = true;
-            motor.StartExhaustion();
+            motor.StartExhaustion ();
         }
 
-        public void ExhaustionEnd()
+        public void ExhaustionEnd ()
         {
-            motor.SetMode(Mode.Fight);
+            motor.SetMode (Mode.Fight);
             rageAmount = 0;
             exhaustionToBeEnded = true;
-            motor.StopExhaustion();
+            motor.StopExhaustion ();
         }
 
-        private void TryToInterrupt(Damage dmg)
+        private void TryToInterrupt (Damage dmg)
         {
-            while (currentHP < GetInterruptionThreshold(interruptionStage + 1))
+            while (currentHP < GetInterruptionThreshold (interruptionStage + 1))
             {
                 interruptionStage += 1;
             }
 
             if (dmg.amount >= InterruptionActivationThreshold
-                && currentHP < GetInterruptionThreshold(interruptionStage)
+                && currentHP < GetInterruptionThreshold (interruptionStage)
                 && mode != Mode.Rage
                 )
             {
-                Interrupt(dmg.origin);
+                Interrupt (dmg.origin);
             }
         }
 
-        private void Interrupt(Vector3 origin)
+        private void Interrupt (Vector3 origin)
         {
-            motor.Interrupt(origin);
+            motor.Interrupt (origin);
             rageAmount += INTERRUPTION_RAGE_INCREASE;
             interruptionStage += 1;
         }
 
         // return the proportion of hp under which interuption can happen
-        private float GetInterruptionThreshold(int stage)
+        private float GetInterruptionThreshold (int stage)
         {
             if (stage >= InterruptionThresholds.Length)
             {
@@ -264,52 +264,52 @@ namespace LightBringer.Enemies
             return InterruptionThresholds[stage];
         }
 
-        private void AddDamageToDisplay(Damage dmg)
+        private void AddDamageToDisplay (Damage dmg)
         {
             if (!dmgWaitingForDisplay)
             {
-                StartCoroutine(DisplayIntervalDamage());
+                StartCoroutine (DisplayIntervalDamage ());
                 dmgWaitingForDisplay = true;
             }
 
-            if (!damageToDisplay.ContainsKey(dmg.element))
+            if (!damageToDisplay.ContainsKey (dmg.element))
             {
-                damageToDisplay.Add(dmg.element, 0f);
+                damageToDisplay.Add (dmg.element, 0f);
             }
 
             damageToDisplay[dmg.element] += dmg.amount;
         }
 
-        private IEnumerator DisplayIntervalDamage()
+        private IEnumerator DisplayIntervalDamage ()
         {
-            yield return new WaitForSeconds(DISPLAY_INTERVAL);
+            yield return new WaitForSeconds (DISPLAY_INTERVAL);
 
             dmgWaitingForDisplay = false;
 
             foreach (KeyValuePair<DamageElement, float> pair in damageToDisplay)
             {
-                DisplayDamage(pair.Key, pair.Value);
+                DisplayDamage (pair.Key, pair.Value);
             }
 
-            damageToDisplay.Clear();
+            damageToDisplay.Clear ();
         }
 
-        private void DisplayDamage(DamageElement element, float amount)
+        private void DisplayDamage (DamageElement element, float amount)
         {
-            GameObject lostHP = Instantiate(lostHPPrefab, lostHpPoint);
-            Destroy(lostHP, DISPLAY_DURATION);
-            Text txt = lostHP.GetComponent<Text>();
+            GameObject lostHP = Instantiate (lostHPPrefab, lostHpPoint);
+            Destroy (lostHP, DISPLAY_DURATION);
+            Text txt = lostHP.GetComponent<Text> ();
 
             // amount
-            txt.text = Mathf.Round(amount).ToString();
+            txt.text = Mathf.Round (amount).ToString ();
 
             // Color
-            txt.material = DamageManager.dm.ElementMaterial(element);
+            txt.material = DamageManager.dm.ElementMaterial (element);
         }
 
-        public void ShieldFlash()
+        public void ShieldFlash ()
         {
-            shieldFlashEffect.Flash();
+            shieldFlashEffect.Flash ();
         }
     }
 }

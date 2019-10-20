@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 
 [ExecuteInEditMode]
-[RequireComponent(typeof(MeshCollider))]
-public class ConeMesh : MonoBehaviour {
+[RequireComponent (typeof (MeshCollider))]
+public class ConeMesh : MonoBehaviour
+{
     public float distance;
     public float angle;
     public float top;
@@ -10,37 +11,38 @@ public class ConeMesh : MonoBehaviour {
 
     private Mesh s;
 
-    void Start () {    
-        CreateAngularAoEMesh();
+    void Start ()
+    {
+        CreateAngularAoEMesh ();
     }
 
-    private void Update()
+    private void Update ()
     {
         if (!done)
         {
-            CreateAngularAoEMesh();
+            CreateAngularAoEMesh ();
             done = true;
         }
     }
 
-    public void CreateAngularAoEMesh()
+    public void CreateAngularAoEMesh ()
     {
-        s = new Mesh();
-        
+        s = new Mesh ();
+
         Vector3[] vertices;
         int[] triangles;
         int j = 0;
 
-        int nbVert = (int)Mathf.Ceil(angle / 22.5f * distance / 10f) + 2;
+        int nbVert = (int)Mathf.Ceil (angle / 22.5f * distance / 10f) + 2;
 
         vertices = new Vector3[2 * nbVert];
-        vertices[0] = new Vector3(0, 0, 0);
-        vertices[nbVert] = new Vector3(0, top, 0);
+        vertices[0] = new Vector3 (0, 0, 0);
+        vertices[nbVert] = new Vector3 (0, top, 0);
 
         for (int i = 0; i < nbVert - 1; i++)
         {
-            vertices[i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), 0);
-            vertices[nbVert + i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), top);
+            vertices[i + 1] = cartFromPol (distance, -angle / 2 + i * (angle / (nbVert - 2)), 0);
+            vertices[nbVert + i + 1] = cartFromPol (distance, -angle / 2 + i * (angle / (nbVert - 2)), top);
         }
 
         triangles = new int[12 * (nbVert - 1)];
@@ -80,29 +82,29 @@ public class ConeMesh : MonoBehaviour {
         triangles[j++] = 0;
         triangles[j++] = nbVert;
         triangles[j++] = 2 * nbVert - 1;
-        
+
         s.vertices = vertices;
         s.triangles = triangles;
 
-        if (GetComponent<MeshFilter>())
+        if (GetComponent<MeshFilter> ())
         {
-            GetComponent<MeshFilter>().mesh = s;
+            GetComponent<MeshFilter> ().mesh = s;
         }
-        if (GetComponent<MeshCollider>())
+        if (GetComponent<MeshCollider> ())
         {
-            GetComponent<MeshCollider>().sharedMesh = null;
-            GetComponent<MeshCollider>().sharedMesh = s;
+            GetComponent<MeshCollider> ().sharedMesh = null;
+            GetComponent<MeshCollider> ().sharedMesh = s;
         }
 
         s.name = "S";
     }
 
-    private Vector3 cartFromPol(float module, float angle, float y)
+    private Vector3 cartFromPol (float module, float angle, float y)
     {
-        return new Vector3(
-                Mathf.Cos(Mathf.Deg2Rad * (90f - angle)) * module,
+        return new Vector3 (
+                Mathf.Cos (Mathf.Deg2Rad * (90f - angle)) * module,
                 y,
-                Mathf.Sin(Mathf.Deg2Rad * (90f - angle)) * module
+                Mathf.Sin (Mathf.Deg2Rad * (90f - angle)) * module
             );
     }
 }

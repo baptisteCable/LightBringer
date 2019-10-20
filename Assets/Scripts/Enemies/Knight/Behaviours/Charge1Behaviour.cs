@@ -27,149 +27,149 @@ namespace LightBringer.Enemies.Knight
 
         private KnightMotor km;
 
-        public Charge1Behaviour(KnightMotor enemyMotor, Vector3 targetPoint) : base(enemyMotor)
+        public Charge1Behaviour (KnightMotor enemyMotor, Vector3 targetPoint) : base (enemyMotor)
         {
             km = enemyMotor;
             targetPosition = targetPoint;
         }
 
-        public override void Init()
+        public override void Init ()
         {
-            base.Init();
+            base.Init ();
 
             if (em.statusManager.mode == Mode.Rage)
             {
                 duration = DURATION_RAGE;
                 dmgStart = DMG_START_RAGE;
                 dmgDuration = DMG_DURATION_RAGE;
-                em.anim.Play("Charge1Rage", -1, 0);
+                em.anim.Play ("Charge1Rage", -1, 0);
             }
             else
             {
                 duration = DURATION;
                 dmgStart = DMG_START;
                 dmgDuration = DMG_DURATION;
-                em.anim.Play("Charge1", -1, 0);
+                em.anim.Play ("Charge1", -1, 0);
             }
 
             actGOs = new GameObject[1];
             actGOs[0] = km.charge1actGO;
             parts = new Part[1];
-            parts[0] = new Part(State.Before, dmgStart, dmgDuration, 0);
+            parts[0] = new Part (State.Before, dmgStart, dmgDuration, 0);
 
             acts = new AbilityColliderTrigger[actGOs.Length];
             for (int i = 0; i < actGOs.Length; i++)
             {
-                acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger>();
+                acts[i] = actGOs[i].GetComponent<AbilityColliderTrigger> ();
             }
 
-            range = Mathf.Min(Mathf.Max(Vector3.Distance(em.transform.position, targetPosition), CHARGE_MIN_RANGE), CHARGE_MAX_RANGE);
+            range = Mathf.Min (Mathf.Max (Vector3.Distance (em.transform.position, targetPosition), CHARGE_MIN_RANGE), CHARGE_MAX_RANGE);
         }
 
-        public override void Run()
+        public override void Run ()
         {
-            DisplayIndicators();
-            StartCollisionParts();
-            RunCollisionParts();
+            DisplayIndicators ();
+            StartCollisionParts ();
+            RunCollisionParts ();
 
             // Rotate at the beginning
             if (Time.time <= startTime + dmgStart)
             {
-                em.RotateTowards(targetPosition);
+                em.RotateTowards (targetPosition);
             }
 
             if (Time.time > startTime + duration)
             {
-                End();
+                End ();
             }
         }
 
         // Resize indicator depending on charge range
-        protected override void DisplayIndicator(int part, float loadingTime)
+        protected override void DisplayIndicator (int part, float loadingTime)
         {
-            base.DisplayIndicator(part, loadingTime);
+            base.DisplayIndicator (part, loadingTime);
 
             if (part == 0)
             {
-                em.indicators[parts[part].indicator].transform.localScale = new Vector3(1, 1, range);
+                em.indicators[parts[part].indicator].transform.localScale = new Vector3 (1, 1, range);
             }
         }
 
-        protected override void StartCollisionPart(int i)
+        protected override void StartCollisionPart (int i)
         {
-            base.StartCollisionPart(i);
+            base.StartCollisionPart (i);
 
             if (i == 0)
             {
                 // Effect
-                km.chargeEffect.GetComponent<ParticleSystem>().Play();
+                km.chargeEffect.GetComponent<ParticleSystem> ().Play ();
 
                 // Movement collisions
-                em.SetMovementCollisonActive(true);
+                em.SetMovementCollisonActive (true);
             }
         }
 
-        protected override void RunCollisionPart(int part)
+        protected override void RunCollisionPart (int part)
         {
             if (part == 0)
             {
-                em.Move(em.transform.forward * range / dmgDuration);
+                em.Move (em.transform.forward * range / dmgDuration);
             }
 
-            base.RunCollisionPart(part);
+            base.RunCollisionPart (part);
         }
 
-        protected override void EndPart(int part)
+        protected override void EndPart (int part)
         {
-            base.EndPart(part);
+            base.EndPart (part);
 
             if (part == 0)
             {
                 // Effect
-                km.chargeEffect.GetComponent<ParticleSystem>().Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                km.chargeEffect.GetComponent<ParticleSystem> ().Stop (true, ParticleSystemStopBehavior.StopEmitting);
 
                 // Movement collisions
-                em.SetMovementCollisonActive(false);
+                em.SetMovementCollisonActive (false);
             }
 
         }
 
-        public override void End()
+        public override void End ()
         {
-            base.End();
-            em.SetOverrideAgent(false);
+            base.End ();
+            em.SetOverrideAgent (false);
         }
 
-        public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public override void OnColliderEnter (AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
-            if (col.tag == "Player" && !cols.ContainsKey(col))
+            if (col.tag == "Player" && !cols.ContainsKey (col))
             {
-                cols.Add(col, Time.time);
+                cols.Add (col, Time.time);
 
-                if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger>())
+                if (abilityColliderTrigger == actGOs[0].GetComponent<AbilityColliderTrigger> ())
                 {
-                    ApplyDamage(col);
+                    ApplyDamage (col);
                 }
             }
         }
 
-        private void ApplyDamage(Collider col)
+        private void ApplyDamage (Collider col)
         {
-            PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-            Damage dmg = new Damage(25f, DamageType.Melee, DamageElement.Physical, em.transform.position);
-            if (psm.IsAffectedBy(dmg, em, em.transform.position))
+            PlayerStatusManager psm = col.GetComponent<PlayerStatusManager> ();
+            Damage dmg = new Damage (25f, DamageType.Melee, DamageElement.Physical, em.transform.position);
+            if (psm.IsAffectedBy (dmg, em, em.transform.position))
             {
-                psm.TakeDamage(dmg, em);
-                psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), STUN_DURATION);
+                psm.TakeDamage (dmg, em);
+                psm.ApplyCrowdControl (new CrowdControl (CrowdControlType.Stun, DamageType.Melee, DamageElement.Physical), STUN_DURATION);
             }
         }
 
-        public override void Abort()
+        public override void Abort ()
         {
-            base.Abort();
+            base.Abort ();
 
             // Movement collisions
-            em.SetMovementCollisonActive(false);
+            em.SetMovementCollisonActive (false);
         }
     }
 }

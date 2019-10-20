@@ -4,17 +4,18 @@ using UnityEngine.UI;
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(Text))]
-    public class CCBar : MonoBehaviour {
+    [RequireComponent (typeof (Text))]
+    public class CCBar : MonoBehaviour
+    {
         private Text ccText;
         public PlayerStatusManager psm;
 
-        private void Start()
+        private void Start ()
         {
-            ccText = GetComponent<Text>();
+            ccText = GetComponent<Text> ();
         }
 
-        void Update()
+        void Update ()
         {
             if (psm.isStunned)
             {

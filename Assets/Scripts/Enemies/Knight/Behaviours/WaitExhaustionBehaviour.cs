@@ -8,23 +8,23 @@ namespace LightBringer.Enemies.Knight
 
         private float duration;
 
-        public WaitExhaustionBehaviour(KnightMotor enemyMotor) : base(enemyMotor)
+        public WaitExhaustionBehaviour (KnightMotor enemyMotor) : base (enemyMotor)
         {
         }
 
-        public override void Init()
+        public override void Init ()
         {
-            base.Init();
+            base.Init ();
 
-            em.anim.SetBool("IdleExhausted", true);
+            em.anim.SetBool ("IdleExhausted", true);
         }
 
-        public override void Run()
+        public override void Run ()
         {
             if (Time.time >= startTime + DURATION)
             {
-                End();
-                em.anim.SetBool("IdleExhausted", false);
+                End ();
+                em.anim.SetBool ("IdleExhausted", false);
             }
         }
     }

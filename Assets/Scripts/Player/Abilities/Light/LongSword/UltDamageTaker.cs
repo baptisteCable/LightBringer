@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-using LightBringer.Enemies;
+﻿using LightBringer.Enemies;
+using UnityEngine;
 
 namespace LightBringer.Player.Abilities.Light.LongSword
 {
-    [RequireComponent(typeof(UltMotor))]
+    [RequireComponent (typeof (UltMotor))]
     public class UltDamageTaker : DamageTaker
     {
         private const float QUARTER_DAMAGE = 6f;
@@ -11,32 +11,32 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private UltMotor um;
 
-        private void Start()
+        private void Start ()
         {
-            um = GetComponent<UltMotor>();
+            um = GetComponent<UltMotor> ();
         }
 
-        private void Update()
+        private void Update ()
         {
             if (statusManager.isDead)
             {
-                Destroy(gameObject);
+                Destroy (gameObject);
             }
         }
 
-        protected override Damage modifyDamage(Damage dmg, PlayerMotor dealer, Vector3 origin)
+        protected override Damage modifyDamage (Damage dmg, PlayerMotor dealer, Vector3 origin)
         {
-            int quarterId = QuarterFromDamageOrigin(origin);
+            int quarterId = QuarterFromDamageOrigin (origin);
             if (dmg.element == DamageElement.Light && um.quarters[quarterId] != null)
             {
                 dmg.amount = QUARTER_DAMAGE;
 
-                um.DestroyQuarter(quarterId);
-                
+                um.DestroyQuarter (quarterId);
+
                 if (um.qCount == 0)
                 {
                     dmg.amount += ALL_QUARTER_DAMAGE;
-                    um.DestroyObject();
+                    um.DestroyObject ();
                 }
             }
             else
@@ -47,9 +47,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             return dmg;
         }
 
-        private int QuarterFromDamageOrigin(Vector3 origin)
+        private int QuarterFromDamageOrigin (Vector3 origin)
         {
-            float angle = Vector3.SignedAngle(transform.forward, origin - transform.position, Vector3.up) + 180;
+            float angle = Vector3.SignedAngle (transform.forward, origin - transform.position, Vector3.up) + 180;
             int quarter = (int)(angle / 90f);
             if (quarter == 4)
             {

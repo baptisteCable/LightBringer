@@ -1,7 +1,5 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using LightBringer.Player.Class;
 using UnityEngine.UI;
-using LightBringer.Player.Class;
 
 namespace LightBringer.UI.Light.LongSword
 {
@@ -10,24 +8,24 @@ namespace LightBringer.UI.Light.LongSword
         private Image loadingImage;
         private Text text;
 
-        protected override void Start()
+        protected override void Start ()
         {
-            base.Start();
+            base.Start ();
 
-            text = transform.Find("Counter").GetComponent<Text>();
-            loadingImage = transform.Find("LoadingImage").GetComponent<Image>();
+            text = transform.Find ("Counter").GetComponent<Text> ();
+            loadingImage = transform.Find ("LoadingImage").GetComponent<Image> ();
         }
 
-        protected override void Update()
+        protected override void Update ()
         {
-            base.Update();
+            base.Update ();
 
-            int sphereCount = ((LightLongSwordMotor)character).GetUltiShpereCount();
+            int sphereCount = ((LightLongSwordMotor)character).GetUltiShpereCount ();
 
             if (sphereCount > 0)
             {
                 text.enabled = true;
-                text.text = sphereCount.ToString();
+                text.text = sphereCount.ToString ();
             }
             else
             {
@@ -36,11 +34,11 @@ namespace LightBringer.UI.Light.LongSword
 
             if (sphereCount == 0 || sphereCount >= LightLongSwordMotor.MAX_SPHERE_COUNT)
             {
-                loadingImage.gameObject.SetActive(false);
+                loadingImage.gameObject.SetActive (false);
             }
             else
             {
-                loadingImage.gameObject.SetActive(true);
+                loadingImage.gameObject.SetActive (true);
                 loadingImage.fillAmount = 1f * sphereCount / LightLongSwordMotor.MAX_SPHERE_COUNT;
             }
         }

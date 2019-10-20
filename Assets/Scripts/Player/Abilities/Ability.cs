@@ -33,7 +33,7 @@ namespace LightBringer.Player.Abilities
 
         public List<GameObject> indicators;
 
-        public Ability(float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor,
+        public Ability (float coolDownDuration, float channelingDuration, float castingDuration, PlayerMotor motor,
             bool channelingCancellable, bool castingCancellable, bool parallelizable, int id)
         {
             state = AbilityState.cooldownUp;
@@ -51,47 +51,47 @@ namespace LightBringer.Player.Abilities
 
             this.id = id;
 
-            indicators = new List<GameObject>();
+            indicators = new List<GameObject> ();
         }
 
-        public virtual void CancelChanelling()
+        public virtual void CancelChanelling ()
         {
             // Movement restrictions
-            resetMovementRestrictions();
+            resetMovementRestrictions ();
 
             // Cooldown
             coolDownRemaining = coolDownDuration * CANCELLING_CC_FACTOR;
             state = AbilityState.cooldownInProgress;
 
             // animation
-            playerMotor.animator.Play("TopIdle");
-            playerMotor.animator.Play("BotIdle");
+            playerMotor.animator.Play ("TopIdle");
+            playerMotor.animator.Play ("BotIdle");
 
             // indicators
-            DestroyIndicators();
+            DestroyIndicators ();
         }
 
-        public virtual void AbortChanelling()
+        public virtual void AbortChanelling ()
         {
             // Movement restrictions
-            resetMovementRestrictions();
+            resetMovementRestrictions ();
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
             state = AbilityState.cooldownInProgress;
 
             // animation
-            playerMotor.animator.Play("TopIdle");
-            playerMotor.animator.Play("BotIdle");
+            playerMotor.animator.Play ("TopIdle");
+            playerMotor.animator.Play ("BotIdle");
 
             // indicators
-            DestroyIndicators();
+            DestroyIndicators ();
         }
 
-        public virtual void AbortCasting()
+        public virtual void AbortCasting ()
         {
             // Movement restrictions
-            resetMovementRestrictions();
+            resetMovementRestrictions ();
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
@@ -100,73 +100,73 @@ namespace LightBringer.Player.Abilities
             // animation
             if (!playerMotor.psm.isStunned)
             {
-                playerMotor.animator.Play("TopIdle");
-                playerMotor.animator.Play("BotIdle");
+                playerMotor.animator.Play ("TopIdle");
+                playerMotor.animator.Play ("BotIdle");
             }
 
             // indicators
-            DestroyIndicators();
+            DestroyIndicators ();
         }
 
-        public virtual void End()
+        public virtual void End ()
         {
             // Movement restrictions
-            resetMovementRestrictions();
+            resetMovementRestrictions ();
 
             // Cooldown
             coolDownRemaining = coolDownDuration;
             state = AbilityState.cooldownInProgress;
         }
 
-        public virtual void Channel()
+        public virtual void Channel ()
         {
             if (Time.time > channelStartTime + channelDuration)
             {
-                StartAbility();
+                StartAbility ();
             }
         }
 
-        public virtual void Cast()
+        public virtual void Cast ()
         {
             if (Time.time > castStartTime + castDuration)
             {
-                End();
+                End ();
             }
         }
 
-        public virtual void StartChanneling()
+        public virtual void StartChanneling ()
         {
             state = AbilityState.channeling;
             channelStartTime = Time.time;
         }
 
-        public virtual void StartAbility()
+        public virtual void StartAbility ()
         {
             state = AbilityState.casting;
             castStartTime = Time.time;
         }
 
-        protected void resetMovementRestrictions()
+        protected void resetMovementRestrictions ()
         {
             playerMotor.abilityMoveMultiplicator = 1f;
             playerMotor.abilityMaxRotation = -1f;
         }
 
-        public virtual void ComputeSpecial()
+        public virtual void ComputeSpecial ()
         {
         }
 
-        public virtual bool CanStart()
+        public virtual bool CanStart ()
         {
             return
                     state == AbilityState.cooldownUp &&
-                    playerMotor.canStartNonParallelizableAbility() &&
+                    playerMotor.canStartNonParallelizableAbility () &&
                     !playerMotor.psm.isStunned &&
                     available;
         }
 
         // Not just a test: can cancel other abilities
-        protected bool CanStartEsc()
+        protected bool CanStartEsc ()
         {
             if (
                     state != AbilityState.cooldownUp ||
@@ -178,29 +178,29 @@ namespace LightBringer.Player.Abilities
                 return false;
             }
 
-            playerMotor.Cancel();
+            playerMotor.Cancel ();
 
-            return playerMotor.canStartNonParallelizableAbility();
+            return playerMotor.canStartNonParallelizableAbility ();
         }
 
-        public virtual void SpecialCancel()
+        public virtual void SpecialCancel ()
         {
-            Debug.LogError("No special cancel for this ability: " + this.GetType());
+            Debug.LogError ("No special cancel for this ability: " + this.GetType ());
         }
 
-        private void DestroyIndicators()
+        private void DestroyIndicators ()
         {
             foreach (GameObject go in indicators)
             {
-                GameObject.Destroy(go);
+                GameObject.Destroy (go);
             }
 
-            indicators.Clear();
+            indicators.Clear ();
         }
 
-        public abstract string GetDescription();
+        public abstract string GetDescription ();
 
-        public abstract string GetTitle();
+        public abstract string GetTitle ();
     }
 }
 

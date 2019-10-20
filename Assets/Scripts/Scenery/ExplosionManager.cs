@@ -15,7 +15,7 @@ namespace LightBringer.Scenery
 
         public static ExplosionManager singleton;
 
-        void Start()
+        void Start ()
         {
             if (singleton == null)
             {
@@ -23,27 +23,27 @@ namespace LightBringer.Scenery
             }
             else
             {
-                Debug.LogError("More than one explosionManager...");
+                Debug.LogError ("More than one explosionManager...");
             }
 
-            curve = new AnimationCurve();
-            curve.AddKey(0, 0);
-            curve.AddKey(0.1f, 1);
-            curve.AddKey(.5f, -.333333f);
-            curve.AddKey(.75f, 0.166667f);
-            curve.AddKey(1f, -0.111111f);
-            curve.AddKey(1.25f, 0.083333f);
-            curve.AddKey(1.5f, 0);
+            curve = new AnimationCurve ();
+            curve.AddKey (0, 0);
+            curve.AddKey (0.1f, 1);
+            curve.AddKey (.5f, -.333333f);
+            curve.AddKey (.75f, 0.166667f);
+            curve.AddKey (1f, -0.111111f);
+            curve.AddKey (1.25f, 0.083333f);
+            curve.AddKey (1.5f, 0);
 
-            explosions = new List<Explosion>();
+            explosions = new List<Explosion> ();
         }
 
         // Update is called once per frame
-        void Update()
+        void Update ()
         {
             while (explosions.Count > MAX_EXPLOSION)
             {
-                explosions.RemoveAt(0);
+                explosions.RemoveAt (0);
             }
 
             if (explosions.Count > 0)
@@ -55,28 +55,28 @@ namespace LightBringer.Scenery
                 {
                     if (Time.time - explosions[i].startTime > 1.5f)
                     {
-                        explosions.RemoveAt(i);
+                        explosions.RemoveAt (i);
                         i--;
                         continue;
                     }
-                    amplitudes[i] = curve.Evaluate(Time.time - explosions[i].startTime) * explosions[i].power;
+                    amplitudes[i] = curve.Evaluate (Time.time - explosions[i].startTime) * explosions[i].power;
                     xCenters[i] = explosions[i].center.x;
                     zCenters[i] = explosions[i].center.y;
                 }
 
                 foreach (Material mat in materials)
                 {
-                    mat.SetFloatArray("_Amplitude", amplitudes);
-                    mat.SetFloatArray("_XCenter", xCenters);
-                    mat.SetFloatArray("_ZCenter", zCenters);
-                    mat.SetFloat("_ExplosionCount", explosions.Count);
+                    mat.SetFloatArray ("_Amplitude", amplitudes);
+                    mat.SetFloatArray ("_XCenter", xCenters);
+                    mat.SetFloatArray ("_ZCenter", zCenters);
+                    mat.SetFloat ("_ExplosionCount", explosions.Count);
                 }
             }
         }
 
-        public void Explode(Vector2 pos, float power)
+        public void Explode (Vector2 pos, float power)
         {
-            explosions.Add(new Explosion(pos, Time.time, power));
+            explosions.Add (new Explosion (pos, Time.time, power));
         }
     }
 }

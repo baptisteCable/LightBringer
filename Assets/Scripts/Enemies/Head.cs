@@ -11,11 +11,11 @@ namespace LightBringer.Enemies
         private const float LOOK_AROUND_X_ERROR = 10f;
         private const float LOOK_AROUND_Y_ERROR = 20f;
 
-        [Header("Transforms")]
+        [Header ("Transforms")]
         [SerializeField] Transform head = null;
         // [SerializeField] Transform sight;
 
-        [Header("Rotation bounds")]
+        [Header ("Rotation bounds")]
         [SerializeField] private float headYAngleBound = 80f;
         [SerializeField] private float headXAngleBound = 20f;
         [SerializeField] private float sightXAngleBound = 50f;
@@ -40,44 +40,44 @@ namespace LightBringer.Enemies
             LookForTarget
         }
 
-        private void Start()
+        private void Start ()
         {
-            NoTarget();
+            NoTarget ();
         }
 
         // Do after animations
-        void LateUpdate()
+        void LateUpdate ()
         {
-            ComputeTargetRotation();
-            ComputeHeadAndSightRotation();
-            RotateHeadAndSight();
+            ComputeTargetRotation ();
+            ComputeHeadAndSightRotation ();
+            RotateHeadAndSight ();
 
             lastHeadRotation = head.transform.localRotation;
             // lastSightRotation = sight.transform.localRotation;
         }
 
-        public void ComputeTargetRotation()
+        public void ComputeTargetRotation ()
         {
             if (behaviour == Behaviour.NoTarget)
             {
                 if (Time.time > nextRandomTime)
                 {
-                    RandomRotation();
+                    RandomRotation ();
                 }
             }
             else if (behaviour == Behaviour.LookAtTarget || behaviour == Behaviour.LookForTarget)
             {
                 Vector3 targetDirection = target.transform.position - head.transform.position;
                 targetDirection.y = 0;
-                theoYRot = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
+                theoYRot = Vector3.SignedAngle (transform.forward, targetDirection, Vector3.up);
 
                 float b = head.transform.position.y - target.transform.position.y - 1.8f;
-                float c = Vector3.Distance(head.transform.position, target.transform.position + 1.8f * Vector3.up);
-                theoXRot = 180 / 3.141592654f * Mathf.Asin(b / c);
+                float c = Vector3.Distance (head.transform.position, target.transform.position + 1.8f * Vector3.up);
+                theoXRot = 180 / 3.141592654f * Mathf.Asin (b / c);
             }
         }
 
-        private void ComputeHeadAndSightRotation()
+        private void ComputeHeadAndSightRotation ()
         {
             if (theoYRot < -headYAngleBound)
             {
@@ -111,7 +111,7 @@ namespace LightBringer.Enemies
             }*/
         }
 
-        private void RotateHeadAndSight()
+        private void RotateHeadAndSight ()
         {
             float lerpRate = LOOK_AROUND_LERP_RATE;
             if (behaviour == Behaviour.LookAtTarget)
@@ -123,13 +123,13 @@ namespace LightBringer.Enemies
                 lerpRate = TARGET_LERP_RATE;
             }
 
-            head.localRotation = Quaternion.Lerp(lastHeadRotation, HeadTargetRotation(), lerpRate * Time.deltaTime);
+            head.localRotation = Quaternion.Lerp (lastHeadRotation, HeadTargetRotation (), lerpRate * Time.deltaTime);
             // sight.localRotation = Quaternion.Lerp(lastSightRotation, SightTargetRotation(), lerpRate * Time.deltaTime);
         }
 
-        private Quaternion HeadTargetRotation()
+        private Quaternion HeadTargetRotation ()
         {
-            return Quaternion.Euler(0, targetHeadYRot, targetHeadXRot);
+            return Quaternion.Euler (0, targetHeadYRot, targetHeadXRot);
         }
 
         /*
@@ -138,23 +138,23 @@ namespace LightBringer.Enemies
             return Quaternion.Euler(0, 0, targetSightXRot);
         }*/
 
-        private void RandomRotation()
+        private void RandomRotation ()
         {
             nextRandomTime = Time.time + Random.value * 3f + 1f;
-            theoXRot = Mathf.Pow(Random.value, 3) * (headXAngleBound + sightXAngleBound);
+            theoXRot = Mathf.Pow (Random.value, 3) * (headXAngleBound + sightXAngleBound);
             theoYRot = Random.value * headYAngleBound * 2 - headYAngleBound;
         }
 
-        public void LookAtTarget(GameObject tar)
+        public void LookAtTarget (GameObject tar)
         {
             behaviour = Behaviour.LookAtTarget;
             target = tar.transform;
         }
 
-        public void NoTarget()
+        public void NoTarget ()
         {
             behaviour = Behaviour.NoTarget;
-            RandomRotation();
+            RandomRotation ();
         }
     }
 

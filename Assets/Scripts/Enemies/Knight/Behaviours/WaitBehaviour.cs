@@ -9,13 +9,13 @@ namespace LightBringer.Enemies.Knight
 
         private float duration;
 
-        public WaitBehaviour(KnightMotor enemyMotor) : base(enemyMotor)
+        public WaitBehaviour (KnightMotor enemyMotor) : base (enemyMotor)
         {
         }
 
-        public override void Init()
+        public override void Init ()
         {
-            base.Init();
+            base.Init ();
 
             if (em.statusManager.mode == Mode.Rage)
             {
@@ -27,11 +27,11 @@ namespace LightBringer.Enemies.Knight
             }
         }
 
-        public override void Run()
+        public override void Run ()
         {
             if (Time.time >= startTime + duration)
             {
-                End();
+                End ();
             }
         }
     }

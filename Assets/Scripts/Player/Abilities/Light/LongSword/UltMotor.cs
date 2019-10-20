@@ -13,35 +13,35 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public Transform anchor;
 
-        private void Start()
+        private void Start ()
         {
-            transform.Find("DamageTaker").gameObject.SetActive(true);
+            transform.Find ("DamageTaker").gameObject.SetActive (true);
             transform.rotation = Quaternion.identity;
-            Destroy(gameObject, EXTRA_DAMAGE_TAKER_DURATION);
-            transform.localScale = Vector3.one * anchor.GetComponent<CharacterController>().radius;
+            Destroy (gameObject, EXTRA_DAMAGE_TAKER_DURATION);
+            transform.localScale = Vector3.one * anchor.GetComponent<CharacterController> ().radius;
         }
 
-        private void Update()
+        private void Update ()
         {
             if (anchor != null)
             {
                 transform.position = anchor.position;
             }
-            transform.Rotate(Vector3.up, Time.deltaTime * ROTATION_SPEED);
+            transform.Rotate (Vector3.up, Time.deltaTime * ROTATION_SPEED);
         }
 
-        public void DestroyObject()
+        public void DestroyObject ()
         {
-            Destroy(gameObject, .7f);
-            transform.Find("DamageTaker/AllBrokenEffect").GetComponent<ParticleSystem>().Play();
+            Destroy (gameObject, .7f);
+            transform.Find ("DamageTaker/AllBrokenEffect").GetComponent<ParticleSystem> ().Play ();
         }
 
-        public void DestroyQuarter(int quarterId)
+        public void DestroyQuarter (int quarterId)
         {
-            quarters[quarterId].transform.Find("Flash").gameObject.SetActive(true);
-            Destroy(quarters[quarterId], .12f);
+            quarters[quarterId].transform.Find ("Flash").gameObject.SetActive (true);
+            Destroy (quarters[quarterId], .12f);
             quarters[quarterId] = null;
-            Destroy(bigQuarters[quarterId]);
+            Destroy (bigQuarters[quarterId]);
             bigQuarters[quarterId] = null;
             qCount -= 1;
         }

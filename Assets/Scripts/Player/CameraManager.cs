@@ -1,22 +1,23 @@
 ﻿using UnityEngine;
 
-public class CameraManager : MonoBehaviour {
+public class CameraManager : MonoBehaviour
+{
     public static CameraManager singleton;
 
     public GameObject overviewCamera;
 
-    private void Start()
+    private void Start ()
     {
         CameraManager.singleton = this;
     }
 
-    public void ActivatePlayerCamera()
+    public void ActivatePlayerCamera ()
     {
-        overviewCamera.SetActive(false);
+        overviewCamera.SetActive (false);
     }
 
-    public void DisactivatePlayerCamera()
+    public void DisactivatePlayerCamera ()
     {
-        overviewCamera.SetActive(true);
+        overviewCamera.SetActive (true);
     }
 }

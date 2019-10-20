@@ -2,7 +2,7 @@
 using UnityEngine;
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(PlayerMotor))]
+    [RequireComponent (typeof (PlayerMotor))]
     public class LayerManager : MonoBehaviour
     {
         public static readonly string[] layerNames = { "Player", "Immaterial", "NoCollision" };
@@ -18,30 +18,30 @@ namespace LightBringer.Player
 
         private Dictionary<object, PlayerLayer> calledLayers;
 
-        private void Start()
+        private void Start ()
         {
-            Init();
+            Init ();
         }
 
-        public void Init()
+        public void Init ()
         {
-            calledLayers = new Dictionary<object, PlayerLayer>();
+            calledLayers = new Dictionary<object, PlayerLayer> ();
             currentLayer = PlayerLayer.Player;
         }
 
-        public void CallLayer(PlayerLayer layer, object caller)
+        public void CallLayer (PlayerLayer layer, object caller)
         {
-            calledLayers.Add(caller, layer);
-            ComputeLayer();
+            calledLayers.Add (caller, layer);
+            ComputeLayer ();
         }
 
-        public void DiscardLayer(object caller)
+        public void DiscardLayer (object caller)
         {
-            calledLayers.Remove(caller);
-            ComputeLayer();
+            calledLayers.Remove (caller);
+            ComputeLayer ();
         }
 
-        private void ComputeLayer()
+        private void ComputeLayer ()
         {
             PlayerLayer newLayer = PlayerLayer.Player;
 
@@ -55,21 +55,21 @@ namespace LightBringer.Player
 
             if (newLayer != currentLayer)
             {
-                recSetLayer(gameObject, layerNames[(int)currentLayer], layerNames[(int)newLayer]);
+                recSetLayer (gameObject, layerNames[(int)currentLayer], layerNames[(int)newLayer]);
                 currentLayer = newLayer;
             }
         }
 
-        private void recSetLayer(GameObject go, string from, string to)
+        private void recSetLayer (GameObject go, string from, string to)
         {
-            if (go.layer == LayerMask.NameToLayer(from))
+            if (go.layer == LayerMask.NameToLayer (from))
             {
-                go.layer = LayerMask.NameToLayer(to);
+                go.layer = LayerMask.NameToLayer (to);
             }
 
             foreach (Transform child in go.transform)
             {
-                recSetLayer(child.gameObject, from, to);
+                recSetLayer (child.gameObject, from, to);
             }
         }
     }

@@ -10,7 +10,7 @@ namespace LightBringer.Player
         AnimationCurve yCurve;
         AnimationCurve zCurve;
 
-        public MovementCurve(float duration, AnimationCurve xCurve, AnimationCurve yCurve, AnimationCurve zCurve)
+        public MovementCurve (float duration, AnimationCurve xCurve, AnimationCurve yCurve, AnimationCurve zCurve)
         {
             curveStart = Time.time;
             curveEnd = Time.time + duration;
@@ -19,16 +19,16 @@ namespace LightBringer.Player
             this.zCurve = zCurve;
         }
 
-        public Vector3 GetPosition()
+        public Vector3 GetPosition ()
         {
-            Vector3 position = new Vector3();
-            position.x = xCurve.Evaluate(Time.time - curveStart);
-            position.y = yCurve.Evaluate(Time.time - curveStart);
-            position.z = zCurve.Evaluate(Time.time - curveStart);
+            Vector3 position = new Vector3 ();
+            position.x = xCurve.Evaluate (Time.time - curveStart);
+            position.y = yCurve.Evaluate (Time.time - curveStart);
+            position.z = zCurve.Evaluate (Time.time - curveStart);
             return position;
         }
 
-        public bool isEnded()
+        public bool isEnded ()
         {
             return Time.time >= curveEnd;
         }

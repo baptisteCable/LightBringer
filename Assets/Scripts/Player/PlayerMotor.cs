@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(PlayerStatusManager))]
-    [RequireComponent(typeof(CharacterController))]
-    [RequireComponent(typeof(PlayerController))]
+    [RequireComponent (typeof (PlayerStatusManager))]
+    [RequireComponent (typeof (CharacterController))]
+    [RequireComponent (typeof (PlayerController))]
     public abstract class PlayerMotor : MonoBehaviour
     {
         // constants
@@ -67,42 +67,42 @@ namespace LightBringer.Player
         [HideInInspector] public Ability specialCancelAbility = null;
 
         // Use this for initialization
-        protected void BaseStart()
+        protected void BaseStart ()
         {
-            psm = GetComponent<PlayerStatusManager>();
-            pc = GetComponent<PlayerController>();
+            psm = GetComponent<PlayerStatusManager> ();
+            pc = GetComponent<PlayerController> ();
 
-            Init();
+            Init ();
 
             // Test Manager
             if (TestManager.singleton != null)
             {
-                TestManager.singleton.SetPlayer(this);
+                TestManager.singleton.SetPlayer (this);
             }
 
             // World manager
             if (WorldManager.singleton != null)
             {
-                WorldManager.singleton.SetPlayerTransform(transform);
+                WorldManager.singleton.SetPlayerTransform (transform);
             }
 
             // Camera
-            playerCamera = Instantiate(cameraPrefab);
-            playerCamera.GetComponent<PlayerCamera>().player = transform;
-            pc.cam = playerCamera.GetComponent<Camera>();
+            playerCamera = Instantiate (cameraPrefab);
+            playerCamera.GetComponent<PlayerCamera> ().player = transform;
+            pc.cam = playerCamera.GetComponent<Camera> ();
 
             if (CameraManager.singleton != null)
             {
-                CameraManager.singleton.ActivatePlayerCamera();
+                CameraManager.singleton.ActivatePlayerCamera ();
             }
 
             // UI
-            userInterface = Instantiate(userInterfacePrefab);
-            userInterface.GetComponent<UserInterface>().SetPlayerMotor(this);
+            userInterface = Instantiate (userInterfacePrefab);
+            userInterface.GetComponent<UserInterface> ().SetPlayerMotor (this);
         }
 
         // Update is called once per frame
-        protected void BaseUpdate()
+        protected void BaseUpdate ()
         {
             if (psm.isDead)
             {
@@ -112,57 +112,57 @@ namespace LightBringer.Player
             // look at mouse point
             if (!psm.isStunned)
             {
-                LookAtMouse();
+                LookAtMouse ();
             }
 
             // cooldowns
-            RefreshCooldowns();
+            RefreshCooldowns ();
 
             // Move
-            Move();
+            Move ();
 
             // CC progression
-            psm.CCComputation();
+            psm.CCComputation ();
 
             // Check buttons and start abilities
-            StartAbilities();
+            StartAbilities ();
 
             // CC effects on channeling and casting
-            CCConsequences();
+            CCConsequences ();
 
             // Channel
-            Channel();
+            Channel ();
 
             // Cast ability
-            Cast();
+            Cast ();
 
             // Special computations on abilities
-            ComputeAbilitiesSpecial();
+            ComputeAbilitiesSpecial ();
         }
 
-        private void Channel()
+        private void Channel ()
         {
             foreach (Ability ab in abilities)
             {
                 if (ab.state == AbilityState.channeling)
                 {
-                    ab.Channel();
+                    ab.Channel ();
                 }
             }
         }
 
-        private void Cast()
+        private void Cast ()
         {
             foreach (Ability ab in abilities)
             {
                 if (ab.state == AbilityState.casting)
                 {
-                    ab.Cast();
+                    ab.Cast ();
                 }
             }
         }
 
-        private void RefreshCooldowns()
+        private void RefreshCooldowns ()
         {
             foreach (Ability ab in abilities)
             {
@@ -184,73 +184,73 @@ namespace LightBringer.Player
             }
         }
 
-        private void ComputeAbilitiesSpecial()
+        private void ComputeAbilitiesSpecial ()
         {
             foreach (Ability ab in abilities)
             {
-                ab.ComputeSpecial();
+                ab.ComputeSpecial ();
             }
         }
 
-        private void StartAbilities()
+        private void StartAbilities ()
         {
             // Check queue first
-            if (pc.queue >= 0 && pc.queue < 6 && abilities[pc.queue].CanStart())
+            if (pc.queue >= 0 && pc.queue < 6 && abilities[pc.queue].CanStart ())
             {
-                abilities[pc.queue].StartChanneling();
+                abilities[pc.queue].StartChanneling ();
                 pc.queue = PlayerController.IN_NONE;
             }
 
             // Check pressed button in a second time
-            if (pc.pressedButton >= 0 && pc.pressedButton < 6 && abilities[pc.pressedButton].CanStart())
+            if (pc.pressedButton >= 0 && pc.pressedButton < 6 && abilities[pc.pressedButton].CanStart ())
             {
-                abilities[pc.pressedButton].StartChanneling();
+                abilities[pc.pressedButton].StartChanneling ();
             }
 
             // Cancel
             if (pc.queue == PlayerController.IN_CANCEL)
             {
-                Cancel();
+                Cancel ();
             }
 
             // TEST: Test button
             if (pc.queue == PlayerController.IN_TEST)
             {
-                psm.AddAndStartState(new Immaterial(5f));
+                psm.AddAndStartState (new Immaterial (5f));
             }
 
             // Clear queue if nothing happening
-            if (canStartNonParallelizableAbility() && pc.queue != PlayerController.IN_NONE)
+            if (canStartNonParallelizableAbility () && pc.queue != PlayerController.IN_NONE)
             {
                 pc.queue = PlayerController.IN_NONE;
             }
         }
 
-        public void Cancel()
+        public void Cancel ()
         {
             foreach (Ability ab in abilities)
             {
                 if (!ab.parallelizable && ab.state == AbilityState.channeling && ab.channelingCancellable)
                 {
-                    ab.CancelChanelling();
+                    ab.CancelChanelling ();
                 }
                 else if (!ab.parallelizable && ab.state == AbilityState.casting && ab.castingCancellable)
                 {
-                    ab.AbortCasting();
+                    ab.AbortCasting ();
                 }
             }
 
             // Special effect of cancelling on some abilities
             if (specialCancelAbility != null)
             {
-                specialCancelAbility.SpecialCancel();
+                specialCancelAbility.SpecialCancel ();
             }
 
             // Cancel states
-            psm.CancelStates();
+            psm.CancelStates ();
         }
 
-        private void Move()
+        private void Move ()
         {
             if (movementMode == MovementMode.Anchor)
             {
@@ -260,7 +260,7 @@ namespace LightBringer.Player
                 }
                 else
                 {
-                    Debug.LogError("No anchor object");
+                    Debug.LogError ("No anchor object");
                 }
             }
             else if (movementMode == MovementMode.Player)
@@ -269,34 +269,34 @@ namespace LightBringer.Player
 
                 if (!psm.isRooted && !psm.isStunned && pc.desiredMove.magnitude > .01f) // TODO : remove last condition if we know if really moving
                 {
-                    desiredMove = new Vector3(pc.desiredMove.x, 0, pc.desiredMove.y);
+                    desiredMove = new Vector3 (pc.desiredMove.x, 0, pc.desiredMove.y);
 
-                    animator.SetFloat("zVel", Vector3.Dot(desiredMove, characterContainer.forward));
-                    animator.SetFloat("xVel", Vector3.Dot(desiredMove, characterContainer.right));
+                    animator.SetFloat ("zVel", Vector3.Dot (desiredMove, characterContainer.forward));
+                    animator.SetFloat ("xVel", Vector3.Dot (desiredMove, characterContainer.right));
 
                     bool reallyMoving = ((previousPosition - transform.position).magnitude / Time.deltaTime > moveSpeed / 6f);
 
-                    animator.SetBool("isMoving", reallyMoving);
+                    animator.SetBool ("isMoving", reallyMoving);
 
                     // get a normal for the surface that is being touched to move along it
                     RaycastHit hitInfo;
-                    LayerMask mask = LayerMask.GetMask("Environment");
+                    LayerMask mask = LayerMask.GetMask ("Environment");
 
-                    Physics.SphereCast(transform.position, charController.radius, Vector3.down, out hitInfo,
+                    Physics.SphereCast (transform.position, charController.radius, Vector3.down, out hitInfo,
                                        charController.height / 2f, mask, QueryTriggerInteraction.Ignore);
-                    desiredMove = Vector3.ProjectOnPlane(desiredMove, hitInfo.normal).normalized;
+                    desiredMove = Vector3.ProjectOnPlane (desiredMove, hitInfo.normal).normalized;
                 }
                 else
                 {
-                    animator.SetBool("isMoving", false);
+                    animator.SetBool ("isMoving", false);
                 }
 
                 // Store position before moving
                 previousPosition = transform.position;
 
                 // add moveSpeed
-                movementDirection.x = desiredMove.x * MoveSpeed();
-                movementDirection.z = desiredMove.z * MoveSpeed();
+                movementDirection.x = desiredMove.x * MoveSpeed ();
+                movementDirection.z = desiredMove.z * MoveSpeed ();
 
                 if (charController.isGrounded)
                 {
@@ -306,46 +306,46 @@ namespace LightBringer.Player
                 {
                     movementDirection += Physics.gravity * Time.deltaTime;
                 }
-                charController.Move(movementDirection * Time.deltaTime);
+                charController.Move (movementDirection * Time.deltaTime);
             }
             else if (movementMode == MovementMode.Curve)
             {
-                transform.position = movementCurve.GetPosition();
+                transform.position = movementCurve.GetPosition ();
 
-                if (movementCurve.isEnded())
+                if (movementCurve.isEnded ())
                 {
                     movementCurve = null;
-                    SetMovementMode(MovementMode.Player);
+                    SetMovementMode (MovementMode.Player);
                 }
             }
         }
 
-        public void AbilityMove(Vector3 speed)
+        public void AbilityMove (Vector3 speed)
         {
-            charController.Move(speed * Time.deltaTime);
+            charController.Move (speed * Time.deltaTime);
         }
 
-        void LookAtMouse()
+        void LookAtMouse ()
         {
-            if ((pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
+            if ((pc.pointedWorldPoint - new Vector3 (transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
             {
                 // Smoothly rotate towards the target point.
-                var targetRotation = Quaternion.LookRotation(
-                        pc.pointedWorldPoint - new Vector3(transform.position.x, GameManager.gm.currentAlt, transform.position.z)
+                var targetRotation = Quaternion.LookRotation (
+                        pc.pointedWorldPoint - new Vector3 (transform.position.x, GameManager.gm.currentAlt, transform.position.z)
                     );
-                Quaternion rotation = Quaternion.Slerp(
+                Quaternion rotation = Quaternion.Slerp (
                         characterContainer.rotation,
                         targetRotation,
                         rotationSpeed * Time.deltaTime
                     );
 
-                currentRotationSpeed = Vector3.SignedAngle(characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
+                currentRotationSpeed = Vector3.SignedAngle (characterContainer.forward, rotation * Vector3.forward, Vector3.up) / Time.deltaTime;
 
-                float mrs = MaxRotationSpeed();
+                float mrs = MaxRotationSpeed ();
 
-                if (Mathf.Abs(currentRotationSpeed) > mrs)
+                if (Mathf.Abs (currentRotationSpeed) > mrs)
                 {
-                    characterContainer.Rotate(Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
+                    characterContainer.Rotate (Vector3.up, ((currentRotationSpeed > 0) ? 1 : -1) * mrs * Time.deltaTime);
                 }
                 else
                 {
@@ -354,7 +354,7 @@ namespace LightBringer.Player
             }
         }
 
-        private float MaxRotationSpeed()
+        private float MaxRotationSpeed ()
         {
             float mrs = Mathf.Infinity;
 
@@ -363,7 +363,7 @@ namespace LightBringer.Player
                 mrs = abilityMaxRotation;
             }
 
-            float stateMaxRS = psm.GetMaxRotationSpeed();
+            float stateMaxRS = psm.GetMaxRotationSpeed ();
 
             if (stateMaxRS < mrs)
             {
@@ -373,63 +373,63 @@ namespace LightBringer.Player
             return mrs;
         }
 
-        private float MoveSpeed()
+        private float MoveSpeed ()
         {
-            return moveSpeed * abilityMoveMultiplicator * psm.GetStateMoveSpeedMultiplicator();
+            return moveSpeed * abilityMoveMultiplicator * psm.GetStateMoveSpeedMultiplicator ();
         }
 
-        private void CCConsequences()
+        private void CCConsequences ()
         {
             if (psm.isStunned)
             {
-                AbortAllAbilities();
+                AbortAllAbilities ();
             }
         }
 
-        protected void AbortAllAbilities()
+        protected void AbortAllAbilities ()
         {
             foreach (Ability ab in abilities)
             {
                 if (ab.state == AbilityState.channeling)
                 {
-                    ab.AbortChanelling();
+                    ab.AbortChanelling ();
                 }
                 else if (ab.state == AbilityState.casting)
                 {
-                    ab.AbortCasting();
+                    ab.AbortCasting ();
                 }
             }
         }
 
-        public void SetMovementMode(MovementMode mode)
+        public void SetMovementMode (MovementMode mode)
         {
             if (movementMode == MovementMode.Anchor && mode != MovementMode.Anchor)
             {
                 charController.enabled = true;
                 psm.anchor = null;
                 visible = true;
-                characterContainer.gameObject.SetActive(true);
+                characterContainer.gameObject.SetActive (true);
             }
 
             movementMode = mode;
         }
 
-        public void MoveByCurve(float duration, AnimationCurve xCurve, AnimationCurve yCurve, AnimationCurve zCurve)
+        public void MoveByCurve (float duration, AnimationCurve xCurve, AnimationCurve yCurve, AnimationCurve zCurve)
         {
-            movementCurve = new MovementCurve(duration, xCurve, yCurve, zCurve);
-            SetMovementMode(MovementMode.Curve);
+            movementCurve = new MovementCurve (duration, xCurve, yCurve, zCurve);
+            SetMovementMode (MovementMode.Curve);
         }
 
-        public void MergeWith(Transform anchor, bool hide = true)
+        public void MergeWith (Transform anchor, bool hide = true)
         {
             charController.enabled = false;
             movementMode = MovementMode.Anchor;
             psm.anchor = anchor;
             visible = false;
-            characterContainer.gameObject.SetActive(false);
+            characterContainer.gameObject.SetActive (false);
         }
 
-        public void LockAbilitiesExcept(bool locked, Ability ability = null)
+        public void LockAbilitiesExcept (bool locked, Ability ability = null)
         {
             foreach (Ability ab in abilities)
             {
@@ -440,18 +440,18 @@ namespace LightBringer.Player
             }
         }
 
-        public MovementMode GetMovementMode()
+        public MovementMode GetMovementMode ()
         {
             return movementMode;
         }
 
-        public void Die()
+        public void Die ()
         {
-            AbortAllAbilities();
+            AbortAllAbilities ();
             charController.enabled = false;
         }
 
-        public bool canStartNonParallelizableAbility()
+        public bool canStartNonParallelizableAbility ()
         {
             foreach (Ability ab in abilities)
             {
@@ -464,12 +464,12 @@ namespace LightBringer.Player
             return true;
         }
 
-        public virtual void Init()
+        public virtual void Init ()
         {
-            charController = GetComponent<CharacterController>();
+            charController = GetComponent<CharacterController> ();
             charController.enabled = true;
 
-            psm.Init();
+            psm.Init ();
 
             abilityMoveMultiplicator = 1f;
             abilityMaxRotation = -1f;
@@ -477,25 +477,25 @@ namespace LightBringer.Player
             movementDirection = Vector3.zero;
             previousPosition = Vector3.zero;
 
-            SetMovementMode(MovementMode.Player);
+            SetMovementMode (MovementMode.Player);
         }
 
-        public void DestroyPlayer()
+        public void DestroyPlayer ()
         {
-            Destroy(playerCamera);
-            Destroy(userInterface);
+            Destroy (playerCamera);
+            Destroy (userInterface);
 
             if (CameraManager.singleton != null)
             {
-                CameraManager.singleton.DisactivatePlayerCamera();
+                CameraManager.singleton.DisactivatePlayerCamera ();
             }
 
-            Destroy(gameObject);
+            Destroy (gameObject);
         }
 
         // Called by id
         public const int M_SetCdDuration = 1400;
-        private void SetCdDuration(int id, float cd)
+        private void SetCdDuration (int id, float cd)
         {
             abilities[id].coolDownDuration = cd;
         }

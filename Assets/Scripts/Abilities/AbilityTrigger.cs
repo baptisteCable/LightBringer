@@ -7,27 +7,27 @@ namespace LightBringer.Abilities
         protected Mesh mesh;
         protected MeshCollider meshCollider;
 
-        private void Awake()
+        private void Awake ()
         {
-            mesh = GetComponent<MeshFilter>().mesh;
-            meshCollider = GetComponent<MeshCollider>();
+            mesh = GetComponent<MeshFilter> ().mesh;
+            meshCollider = GetComponent<MeshCollider> ();
             meshCollider.sharedMesh = mesh;
         }
 
-        static protected void CreateAngularAoEMesh(float distance, float angle, float height, ref Mesh mesh)
+        static protected void CreateAngularAoEMesh (float distance, float angle, float height, ref Mesh mesh)
         {
             Vector3[] vertices;
             int[] triangles;
-            int nbVert = (int)Mathf.Ceil(angle / 22.5f) + 2;
+            int nbVert = (int)Mathf.Ceil (angle / 22.5f) + 2;
 
             vertices = new Vector3[2 * nbVert];
-            vertices[0] = new Vector3(0, 0, 0);
-            vertices[nbVert] = new Vector3(0, height, 0);
+            vertices[0] = new Vector3 (0, 0, 0);
+            vertices[nbVert] = new Vector3 (0, height, 0);
 
             for (int i = 0; i < nbVert - 1; i++)
             {
-                vertices[i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), 0);
-                vertices[nbVert + i + 1] = cartFromPol(distance, -angle / 2 + i * (angle / (nbVert - 2)), height);
+                vertices[i + 1] = cartFromPol (distance, -angle / 2 + i * (angle / (nbVert - 2)), 0);
+                vertices[nbVert + i + 1] = cartFromPol (distance, -angle / 2 + i * (angle / (nbVert - 2)), height);
             }
 
             triangles = new int[6 * (nbVert - 2)];
@@ -44,18 +44,18 @@ namespace LightBringer.Abilities
                 triangles[3 * (nbVert - 2 + i) + 2] = nbVert + i + 2;
             }
 
-            mesh.Clear();
+            mesh.Clear ();
             mesh.vertices = vertices;
             mesh.triangles = triangles;
 
         }
 
-        static Vector3 cartFromPol(float module, float angle, float y)
+        static Vector3 cartFromPol (float module, float angle, float y)
         {
-            return new Vector3(
-                    Mathf.Cos(Mathf.Deg2Rad * (90f - angle)) * module,
+            return new Vector3 (
+                    Mathf.Cos (Mathf.Deg2Rad * (90f - angle)) * module,
                     y,
-                    Mathf.Sin(Mathf.Deg2Rad * (90f - angle)) * module
+                    Mathf.Sin (Mathf.Deg2Rad * (90f - angle)) * module
                 );
         }
     }

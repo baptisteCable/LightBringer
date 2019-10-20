@@ -13,29 +13,29 @@ namespace LightBringer.TerrainGeneration
         public int x;
         public int y;
 
-        public Dic2DKey(int x, int y)
+        public Dic2DKey (int x, int y)
         {
             this.x = x;
             this.y = y;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals (object obj)
         {
             return ((Dic2DKey)obj).x == x && ((Dic2DKey)obj).y == y;
         }
 
-        public override int GetHashCode()
+        public override int GetHashCode ()
         {
             return 32768 * x + y;
         }
 
-        public override string ToString()
+        public override string ToString ()
         {
             return "(" + x + "; " + y + ")";
         }
-        public Vector2 ToVector2()
+        public Vector2 ToVector2 ()
         {
-            return new Vector2(x, y);
+            return new Vector2 (x, y);
         }
     }
 
@@ -67,36 +67,36 @@ namespace LightBringer.TerrainGeneration
         // values
         private Dictionary<Dic2DKey, T> dic;
 
-        public SpatialDictionary(int scale = MIN_SCALE + 1)
+        public SpatialDictionary (int scale = MIN_SCALE + 1)
         {
             this.scale = scale;
             count = 0;
 
-            if (IsLeaf())
+            if (IsLeaf ())
             {
-                dic = new Dictionary<Dic2DKey, T>();
+                dic = new Dictionary<Dic2DKey, T> ();
             }
         }
 
-        private bool IsLeaf()
+        private bool IsLeaf ()
         {
             return scale <= MIN_SCALE;
         }
 
-        public void Add(int x, int y, T value)
+        public void Add (int x, int y, T value)
         {
             count++;
 
-            int fullScale = PowerOfTwo(scale);
+            int fullScale = PowerOfTwo (scale);
             while (x >= fullScale || x < -fullScale || y >= fullScale || y < -fullScale)
             {
-                Expand();
-                fullScale = PowerOfTwo(scale);
+                Expand ();
+                fullScale = PowerOfTwo (scale);
             }
 
-            if (IsLeaf())
+            if (IsLeaf ())
             {
-                dic[new Dic2DKey(x, y)] = value;
+                dic[new Dic2DKey (x, y)] = value;
             }
             else
             {
@@ -112,9 +112,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (botLeft == null)
                         {
-                            botLeft = new SpatialDictionary<T>(scale - 1);
+                            botLeft = new SpatialDictionary<T> (scale - 1);
                         }
-                        botLeft.Add(x, y, value);
+                        botLeft.Add (x, y, value);
                     }
                     else
                     {
@@ -122,9 +122,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (topLeft == null)
                         {
-                            topLeft = new SpatialDictionary<T>(scale - 1);
+                            topLeft = new SpatialDictionary<T> (scale - 1);
                         }
-                        topLeft.Add(x, y, value);
+                        topLeft.Add (x, y, value);
                     }
                 }
                 else
@@ -137,9 +137,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (botRight == null)
                         {
-                            botRight = new SpatialDictionary<T>(scale - 1);
+                            botRight = new SpatialDictionary<T> (scale - 1);
                         }
-                        botRight.Add(x, y, value);
+                        botRight.Add (x, y, value);
                     }
                     else
                     {
@@ -147,28 +147,28 @@ namespace LightBringer.TerrainGeneration
 
                         if (topRight == null)
                         {
-                            topRight = new SpatialDictionary<T>(scale - 1);
+                            topRight = new SpatialDictionary<T> (scale - 1);
                         }
-                        topRight.Add(x, y, value);
+                        topRight.Add (x, y, value);
                     }
                 }
             }
         }
 
-        public T Get(Dic2DKey key)
+        public T Get (Dic2DKey key)
         {
-            return Get(key.x, key.y);
+            return Get (key.x, key.y);
         }
 
-        public T Get(int x, int y)
+        public T Get (int x, int y)
         {
-            if (IsLeaf())
+            if (IsLeaf ())
             {
-                return dic[new Dic2DKey(x, y)];
+                return dic[new Dic2DKey (x, y)];
             }
             else
             {
-                int halfFullScale = PowerOfTwo(scale - 1);
+                int halfFullScale = PowerOfTwo (scale - 1);
 
                 if (x < 0)
                 {
@@ -180,9 +180,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (botLeft == null)
                         {
-                            throw new KeyNotFoundException("Spatial dictionary area is empty");
+                            throw new KeyNotFoundException ("Spatial dictionary area is empty");
                         }
-                        return botLeft.Get(x, y);
+                        return botLeft.Get (x, y);
                     }
                     else
                     {
@@ -190,9 +190,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (topLeft == null)
                         {
-                            throw new KeyNotFoundException("Spatial dictionary area is empty");
+                            throw new KeyNotFoundException ("Spatial dictionary area is empty");
                         }
-                        return topLeft.Get(x, y);
+                        return topLeft.Get (x, y);
                     }
                 }
                 else
@@ -205,9 +205,9 @@ namespace LightBringer.TerrainGeneration
 
                         if (botRight == null)
                         {
-                            throw new KeyNotFoundException("Spatial dictionary area is empty");
+                            throw new KeyNotFoundException ("Spatial dictionary area is empty");
                         }
-                        return botRight.Get(x, y);
+                        return botRight.Get (x, y);
                     }
                     else
                     {
@@ -215,19 +215,19 @@ namespace LightBringer.TerrainGeneration
 
                         if (topRight == null)
                         {
-                            throw new KeyNotFoundException("Spatial dictionary area is empty");
+                            throw new KeyNotFoundException ("Spatial dictionary area is empty");
                         }
-                        return topRight.Get(x, y);
+                        return topRight.Get (x, y);
                     }
                 }
             }
         }
 
-        public List<T> GetAround(int x, int y, int distance)
+        public List<T> GetAround (int x, int y, int distance)
         {
-            List<T> list = new List<T>();
+            List<T> list = new List<T> ();
 
-            if (IsLeaf())
+            if (IsLeaf ())
             {
                 foreach (KeyValuePair<Dic2DKey, T> pair in dic)
                 {
@@ -238,35 +238,35 @@ namespace LightBringer.TerrainGeneration
                             pair.Key.y - y > -distance
                         )
                     {
-                        list.Add(pair.Value);
+                        list.Add (pair.Value);
                     }
                 }
 
             }
             else
             {
-                int halfFullScale = PowerOfTwo(scale - 1);
+                int halfFullScale = PowerOfTwo (scale - 1);
 
                 if (x - distance < 0)
                 {
                     if (botLeft != null && y - distance < 0)
                     {
-                        list.AddRange(botLeft.GetAround(x + halfFullScale, y + halfFullScale, distance));
+                        list.AddRange (botLeft.GetAround (x + halfFullScale, y + halfFullScale, distance));
                     }
                     if (topLeft != null && y + distance > 0)
                     {
-                        list.AddRange(topLeft.GetAround(x + halfFullScale, y - halfFullScale, distance));
+                        list.AddRange (topLeft.GetAround (x + halfFullScale, y - halfFullScale, distance));
                     }
                 }
                 if (x + distance > 0)
                 {
                     if (botRight != null && y - distance < 0)
                     {
-                        list.AddRange(botRight.GetAround(x - halfFullScale, y + halfFullScale, distance));
+                        list.AddRange (botRight.GetAround (x - halfFullScale, y + halfFullScale, distance));
                     }
                     if (topRight != null && y + distance > 0)
                     {
-                        list.AddRange(topRight.GetAround(x - halfFullScale, y - halfFullScale, distance));
+                        list.AddRange (topRight.GetAround (x - halfFullScale, y - halfFullScale, distance));
                     }
                 }
             }
@@ -274,11 +274,11 @@ namespace LightBringer.TerrainGeneration
             return list;
         }
 
-        public int CountAround(int x, int y, int distance)
+        public int CountAround (int x, int y, int distance)
         {
             int count = 0;
 
-            if (IsLeaf())
+            if (IsLeaf ())
             {
                 foreach (KeyValuePair<Dic2DKey, T> pair in dic)
                 {
@@ -295,28 +295,28 @@ namespace LightBringer.TerrainGeneration
             }
             else
             {
-                int halfFullScale = PowerOfTwo(scale - 1);
+                int halfFullScale = PowerOfTwo (scale - 1);
 
                 if (x - distance < 0)
                 {
                     if (botLeft != null && y - distance < 0)
                     {
-                        count += botLeft.CountAround(x + halfFullScale, y + halfFullScale, distance);
+                        count += botLeft.CountAround (x + halfFullScale, y + halfFullScale, distance);
                     }
                     if (topLeft != null && y + distance > 0)
                     {
-                        count += topLeft.CountAround(x + halfFullScale, y - halfFullScale, distance);
+                        count += topLeft.CountAround (x + halfFullScale, y - halfFullScale, distance);
                     }
                 }
                 if (x + distance > 0)
                 {
                     if (botRight != null && y - distance < 0)
                     {
-                        count += botRight.CountAround(x - halfFullScale, y + halfFullScale, distance);
+                        count += botRight.CountAround (x - halfFullScale, y + halfFullScale, distance);
                     }
                     if (topRight != null && y + distance > 0)
                     {
-                        count += topRight.CountAround(x - halfFullScale, y - halfFullScale, distance);
+                        count += topRight.CountAround (x - halfFullScale, y - halfFullScale, distance);
                     }
                 }
             }
@@ -324,9 +324,9 @@ namespace LightBringer.TerrainGeneration
             return count;
         }
 
-        public bool IsEmpty(int x, int y, int distance)
+        public bool IsEmpty (int x, int y, int distance)
         {
-            if (IsLeaf())
+            if (IsLeaf ())
             {
                 foreach (KeyValuePair<Dic2DKey, T> pair in dic)
                 {
@@ -345,15 +345,15 @@ namespace LightBringer.TerrainGeneration
             }
             else
             {
-                int halfFullScale = PowerOfTwo(scale - 1);
+                int halfFullScale = PowerOfTwo (scale - 1);
 
                 if (x - distance < 0)
                 {
-                    if (botLeft != null && y - distance < 0 && !botLeft.IsEmpty(x + halfFullScale, y + halfFullScale, distance))
+                    if (botLeft != null && y - distance < 0 && !botLeft.IsEmpty (x + halfFullScale, y + halfFullScale, distance))
                     {
                         return false;
                     }
-                    if (topLeft != null && y + distance > 0 && !topLeft.IsEmpty(x + halfFullScale, y - halfFullScale, distance))
+                    if (topLeft != null && y + distance > 0 && !topLeft.IsEmpty (x + halfFullScale, y - halfFullScale, distance))
                     {
                         return false;
                     }
@@ -361,11 +361,11 @@ namespace LightBringer.TerrainGeneration
 
                 if (x + distance > 0)
                 {
-                    if (botRight != null && y - distance < 0 && !botRight.IsEmpty(x - halfFullScale, y + halfFullScale, distance))
+                    if (botRight != null && y - distance < 0 && !botRight.IsEmpty (x - halfFullScale, y + halfFullScale, distance))
                     {
                         return false;
                     }
-                    if (topRight != null && y + distance > 0 && !topRight.IsEmpty(x - halfFullScale, y - halfFullScale, distance))
+                    if (topRight != null && y + distance > 0 && !topRight.IsEmpty (x - halfFullScale, y - halfFullScale, distance))
                     {
                         return false;
                     }
@@ -375,11 +375,11 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void Expand()
+        private void Expand ()
         {
             if (topLeft != null)
             {
-                SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                SpatialDictionary<T> newDic = new SpatialDictionary<T> (scale);
                 newDic.count = topLeft.count;
                 newDic.botRight = topLeft;
                 topLeft = newDic;
@@ -387,7 +387,7 @@ namespace LightBringer.TerrainGeneration
 
             if (topRight != null)
             {
-                SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                SpatialDictionary<T> newDic = new SpatialDictionary<T> (scale);
                 newDic.count = topRight.count;
                 newDic.botLeft = topRight;
                 topRight = newDic;
@@ -395,7 +395,7 @@ namespace LightBringer.TerrainGeneration
 
             if (botLeft != null)
             {
-                SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                SpatialDictionary<T> newDic = new SpatialDictionary<T> (scale);
                 newDic.count = botLeft.count;
                 newDic.topRight = botLeft;
                 botLeft = newDic;
@@ -403,7 +403,7 @@ namespace LightBringer.TerrainGeneration
 
             if (botRight != null)
             {
-                SpatialDictionary<T> newDic = new SpatialDictionary<T>(scale);
+                SpatialDictionary<T> newDic = new SpatialDictionary<T> (scale);
                 newDic.count = botRight.count;
                 newDic.topLeft = botRight;
                 botRight = newDic;
@@ -412,7 +412,7 @@ namespace LightBringer.TerrainGeneration
             scale++;
         }
 
-        public static int PowerOfTwo(int n)
+        public static int PowerOfTwo (int n)
         {
             int val = 1;
             for (int i = 1; i <= n; i++)
@@ -423,24 +423,24 @@ namespace LightBringer.TerrainGeneration
             return val;
         }
 
-        public SpatialDictionary<T> Copy()
+        public SpatialDictionary<T> Copy ()
         {
-            if (!typeof(T).IsSerializable)
+            if (!typeof (T).IsSerializable)
             {
-                throw new SerializationException("The type must be serializable.");
+                throw new SerializationException ("The type must be serializable.");
             }
 
-            IFormatter formatter = new BinaryFormatter(); SurrogateSelector surrogateSelector = new SurrogateSelector();
-            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate();
-            surrogateSelector.AddSurrogate(typeof(Vector2), new StreamingContext(StreamingContextStates.All), vector2SS);
+            IFormatter formatter = new BinaryFormatter (); SurrogateSelector surrogateSelector = new SurrogateSelector ();
+            Vector2SerializationSurrogate vector2SS = new Vector2SerializationSurrogate ();
+            surrogateSelector.AddSurrogate (typeof (Vector2), new StreamingContext (StreamingContextStates.All), vector2SS);
             formatter.SurrogateSelector = surrogateSelector;
 
-            Stream stream = new MemoryStream();
+            Stream stream = new MemoryStream ();
             using (stream)
             {
-                formatter.Serialize(stream, this);
-                stream.Seek(0, SeekOrigin.Begin);
-                return (SpatialDictionary<T>)formatter.Deserialize(stream);
+                formatter.Serialize (stream, this);
+                stream.Seek (0, SeekOrigin.Begin);
+                return (SpatialDictionary<T>)formatter.Deserialize (stream);
             }
         }
     }

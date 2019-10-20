@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using LightBringer.Effects;
+﻿using LightBringer.Effects;
 using LightBringer.Enemies;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(PlayerMotor)), RequireComponent(typeof(FlashEffect))]
+    [RequireComponent (typeof (PlayerMotor)), RequireComponent (typeof (FlashEffect))]
     public class PlayerStatusManager : MonoBehaviour
     {
         // HP MP
@@ -53,39 +53,39 @@ namespace LightBringer.Player
         public bool canDie = true;
 
         // State Effects
-        [Header("States Effects")]
+        [Header ("States Effects")]
         public ParticleSystem hasteTrailsEffect;
         public ParticleSystem.MainModule hasteTrailsEffectMain;
         public ParticleSystem immaterialCloudEffect;
 
-        void Start()
+        void Start ()
         {
-            playerMotor = GetComponent<PlayerMotor>();
-            flashEffect = GetComponent<FlashEffect>();
+            playerMotor = GetComponent<PlayerMotor> ();
+            flashEffect = GetComponent<FlashEffect> ();
 
             statusBar.psm = this;
 
             hasteTrailsEffectMain = hasteTrailsEffect.main;
         }
 
-        private void Update()
+        private void Update ()
         {
             // get state information from server on connection
             if (queuedStates != null)
             {
-                AddAndStartQueuedStates();
+                AddAndStartQueuedStates ();
 
                 foreach (State s in states)
                 {
-                    s.Update();
+                    s.Update ();
                 }
 
-                RemoveCompletedStates();
+                RemoveCompletedStates ();
             }
 
         }
 
-        private void RemoveCompletedStates()
+        private void RemoveCompletedStates ()
         {
             int i = 0;
 
@@ -93,7 +93,7 @@ namespace LightBringer.Player
             {
                 if (states[i].complete)
                 {
-                    states.RemoveAt(i);
+                    states.RemoveAt (i);
                 }
                 else
                 {
@@ -103,11 +103,11 @@ namespace LightBringer.Player
         }
 
         // return false if the damage cannot target the player
-        public bool IsAffectedBy(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
+        public bool IsAffectedBy (Damage dmg, Motor dealer, Vector3 origin = default (Vector3))
         {
             foreach (State s in states)
             {
-                if (!s.IsAffectedBy(dmg, dealer, origin))
+                if (!s.IsAffectedBy (dmg, dealer, origin))
                 {
                     return false;
                 }
@@ -117,11 +117,11 @@ namespace LightBringer.Player
         }
 
         // return false if the damage cannot target the player
-        public bool IsAffectedByCC(CrowdControl cc)
+        public bool IsAffectedByCC (CrowdControl cc)
         {
             foreach (State s in states)
             {
-                if (!s.isAffectedByCC(cc))
+                if (!s.isAffectedByCC (cc))
                 {
                     return false;
                 }
@@ -130,68 +130,68 @@ namespace LightBringer.Player
             return true;
         }
 
-        public void TakeDamage(Damage dmg, Motor dealer, Vector3 origin = default(Vector3))
+        public void TakeDamage (Damage dmg, Motor dealer, Vector3 origin = default (Vector3))
         {
             foreach (State s in states)
             {
-                dmg = s.AlterTakenDamage(dmg, dealer, origin);
+                dmg = s.AlterTakenDamage (dmg, dealer, origin);
             }
 
             if (dmg.amount > 0)
             {
-                flashEffect.Flash();
+                flashEffect.Flash ();
                 currentHP -= dmg.amount;
             }
 
             if (currentHP <= 0 && canDie)
             {
-                Die();
+                Die ();
             }
         }
 
         // compute damage depending on states
-        public Damage AlterDealtDamage(Damage dmg)
+        public Damage AlterDealtDamage (Damage dmg)
         {
             foreach (State s in states)
             {
-                dmg = s.AlterDealtDamage(dmg);
+                dmg = s.AlterDealtDamage (dmg);
             }
 
             return dmg;
         }
 
-        public void AddAndStartState(State state)
+        public void AddAndStartState (State state)
         {
-            queuedStates.Add(state);
+            queuedStates.Add (state);
         }
 
-        private void AddAndStartQueuedStates()
+        private void AddAndStartQueuedStates ()
         {
             while (queuedStates.Count > 0)
             {
                 State s = queuedStates[0];
-                states.Add(s);
-                s.Start(this);
-                queuedStates.RemoveAt(0);
+                states.Add (s);
+                s.Start (this);
+                queuedStates.RemoveAt (0);
             }
         }
 
-        public void StopState(State state)
+        public void StopState (State state)
         {
-            state.Stop();
+            state.Stop ();
         }
 
-        public void RemoveState(State state)
+        public void RemoveState (State state)
         {
-            states.Remove(state);
+            states.Remove (state);
         }
 
-        public void ApplyCrowdControl(CrowdControl cc, float duration)
+        public void ApplyCrowdControl (CrowdControl cc, float duration)
         {
             bool affected = true;
             foreach (State s in states)
             {
-                if (!s.isAffectedByCC(cc))
+                if (!s.isAffectedByCC (cc))
                 {
                     affected = false;
                 }
@@ -201,23 +201,23 @@ namespace LightBringer.Player
             {
                 switch (cc.ccType)
                 {
-                    case CrowdControlType.Root: Root(duration); break;
-                    case CrowdControlType.Stun: Stun(duration); break;
+                    case CrowdControlType.Root: Root (duration); break;
+                    case CrowdControlType.Stun: Stun (duration); break;
                 }
             }
         }
 
-        private void Stun(float duration)
+        private void Stun (float duration)
         {
             isStunned = true;
             if (stunDuration < duration)
             {
                 stunDuration = duration;
-                playerMotor.animator.SetBool("isStunned", true);
+                playerMotor.animator.SetBool ("isStunned", true);
             }
         }
 
-        private void Root(float duration)
+        private void Root (float duration)
         {
             isRooted = true;
             if (rootDuration < duration)
@@ -226,7 +226,7 @@ namespace LightBringer.Player
             }
         }
 
-        public void CCComputation()
+        public void CCComputation ()
         {
             if (isRooted)
             {
@@ -243,23 +243,23 @@ namespace LightBringer.Player
                 if (stunDuration <= 0f)
                 {
                     isStunned = false;
-                    playerMotor.animator.SetBool("isStunned", false);
+                    playerMotor.animator.SetBool ("isStunned", false);
                 }
             }
         }
 
-        public void CancelStates()
+        public void CancelStates ()
         {
             foreach (State s in states)
             {
                 if (s.cancellable)
                 {
-                    s.Cancel();
+                    s.Cancel ();
                 }
             }
         }
 
-        private void Die()
+        private void Die ()
         {
             if (!isDead)
             {
@@ -267,12 +267,12 @@ namespace LightBringer.Player
 
                 // TODO animation
 
-                playerMotor.Die();
+                playerMotor.Die ();
 
             }
         }
 
-        public float GetStateMoveSpeedMultiplicator()
+        public float GetStateMoveSpeedMultiplicator ()
         {
             float mult = 1f;
 
@@ -284,7 +284,7 @@ namespace LightBringer.Player
             return mult;
         }
 
-        public float GetMaxRotationSpeed()
+        public float GetMaxRotationSpeed ()
         {
             float mrs = Mathf.Infinity;
 
@@ -299,7 +299,7 @@ namespace LightBringer.Player
             return mrs;
         }
 
-        public void Init()
+        public void Init ()
         {
             //HP
             currentHP = maxHP;
@@ -314,13 +314,13 @@ namespace LightBringer.Player
             abilitySuppress = false;
 
             // States
-            states = new List<State>();
-            queuedStates = new List<State>();
+            states = new List<State> ();
+            queuedStates = new List<State> ();
             isDead = false;
 
             // Gradables
-            moveMultiplicators = new Dictionary<State, float>();
-            maxRotation = new Dictionary<State, float>();
+            moveMultiplicators = new Dictionary<State, float> ();
+            maxRotation = new Dictionary<State, float> ();
         }
     }
 }

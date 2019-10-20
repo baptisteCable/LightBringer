@@ -17,7 +17,7 @@ namespace LightBringer
             this.origin = origin;
         }
     }
-    
+
     public enum DamageElement
     {
         Physical = 0,

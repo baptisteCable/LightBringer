@@ -28,7 +28,7 @@ namespace LightBringer.Enemies
             public float duration;
             public int indicator;
 
-            public Part(State state, float startTime, float duration, int indicator)
+            public Part (State state, float startTime, float duration, int indicator)
             {
                 this.state = state;
                 this.startTime = startTime;
@@ -37,19 +37,19 @@ namespace LightBringer.Enemies
             }
         }
 
-        public EnemyBehaviour(Motor enemyMotor)
+        public EnemyBehaviour (Motor enemyMotor)
         {
             em = enemyMotor;
         }
 
-        public abstract void Run();
+        public abstract void Run ();
 
-        public virtual void Init()
+        public virtual void Init ()
         {
             startTime = Time.time;
         }
 
-        public virtual void Abort()
+        public virtual void Abort ()
         {
             if (parts != null)
             {
@@ -57,7 +57,7 @@ namespace LightBringer.Enemies
                 {
                     if (parts[i].indicator != -1)
                     {
-                        em.HideIndicator(parts[i].indicator);
+                        em.HideIndicator (parts[i].indicator);
                     }
                 }
             }
@@ -65,95 +65,95 @@ namespace LightBringer.Enemies
             complete = true;
         }
 
-        public virtual void End()
+        public virtual void End ()
         {
             complete = true;
         }
 
-        protected void DisplayIndicators()
+        protected void DisplayIndicators ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                if (IsDisplayIndicatorTime(i, INDICATOR_DISPLAY_TIME))
+                if (IsDisplayIndicatorTime (i, INDICATOR_DISPLAY_TIME))
                 {
-                    DisplayIndicator(i, INDICATOR_DISPLAY_TIME);
+                    DisplayIndicator (i, INDICATOR_DISPLAY_TIME);
                 }
             }
         }
 
-        protected bool IsDisplayIndicatorTime(int part, float displayTime)
+        protected bool IsDisplayIndicatorTime (int part, float displayTime)
         {
             // call the display MAX_RTT_COMPENSATION_INDICATOR seconds by advance
             return Time.time >= startTime + parts[part].startTime - displayTime - Motor.MAX_RTT_COMPENSATION_INDICATOR
                 && parts[part].state == State.Before;
         }
 
-        protected virtual void DisplayIndicator(int part, float loadingTime)
+        protected virtual void DisplayIndicator (int part, float loadingTime)
         {
             if (parts[part].indicator != -1)
             {
                 GameObject indicator = em.indicators[parts[part].indicator];
-                indicator.SetActive(true);
-                indicator.GetComponent<IndicatorLoader>().Load(loadingTime);
+                indicator.SetActive (true);
+                indicator.GetComponent<IndicatorLoader> ().Load (loadingTime);
             }
             parts[part].state = State.IndicatorDisplayed;
         }
 
-        protected void StartParts()
+        protected void StartParts ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                if (IsStartTime(i))
+                if (IsStartTime (i))
                 {
-                    StartPart(i);
+                    StartPart (i);
                 }
             }
         }
 
-        protected bool IsStartTime(int part)
+        protected bool IsStartTime (int part)
         {
             return Time.time > startTime + parts[part].startTime && parts[part].state == State.IndicatorDisplayed;
         }
 
-        protected virtual void StartPart(int part)
+        protected virtual void StartPart (int part)
         {
             if (parts[part].indicator != -1)
             {
-                em.HideIndicator(parts[part].indicator);
+                em.HideIndicator (parts[part].indicator);
             }
             parts[part].state = State.InProgress;
         }
 
-        protected virtual void RunParts()
+        protected virtual void RunParts ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                if (IsRunTime(i))
+                if (IsRunTime (i))
                 {
-                    RunPart(i);
+                    RunPart (i);
                 }
             }
         }
 
-        protected bool IsRunTime(int part)
+        protected bool IsRunTime (int part)
         {
             return parts[part].state == State.InProgress;
         }
 
-        protected virtual void RunPart(int part)
+        protected virtual void RunPart (int part)
         {
-            if (IsEndTime(part))
+            if (IsEndTime (part))
             {
-                EndPart(part);
+                EndPart (part);
             }
         }
 
-        protected bool IsEndTime(int part)
+        protected bool IsEndTime (int part)
         {
             return parts[part].state == State.InProgress && Time.time >= startTime + parts[part].startTime + parts[part].duration;
         }
 
-        protected virtual void EndPart(int part)
+        protected virtual void EndPart (int part)
         {
             parts[part].state = State.Terminated;
         }

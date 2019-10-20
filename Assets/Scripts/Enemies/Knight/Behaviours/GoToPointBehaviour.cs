@@ -6,43 +6,43 @@ namespace LightBringer.Enemies.Knight
     {
         Vector3 target;
 
-        public GoToPointBehaviour(KnightMotor enemyMotor, Vector3 target) : base(enemyMotor)
+        public GoToPointBehaviour (KnightMotor enemyMotor, Vector3 target) : base (enemyMotor)
         {
             this.target = target;
         }
 
-        public override void Init()
+        public override void Init ()
         {
-            em.agent.SetDestination(target);
+            em.agent.SetDestination (target);
             em.agent.isStopped = false;
 
             // Movement collisions
-            em.SetMovementCollisonActive(true);
+            em.SetMovementCollisonActive (true);
         }
 
-        public override void Run()
+        public override void Run ()
         {
             if (em.agent.remainingDistance < em.agent.stoppingDistance)
             {
-                End();
+                End ();
             }
         }
 
-        public override void End()
+        public override void End ()
         {
-            base.End();
+            base.End ();
             em.agent.isStopped = true;
 
             // Movement collisions
-            em.SetMovementCollisonActive(false);
+            em.SetMovementCollisonActive (false);
         }
 
-        public override void Abort()
+        public override void Abort ()
         {
-            base.Abort();
+            base.Abort ();
 
             // Movement collisions
-            em.SetMovementCollisonActive(false);
+            em.SetMovementCollisonActive (false);
         }
     }
 }

@@ -18,17 +18,17 @@ namespace LightBringer.Enemies.Knight
         private float endTime = -1;
         private float selfHideTime = -1;
 
-        public void SetupAndStart(float duration, float length)
+        public void SetupAndStart (float duration, float length)
         {
             spawnTime = Time.time + SPAWN_DURATION;
             endTime = Time.time + duration;
             selfHideTime = Time.time + duration + VANISH_DURATION;
 
             // Line activation
-            line.gameObject.SetActive(true);
+            line.gameObject.SetActive (true);
 
             // Length
-            SetLength(length);
+            SetLength (length);
 
             // Duration
             ParticleSystem.MainModule main1 = ps1.main;
@@ -51,41 +51,41 @@ namespace LightBringer.Enemies.Knight
             mainEmiter.duration = duration;
 
             // Play ps1, ps2 and emiter
-            ps1.Play();
-            ps2.Play();
-            emiter.Play();
+            ps1.Play ();
+            ps2.Play ();
+            emiter.Play ();
 
             if (ending != null)
             {
-                ending.Play();
+                ending.Play ();
             }
         }
 
-        public void SetLength(float length)
+        public void SetLength (float length)
         {
             // Line length
-            line.SetPosition(0, new Vector3(0, 0, length));
+            line.SetPosition (0, new Vector3 (0, 0, length));
 
             // Emission cone length
             ParticleSystem.ShapeModule shape1 = ps1.shape;
-            shape1.length = Mathf.Max(length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
+            shape1.length = Mathf.Max (length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
             ParticleSystem.ShapeModule shape2 = ps2.shape;
-            shape2.length = Mathf.Max(length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
+            shape2.length = Mathf.Max (length - PARTICLE_DURATION * ps1.main.startSpeed.constant, .1f);
 
             // Ending position
             if (ending != null)
             {
-                ending.transform.localPosition = new Vector3(0, 0, length);
+                ending.transform.localPosition = new Vector3 (0, 0, length);
             }
         }
 
         // Update is called once per frame
-        void Update()
+        void Update ()
         {
             // Spawning effect
             if (spawnTime > 0 && Time.time < spawnTime)
             {
-                line.widthMultiplier = Mathf.Min(1 - (spawnTime - Time.time) / SPAWN_DURATION, 1) * LINE_WIDTH;
+                line.widthMultiplier = Mathf.Min (1 - (spawnTime - Time.time) / SPAWN_DURATION, 1) * LINE_WIDTH;
             }
             else if (spawnTime > 0)
             {
@@ -96,35 +96,35 @@ namespace LightBringer.Enemies.Knight
             // Vanishing effect
             if (endTime > 0 && Time.time > endTime)
             {
-                emiter.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                emiter.Stop (true, ParticleSystemStopBehavior.StopEmitting);
                 if (ending != null)
                 {
-                    ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                    ending.Stop (true, ParticleSystemStopBehavior.StopEmitting);
                 }
-                line.widthMultiplier = Mathf.Max(1 - (Time.time - endTime) / VANISH_DURATION, 0) * LINE_WIDTH;
+                line.widthMultiplier = Mathf.Max (1 - (Time.time - endTime) / VANISH_DURATION, 0) * LINE_WIDTH;
             }
 
             // Self destroy
             if (selfHideTime > 0 && Time.time > selfHideTime)
             {
-                Hide();
+                Hide ();
             }
         }
 
-        public void Abort()
+        public void Abort ()
         {
             if (ending != null)
             {
-                ending.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                ending.Stop (true, ParticleSystemStopBehavior.StopEmitting);
             }
-            emiter.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            emiter.Stop (true, ParticleSystemStopBehavior.StopEmitting);
 
-            Hide();
+            Hide ();
         }
 
-        private void Hide()
+        private void Hide ()
         {
-            line.gameObject.SetActive(false);
+            line.gameObject.SetActive (false);
             selfHideTime = -1;
             endTime = -1;
         }

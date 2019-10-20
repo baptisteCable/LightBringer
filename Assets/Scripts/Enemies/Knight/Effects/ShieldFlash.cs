@@ -7,10 +7,10 @@ namespace Assets.Scripts.Enemies.Knight.Effects
     {
         [SerializeField] private ParticleSystem ps = null;
 
-        public override void Flash()
+        public override void Flash ()
         {
-            base.Flash();
-            ps.Play();
+            base.Flash ();
+            ps.Play ();
         }
     }
 }

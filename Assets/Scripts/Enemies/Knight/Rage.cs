@@ -16,62 +16,62 @@ namespace LightBringer.Enemies.Knight
         private Color lightInitialColor;
         private Color[] crystalInitialColors;
 
-        private void Start()
+        private void Start ()
         {
             crystalInitialColors = new Color[crystals.Length];
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystalInitialColors[i] = crystals[i].material.GetColor("_EmissionColor");
+                crystalInitialColors[i] = crystals[i].material.GetColor ("_EmissionColor");
             }
 
             lightInitialColor = pointLight.color;
         }
 
-        public void StartRageDelayed(float delay)
+        public void StartRageDelayed (float delay)
         {
-            StartCoroutine(DelayedRage(delay));
+            StartCoroutine (DelayedRage (delay));
         }
 
-        IEnumerator DelayedRage(float delay)
+        IEnumerator DelayedRage (float delay)
         {
-            yield return new WaitForSeconds(delay);
-            StartRage();
+            yield return new WaitForSeconds (delay);
+            StartRage ();
         }
 
-        public void StartRage()
+        public void StartRage ()
         {
-            ragePs.Play();
+            ragePs.Play ();
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystals[i].material.SetColor("_EmissionColor", rageColor);
+                crystals[i].material.SetColor ("_EmissionColor", rageColor);
             }
 
             pointLight.color = rageColor;
             pointLight.intensity = 2;
         }
 
-        public void StartExhaustion()
+        public void StartExhaustion ()
         {
-            ragePs.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            exhaustionPs.Play();
+            ragePs.Stop (true, ParticleSystemStopBehavior.StopEmitting);
+            exhaustionPs.Play ();
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystals[i].material.SetColor("_EmissionColor", exhaustionColor);
+                crystals[i].material.SetColor ("_EmissionColor", exhaustionColor);
             }
 
             pointLight.color = exhaustionColor;
         }
 
-        public void StopExhaustion()
+        public void StopExhaustion ()
         {
-            exhaustionPs.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            exhaustionPs.Stop (true, ParticleSystemStopBehavior.StopEmitting);
 
             for (int i = 0; i < crystals.Length; i++)
             {
-                crystals[i].material.SetColor("_EmissionColor", crystalInitialColors[i]);
+                crystals[i].material.SetColor ("_EmissionColor", crystalInitialColors[i]);
             }
 
             pointLight.color = lightInitialColor;

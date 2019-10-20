@@ -29,78 +29,78 @@ public class TestManager : MonoBehaviour
 
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
-    private void Start()
+    private void Start ()
     {
         singleton = this;
 
         if (nms != null)
         {
-            nms = wm.GetComponent<NavMeshSurface>();
+            nms = wm.GetComponent<NavMeshSurface> ();
         }
 
-        testUI.SetActive(true);
+        testUI.SetActive (true);
     }
 
-    public void GenerateNewTerrain()
+    public void GenerateNewTerrain ()
     {
         /*
         tg.GenerateTerrain();
         nms.BuildNavMesh();*/
     }
 
-    public void SetPlayer(PlayerMotor pm)
+    public void SetPlayer (PlayerMotor pm)
     {
         playerMotor = pm;
-        psm = pm.GetComponent<PlayerStatusManager>();
+        psm = pm.GetComponent<PlayerStatusManager> ();
 
         psm.canDie = canDie;
     }
 
-    public void RestartFight()
+    public void RestartFight ()
     {
         if (playerMotor != null)
         {
-            playerMotor.DestroyPlayer();
+            playerMotor.DestroyPlayer ();
         }
 
-        KillKnight();
-        DestroyEverything();
+        KillKnight ();
+        DestroyEverything ();
 
         // Player
-        GameObject playerGo = Instantiate(playerPrefab);
-        playerMotor = playerGo.GetComponent<PlayerMotor>();
-        SetHighSpeed(highSpeed);
+        GameObject playerGo = Instantiate (playerPrefab);
+        playerMotor = playerGo.GetComponent<PlayerMotor> ();
+        SetHighSpeed (highSpeed);
 
-        playerMotor.transform.position = new Vector3(0, 6, 0);
+        playerMotor.transform.position = new Vector3 (0, 6, 0);
 
         // Knight
-        knight = Instantiate(knightPrefab, new Vector3(20, 0, 0), Quaternion.AngleAxis(180, Vector3.up));
+        knight = Instantiate (knightPrefab, new Vector3 (20, 0, 0), Quaternion.AngleAxis (180, Vector3.up));
 
-        kc = knight.GetComponent<KnightController>();
+        kc = knight.GetComponent<KnightController> ();
         kc.passive = knightPassive;
     }
 
-    private void DestroyEverything()
+    private void DestroyEverything ()
     {
-        GameObject[] allObjects = SceneManager.GetActiveScene().GetRootGameObjects();
+        GameObject[] allObjects = SceneManager.GetActiveScene ().GetRootGameObjects ();
         foreach (GameObject go in allObjects)
         {
-            if (!NotToDestroyItems.Contains(go) && go.layer != 9)
+            if (!NotToDestroyItems.Contains (go) && go.layer != 9)
             {
-                Destroy(go);
+                Destroy (go);
             }
         }
     }
 
-    public void KillKnight()
+    public void KillKnight ()
     {
         if (knight != null)
         {
-            Destroy(knight);
+            Destroy (knight);
         }
     }
 
-    public void SetKnightPassive(bool isPassive)
+    public void SetKnightPassive (bool isPassive)
     {
         knightPassive = isPassive;
         if (kc != null)
@@ -109,7 +109,7 @@ public class TestManager : MonoBehaviour
         }
     }
 
-    public void SetCanDie(bool canDie)
+    public void SetCanDie (bool canDie)
     {
         this.canDie = canDie;
         if (psm != null)
@@ -118,7 +118,7 @@ public class TestManager : MonoBehaviour
         }
     }
 
-    public void SetNoCD(bool noCD)
+    public void SetNoCD (bool noCD)
     {
         if (GameManager.gm != null)
         {
@@ -126,7 +126,7 @@ public class TestManager : MonoBehaviour
         }
     }
 
-    public void SetHighSpeed(bool hs)
+    public void SetHighSpeed (bool hs)
     {
         highSpeed = hs;
         if (playerMotor != null)
@@ -142,8 +142,8 @@ public class TestManager : MonoBehaviour
         }
     }
 
-    public void QuitGame()
+    public void QuitGame ()
     {
-        Application.Quit();
+        Application.Quit ();
     }
 }

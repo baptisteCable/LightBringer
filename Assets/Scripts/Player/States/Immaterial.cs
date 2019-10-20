@@ -10,33 +10,33 @@ namespace LightBringer.Player
         private const string IMMATERIAL_LAYER = "Immaterial";
         private const string PLAYER_LAYER = "Player";
 
-        public Immaterial(float duration) : base(CANCELLABLE, duration)
+        public Immaterial (float duration) : base (CANCELLABLE, duration)
         {
         }
 
-        public override void Start(PlayerStatusManager psm)
+        public override void Start (PlayerStatusManager psm)
         {
-            base.Start(psm);
-            psm.immaterialCloudEffect.Play();
-            psm.playerMotor.layerManager.CallLayer(LayerManager.PlayerLayer.Immaterial, this);
-            RecTransparentOn(psm.transform);
+            base.Start (psm);
+            psm.immaterialCloudEffect.Play ();
+            psm.playerMotor.layerManager.CallLayer (LayerManager.PlayerLayer.Immaterial, this);
+            RecTransparentOn (psm.transform);
         }
 
-        public override void Stop()
+        public override void Stop ()
         {
-            base.Stop();
-            psm.immaterialCloudEffect.Play();
-            psm.playerMotor.layerManager.DiscardLayer(this);
-            RecTransparentOff(psm.transform);
+            base.Stop ();
+            psm.immaterialCloudEffect.Play ();
+            psm.playerMotor.layerManager.DiscardLayer (this);
+            RecTransparentOff (psm.transform);
         }
 
-        public override void Cancel()
+        public override void Cancel ()
         {
-            base.Cancel();
-            Stop();
+            base.Cancel ();
+            Stop ();
         }
 
-        public override bool IsAffectedBy(Damage dmg, Motor dealer, Vector3 origin)
+        public override bool IsAffectedBy (Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete)
             {
@@ -48,7 +48,7 @@ namespace LightBringer.Player
             }
         }
 
-        public override Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
+        public override Damage AlterTakenDamage (Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete)
             {
@@ -57,7 +57,7 @@ namespace LightBringer.Player
             return dmg;
         }
 
-        public override Damage AlterDealtDamage(Damage dmg)
+        public override Damage AlterDealtDamage (Damage dmg)
         {
             if (!complete)
             {
@@ -66,7 +66,7 @@ namespace LightBringer.Player
             return dmg;
         }
 
-        public override bool isAffectedByCC(CrowdControl cc)
+        public override bool isAffectedByCC (CrowdControl cc)
         {
             if (cc.damageType == DamageType.Self)
             {
@@ -78,72 +78,72 @@ namespace LightBringer.Player
             }
         }
 
-        public static void RecTransparentOn(Transform tr)
+        public static void RecTransparentOn (Transform tr)
         {
             if (tr.tag != "Spell" && tr.tag != "UI")
             {
-                Renderer renderer = tr.GetComponent<Renderer>();
+                Renderer renderer = tr.GetComponent<Renderer> ();
 
                 if (renderer != null)
                 {
-                    Material mat = tr.GetComponent<Renderer>().material;
+                    Material mat = tr.GetComponent<Renderer> ().material;
 
                     if (mat.shader.name == "Standard")
                     {
-                        Color color = mat.GetColor("_Color");
+                        Color color = mat.GetColor ("_Color");
 
                         color.a = .3f;
-                        mat.SetColor("_Color", color);
-                        mat.SetFloat("_Mode", 3);
+                        mat.SetColor ("_Color", color);
+                        mat.SetFloat ("_Mode", 3);
 
-                        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        mat.SetInt("_ZWrite", 0);
-                        mat.DisableKeyword("_ALPHATEST_ON");
-                        mat.DisableKeyword("_ALPHABLEND_ON");
-                        mat.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                        mat.SetInt ("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                        mat.SetInt ("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                        mat.SetInt ("_ZWrite", 0);
+                        mat.DisableKeyword ("_ALPHATEST_ON");
+                        mat.DisableKeyword ("_ALPHABLEND_ON");
+                        mat.EnableKeyword ("_ALPHAPREMULTIPLY_ON");
                         mat.renderQueue = 3000;
                     }
                 }
 
                 foreach (Transform child in tr)
                 {
-                    RecTransparentOn(child);
+                    RecTransparentOn (child);
                 }
             }
         }
 
-        public static void RecTransparentOff(Transform tr)
+        public static void RecTransparentOff (Transform tr)
         {
             if (tr.tag != "Spell" && tr.tag != "UI")
             {
-                Renderer renderer = tr.GetComponent<Renderer>();
+                Renderer renderer = tr.GetComponent<Renderer> ();
 
                 if (renderer != null)
                 {
-                    Material mat = tr.GetComponent<Renderer>().material;
+                    Material mat = tr.GetComponent<Renderer> ().material;
 
                     if (mat.shader.name == "Standard")
                     {
-                        Color color = mat.GetColor("_Color");
+                        Color color = mat.GetColor ("_Color");
 
                         color.a = 1f;
-                        mat.SetColor("_Color", color);
-                        mat.SetFloat("_Mode", 0);
+                        mat.SetColor ("_Color", color);
+                        mat.SetFloat ("_Mode", 0);
 
-                        mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                        mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                        mat.SetInt("_ZWrite", 1);
-                        mat.DisableKeyword("_ALPHATEST_ON");
-                        mat.DisableKeyword("_ALPHABLEND_ON");
-                        mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                        mat.SetInt ("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                        mat.SetInt ("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                        mat.SetInt ("_ZWrite", 1);
+                        mat.DisableKeyword ("_ALPHATEST_ON");
+                        mat.DisableKeyword ("_ALPHABLEND_ON");
+                        mat.DisableKeyword ("_ALPHAPREMULTIPLY_ON");
                         mat.renderQueue = -1;
                     }
                 }
 
                 foreach (Transform child in tr)
                 {
-                    RecTransparentOff(child);
+                    RecTransparentOff (child);
                 }
             }
         }

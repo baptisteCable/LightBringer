@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using LightBringer.Abilities;
+﻿using LightBringer.Abilities;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightBringer.Enemies
@@ -17,69 +17,69 @@ namespace LightBringer.Enemies
         float stopDist;
         Transform target;
 
-        public CollisionBehaviour(Motor enemyMotor) : base(enemyMotor)
+        public CollisionBehaviour (Motor enemyMotor) : base (enemyMotor)
         {
         }
 
-        protected void StartCollisionParts()
+        protected void StartCollisionParts ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                if (IsStartTime(i))
+                if (IsStartTime (i))
                 {
-                    StartCollisionPart(i);
+                    StartCollisionPart (i);
                 }
             }
         }
 
-        protected virtual void StartCollisionPart(int i)
+        protected virtual void StartCollisionPart (int i)
         {
-            StartPart(i);
+            StartPart (i);
             //actGOs[i].SetActive(true);
-            acts[i].SetAbility(this);
-            cols = new Dictionary<Collider, float>();
+            acts[i].SetAbility (this);
+            cols = new Dictionary<Collider, float> ();
         }
 
-        protected virtual void RunCollisionParts()
+        protected virtual void RunCollisionParts ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                if (IsRunTime(i))
+                if (IsRunTime (i))
                 {
-                    RunCollisionPart(i);
+                    RunCollisionPart (i);
                 }
             }
         }
 
-        protected virtual void RunCollisionPart(int part)
+        protected virtual void RunCollisionPart (int part)
         {
-            if (IsEndTime(part))
+            if (IsEndTime (part))
             {
-                EndCollisionPart(part);
+                EndCollisionPart (part);
             }
         }
 
-        protected void EndCollisionPart(int i)
+        protected void EndCollisionPart (int i)
         {
-            EndPart(i);
-            acts[i].UnsetAbility();
+            EndPart (i);
+            acts[i].UnsetAbility ();
             //actGOs[i].SetActive(false);
         }
 
-        public override void Abort()
+        public override void Abort ()
         {
             for (int i = 0; i < parts.Length; i++)
             {
-                acts[i].UnsetAbility();
+                acts[i].UnsetAbility ();
                 //actGOs[i].SetActive(false);
             }
 
-            base.Abort();
+            base.Abort ();
         }
 
-        public abstract void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col);
+        public abstract void OnColliderEnter (AbilityColliderTrigger abilityColliderTrigger, Collider col);
 
-        public virtual void OnColliderStay(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public virtual void OnColliderStay (AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
         }
 

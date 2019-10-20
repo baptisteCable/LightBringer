@@ -1,5 +1,4 @@
 ﻿using LightBringer.Player;
-using LightBringer.Player.Class;
 using UnityEngine;
 
 namespace LightBringer.UI
@@ -10,34 +9,34 @@ namespace LightBringer.UI
         public GameObject abilityBar;
         public AbilityImage[] abIms;
 
-        private void Start()
+        private void Start ()
         {
             if (character != null)
             {
-                SetCharacterToImages();
+                SetCharacterToImages ();
             }
         }
 
-        private void Update()
+        private void Update ()
         {
             if (character == null && abilityBar.activeSelf)
             {
-                abilityBar.SetActive(false);
+                abilityBar.SetActive (false);
             }
         }
 
-        public void SetPlayerMotor(PlayerMotor character)
+        public void SetPlayerMotor (PlayerMotor character)
         {
             this.character = character;
-            SetCharacterToImages();
+            SetCharacterToImages ();
         }
 
-        private void SetCharacterToImages()
+        private void SetCharacterToImages ()
         {
             foreach (AbilityImage abim in abIms)
             {
                 abim.character = character;
-                abilityBar.SetActive(true);
+                abilityBar.SetActive (true);
             }
         }
     }

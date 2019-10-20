@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using LightBringer.Player;
+﻿using LightBringer.Player;
+using UnityEngine;
 
 namespace LightBringer.Enemies
 {
@@ -13,19 +13,19 @@ namespace LightBringer.Enemies
 
         public StatusManager statusManager;
 
-        public virtual void TakeDamage(Damage dmg, PlayerMotor dealer, Vector3 origin, int id)
+        public virtual void TakeDamage (Damage dmg, PlayerMotor dealer, Vector3 origin, int id)
         {
-            dmg = modifyDamage(dmg, dealer, origin);
+            dmg = modifyDamage (dmg, dealer, origin);
 
             if (extraDmg)
             {
-                id = Random.Range(int.MinValue, int.MaxValue);
+                id = Random.Range (int.MinValue, int.MaxValue);
             }
 
-            statusManager.TakeDamage(dmg, dealer, id, (transform.position - origin).magnitude);
+            statusManager.TakeDamage (dmg, dealer, id, (transform.position - origin).magnitude);
         }
 
-        protected virtual Damage modifyDamage(Damage dmg, PlayerMotor dealer, Vector3 origin)
+        protected virtual Damage modifyDamage (Damage dmg, PlayerMotor dealer, Vector3 origin)
         {
             return dmg;
         }

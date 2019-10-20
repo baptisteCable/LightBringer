@@ -61,7 +61,7 @@ namespace LightBringer.TerrainGeneration
         [NonSerialized]
         private float[] ground1Zone;
 
-        public Island(Vector2 centerPosition, Biome.Type bt, int type, int newSeed = 0)
+        public Island (Vector2 centerPosition, Biome.Type bt, int type, int newSeed = 0)
         {
             centerInWorld = centerPosition;
             this.type = type;
@@ -72,9 +72,9 @@ namespace LightBringer.TerrainGeneration
             {
                 if (staticRnd == null)
                 {
-                    staticRnd = new System.Random();
+                    staticRnd = new System.Random ();
                 }
-                seed = staticRnd.Next();
+                seed = staticRnd.Next ();
             }
             else
             {
@@ -82,12 +82,12 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        public float GetAvgRadius()
+        public float GetAvgRadius ()
         {
-            return GetAvgRadius(type);
+            return GetAvgRadius (type);
         }
 
-        static public float GetAvgRadius(int type)
+        static public float GetAvgRadius (int type)
         {
             switch (type)
             {
@@ -95,82 +95,82 @@ namespace LightBringer.TerrainGeneration
                 case 1: return 3.75f;
             }
 
-            throw new Exception("No valid type");
+            throw new Exception ("No valid type");
         }
 
-        public static Vector2 Vector2FromAngle(float a)
+        public static Vector2 Vector2FromAngle (float a)
         {
-            return new Vector2(Mathf.Cos(a), Mathf.Sin(a));
+            return new Vector2 (Mathf.Cos (a), Mathf.Sin (a));
         }
 
         // radian angle
-        public static Vector2 RotateVector(Vector2 v, float angle)
+        public static Vector2 RotateVector (Vector2 v, float angle)
         {
-            return RotateVector(v, (double)angle);
+            return RotateVector (v, (double)angle);
         }
 
-        public static Vector2 RotateVector(Vector2 v, double angle)
+        public static Vector2 RotateVector (Vector2 v, double angle)
         {
-            double x = v.x * Math.Cos(angle) - v.y * Math.Sin(angle);
-            double y = v.x * Math.Sin(angle) + v.y * Math.Cos(angle);
-            return new Vector2((float)x, (float)y);
+            double x = v.x * Math.Cos (angle) - v.y * Math.Sin (angle);
+            double y = v.x * Math.Sin (angle) + v.y * Math.Cos (angle);
+            return new Vector2 ((float)x, (float)y);
         }
 
-        public void GenerateIslandVertices()
+        public void GenerateIslandVertices ()
         {
             if (vertices != null)
             {
                 return;
             }
 
-            rnd = new System.Random(seed);
+            rnd = new System.Random (seed);
 
-            InitCircles();
+            InitCircles ();
 
             // Ground 1 function
-            InitGround1Function();
+            InitGround1Function ();
 
-            vertices = new List<Vector2>();
+            vertices = new List<Vector2> ();
 
             int c = 0;
-            Vector2 vector = RotateVector(new Vector2(1, 0), Mathf.PI / 4f);
-            vertices.Add(circleCenters[circleOrder[c]] + new Vector2(circleRadius[circleOrder[c]], 0));
+            Vector2 vector = RotateVector (new Vector2 (1, 0), Mathf.PI / 4f);
+            vertices.Add (circleCenters[circleOrder[c]] + new Vector2 (circleRadius[circleOrder[c]], 0));
 
             // Compute vertices
             while (vertices.Count < 10 || c < circleOrder.Length - 1 || (vertices[0] - vertices[vertices.Count - 1]).magnitude > 3f)
             {
-                DetermineCurrentCircleOrder(ref c);
+                DetermineCurrentCircleOrder (ref c);
 
-                float angle = randomAngle(
+                float angle = randomAngle (
                     circleCenters[circleOrder[c]],
                     circleRadius[circleOrder[c]],
                     vector,
                     vertices[vertices.Count - 1],
                     rnd);
-                vector = RotateVector(vector, angle);
-                vertices.Add(vertices[vertices.Count - 1] + vector);
+                vector = RotateVector (vector, angle);
+                vertices.Add (vertices[vertices.Count - 1] + vector);
             }
 
             // last 2 vertices
-            LastTwoVertices();
+            LastTwoVertices ();
 
             // Rotate island
-            RotateIsland(rnd);
+            RotateIsland (rnd);
 
             // slopes
-            GenerateSlopes();
+            GenerateSlopes ();
         }
 
-        private void RotateIsland(System.Random rnd)
+        private void RotateIsland (System.Random rnd)
         {
-            double angle = rnd.NextDouble() * Math.PI * 2;
+            double angle = rnd.NextDouble () * Math.PI * 2;
             for (int i = 0; i < vertices.Count; i++)
             {
-                vertices[i] = RotateVector(vertices[i], angle);
+                vertices[i] = RotateVector (vertices[i], angle);
             }
         }
 
-        private void DetermineCurrentCircleOrder(ref int c)
+        private void DetermineCurrentCircleOrder (ref int c)
         {
             while (c + 1 < circleOrder.Length)
             {
@@ -188,7 +188,7 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void InitCircles()
+        private void InitCircles ()
         {
             switch (type)
             {
@@ -205,9 +205,9 @@ namespace LightBringer.TerrainGeneration
                     break;
                 case 1:
                     circleCenters = new Vector2[3];
-                    circleCenters[0] = new Vector2(1.25f, 0);
-                    circleCenters[1] = new Vector2(0, 0);
-                    circleCenters[2] = new Vector2(-1.25f, 0);
+                    circleCenters[0] = new Vector2 (1.25f, 0);
+                    circleCenters[1] = new Vector2 (0, 0);
+                    circleCenters[2] = new Vector2 (-1.25f, 0);
                     circleRadius = new float[3];
                     circleRadius[0] = 2.5f;
                     circleRadius[1] = 2.5f;
@@ -223,12 +223,12 @@ namespace LightBringer.TerrainGeneration
                     ground1Max = 10;
                     break;
                 default:
-                    throw new Exception("Invalid Island type : " + type);
+                    throw new Exception ("Invalid Island type : " + type);
 
             }
         }
 
-        private void LastTwoVertices()
+        private void LastTwoVertices ()
         {
             Vector2 last = vertices[vertices.Count - 1];
             Vector2 first = vertices[0];
@@ -237,27 +237,27 @@ namespace LightBringer.TerrainGeneration
             float distance = vector.magnitude;
             vector /= distance;
 
-            float angle = -Mathf.Acos((distance - 1) / 2);
+            float angle = -Mathf.Acos ((distance - 1) / 2);
 
             // add vertex 1
-            vertices.Add(vertices[vertices.Count - 1] + RotateVector(vector, angle));
+            vertices.Add (vertices[vertices.Count - 1] + RotateVector (vector, angle));
 
             // add vertex 2
-            vertices.Add(vertices[vertices.Count - 1] + vector);
+            vertices.Add (vertices[vertices.Count - 1] + vector);
         }
 
-        private float angleDistrib(float angle)
+        private float angleDistrib (float angle)
         {
-            return 3 - Mathf.Abs(angle);
+            return 3 - Mathf.Abs (angle);
         }
 
-        private float distDistrib(float angle, Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)
+        private float distDistrib (float angle, Vector2 center, float radius, Vector2 vector, Vector2 previousPoint)
         {
-            Vector2 newVector = RotateVector(vector, angle);
+            Vector2 newVector = RotateVector (vector, angle);
 
             // 0 if going back
-            Vector2 tangent = RotateVector(previousPoint - center, Mathf.PI / 2f);
-            if (Vector2.Dot(tangent, newVector) < 0)
+            Vector2 tangent = RotateVector (previousPoint - center, Mathf.PI / 2f);
+            if (Vector2.Dot (tangent, newVector) < 0)
             {
                 return 0;
             }
@@ -271,10 +271,10 @@ namespace LightBringer.TerrainGeneration
             }
 
             float ratio = dist / radius - 1;
-            return Mathf.Exp(-6 * ratio * ratio);
+            return Mathf.Exp (-6 * ratio * ratio);
         }
 
-        private float randomAngle(Vector2 center, float radius, Vector2 vector, Vector2 previousPoint, System.Random rdm)
+        private float randomAngle (Vector2 center, float radius, Vector2 vector, Vector2 previousPoint, System.Random rdm)
         {
             float[] distributions = new float[9];
             float sum = 0f;
@@ -284,7 +284,7 @@ namespace LightBringer.TerrainGeneration
             for (i = 0; i < 9; i++)
             {
                 float angle = (i - 4) * Mathf.PI / 8f;
-                distributions[i] = angleDistrib(angle) * distDistrib(angle, center, radius, vector, previousPoint);
+                distributions[i] = angleDistrib (angle) * distDistrib (angle, center, radius, vector, previousPoint);
                 sum += distributions[i];
             }
 
@@ -295,7 +295,7 @@ namespace LightBringer.TerrainGeneration
             }
 
 
-            double rnd = rdm.NextDouble();
+            double rnd = rdm.NextDouble ();
 
             i = 0;
             while (distributions[i] < rnd)
@@ -308,11 +308,11 @@ namespace LightBringer.TerrainGeneration
         }
 
         // return the distance to the island in island unit (1f is segment length)
-        public float DistanceFromIslandInIslandUnit(Vector2 point, bool insideNegative = false)
+        public float DistanceFromIslandInIslandUnit (Vector2 point, bool insideNegative = false)
         {
             if (vertices == null)
             {
-                GenerateIslandVertices();
+                GenerateIslandVertices ();
             }
 
             // closest point
@@ -343,11 +343,11 @@ namespace LightBringer.TerrainGeneration
                 second = vertices[(closest + 1) % vertices.Count];
             }
 
-            Vector2 normal = RotateVector(second - first, -Mathf.PI / 2f);
+            Vector2 normal = RotateVector (second - first, -Mathf.PI / 2f);
             Vector2 vect = point - first;
 
-            float dotProdTangent = Vector2.Dot(second - first, vect);
-            float dotProdNormal = Vector2.Dot(normal, vect);
+            float dotProdTangent = Vector2.Dot (second - first, vect);
+            float dotProdNormal = Vector2.Dot (normal, vect);
 
             if (dotProdNormal <= 0)
             {
@@ -371,13 +371,13 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        public float DistanceFromIslandInWorldUnit(Vector2 worldPos)
+        public float DistanceFromIslandInWorldUnit (Vector2 worldPos)
         {
             Vector2 point = (worldPos - centerInWorld) / SCALE;
-            return SCALE * DistanceFromIslandInIslandUnit(point);
+            return SCALE * DistanceFromIslandInIslandUnit (point);
         }
 
-        public void GenerateIslandHeightsAndAlphaMap(
+        public void GenerateIslandHeightsAndAlphaMap (
             ref float[,,] alphaMap,
             ref float[,] terrainHeights,
             ref Biome.Type[,] biomeMap,
@@ -387,14 +387,14 @@ namespace LightBringer.TerrainGeneration
             // Generate island data from seed
             if (vertices == null)
             {
-                GenerateIslandVertices();
+                GenerateIslandVertices ();
             }
 
-            GenerateHeights(ref terrainHeights, terrainPosition);
-            GenerateAlphaMap(ref alphaMap, ref biomeMap, ref groundMap, terrainPosition);
+            GenerateHeights (ref terrainHeights, terrainPosition);
+            GenerateAlphaMap (ref alphaMap, ref biomeMap, ref groundMap, terrainPosition);
         }
 
-        private void GetBounds(int mapSize, Vector2 terrainPosition, int margin,
+        private void GetBounds (int mapSize, Vector2 terrainPosition, int margin,
             out Vector2 islandCenterInIntCoord, out float pointPerUnit, out int uMin, out int uMax, out int vMin, out int vMax)
         {
             // find bounds
@@ -416,21 +416,21 @@ namespace LightBringer.TerrainGeneration
             islandCenterInIntCoord = localIslandCenter * pointPerUnit + WorldManager.BLUR_RADIUS * Vector2.one;
 
             // find height points bounds
-            uMin = Mathf.Max(0, (int)(xMin * pointPerUnit * SCALE + islandCenterInIntCoord.x) - margin);
-            uMax = Mathf.Min(mapSize + 2 * WorldManager.BLUR_RADIUS,
-                            (int)Math.Ceiling(xMax * pointPerUnit * SCALE + islandCenterInIntCoord.x) + margin);
-            vMin = Mathf.Max(0, (int)(yMin * pointPerUnit * SCALE + islandCenterInIntCoord.y) - margin);
-            vMax = Mathf.Min(mapSize + 2 * WorldManager.BLUR_RADIUS,
-                            (int)Math.Ceiling(yMax * pointPerUnit * SCALE + islandCenterInIntCoord.y) + margin);
+            uMin = Mathf.Max (0, (int)(xMin * pointPerUnit * SCALE + islandCenterInIntCoord.x) - margin);
+            uMax = Mathf.Min (mapSize + 2 * WorldManager.BLUR_RADIUS,
+                            (int)Math.Ceiling (xMax * pointPerUnit * SCALE + islandCenterInIntCoord.x) + margin);
+            vMin = Mathf.Max (0, (int)(yMin * pointPerUnit * SCALE + islandCenterInIntCoord.y) - margin);
+            vMax = Mathf.Min (mapSize + 2 * WorldManager.BLUR_RADIUS,
+                            (int)Math.Ceiling (yMax * pointPerUnit * SCALE + islandCenterInIntCoord.y) + margin);
         }
 
-        private void GenerateHeights(
+        private void GenerateHeights (
             ref float[,] terrainHeights,
             Vector2 terrainPosition)
         {
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT + 1;
             int margin = (int)(BIOME_GROUND_DIST * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT);
-            GetBounds(mapSize, terrainPosition, margin,
+            GetBounds (mapSize, terrainPosition, margin,
                 out Vector2 islandCenterInHeightCoord, out float pointPerUnit, out int uMin, out int uMax, out int vMin, out int vMax);
 
             // For each point in the region, compute height
@@ -444,8 +444,8 @@ namespace LightBringer.TerrainGeneration
                     // convert to island unit (/SCALE)
                     float y = (v - islandCenterInHeightCoord.y - WorldManager.BLUR_RADIUS) / pointPerUnit / SCALE;
 
-                    Vector2 coord = new Vector2(x, y);
-                    float height = TopOrCliffPointHeight(coord, out bool isIslandBiome);
+                    Vector2 coord = new Vector2 (x, y);
+                    float height = TopOrCliffPointHeight (coord, out bool isIslandBiome);
                     if (isIslandBiome)
                     {
                         float slopeHeight = 0;
@@ -453,21 +453,21 @@ namespace LightBringer.TerrainGeneration
                         // if not on top, test slope
                         if (height != 1)
                         {
-                            slopeHeight = SlopPointHeight(coord);
+                            slopeHeight = SlopPointHeight (coord);
                         }
 
                         // write heightmap
                         if (u >= WorldManager.BLUR_RADIUS && v >= WorldManager.BLUR_RADIUS
                             && u < mapSize + WorldManager.BLUR_RADIUS && v < mapSize + WorldManager.BLUR_RADIUS)
                         {
-                            terrainHeights[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS] = .5f * Mathf.Max(height, slopeHeight);
+                            terrainHeights[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS] = .5f * Mathf.Max (height, slopeHeight);
                         }
                     }
                 }
             }
         }
 
-        private void GenerateAlphaMap(
+        private void GenerateAlphaMap (
             ref float[,,] alphaMap,
             ref Biome.Type[,] biomeMap,
             ref GroundType[,] groundMap,
@@ -475,7 +475,7 @@ namespace LightBringer.TerrainGeneration
         {
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
             int margin = (int)(BIOME_GROUND_DIST * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT);
-            GetBounds(mapSize, terrainPosition, margin,
+            GetBounds (mapSize, terrainPosition, margin,
                 out Vector2 islandCenterInIntCoord, out float pointPerUnit, out int uMin, out int uMax, out int vMin, out int vMax);
 
             // For each point in the region, compute height
@@ -489,14 +489,14 @@ namespace LightBringer.TerrainGeneration
                     // convert to island unit (/SCALE)
                     float y = (v - islandCenterInIntCoord.y - WorldManager.BLUR_RADIUS) / pointPerUnit / SCALE;
 
-                    Vector2 coord = new Vector2(x, y);
-                    BotTopCliffBlend(coord, u, v, ref alphaMap, ref groundMap, out bool isIslandBiome);
+                    Vector2 coord = new Vector2 (x, y);
+                    BotTopCliffBlend (coord, u, v, ref alphaMap, ref groundMap, out bool isIslandBiome);
                     if (isIslandBiome)
                     {
                         // if not on top, test slope
                         if (groundMap[v, u] != GroundType.Top)
                         {
-                            SlopBlend(coord, u, v, ref alphaMap, ref groundMap);
+                            SlopBlend (coord, u, v, ref alphaMap, ref groundMap);
                         }
 
                         biomeMap[v, u] = biomeType;
@@ -505,24 +505,24 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private void GenerateSlopes()
+        private void GenerateSlopes ()
         {
             slopeTopOnRight = new bool[slopes.Length];
 
             // Find all good vertex for slopes (convex)
             // List
-            List<int> goodVertices = new List<int>();
+            List<int> goodVertices = new List<int> ();
             for (int i = 0; i < vertices.Count; i++)
             {
                 if (
-                    IsConvexVertex(i) &&
+                    IsConvexVertex (i) &&
                     (
-                        IsConvexVertex((i + 1) % vertices.Count) ||
-                        IsConvexVertex((i - 1 + vertices.Count) % vertices.Count)
+                        IsConvexVertex ((i + 1) % vertices.Count) ||
+                        IsConvexVertex ((i - 1 + vertices.Count) % vertices.Count)
                     )
                 )
                 {
-                    goodVertices.Add(i);
+                    goodVertices.Add (i);
                 }
             }
 
@@ -572,8 +572,8 @@ namespace LightBringer.TerrainGeneration
                 // move last slope if closer to ideal position
                 else
                 {
-                    float d1 = ModuloDistance(vertexIndex, slopes[0] + part * partWidth, vertices.Count);
-                    float d2 = ModuloDistance(slopes[part], slopes[0] + part * partWidth, vertices.Count);
+                    float d1 = ModuloDistance (vertexIndex, slopes[0] + part * partWidth, vertices.Count);
+                    float d2 = ModuloDistance (slopes[part], slopes[0] + part * partWidth, vertices.Count);
 
                     if (d1 < d2)
                     {
@@ -587,8 +587,8 @@ namespace LightBringer.TerrainGeneration
             // Create slopes in a random direction at these points
             for (int i = 0; i < slopes.Length; i++)
             {
-                bool nextConvex = IsConvexVertex((slopes[i] + 1) % vertices.Count);
-                bool previousConvex = IsConvexVertex((slopes[i] - 1 + vertices.Count) % vertices.Count);
+                bool nextConvex = IsConvexVertex ((slopes[i] + 1) % vertices.Count);
+                bool previousConvex = IsConvexVertex ((slopes[i] - 1 + vertices.Count) % vertices.Count);
 
                 if (!previousConvex)
                 {
@@ -600,28 +600,28 @@ namespace LightBringer.TerrainGeneration
                 }
                 else
                 {
-                    slopeTopOnRight[i] = rnd.NextDouble() < .5f;
+                    slopeTopOnRight[i] = rnd.NextDouble () < .5f;
                 }
             }
         }
 
-        private float ModuloDistance(float a, float b, float modulo)
+        private float ModuloDistance (float a, float b, float modulo)
         {
             float dist = (a - b + 2 * modulo) % modulo;
-            return Math.Min(dist, modulo - dist);
+            return Math.Min (dist, modulo - dist);
         }
 
-        private bool IsConvexVertex(int vertexIndex)
+        private bool IsConvexVertex (int vertexIndex)
         {
             Vector2 vec1 = vertices[(vertexIndex + 1) % vertices.Count] - vertices[vertexIndex];
             Vector2 vec2 = vertices[(vertexIndex - 1 + vertices.Count) % vertices.Count] - vertices[vertexIndex];
-            Vector2 norm1 = RotateVector(vec1, Mathf.PI / 2f);
+            Vector2 norm1 = RotateVector (vec1, Mathf.PI / 2f);
 
-            return Vector2.Dot(vec2, norm1) >= 0;
+            return Vector2.Dot (vec2, norm1) >= 0;
         }
 
         // returns 0 if not in slope. Height between 0 and 1
-        private float SlopPointHeight(Vector2 coord)
+        private float SlopPointHeight (Vector2 coord)
         {
             // Create slope data if not done
             if (slopeData == null)
@@ -629,7 +629,7 @@ namespace LightBringer.TerrainGeneration
                 slopeData = new SlopeData[slopes.Length];
                 for (int i = 0; i < slopes.Length; i++)
                 {
-                    slopeData[i] = new SlopeData(
+                    slopeData[i] = new SlopeData (
                            vertices[slopes[i]],
                            vertices[(slopes[i] + 1) % vertices.Count],
                            vertices[(slopes[i] + vertices.Count - 1) % vertices.Count],
@@ -641,7 +641,7 @@ namespace LightBringer.TerrainGeneration
             for (int i = 0; i < slopes.Length; i++)
             {
                 SlopeData sd = slopeData[i];
-                sd.SetPoint(coord);
+                sd.SetPoint (coord);
 
                 // slope
                 if (sd.altDotNorm1 >= 0 && sd.altDotNorm1 <= SLOPE_WIDTH)
@@ -655,7 +655,7 @@ namespace LightBringer.TerrainGeneration
                     // First slope part
                     else if (sd.dot1 >= 0 && sd.dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f - sd.dot1);
+                        return SlopeEquation ((1f - SLOPE_LANDING) / 2f - sd.dot1);
                     }
 
                 }
@@ -664,7 +664,7 @@ namespace LightBringer.TerrainGeneration
                 if (sd.dot1 < 0 && sd.dot2 < 0 && sd.baseDistance >= sd.slopeDistInTurn
                     && sd.baseDistance <= sd.slopeDistInTurn + SLOPE_WIDTH)
                 {
-                    return SlopeEquation((1 - SLOPE_LANDING) / 2f);
+                    return SlopeEquation ((1 - SLOPE_LANDING) / 2f);
                 }
 
                 // second slope part
@@ -672,7 +672,7 @@ namespace LightBringer.TerrainGeneration
                 {
                     if (sd.dot2 >= 0 && sd.dot2 <= SLOPE_DESCENT)
                     {
-                        return SlopeEquation((1f - SLOPE_LANDING) / 2f + sd.dot2);
+                        return SlopeEquation ((1f - SLOPE_LANDING) / 2f + sd.dot2);
                     }
                 }
 
@@ -699,7 +699,7 @@ namespace LightBringer.TerrainGeneration
                     }
                     else if (sd.dot1 >= 0 && sd.dot1 <= (1 - SLOPE_LANDING) / 2f)
                     {
-                        float height = SlopeEquation((1f - SLOPE_LANDING) / 2f - sd.dot1) - (sd.altDotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                        float height = SlopeEquation ((1f - SLOPE_LANDING) / 2f - sd.dot1) - (sd.altDotNorm1 - SLOPE_WIDTH) * CLIFF_SLOPE;
                         return height;
                     }
                 }
@@ -708,14 +708,14 @@ namespace LightBringer.TerrainGeneration
                 if (sd.dot1 < 0 && sd.dot2 < 0 && sd.baseDistance >= sd.slopeDistInTurn + SLOPE_WIDTH
                     && sd.baseDistance <= sd.slopeDistInTurn + SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                 {
-                    float height = SlopeEquation((1 - SLOPE_LANDING) / 2f) - (sd.baseDistance - sd.slopeDistInTurn - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    float height = SlopeEquation ((1 - SLOPE_LANDING) / 2f) - (sd.baseDistance - sd.slopeDistInTurn - SLOPE_WIDTH) * CLIFF_SLOPE;
                     return height;
                 }
 
                 if (sd.altDotNorm2 >= SLOPE_WIDTH && sd.altDotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE
                     && sd.dot2 >= 0 && sd.dot2 <= Island.SLOPE_DESCENT)
                 {
-                    float height = SlopeEquation((1f - SLOPE_LANDING) / 2f + sd.dot2) - (sd.altDotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
+                    float height = SlopeEquation ((1f - SLOPE_LANDING) / 2f + sd.dot2) - (sd.altDotNorm2 - SLOPE_WIDTH) * CLIFF_SLOPE;
                     return height;
                 }
             }
@@ -724,12 +724,12 @@ namespace LightBringer.TerrainGeneration
         }
 
         // returns 0 if not in slope. Height between 0 and 1
-        private void SlopBlend(Vector2 coord, int u, int v, ref float[,,] alphaMap, ref GroundType[,] groundMap)
+        private void SlopBlend (Vector2 coord, int u, int v, ref float[,,] alphaMap, ref GroundType[,] groundMap)
         {
             for (int i = 0; i < slopes.Length; i++)
             {
                 SlopeData sd = slopeData[i];
-                sd.SetPoint(coord);
+                sd.SetPoint (coord);
 
                 // Top landing
                 if (sd.dot1 >= (1 - SLOPE_LANDING) / 2f && sd.dot1 <= (1 + SLOPE_LANDING) / 2f)
@@ -748,7 +748,7 @@ namespace LightBringer.TerrainGeneration
                         )
                     {
                         groundMap[v, u] = GroundType.Path;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
 
                     // Top
@@ -765,7 +765,7 @@ namespace LightBringer.TerrainGeneration
                         )
                     {
                         groundMap[v, u] = GroundType.Path;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
 
                     // Top cliff blur 1
@@ -777,7 +777,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (sd.dot1 - (1 - SLOPE_LANDING) / 2f) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
 
                     // Top cliff blur 2
@@ -788,11 +788,11 @@ namespace LightBringer.TerrainGeneration
                         )
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        float topProp = Math.Min(
+                        float topProp = Math.Min (
                                 ((1 + SLOPE_LANDING) / 2f - sd.dot1) / CLIFF_BLUR,
                                 (SLOPE_WIDTH - sd.altDot1) / CLIFF_BLUR
                             );
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
 
                     // Bot cliff blur
@@ -803,20 +803,20 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (SLOPE_WIDTH - sd.altDotNorm1) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Bot cliff
                     else if (sd.altDotNorm1 > SLOPE_WIDTH && sd.altDotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff blur
                     else if (sd.altDotNorm1 > SLOPE_WIDTH + 1 / CLIFF_SLOPE && sd.altDotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE + CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float botProp = (sd.altDotNorm1 - SLOPE_WIDTH - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                     }
                 }
                 // Top landing side cliff
@@ -832,14 +832,14 @@ namespace LightBringer.TerrainGeneration
                         if (sd.dotNorm1 > 1 / CLIFF_SLOPE)
                         {
                             groundMap[v, u] = GroundType.Cliff;
-                            PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                            PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                         }
                         // blur
                         else if (groundMap[v, u] != GroundType.Cliff)
                         {
                             groundMap[v, u] = GroundType.Cliff;
                             float botProp = (sd.dot1 - (1 + SLOPE_LANDING) / 2f - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                            PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                            PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                         }
 
                     }
@@ -847,14 +847,14 @@ namespace LightBringer.TerrainGeneration
                     else if (sd.cornerDistance <= 1 / CLIFF_SLOPE)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // corner cliff blur
                     else if (sd.cornerDistance <= 1 / CLIFF_SLOPE + CLIFF_BLUR && groundMap[v, u] != GroundType.Cliff)
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float botProp = (sd.cornerDistance - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                     }
                 }
 
@@ -866,14 +866,14 @@ namespace LightBringer.TerrainGeneration
                         sd.altDotNorm1 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                     {
                         groundMap[v, u] = GroundType.Path;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top
                     else if (sd.altDotNorm1 >= CLIFF_BLUR &&
                         sd.altDotNorm1 <= SLOPE_WIDTH - CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Top;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top cliff blur
                     else if (sd.altDotNorm1 >= 0 &&
@@ -881,7 +881,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = sd.altDotNorm1 / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Bot cliff blur
                     else if (sd.altDotNorm1 > SLOPE_WIDTH - CLIFF_BLUR &&
@@ -889,26 +889,26 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (SLOPE_WIDTH - sd.altDotNorm1) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Top cliff
                     else if (sd.dotNorm1 >= 0 && sd.altDotNorm1 <= 0)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff
                     else if (sd.altDotNorm1 > SLOPE_WIDTH && sd.dotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff blur
                     else if (sd.dotNorm1 > SLOPE_WIDTH + 1 / CLIFF_SLOPE && sd.dotNorm1 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE + CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float botProp = (sd.dotNorm1 - SLOPE_WIDTH - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                     }
                 }
 
@@ -920,14 +920,14 @@ namespace LightBringer.TerrainGeneration
                         sd.baseDistance <= sd.slopeDistInTurn + (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                     {
                         groundMap[v, u] = GroundType.Path;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top
                     else if (sd.baseDistance >= sd.slopeDistInTurn + CLIFF_BLUR &&
                         sd.baseDistance <= sd.slopeDistInTurn + SLOPE_WIDTH - CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Top;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top cliff blur
                     else if (sd.baseDistance >= sd.slopeDistInTurn &&
@@ -935,7 +935,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (sd.baseDistance - sd.slopeDistInTurn) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Bot cliff blur
                     else if (sd.baseDistance > sd.slopeDistInTurn + SLOPE_WIDTH - CLIFF_BLUR &&
@@ -943,26 +943,26 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (sd.slopeDistInTurn + SLOPE_WIDTH - sd.baseDistance) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Top cliff
                     else if (sd.baseDistance >= 0 && sd.baseDistance <= sd.slopeDistInTurn)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff
                     else if (sd.baseDistance > sd.slopeDistInTurn + SLOPE_WIDTH && sd.baseDistance <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff blur
                     else if (sd.baseDistance > SLOPE_WIDTH + 1 / CLIFF_SLOPE && sd.baseDistance <= SLOPE_WIDTH + 1 / CLIFF_SLOPE + CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float botProp = (sd.baseDistance - SLOPE_WIDTH - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                     }
                 }
 
@@ -974,14 +974,14 @@ namespace LightBringer.TerrainGeneration
                         sd.altDotNorm2 <= (SLOPE_WIDTH + SLOPE_WAY_WIDTH) / 2f)
                     {
                         groundMap[v, u] = GroundType.Path;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top
                     else if (sd.altDotNorm2 >= CLIFF_BLUR &&
                         sd.altDotNorm2 <= SLOPE_WIDTH - CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Top;
-                        ClearPaint(ref alphaMap, u, v);
+                        ClearPaint (ref alphaMap, u, v);
                     }
                     // Top cliff blur
                     else if (sd.altDotNorm2 >= 0 &&
@@ -989,7 +989,7 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = sd.altDotNorm2 / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Bot cliff blur
                     else if (sd.altDotNorm2 > SLOPE_WIDTH - CLIFF_BLUR &&
@@ -997,55 +997,55 @@ namespace LightBringer.TerrainGeneration
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float topProp = (SLOPE_WIDTH - sd.altDotNorm2) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, topProp, 1 - topProp, 0);
                     }
                     // Top cliff
                     else if (sd.dotNorm2 >= 0 && sd.altDotNorm2 <= 0)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff
                     else if (sd.altDotNorm2 > SLOPE_WIDTH && sd.dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE)
                     {
                         groundMap[v, u] = GroundType.Cliff;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                     }
                     // Bot cliff blur
                     else if (sd.dotNorm2 > SLOPE_WIDTH + 1 / CLIFF_SLOPE && sd.dotNorm2 <= SLOPE_WIDTH + 1 / CLIFF_SLOPE + CLIFF_BLUR)
                     {
                         groundMap[v, u] = GroundType.Cliff;
                         float botProp = (sd.dotNorm2 - SLOPE_WIDTH - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                        PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                        PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                     }
                 }
             }
         }
 
         // x is the descent position. 0 for the top. The turn is at (1 - SLOPE_LANDING) / 2f
-        public static float SlopeEquation(float x)
+        public static float SlopeEquation (float x)
         {
             return 1 - 1f / (SLOPE_DESCENT + (1f - SLOPE_LANDING) / 2f) * x;
         }
 
         // x is the descent position. 0 for the top. The turn is at (1 - SLOPE_LANDING) / 2f
-        public float CliffWidth(float x)
+        public float CliffWidth (float x)
         {
-            return Island.SlopeEquation(x) / Island.CLIFF_SLOPE;
+            return Island.SlopeEquation (x) / Island.CLIFF_SLOPE;
         }
 
         // height between 0 and 1
-        private float TopOrCliffPointHeight(Vector2 coord, out bool inIslandBiome)
+        private float TopOrCliffPointHeight (Vector2 coord, out bool inIslandBiome)
         {
-            float dist = DistanceFromIslandInIslandUnit(coord);
+            float dist = DistanceFromIslandInIslandUnit (coord);
             inIslandBiome = dist <= BIOME_GROUND_DIST;
-            return Mathf.Max(0, 1 - dist * CLIFF_SLOPE);
+            return Mathf.Max (0, 1 - dist * CLIFF_SLOPE);
         }
 
         // height between 0 and 1
-        private void BotTopCliffBlend(Vector2 coord, int u, int v, ref float[,,] alphaMap, ref GroundType[,] groundMap, out bool inIslandBiome)
+        private void BotTopCliffBlend (Vector2 coord, int u, int v, ref float[,,] alphaMap, ref GroundType[,] groundMap, out bool inIslandBiome)
         {
-            float dist = DistanceFromIslandInIslandUnit(coord, true);
+            float dist = DistanceFromIslandInIslandUnit (coord, true);
             if (dist <= -CLIFF_BLUR)
             {
                 groundMap[v, u] = GroundType.Top;
@@ -1056,20 +1056,20 @@ namespace LightBringer.TerrainGeneration
             {
                 groundMap[v, u] = GroundType.Cliff;
                 float cliffProp = (dist + CLIFF_BLUR) / CLIFF_BLUR;
-                PaintCliff(ref alphaMap, u, v, biomeType, 1 - cliffProp, cliffProp, 0);
+                PaintCliff (ref alphaMap, u, v, biomeType, 1 - cliffProp, cliffProp, 0);
                 inIslandBiome = true;
             }
             else if (dist <= 1 / CLIFF_SLOPE)
             {
                 groundMap[v, u] = GroundType.Cliff;
-                PaintCliff(ref alphaMap, u, v, biomeType, 0, 1, 0);
+                PaintCliff (ref alphaMap, u, v, biomeType, 0, 1, 0);
                 inIslandBiome = true;
             }
             else if (dist < 1 / CLIFF_SLOPE + CLIFF_BLUR)
             {
                 groundMap[v, u] = GroundType.Cliff;
                 float botProp = (dist - 1 / CLIFF_SLOPE) / CLIFF_BLUR;
-                PaintCliff(ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
+                PaintCliff (ref alphaMap, u, v, biomeType, 0, 1 - botProp, botProp);
                 inIslandBiome = true;
             }
             else if (dist <= BIOME_GROUND_DIST)
@@ -1083,12 +1083,12 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        void ClearPaint(ref float[,,] alphaMap, int u, int v)
+        void ClearPaint (ref float[,,] alphaMap, int u, int v)
         {
-            PaintCliff(ref alphaMap, u, v, biomeType, 0, 0, 0);
+            PaintCliff (ref alphaMap, u, v, biomeType, 0, 0, 0);
         }
 
-        void PaintCliff(ref float[,,] alphaMap, int u, int v, Biome.Type bType, float topProp, float cliffProp, float botProp)
+        void PaintCliff (ref float[,,] alphaMap, int u, int v, Biome.Type bType, float topProp, float cliffProp, float botProp)
         {
             if (
                 u >= WorldManager.BLUR_RADIUS
@@ -1097,55 +1097,54 @@ namespace LightBringer.TerrainGeneration
                 && v < WorldManager.HEIGHT_POINT_PER_UNIT * WorldManager.TERRAIN_WIDTH + WorldManager.BLUR_RADIUS)
             {
                 alphaMap[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS,
-                                    WorldManager.GetLayerIndex(GroundType.Top, bType)] = topProp;
+                                    WorldManager.GetLayerIndex (GroundType.Top, bType)] = topProp;
                 alphaMap[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS,
-                    WorldManager.GetLayerIndex(GroundType.Cliff, bType)] = cliffProp;
+                    WorldManager.GetLayerIndex (GroundType.Cliff, bType)] = cliffProp;
                 alphaMap[v - WorldManager.BLUR_RADIUS, u - WorldManager.BLUR_RADIUS,
-                    WorldManager.GetLayerIndex(GroundType.Ground1, bType)] = botProp;
+                    WorldManager.GetLayerIndex (GroundType.Ground1, bType)] = botProp;
             }
         }
 
-        private void InitGround1Function()
+        private void InitGround1Function ()
         {
-            Debug.Log(ground1Min + " -- " + ground1Max);
             ground1Zone = new float[GROUND_1_FUNCTION_PARTS];
             for (int i = 0; i < GROUND_1_FUNCTION_PARTS; i++)
             {
-                ground1Zone[i] = (float)rnd.NextDouble() * (ground1Max - ground1Min) + ground1Min;
+                ground1Zone[i] = (float)rnd.NextDouble () * (ground1Max - ground1Min) + ground1Min;
             }
         }
 
-        private float Ground1Dist(float angle)
+        private float Ground1Dist (float angle)
         {
             angle = (angle + 2 * (float)Math.PI) % (2 * (float)Math.PI);
             float sectorLength = 2 * (float)Math.PI / GROUND_1_FUNCTION_PARTS;
             int i = (int)(angle / sectorLength);
             float t = (angle - i * sectorLength) / sectorLength;
-            float prop = (1 - (float)Math.Cos(t * Math.PI)) * .5f;
+            float prop = (1 - (float)Math.Cos (t * Math.PI)) * .5f;
             return ground1Zone[i] * (1 - prop) + ground1Zone[(i + 1) % GROUND_1_FUNCTION_PARTS] * prop;
         }
 
         // coord in island units
-        public bool IsInGround1(Vector2 pos)
+        public bool IsInGround1 (Vector2 pos)
         {
             if (vertices == null)
             {
-                GenerateIslandVertices();
+                GenerateIslandVertices ();
             }
 
-            return pos.magnitude < Ground1Dist(Vector2.SignedAngle(Vector2.left, pos) / 180 * (float)Math.PI);
+            return pos.magnitude < Ground1Dist (Vector2.SignedAngle (Vector2.left, pos) / 180 * (float)Math.PI);
         }
 
-        public void GenerateGround1(ref GroundType[,] groundMap, Vector2 terrainPosition)
+        public void GenerateGround1 (ref GroundType[,] groundMap, Vector2 terrainPosition)
         {
             if (vertices == null)
             {
-                GenerateIslandVertices();
+                GenerateIslandVertices ();
             }
 
             int mapSize = WorldManager.TERRAIN_WIDTH * WorldManager.HEIGHT_POINT_PER_UNIT;
             int margin = (int)(ground1Max * SCALE * WorldManager.HEIGHT_POINT_PER_UNIT);
-            GetBounds(mapSize, terrainPosition, margin,
+            GetBounds (mapSize, terrainPosition, margin,
                 out Vector2 islandCenterInIntCoord, out float pointPerUnit, out int uMin, out int uMax, out int vMin, out int vMax);
 
             // For each point in the region
@@ -1159,7 +1158,7 @@ namespace LightBringer.TerrainGeneration
                     // convert to island unit (/SCALE)
                     float y = (v - islandCenterInIntCoord.y - WorldManager.BLUR_RADIUS) / pointPerUnit / SCALE;
 
-                    if (IsInGround1(new Vector2(x, y)))
+                    if (IsInGround1 (new Vector2 (x, y)))
                     {
                         groundMap[v, u] = GroundType.Ground1;
                     }

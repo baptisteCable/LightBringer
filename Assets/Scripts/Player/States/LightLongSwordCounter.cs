@@ -12,24 +12,24 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private LightSword sword;
 
-        public LightLongSwordCounter(float duration, LightSword sword) : base(CANCELLABLE, duration)
+        public LightLongSwordCounter (float duration, LightSword sword) : base (CANCELLABLE, duration)
         {
             this.sword = sword;
         }
 
-        public override Damage AlterTakenDamage(Damage dmg, Motor dealer, Vector3 origin)
+        public override Damage AlterTakenDamage (Damage dmg, Motor dealer, Vector3 origin)
         {
             if (!complete)
             {
-                psm.AddAndStartState(new Immaterial(IMMATERIAL_DURATION));
-                psm.AddAndStartState(new Haste(HASTE_DURATION));
+                psm.AddAndStartState (new Immaterial (IMMATERIAL_DURATION));
+                psm.AddAndStartState (new Haste (HASTE_DURATION));
 
                 if (!sword.isLoaded)
                 {
-                    sword.Load();
+                    sword.Load ();
                 }
 
-                Stop();
+                Stop ();
                 dmg.amount = 0;
 
                 return dmg;
@@ -40,43 +40,43 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             }
         }
 
-        public override void Start(PlayerStatusManager psm)
+        public override void Start (PlayerStatusManager psm)
         {
-            base.Start(psm);
+            base.Start (psm);
 
-            psm.moveMultiplicators.Add(this, 0);
-            psm.maxRotation.Add(this, 0);
+            psm.moveMultiplicators.Add (this, 0);
+            psm.maxRotation.Add (this, 0);
 
             // Lock all abilities
-            psm.playerMotor.LockAbilitiesExcept(true, psm.playerMotor.abilities[PlayerController.IN_AB_ESC]);
+            psm.playerMotor.LockAbilitiesExcept (true, psm.playerMotor.abilities[PlayerController.IN_AB_ESC]);
 
             // TODO Effect
         }
 
-        public override void Stop()
+        public override void Stop ()
         {
-            base.Stop();
+            base.Stop ();
 
-            psm.moveMultiplicators.Remove(this);
-            psm.maxRotation.Remove(this);
+            psm.moveMultiplicators.Remove (this);
+            psm.maxRotation.Remove (this);
 
             // Unlock all abilities
-            psm.playerMotor.LockAbilitiesExcept(false);
+            psm.playerMotor.LockAbilitiesExcept (false);
 
             // TODO Effect end
 
             // Animator
-            psm.playerMotor.animator.SetBool("isInDefPos", false);
+            psm.playerMotor.animator.SetBool ("isInDefPos", false);
         }
 
-        public override void Cancel()
+        public override void Cancel ()
         {
-            base.Cancel();
+            base.Cancel ();
 
-            Stop();
+            Stop ();
         }
 
-        public override bool isAffectedByCC(CrowdControl cc)
+        public override bool isAffectedByCC (CrowdControl cc)
         {
             if (!complete)
             {

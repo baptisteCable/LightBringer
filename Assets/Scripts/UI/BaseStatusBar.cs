@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class BaseStatusBar : MonoBehaviour {
+public class BaseStatusBar : MonoBehaviour
+{
 
     private const float c_timeBeforeDelete = 1f;
 
@@ -12,7 +13,8 @@ public class BaseStatusBar : MonoBehaviour {
     protected float timeSinceDmg;
     protected float lastHP;
 
-    protected void ComputeHPBar (float currentHP, float maxHP) {
+    protected void ComputeHPBar (float currentHP, float maxHP)
+    {
 
         hpImage.fillAmount = currentHP / maxHP;
 
@@ -41,13 +43,13 @@ public class BaseStatusBar : MonoBehaviour {
                 deleting = false;
             }
         }
-	}
+    }
 
-    protected void LookAtCamera(Camera camera)
+    protected void LookAtCamera (Camera camera)
     {
         if (camera != null)
         {
-            transform.LookAt(transform.position + camera.transform.rotation * Vector3.forward, camera.transform.rotation * Vector3.up);
+            transform.LookAt (transform.position + camera.transform.rotation * Vector3.forward, camera.transform.rotation * Vector3.up);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using LightBringer.Abilities;
 using LightBringer.Player;
-using System.Collections;
 using UnityEngine;
 
 namespace LightBringer.Enemies.Knight
@@ -15,97 +14,97 @@ namespace LightBringer.Enemies.Knight
 
         private KnightMotor km;
 
-        public StartRageBehaviour(KnightMotor enemyMotor) : base(enemyMotor)
+        public StartRageBehaviour (KnightMotor enemyMotor) : base (enemyMotor)
         {
             km = enemyMotor;
         }
 
-        public override void Init()
+        public override void Init ()
         {
-            base.Init();
+            base.Init ();
 
-            em.anim.Play("StartRage", -1, 0);
+            em.anim.Play ("StartRage", -1, 0);
 
-            em.SetOverrideAgent(true);
+            em.SetOverrideAgent (true);
 
             actGOs = new GameObject[1];
             actGOs[0] = km.StartRageActGO;
             parts = new Part[1];
-            parts[0] = new Part(State.Before, SHIELD_ON_GROUND, PUSH_AWAY_DURATION, -1);
+            parts[0] = new Part (State.Before, SHIELD_ON_GROUND, PUSH_AWAY_DURATION, -1);
 
             acts = new AbilityColliderTrigger[1];
-            acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger>();
+            acts[0] = actGOs[0].GetComponent<AbilityColliderTrigger> ();
         }
 
-        public override void Run()
+        public override void Run ()
         {
-            DisplayIndicators();
-            StartCollisionParts();
-            RunCollisionParts();
+            DisplayIndicators ();
+            StartCollisionParts ();
+            RunCollisionParts ();
 
             if (Time.time >= startTime + DURATION)
             {
-                End();
+                End ();
             }
         }
-        protected override void StartCollisionPart(int i)
+        protected override void StartCollisionPart (int i)
         {
-            base.StartCollisionPart(i);
+            base.StartCollisionPart (i);
 
             if (i == 0)
             {
-                km.startRagePs.Play(true);
-                km.rage.StartRageDelayed(RAGE_EFFECT_DELAY);
+                km.startRagePs.Play (true);
+                km.rage.StartRageDelayed (RAGE_EFFECT_DELAY);
             }
         }
 
-        public override void End()
+        public override void End ()
         {
-            base.End();
-            em.SetOverrideAgent(false);
+            base.End ();
+            em.SetOverrideAgent (false);
         }
 
-        public override void OnColliderEnter(AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        public override void OnColliderEnter (AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
-            if (col.tag == "Player" && !cols.ContainsKey(col))
+            if (col.tag == "Player" && !cols.ContainsKey (col))
             {
-                cols.Add(col, Time.time);
+                cols.Add (col, Time.time);
 
                 // Stun the player and push away
-                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager>();
-                if (psm.IsAffectedByCC(new CrowdControl(CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
+                PlayerStatusManager psm = col.GetComponent<PlayerStatusManager> ();
+                if (psm.IsAffectedByCC (new CrowdControl (CrowdControlType.ForcedMove, DamageType.AreaOfEffect, DamageElement.Physical)))
                 {
-                    psm.ApplyCrowdControl(new CrowdControl(CrowdControlType.Stun, DamageType.AreaOfEffect, DamageElement.Physical), STUN_DURATION);
-                    PushAway(psm, abilityColliderTrigger, col);
+                    psm.ApplyCrowdControl (new CrowdControl (CrowdControlType.Stun, DamageType.AreaOfEffect, DamageElement.Physical), STUN_DURATION);
+                    PushAway (psm, abilityColliderTrigger, col);
                 }
             }
         }
 
-        void PushAway(PlayerStatusManager psm, AbilityColliderTrigger abilityColliderTrigger, Collider col)
+        void PushAway (PlayerStatusManager psm, AbilityColliderTrigger abilityColliderTrigger, Collider col)
         {
             // Push the player away
             Vector3 actPos = abilityColliderTrigger.transform.position;
-            SphereCollider sc = abilityColliderTrigger.GetComponent<SphereCollider>();
+            SphereCollider sc = abilityColliderTrigger.GetComponent<SphereCollider> ();
 
             Vector3 position = col.transform.position;
             Vector3 finalPosition = position + (position - actPos).normalized * (sc.radius - (position - actPos).magnitude);
 
             // x and z
-            AnimationCurve xCurve = new AnimationCurve();
-            xCurve.AddKey(new Keyframe(0, position.x));
-            xCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.x));
+            AnimationCurve xCurve = new AnimationCurve ();
+            xCurve.AddKey (new Keyframe (0, position.x));
+            xCurve.AddKey (new Keyframe (PUSH_AWAY_DURATION, finalPosition.x));
 
-            AnimationCurve zCurve = new AnimationCurve();
-            zCurve.AddKey(new Keyframe(0, position.z));
-            zCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, finalPosition.z));
+            AnimationCurve zCurve = new AnimationCurve ();
+            zCurve.AddKey (new Keyframe (0, position.z));
+            zCurve.AddKey (new Keyframe (PUSH_AWAY_DURATION, finalPosition.z));
 
             // y
-            AnimationCurve yCurve = new AnimationCurve();
-            yCurve.AddKey(new Keyframe(0, position.y));
-            yCurve.AddKey(new Keyframe(PUSH_AWAY_DURATION, position.y));
+            AnimationCurve yCurve = new AnimationCurve ();
+            yCurve.AddKey (new Keyframe (0, position.y));
+            yCurve.AddKey (new Keyframe (PUSH_AWAY_DURATION, position.y));
 
             // Add curve to player movement
-            psm.playerMotor.MoveByCurve(PUSH_AWAY_DURATION, xCurve, yCurve, zCurve);
+            psm.playerMotor.MoveByCurve (PUSH_AWAY_DURATION, xCurve, yCurve, zCurve);
         }
     }
 }

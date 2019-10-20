@@ -2,7 +2,7 @@
 
 namespace LightBringer.Player
 {
-    [RequireComponent(typeof(PlayerMotor))]
+    [RequireComponent (typeof (PlayerMotor))]
     public class PlayerController : MonoBehaviour
     {
         // Input const
@@ -31,9 +31,9 @@ namespace LightBringer.Player
         // Components
         private PlayerMotor pm;
 
-        private void Start()
+        private void Start ()
         {
-            pm = GetComponent<PlayerMotor>();
+            pm = GetComponent<PlayerMotor> ();
 
             desiredMove = Vector2.zero;
 
@@ -48,25 +48,25 @@ namespace LightBringer.Player
             inputButtons[IN_TEST] = "TestButton";
         }
 
-        private void Update()
+        private void Update ()
         {
-            ComputePointedWorldPoint();
-            DesiredMove();
-            AbilityInputAndQueue();
+            ComputePointedWorldPoint ();
+            DesiredMove ();
+            AbilityInputAndQueue ();
         }
 
-        private void AbilityInputAndQueue()
+        private void AbilityInputAndQueue ()
         {
             pressedButton = IN_NONE;
 
             for (int i = 0; i < inputButtons.Length; i++)
             {
-                if (Input.GetButtonDown(inputButtons[i]))
+                if (Input.GetButtonDown (inputButtons[i]))
                 {
                     queue = i;
                 }
 
-                if (Input.GetButton(inputButtons[i]))
+                if (Input.GetButton (inputButtons[i]))
                 {
                     pressedButton = i;
                 }
@@ -80,12 +80,12 @@ namespace LightBringer.Player
         }
 
         // Get desired move from local player input
-        private void DesiredMove()
+        private void DesiredMove ()
         {
             // Move input
-            float v = Input.GetAxisRaw("Vertical");
-            float h = Input.GetAxisRaw("Horizontal");
-            Vector2 move = new Vector2(v + h, v - h);
+            float v = Input.GetAxisRaw ("Vertical");
+            float h = Input.GetAxisRaw ("Horizontal");
+            Vector2 move = new Vector2 (v + h, v - h);
 
             if (move.magnitude < .01f)
             {
@@ -93,7 +93,7 @@ namespace LightBringer.Player
             }
             else
             {
-                move.Normalize();
+                move.Normalize ();
             }
 
             if (move != desiredMove)
@@ -102,19 +102,19 @@ namespace LightBringer.Player
             }
         }
 
-        private void ComputePointedWorldPoint()
+        private void ComputePointedWorldPoint ()
         {
             if (cam != null)
             {
-                Ray mouseRay = cam.ScreenPointToRay(Input.mousePosition);
+                Ray mouseRay = cam.ScreenPointToRay (Input.mousePosition);
 
                 float distance;
 
                 Vector3 point = Vector3.zero;
 
-                if (GameManager.gm.floorPlane.Raycast(mouseRay, out distance))
+                if (GameManager.gm.floorPlane.Raycast (mouseRay, out distance))
                 {
-                    pointedWorldPoint = mouseRay.GetPoint(distance);
+                    pointedWorldPoint = mouseRay.GetPoint (distance);
                 }
             }
         }

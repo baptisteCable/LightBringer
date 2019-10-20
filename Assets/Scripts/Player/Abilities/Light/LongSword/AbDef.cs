@@ -19,36 +19,36 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         // Inherited motor
         LightLongSwordMotor lightMotor;
 
-        public AbDef(LightLongSwordMotor playerMotor, int id) :
-            base(COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
+        public AbDef (LightLongSwordMotor playerMotor, int id) :
+            base (COOLDOWN_DURATION, CHANNELING_DURATION, ABILITY_DURATION, playerMotor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
         {
             lightMotor = playerMotor;
         }
 
-        public override void StartChanneling()
+        public override void StartChanneling ()
         {
-            base.StartChanneling();
+            base.StartChanneling ();
             playerMotor.abilityMoveMultiplicator = 0;
             playerMotor.abilityMaxRotation = 0;
 
-            lightMotor.animator.SetBool("isInDefPos", true);
-            lightMotor.animator.Play("BotAbDef");
-            lightMotor.animator.Play("TopAbDef");
+            lightMotor.animator.SetBool ("isInDefPos", true);
+            lightMotor.animator.Play ("BotAbDef");
+            lightMotor.animator.Play ("TopAbDef");
         }
 
-        public override void StartAbility()
+        public override void StartAbility ()
         {
-            base.StartAbility();
+            base.StartAbility ();
 
-            playerMotor.psm.AddAndStartState(new LightLongSwordCounter(COUNTER_DURATION, lightMotor.sword));
+            playerMotor.psm.AddAndStartState (new LightLongSwordCounter (COUNTER_DURATION, lightMotor.sword));
         }
 
-        public override string GetTitle()
+        public override string GetTitle ()
         {
             return "Esquive ethérée";
         }
 
-        public override string GetDescription()
+        public override string GetDescription ()
         {
             return "Contre la prochaine attaque de mêlée ou projectile.\n\nSi une attaque est contrée, vous rend Immatériel pendant 1 seconde, charge l’arme et donne Haste.";
         }

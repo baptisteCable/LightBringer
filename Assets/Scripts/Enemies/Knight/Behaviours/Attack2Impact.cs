@@ -19,9 +19,9 @@ namespace LightBringer.Enemies.Knight
         public CollisionAbility ability;
 
 
-        void Start()
+        void Start ()
         {
-            bullet.GetComponent<Rigidbody>().velocity = Vector3.down * 40 / FALLDOWN_TIME;
+            bullet.GetComponent<Rigidbody> ().velocity = Vector3.down * 40 / FALLDOWN_TIME;
             bullet.transform.localScale *= radius;
 
             indicator.transform.localScale *= radius;
@@ -30,25 +30,25 @@ namespace LightBringer.Enemies.Knight
             explosion.transform.localScale *= radius;
 
             // if on server
-            if(ability != null)
+            if (ability != null)
             {
-                explosion.transform.Find("Effect").GetComponent<AbilityColliderTrigger>().SetAbility(ability);
-                explosion.transform.Find("Effect").GetComponent<Collider>().enabled = true;
+                explosion.transform.Find ("Effect").GetComponent<AbilityColliderTrigger> ().SetAbility (ability);
+                explosion.transform.Find ("Effect").GetComponent<Collider> ().enabled = true;
             }
 
             startingTime = Time.time;
         }
 
-        void Update()
+        void Update ()
         {
             if (Time.time > startingTime + FALLDOWN_TIME && exploded == false)
             {
                 exploded = true;
-                Destroy(bullet);
-                Destroy(indicator);
-                Destroy(indicatorPS);
-                explosion.SetActive(true);
-                Destroy(gameObject, .5f);
+                Destroy (bullet);
+                Destroy (indicator);
+                Destroy (indicatorPS);
+                explosion.SetActive (true);
+                Destroy (gameObject, .5f);
             }
         }
     }

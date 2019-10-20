@@ -2,10 +2,10 @@
 
 namespace LightBringer.Enemies.Knight
 {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent (typeof (CharacterController))]
     public class KnightMotor : Motor
     {
-        [Header("Prefabs")]
+        [Header ("Prefabs")]
         public GameObject bulletPrefab;
         public GameObject casterPrefab;
         public GameObject attack1GroundActGOPrefab;
@@ -13,7 +13,7 @@ namespace LightBringer.Enemies.Knight
         public GameObject attack4ExplColliderPrefab;
         public GameObject attack4ExplRendererPrefab;
 
-        [Header("Game Objects")]
+        [Header ("Game Objects")]
         public GameObject attack1Container;
         public GameObject attack1actGO;
         public GameObject attack1actContainer;
@@ -28,7 +28,7 @@ namespace LightBringer.Enemies.Knight
         public GameObject charge1actGO;
         public GameObject StartRageActGO;
 
-        [Header("Effects")]
+        [Header ("Effects")]
         public ParticleSystem chargeEffect;
         public ParticleSystem attack1ChannelingEffect;
         public ParticleSystem attack1ChannelingEffectRage;
@@ -41,35 +41,35 @@ namespace LightBringer.Enemies.Knight
         public ParticleSystem attack4ChannelingEffectRage;
         public ParticleSystem startRagePs;
 
-        [Header("Scripts")]
+        [Header ("Scripts")]
         public Rage rage;
 
-        private void Start()
+        private void Start ()
         {
-            BaseStart();
+            BaseStart ();
 
             // Initial mode
-            SetMode(Mode.Fight);
+            SetMode (Mode.Fight);
         }
 
-        private void Update()
+        private void Update ()
         {
-            BaseUpdate();
+            BaseUpdate ();
         }
 
-        public override void StartExhaustion()
+        public override void StartExhaustion ()
         {
-            rage.StartExhaustion();
+            rage.StartExhaustion ();
         }
 
-        public override void StopExhaustion()
+        public override void StopExhaustion ()
         {
-            rage.StopExhaustion();
+            rage.StopExhaustion ();
         }
 
-        public override void Interrupt(Vector3 origin)
+        public override void Interrupt (Vector3 origin)
         {
-            controller.Interrupt(origin);
+            controller.Interrupt (origin);
         }
     }
 }

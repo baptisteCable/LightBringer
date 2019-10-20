@@ -8,25 +8,25 @@ namespace LightBringer.Player
 
         public PlayerStatusManager psm;
         public PlayerMotor character;
-        
+
         private GameObject channelingBar;
 
-        void Start()
+        void Start ()
         {
-            Transform hpBG = transform.Find("BackGround").Find("HPBackGroung");
-            hpImage = hpBG.Find("Content").GetComponent<Image>();
-            deleteHPdImage = hpBG.Find("Deleted").GetComponent<UnityEngine.UI.Image>();
+            Transform hpBG = transform.Find ("BackGround").Find ("HPBackGroung");
+            hpImage = hpBG.Find ("Content").GetComponent<Image> ();
+            deleteHPdImage = hpBG.Find ("Deleted").GetComponent<UnityEngine.UI.Image> ();
 
             deleteHPdImage.fillAmount = psm.currentHP / psm.maxHP;
             lastHP = psm.currentHP;
             timeSinceDmg = 10f;
         }
 
-        void Update()
+        void Update ()
         {
-            LookAtCamera(Camera.main);
+            LookAtCamera (Camera.main);
 
-            ComputeHPBar(psm.currentHP, psm.maxHP);
+            ComputeHPBar (psm.currentHP, psm.maxHP);
         }
     }
 }

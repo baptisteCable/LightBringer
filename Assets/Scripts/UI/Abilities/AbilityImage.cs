@@ -1,6 +1,6 @@
-﻿using UnityEngine.EventSystems;
-using LightBringer.Player;
+﻿using LightBringer.Player;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace LightBringer.UI
@@ -18,38 +18,38 @@ namespace LightBringer.UI
         private Image channelingImage;
         private Image abilityImage;
         private GameObject lockedImage;
-        
-        protected virtual void Start()
+
+        protected virtual void Start ()
         {
-            cdImage = transform.Find("CDImage").GetComponent<Image>();
-            channelingImage = transform.Find("ChannelingImage").GetComponent<Image>();
-            lockedImage = transform.Find("LockedImage").gameObject;
-            abilityImage = transform.GetComponent<Image>();
+            cdImage = transform.Find ("CDImage").GetComponent<Image> ();
+            channelingImage = transform.Find ("ChannelingImage").GetComponent<Image> ();
+            lockedImage = transform.Find ("LockedImage").gameObject;
+            abilityImage = transform.GetComponent<Image> ();
         }
 
-        protected virtual void Update()
+        protected virtual void Update ()
         {
             // CD running
             if (character.abilities[abilityIndex].state == Player.Abilities.AbilityState.cooldownInProgress)
             {
-                cdImage.gameObject.SetActive(true);
+                cdImage.gameObject.SetActive (true);
                 cdImage.fillAmount = character.abilities[abilityIndex].coolDownRemaining / character.abilities[abilityIndex].coolDownDuration;
             }
             // CD Up
             else
             {
-                cdImage.gameObject.SetActive(false);
+                cdImage.gameObject.SetActive (false);
             }
 
             // Channeling?
             if (character.abilities[abilityIndex].state == Player.Abilities.AbilityState.channeling)
             {
-                channelingImage.gameObject.SetActive(true);
+                channelingImage.gameObject.SetActive (true);
                 channelingImage.fillAmount = (Time.time - character.abilities[abilityIndex].channelStartTime) / character.abilities[abilityIndex].channelDuration;
             }
             else
             {
-                channelingImage.gameObject.SetActive(false);
+                channelingImage.gameObject.SetActive (false);
             }
 
             // Current ability or not
@@ -63,20 +63,20 @@ namespace LightBringer.UI
             }
 
             // Locked
-            lockedImage.SetActive(character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available);
+            lockedImage.SetActive (character.abilities[abilityIndex].locked || !character.abilities[abilityIndex].available);
         }
-        public void OnPointerEnter(PointerEventData eventData)
+        public void OnPointerEnter (PointerEventData eventData)
         {
-            abilityDescriptionPanel = Instantiate(panelPrefab, gameObject.transform);
-            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetTitle(
-                character.abilities[abilityIndex].GetTitle());
-            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel>().SetDescription(
-                character.abilities[abilityIndex].GetDescription());
+            abilityDescriptionPanel = Instantiate (panelPrefab, gameObject.transform);
+            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel> ().SetTitle (
+                character.abilities[abilityIndex].GetTitle ());
+            abilityDescriptionPanel.GetComponent<AbilityDescriptionPanel> ().SetDescription (
+                character.abilities[abilityIndex].GetDescription ());
         }
 
-        public void OnPointerExit(PointerEventData eventData)
+        public void OnPointerExit (PointerEventData eventData)
         {
-            Destroy(abilityDescriptionPanel);
+            Destroy (abilityDescriptionPanel);
         }
     }
 }

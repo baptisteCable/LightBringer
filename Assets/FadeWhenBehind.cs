@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(Collider))]
+[RequireComponent (typeof (Collider))]
 public class FadeWhenBehind : MonoBehaviour
 {
     private const float MIN_ALPHA = .15f;
@@ -13,40 +13,40 @@ public class FadeWhenBehind : MonoBehaviour
     Collider col;
     [SerializeField] MeshRenderer[] objectsToFade = null;
 
-    private void Start()
+    private void Start ()
     {
-        col = GetComponent<Collider>();
+        col = GetComponent<Collider> ();
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "ViewLine")
-        {
-            FadeOut();
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerEnter (Collider other)
     {
         if (other.tag == "ViewLine")
         {
-            FadeIn();
+            FadeOut ();
         }
     }
 
-    void FadeOut()
+    private void OnTriggerExit (Collider other)
     {
-        StopAllCoroutines();
-        StartCoroutine(FadingOut());
+        if (other.tag == "ViewLine")
+        {
+            FadeIn ();
+        }
     }
 
-    void FadeIn()
+    void FadeOut ()
     {
-        StopAllCoroutines();
-        StartCoroutine(FadingIn());
+        StopAllCoroutines ();
+        StartCoroutine (FadingOut ());
     }
 
-    IEnumerator FadingOut()
+    void FadeIn ()
+    {
+        StopAllCoroutines ();
+        StartCoroutine (FadingIn ());
+    }
+
+    IEnumerator FadingOut ()
     {
         while (currentAlpha > MIN_ALPHA)
         {
@@ -56,15 +56,15 @@ public class FadeWhenBehind : MonoBehaviour
                 currentAlpha = MIN_ALPHA;
             }
 
-            SetAlpha();
+            SetAlpha ();
 
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame ();
         }
 
 
     }
 
-    IEnumerator FadingIn()
+    IEnumerator FadingIn ()
     {
         while (currentAlpha < MAX_ALPHA)
         {
@@ -74,19 +74,19 @@ public class FadeWhenBehind : MonoBehaviour
                 currentAlpha = MAX_ALPHA;
             }
 
-            SetAlpha();
+            SetAlpha ();
 
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame ();
         }
     }
 
-    void SetAlpha()
+    void SetAlpha ()
     {
         foreach (MeshRenderer rend in objectsToFade)
         {
-            Color col = rend.material.GetColor("_Color");
+            Color col = rend.material.GetColor ("_Color");
             col.a = currentAlpha;
-            rend.material.SetColor("_Color", col);
+            rend.material.SetColor ("_Color", col);
         }
     }
 }
