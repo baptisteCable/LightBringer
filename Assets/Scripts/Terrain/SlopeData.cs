@@ -18,7 +18,7 @@ namespace LightBringer.TerrainGeneration
         public Vector2 altNorm1;
         public Vector2 altNorm2;
 
-        public float pathDistInTurn;
+        public float slopeDistInTurn;
 
         public Vector2 origin1;
         public Vector2 origin2;
@@ -60,10 +60,10 @@ namespace LightBringer.TerrainGeneration
                 norm2 = Island.RotateVector(vec2, Math.PI / 2f);
             }
 
-            pathDistInTurn = (1 - Island.SlopeEquation((1 - Island.SLOPE_LANDING) / 2f)) / Island.CLIFF_SLOPE;
+            slopeDistInTurn = (1 - Island.SlopeEquation((1 - Island.SLOPE_LANDING) / 2f)) / Island.CLIFF_SLOPE;
 
-            origin1 = baseVertex + norm1 * pathDistInTurn;
-            origin2 = baseVertex + norm2 * pathDistInTurn;
+            origin1 = baseVertex + norm1 * slopeDistInTurn;
+            origin2 = baseVertex + norm2 * slopeDistInTurn;
 
             altVec1 = (baseVertex + vec1 * (1 - Island.SLOPE_LANDING) / 2f - origin1).normalized;
             altVec2 = (baseVertex + vec2 * Island.SLOPE_DESCENT + norm2 / Island.CLIFF_SLOPE - origin2).normalized;
@@ -82,8 +82,8 @@ namespace LightBringer.TerrainGeneration
             float b = (1 - Island.SLOPE_LANDING) / 2f;
             corner = baseVertex + vec1 * (1 + Island.SLOPE_LANDING) / 2f
                 + norm1 * (
-                    Island.SLOPE_WIDTH * (float)Math.Sqrt(pathDistInTurn * pathDistInTurn + b * b) 
-                    - Island.SLOPE_LANDING * pathDistInTurn
+                    Island.SLOPE_WIDTH * (float)Math.Sqrt(slopeDistInTurn * slopeDistInTurn + b * b) 
+                    - Island.SLOPE_LANDING * slopeDistInTurn
                 ) / b;
         }
 
@@ -124,7 +124,7 @@ namespace LightBringer.TerrainGeneration
                 + "\n\taltNorm1 : " + altNorm1.ToString("F3")
                 + "\n\taltNorm2: " + altNorm2.ToString("F3")
                 + "\n\tcorner: " + corner.ToString("F3")
-                + "\n\tpathDistTurn: " + pathDistInTurn;
+                + "\n\tpathDistTurn: " + slopeDistInTurn;
 
         }
 

@@ -16,7 +16,6 @@ namespace LightBringer.Player
         public const int IN_CANCEL = 6;
         public const int IN_TEST = 7;
 
-        // Input buttons (TODO: in preferences)
         private string[] inputButtons;
 
         // Queue and pressed button
@@ -38,7 +37,6 @@ namespace LightBringer.Player
 
             desiredMove = Vector2.zero;
 
-            // TODO: Put in in preferences
             inputButtons = new string[8];
             inputButtons[IN_AB_ESC] = "AbEsc";
             inputButtons[IN_AB_1] = "Ab1";

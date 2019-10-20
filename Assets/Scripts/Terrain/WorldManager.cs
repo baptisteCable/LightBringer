@@ -172,9 +172,9 @@ namespace LightBringer.TerrainGeneration
             biomes = new SpatialDictionary<Biome>();
             islands = new SpatialDictionary<Island>();
 
-            Biome b = new Biome(500, 0);
+            Biome b = new Biome(0, 0);
             b.type = Biome.Type.Light;
-            biomes.Add(500, 0, b);
+            biomes.Add(0, 0, b);
             b = new Biome(-500, 0);
             b.type = Biome.Type.Darkness;
             biomes.Add(-500, 0, b);
@@ -184,6 +184,8 @@ namespace LightBringer.TerrainGeneration
             b = new Biome(1280, -1280);
             b.type = Biome.Type.Fire;
             biomes.Add(1280, -1280, b);
+
+            islands.Add(0, 0, new Island(new Vector2(0, 0), Biome.Type.Light, 1, 5));
 
         }
 
@@ -269,6 +271,7 @@ namespace LightBringer.TerrainGeneration
                 lock (island)
                 {
                     island.GenerateIslandHeightsAndAlphaMap(
+                            ref map,    
                             ref heights,
                             ref biomeMap,
                             ref groundMap,
@@ -595,11 +598,12 @@ namespace LightBringer.TerrainGeneration
                     GroundType gType = groundMap[i + BLUR_RADIUS, j + BLUR_RADIUS];
 
                     // if not ground, no blur
-                    if (gType == GroundType.Cliff || gType == GroundType.Path || gType == GroundType.Top)
+                    if (gType == GroundType.Path || gType == GroundType.Top)
                     {
                         map[i, j, GetLayerIndex(gType, biomeMap[i + BLUR_RADIUS, j + BLUR_RADIUS])] = 1;
                     }
-                    else
+                    // Dont paint cliffs (done with blending in Islands)
+                    else if (gType != GroundType.Cliff)
                     {
                         // count the ground ones and sum in map
                         int count = 0;
@@ -653,7 +657,7 @@ namespace LightBringer.TerrainGeneration
         }
 
         // works for 6 biomes
-        static private int GetLayerIndex(GroundType type, Biome.Type biome)
+        static public int GetLayerIndex(GroundType type, Biome.Type biome)
         {
             return NB_BIOME_TYPE * (int)type + (int)biome - 1;
         }

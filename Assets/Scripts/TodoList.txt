@@ -22,17 +22,13 @@ Bugs :
 Monde :
 	- gérer les différentes altitudes du perso :
 		* jump (visée de la camera sur l'environement)
+		* Vérifier chaque attaque
+		* Knight : zone posée à altitude fixée
 		* camera
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
-	- décor qui disparait : monobehavior + transparence (seulement la première couche rencontrée dans l'objet, cf ghost effect)
 	- lisser les textures au bord des iles
-	- bien aligner les textures et les altitudes (pas la même résolution)
-	- Supprimer les masques et tout faire dans le shader
-		* calculer l'image
-		* cutoff selon masque circulaire
-		* longueur de chaque secteur
-		* permet de faire des flous partout <3
-		* pas d'interaction entre une zone ou une autre !
+		* Calculer le mélange de cliff à la création de l'île (alphaMap en param ref)
+		* Ecrire la groundMap en cliff pour indiquer qu'il ne faut plus toucher à ces pixels lors du flou final
 
 
 Retours :
