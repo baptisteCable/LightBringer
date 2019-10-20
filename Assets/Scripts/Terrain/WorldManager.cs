@@ -557,15 +557,33 @@ namespace LightBringer.TerrainGeneration
                     // if a square of the same type, no blur
                     Biome.Type bType = biomeMap[xMin, yMin];
                     GroundType gType = groundMap[xMin, yMin];
-                    if (
-                            xMin != 0 && xMax != mapSize && yMin != 0 && yMax != mapSize &&
-                            bType == biomeMap[xMin, yMax + 2 * BLUR_RADIUS - 1] &&
-                            bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMin] &&
-                            bType == biomeMap[xMax + 2 * BLUR_RADIUS - 1, yMax + 2 * BLUR_RADIUS - 1] &&
-                            gType == groundMap[xMin, yMax + 2 * BLUR_RADIUS - 1] &&
-                            gType == groundMap[xMax + 2 * BLUR_RADIUS - 1, yMin] &&
-                            gType == groundMap[xMax + 2 * BLUR_RADIUS - 1, yMax + 2 * BLUR_RADIUS - 1]
-                        )
+
+                    bool same = true;
+
+                    if (xMin != 0 && xMax != mapSize && yMin != 0 && yMax != mapSize)    
+                    {
+                        foreach (int u in new int[] { xMin, xMin + BLUR_RADIUS, (xMax + xMin) / 2 + BLUR_RADIUS, xMax + BLUR_RADIUS, xMax + 2 * BLUR_RADIUS })
+                        {
+                            foreach (int v in new int[] { yMin, yMin + BLUR_RADIUS, (yMax + yMin) / 2 + BLUR_RADIUS, yMax + BLUR_RADIUS, yMax + 2 * BLUR_RADIUS })
+                            {
+                                if (bType != biomeMap[u, v] || gType != groundMap[u, v])
+                                {
+                                    same = false;
+                                    break;
+                                }
+                            }
+                            if (!same)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        same = false;
+                    }
+                    
+                    if (same)
                     {
                         PaintSquareNoBlur (ref map, xMin, xMax, yMin, yMax, bType, gType);
                     }
