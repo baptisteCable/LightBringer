@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
 {
@@ -19,6 +20,8 @@ namespace LightBringer.TerrainGeneration
         static System.Random rnd;
 
         WorldCreator wc;
+
+        [SerializeField] WorldManager wm;
 
         // Update is called once per frame
         void Update ()
@@ -47,12 +50,6 @@ namespace LightBringer.TerrainGeneration
         private void Test ()
         {
             Debug.Log ("Test");
-
-            SpatialDictionary<Biome> biomes = new SpatialDictionary<Biome> ();
-            SpatialDictionary<Island> islands = new SpatialDictionary<Island> ();
-
-            biomes.Add (0, 0, new Biome (0, 0));
-            islands.Add (0, 0, new Island (Vector2.zero, Biome.Type.Air, 1));
         }
 
         private void SetWC ()

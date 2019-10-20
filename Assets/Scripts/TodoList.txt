@@ -26,6 +26,7 @@ Monde :
 		* Knight : zone posée à altitude fixée
 		* camera
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
+	- terrain data sync (to save CPU when laoded ?)
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?

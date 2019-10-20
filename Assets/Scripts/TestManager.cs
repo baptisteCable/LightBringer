@@ -27,6 +27,9 @@ public class TestManager : MonoBehaviour
     private bool canDie = true;
     private bool highSpeed = true;
 
+    [SerializeField] private Vector3 playerSpawnCoord;
+    [SerializeField] private Vector3 knightSpawnCoord;
+
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
     private void Start ()
@@ -71,10 +74,10 @@ public class TestManager : MonoBehaviour
         playerMotor = playerGo.GetComponent<PlayerMotor> ();
         SetHighSpeed (highSpeed);
 
-        playerMotor.transform.position = new Vector3 (0, 6, 0);
+        playerMotor.transform.position = playerSpawnCoord;
 
         // Knight
-        knight = Instantiate (knightPrefab, new Vector3 (20, 0, 0), Quaternion.AngleAxis (180, Vector3.up));
+        knight = Instantiate (knightPrefab, knightSpawnCoord, Quaternion.AngleAxis (180, Vector3.up));
 
         kc = knight.GetComponent<KnightController> ();
         kc.passive = knightPassive;
