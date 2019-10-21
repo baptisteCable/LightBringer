@@ -81,8 +81,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             base.StartAbility ();
 
-            // No more rotation
+            // Movement restructions
             playerMotor.abilityMaxRotation = 0f;
+            playerMotor.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
 
             // Trail effect
             lightMotor.sword.transform.Find ("FxTrail").GetComponent<ParticleSystem> ().Play ();

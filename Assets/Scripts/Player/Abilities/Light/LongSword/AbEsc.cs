@@ -94,6 +94,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             else
             {
                 destination = playerMotor.transform.position + (playerMotor.pc.pointedWorldPoint - playerMotor.transform.position).normalized * MAX_RANGE;
+                destination.y = GameManager.GetAltitude (destination);
             }
         }
 
@@ -101,7 +102,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             GetDestination ();
 
-            Vector3 pos = new Vector3 (destination.x, .2f, destination.z);
+            Vector3 pos = new Vector3 (destination.x, GameManager.GetAltitude(destination) + .2f, destination.z);
 
             landingIndicator = GameObject.Instantiate (lightMotor.abEscLandingIndicatorPrefab);
             landingIndicator.transform.position = pos;
@@ -163,7 +164,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         {
             float x = Mathf.Lerp (origin.x, destination.x, t / LANDING_TIME);
             float z = Mathf.Lerp (origin.z, destination.z, t / LANDING_TIME);
-            float y = yFunction (t / LANDING_TIME);
+            float y = Mathf.Lerp (origin.y, destination.y, t / LANDING_TIME) + yFunction (t / LANDING_TIME);
             return new Vector3 (x, y, z);
         }
 
@@ -183,7 +184,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private void SpawnLight ()
         {
             Vector3 pos = playerMotor.transform.position + playerMotor.characterContainer.forward;
-            pos.y = .02f;
+            pos.y += .02f;
 
             GameObject lightZone = GameObject.Instantiate (lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;

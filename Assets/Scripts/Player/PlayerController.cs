@@ -108,13 +108,9 @@ namespace LightBringer.Player
             {
                 Ray mouseRay = cam.ScreenPointToRay (Input.mousePosition);
 
-                float distance;
-
-                Vector3 point = Vector3.zero;
-
-                if (GameManager.gm.floorPlane.Raycast (mouseRay, out distance))
+                if (Physics.Raycast(mouseRay, out RaycastHit hit, 200, LayerMask.GetMask("Environment")))
                 {
-                    pointedWorldPoint = mouseRay.GetPoint (distance);
+                    pointedWorldPoint = hit.point;
                 }
             }
         }

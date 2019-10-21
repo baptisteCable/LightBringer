@@ -27,8 +27,8 @@ public class TestManager : MonoBehaviour
     private bool canDie = true;
     private bool highSpeed = true;
 
-    [SerializeField] private Vector3 playerSpawnCoord;
-    [SerializeField] private Vector3 knightSpawnCoord;
+    [SerializeField] private Vector3 playerSpawnCoord = Vector3.zero;
+    [SerializeField] private Vector3 knightSpawnCoord = Vector3.zero;
 
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
@@ -42,13 +42,6 @@ public class TestManager : MonoBehaviour
         }
 
         testUI.SetActive (true);
-    }
-
-    public void GenerateNewTerrain ()
-    {
-        /*
-        tg.GenerateTerrain();
-        nms.BuildNavMesh();*/
     }
 
     public void SetPlayer (PlayerMotor pm)

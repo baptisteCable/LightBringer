@@ -4,10 +4,11 @@ using UnityEngine;
 [RequireComponent (typeof (Camera))]
 public class PlayerCamera : MonoBehaviour
 {
-    private const float ZOOM_LENGTH = 10f;
-    private const float SCROLL_SPEED = 1f;
+    private const float SCROLL_SPEED = .3f;
+    private const float MAX_CAM_DIST = 50f;
 
-    private Camera cam;
+    [SerializeField]private Camera cam = null;
+    [SerializeField]private Camera uiCam = null;
     public Transform player;
     private Vector3 camPositionFromPlayer;
     private float currentPosition; // 0 for clostest, 1 for farthest
@@ -16,14 +17,15 @@ public class PlayerCamera : MonoBehaviour
     private float targetFieldOfView;
 
     private PlayerController pc;
+    private PlayerMotor pm;
 
     private AnimationCurve xPos, yPos, zPos, xRot, fieldOfView;
 
     private void Start ()
     {
         pc = player.GetComponent<PlayerController> ();
+        pm = player.GetComponent<PlayerMotor> ();
 
-        cam = GetComponent<Camera> ();
         GameManager.gm.floorPlane = new Plane (new Vector3 (0, 1, 0), new Vector3 (0, GameManager.gm.currentAlt, 0));
 
         ComputeCurves ();
@@ -81,10 +83,16 @@ public class PlayerCamera : MonoBehaviour
         }
         else
         {
+            Vector3 direction = pc.pointedWorldPoint - player.position;
+            if (direction.magnitude > MAX_CAM_DIST)
+            {
+                direction = direction.normalized * MAX_CAM_DIST;
+            }
+
             cam.transform.position = Vector3.Lerp (cam.transform.position, new Vector3 (
-                    player.position.x + camPositionFromPlayer.x + (pc.pointedWorldPoint.x - player.position.x) * .3f,
-                    camPositionFromPlayer.y,
-                    player.position.z + camPositionFromPlayer.z + (pc.pointedWorldPoint.z - player.position.z) * .3f
+                    player.position.x + camPositionFromPlayer.x + direction.x * .3f,
+                    pm.groundAltitude + camPositionFromPlayer.y,
+                    player.position.z + camPositionFromPlayer.z + direction.z * .3f
                 ), Time.deltaTime * 8f);
         }
     }
@@ -121,5 +129,6 @@ public class PlayerCamera : MonoBehaviour
         currentXRotation = Mathf.Lerp (currentXRotation, targetXRotation, Time.deltaTime * 8f);
         cam.transform.rotation = Quaternion.Euler (currentXRotation, 45f, 0);
         cam.fieldOfView = Mathf.Lerp (cam.fieldOfView, targetFieldOfView, Time.deltaTime * 8f);
+        uiCam.fieldOfView = Mathf.Lerp (cam.fieldOfView, targetFieldOfView, Time.deltaTime * 8f);
     }
 }

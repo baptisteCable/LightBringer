@@ -35,8 +35,9 @@ namespace LightBringer.Enemies.Knight
         {
             remainingShots -= 1;
             Vector3 relativePosition = Quaternion.AngleAxis (Random.value * 360, Vector3.up) * Vector3.forward * Random.value * range;
-
-            GameObject impact = Instantiate (ImpactPrefab, transform.position + relativePosition, Quaternion.identity);
+            Vector3 impactPos = transform.position + relativePosition;
+            impactPos.y = GameManager.GetAltitude (impactPos);
+            GameObject impact = Instantiate (ImpactPrefab, impactPos, Quaternion.identity);
             Attack2Impact a2i = impact.GetComponent<Attack2Impact> ();
             a2i.radius = radius;
             a2i.ability = ability;

@@ -1,4 +1,5 @@
-﻿using LightBringer.Player.Abilities;
+﻿using System;
+using LightBringer.Player.Abilities;
 using LightBringer.TerrainGeneration;
 using LightBringer.UI;
 using UnityEngine;
@@ -51,6 +52,9 @@ namespace LightBringer.Player
 
         // Movement with curves
         MovementCurve movementCurve;
+
+        // World interaction
+        public float groundAltitude { get; private set; }
 
         /* Abilities :
          *      0: None
@@ -138,6 +142,15 @@ namespace LightBringer.Player
 
             // Special computations on abilities
             ComputeAbilitiesSpecial ();
+
+            // Altitude
+            GroundAltitude ();
+        }
+
+        private void GroundAltitude ()
+        {
+            Physics.Raycast (transform.position + 5f * Vector3.up, Vector3.down, out RaycastHit hit, 20f, LayerMask.GetMask ("Environment"));
+            groundAltitude = hit.point.y;
         }
 
         private void Channel ()
@@ -327,12 +340,13 @@ namespace LightBringer.Player
 
         void LookAtMouse ()
         {
-            if ((pc.pointedWorldPoint - new Vector3 (transform.position.x, GameManager.gm.currentAlt, transform.position.z)).magnitude > 0)
+            Vector3 lookingDirection = pc.pointedWorldPoint - transform.position;
+            lookingDirection.y = 0;
+
+            if (lookingDirection.magnitude > 0)
             {
                 // Smoothly rotate towards the target point.
-                var targetRotation = Quaternion.LookRotation (
-                        pc.pointedWorldPoint - new Vector3 (transform.position.x, GameManager.gm.currentAlt, transform.position.z)
-                    );
+                var targetRotation = Quaternion.LookRotation (lookingDirection);
                 Quaternion rotation = Quaternion.Slerp (
                         characterContainer.rotation,
                         targetRotation,
@@ -492,51 +506,5 @@ namespace LightBringer.Player
 
             Destroy (gameObject);
         }
-
-        // Called by id
-        public const int M_SetCdDuration = 1400;
-        private void SetCdDuration (int id, float cd)
-        {
-            abilities[id].coolDownDuration = cd;
-        }
-
-        /*
-        private void OnGUI()
-        {
-            GUI.contentColor = Color.black;
-            GUILayout.BeginArea(new Rect(20, 20, 250, 120));
-            GUILayout.Label("States count: " + states.Count);
-            GUILayout.EndArea();
-        }*/
     }
-
-    /* 
-     * La charge pousse le joueur sur le côté et ne monte pas dessus. Le Knight n'est pas bloqué par le joueur.
-     * Effets Knight (tenter les slashs nouveaux ?)
-     * 
-     * Transparent pas comme ça. Shader
-     * Shader lumière (ou particules ?)
-     * 
-     * Knight : mode rage impacte les CD et la vitesse de cast (?).
-     * 
-     * Synchronisation des idle et run top et bot ?
-     * Ralentir l'animation de course en fonction du modificateur de vitesse
-     * 
-     * Camera quand on monte. Gestion du 1er étage en général (chute, compétences qui partent du niveau 0, etc.)
-     * Variable d'état indiquant l'étage en cours ? Ou l'altitude du sol ? Que se passe-t-il alors quand on saute
-     * par dessus un ilot ?
-     * 
-     * Compress textures
-     * 
-     * Pentes des ilots : bords progressifs pour la texture du chemin
-     *  
-     * Base.Start à remplacer. ne pas override ces méthodes.
-     *  
-     * Commenter le code
-     * 
-     * Bugs:
-     *  - Bullet of attack2 can stay stuck in the air before fire
-     *  - Jump threw the ground
-     *  - Test manager: no mob repop after deco reco
-     * */
 }

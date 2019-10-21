@@ -18,16 +18,13 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         public const float COOLDOWN_DURATION_B = .1f;
         public const float CHANNELING_DURATION_A = 12f / 60f;
         public const float CHANNELING_DURATION_B = 10f / 60f;
-        private const float ABILITY_DURATION_A = 6f / 60f;
-        private const float ABILITY_DURATION_B = 6f / 60f;
+        private const float ABILITY_DURATION = 6f / 60f;
 
         private const float CHANNELING_MOVE_MULTIPLICATOR = .7f;
-        private const float CASTING_MOVE_MULTIPLICATOR = .3f;
+        private const float CASTING_MOVE_MULTIPLICATOR = .7f;
         private const float DAMAGE = 6f;
 
         private const float VANISH_DURATION = 1f;
-
-        private const float STUN_DURATION = .6f;
 
         // Colliders
         private Dictionary<Collider, Vector3> encounteredCols;
@@ -47,7 +44,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         LightLongSwordMotor lightMotor;
 
         public AbOff (LightLongSwordMotor motor, int id) :
-            base (COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION_A, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
+            base (COOLDOWN_DURATION_A, CHANNELING_DURATION_A, ABILITY_DURATION, motor, CHANNELING_CANCELLABLE, CASTING_CANCELLABLE, PARALLELIZABLE, id)
         {
             lightMotor = motor;
         }
@@ -67,7 +64,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 // Indicator
                 GameObject indicator = GameObject.Instantiate (lightMotor.abOffIndicatorPrefab, lightMotor.characterContainer);
-                GameObject.Destroy (indicator, AbOff.CHANNELING_DURATION_A);
+                GameObject.Destroy (indicator, CHANNELING_DURATION_A);
                 indicators.Add (indicator);
             }
             else
@@ -79,7 +76,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
                 lightMotor.animator.Play ("BotAbOffb");
                 lightMotor.animator.Play ("TopAbOffb");
-                channelDuration = AbOff.CHANNELING_DURATION_B;
+                channelDuration = CHANNELING_DURATION_B;
 
                 FadeIn ();
             }
@@ -91,6 +88,9 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
             // No more rotation
             playerMotor.abilityMaxRotation = 0f;
+
+            // Movement restriction
+            playerMotor.abilityMoveMultiplicator = CASTING_MOVE_MULTIPLICATOR;
 
             // Trail effect
             SlashEffect ();
@@ -129,7 +129,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
             GameObject.Destroy (lightColumn, .5f);
 
             // Long cooldown
-            coolDownDuration = AbOff.COOLDOWN_DURATION_A;
+            coolDownDuration = COOLDOWN_DURATION_A;
 
             // unlock other abilities
             playerMotor.LockAbilitiesExcept (false, this);

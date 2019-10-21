@@ -171,4 +171,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f207817d0cd3fd9439b19f3c09b84a56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 20941822970843744}
+  uiCam: {fileID: 20212561124310500}
   player: {fileID: 0}

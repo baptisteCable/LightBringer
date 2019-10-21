@@ -25,8 +25,8 @@ namespace LightBringer.Player.Abilities.Light.LongSword
         private const float CASTING_MOVE_MULTIPLICATOR_AB = .7f;
         private const float CASTING_MOVE_MULTIPLICATOR_C = 0;
         private const float CASTING_ROTATION_SPEED = 0;
-        private const float DAMAGE_AB = 10f;
-        private const float DAMAGE_C = 12f;
+        private const float DAMAGE_AB = 3f;
+        private const float DAMAGE_C = 6f;
 
         private const float STUN_DURATION = .2f;
         private const float COMBO_DURATION = .5f;
@@ -158,7 +158,10 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         private void SpawnLight ()
         {
-            Vector3 pos = new Vector3 (lightMotor.sword.transform.position.x, .02f, lightMotor.sword.transform.position.z);
+            Vector3 pos = new Vector3 (
+                lightMotor.sword.transform.position.x,
+                .02f + lightMotor.transform.position.y, 
+                lightMotor.sword.transform.position.z);
 
             GameObject lightZone = GameObject.Instantiate (lightMotor.lightZonePrefab, null);
             lightZone.transform.position = pos;
@@ -328,7 +331,7 @@ namespace LightBringer.Player.Abilities.Light.LongSword
 
         public override string GetDescription ()
         {
-            return "Enchaîne 2 attaques horizontale infligeant 10 points de dégâts puis plante son épée, infligeant 12 points de dégâts de zone et créant une zone de lumière.";
+            return "Enchaîne 2 attaques horizontale infligeant " + DAMAGE_AB + " points de dégâts puis plante son épée, infligeant " + DAMAGE_C + " points de dégâts de zone et créant une zone de lumière.";
         }
     }
 }

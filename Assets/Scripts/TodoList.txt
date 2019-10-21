@@ -17,16 +17,14 @@ Autre
 
 Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
-	- pente d'ile générée dans une tuile (haut de pente) mais suite de la pente non généré (tuile contenant la majorité de l'île, mais pas le haut de pente)
+	- Dual screen : camera qui va bien trop loin. Bloquer au max de la fenêtre.
+	- Stack de zones de lumière : on voit des carrés dans le sol
+	- Grosse conso de GPU ?
 
 Monde :
-	- gérer les différentes altitudes du perso :
-		* jump (visée de la camera sur l'environement)
-		* Vérifier chaque attaque
-		* Knight : zone posée à altitude fixée
-		* camera
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
-	- terrain data sync (to save CPU when laoded ?)
+	- terrain data sync (to prevent lag when loading ?)
+	- explosions avec les compétences
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?
