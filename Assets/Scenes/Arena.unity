@@ -1562,7 +1562,7 @@ MonoBehaviour:
   testUI: {fileID: 643621722}
   wm: {fileID: 1463274852}
   playerSpawnCoord: {x: 0, y: 6, z: 0}
-  knightSpawnCoord: {x: 10, y: 4, z: 0}
+  knightSpawnCoord: {x: -60, y: 0, z: 20}
   NotToDestroyItems:
   - {fileID: 763179048}
   - {fileID: 1463274851}
@@ -1573,6 +1573,10 @@ MonoBehaviour:
   - {fileID: 870409391}
   - {fileID: 1784187784}
   - {fileID: 2116816013}
+  treePackPrefab: {fileID: 907996899165605238, guid: 4776054dcd162bc48bf6b003d9944037,
+    type: 3}
+  grassPrefab: {fileID: 907996899165605238, guid: d7d6d8e6d02bb6d47b2c46afdc3b284f,
+    type: 3}
 --- !u!4 &912195130
 Transform:
   m_ObjectHideFlags: 0

@@ -205,12 +205,12 @@ namespace LightBringer.TerrainGeneration
                 alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
                 baseMapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
                 terrainLayers = terrainLayers,
-                thickness = 2,
                 size = new Vector3 (TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH)
             };
             terrainData.SetDetailResolution (1024, 16);
             terrainData.SetHeights (0, 0, heights);
             terrainData.SetAlphamaps (0, 0, map);
+            terrainData.SetDetailResolution(128, 128);
 
             // Game objet creation
             GameObject terrainGO = Terrain.CreateTerrainGameObject (terrainData);

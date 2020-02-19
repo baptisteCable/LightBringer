@@ -1,8 +1,4 @@
-﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
-
-Shader "Scenery/WindShaderSeeThrough"
+﻿Shader "Scenery/WindShaderSeeThrough"
 {
     Properties
     {
@@ -10,13 +6,13 @@ Shader "Scenery/WindShaderSeeThrough"
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
-		//_Center1("Explosion center 1", Vector) = (0, 0, 0, 0)
-		//_Amplitude1("Amplitude 1", Float) = 0
 		_Radius("Radius", Float) = 10
 		_Height("Height", Float) = 5
 		_WindDir("Wind direction", Vector) = (1, 0, 0, 0)
 		_WindStrength("Wind strength", Float) = 1
 		_WindFrequency("Wind frequency", Float) = 1
+		_Emission("Emission", Color) = (0,0,0,0)
+		_EmissionIntensity("EmissionIntensity", Range(0,1)) = 1
     }
     SubShader
     {
@@ -43,15 +39,6 @@ Shader "Scenery/WindShaderSeeThrough"
 			{
 				float4 vertex : SV_POSITION;
 			};
-
-			/*
-			v2f vert(appdata v)
-			{
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				return o;
-			}
-			*/
 
 			float _Radius;
 			float _XCenter[20];
@@ -104,6 +91,8 @@ Shader "Scenery/WindShaderSeeThrough"
 		half _Glossiness;
         half _Metallic;
         fixed4 _Color;
+		half3 _Emission;
+		half _EmissionIntensity;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -139,8 +128,9 @@ Shader "Scenery/WindShaderSeeThrough"
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
-            o.Metallic = _Metallic;
-            o.Smoothness = _Glossiness;
+            o.Metallic = _Metallic * _EmissionIntensity;
+            o.Smoothness = _Glossiness * _EmissionIntensity;
+			o.Emission = _Emission * _EmissionIntensity;
             o.Alpha = c.a;
         }
         ENDCG

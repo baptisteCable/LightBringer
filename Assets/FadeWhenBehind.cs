@@ -4,23 +4,19 @@ using UnityEngine;
 [RequireComponent (typeof (Collider))]
 public class FadeWhenBehind : MonoBehaviour
 {
-    private const float MIN_ALPHA = .15f;
+    private const float MIN_ALPHA = 0.1f;
     private const float MAX_ALPHA = 1f;
-    private const float FADING_TIME = 2f;
+    private const float MIN_INTENSITY = .1f;
+    private const float MAX_INTENSITY = 1f;
+    private const float FADING_SPEED = 2f;
 
-    private float currentAlpha = MAX_ALPHA;
+    private float t = 1;
 
-    Collider col;
     [SerializeField] MeshRenderer[] objectsToFade = null;
-
-    private void Start ()
-    {
-        col = GetComponent<Collider> ();
-    }
 
     private void OnTriggerEnter (Collider other)
     {
-        if (other.tag == "ViewLine")
+        if (other.CompareTag ("ViewLine"))
         {
             FadeOut ();
         }
@@ -28,7 +24,7 @@ public class FadeWhenBehind : MonoBehaviour
 
     private void OnTriggerExit (Collider other)
     {
-        if (other.tag == "ViewLine")
+        if (other.CompareTag ("ViewLine"))
         {
             FadeIn ();
         }
@@ -48,12 +44,12 @@ public class FadeWhenBehind : MonoBehaviour
 
     IEnumerator FadingOut ()
     {
-        while (currentAlpha > MIN_ALPHA)
+        while (t > 0)
         {
-            currentAlpha -= Time.deltaTime * FADING_TIME;
-            if (currentAlpha < MIN_ALPHA)
+            t -= Time.deltaTime * FADING_SPEED;
+            if (t < 0)
             {
-                currentAlpha = MIN_ALPHA;
+                t = 0;
             }
 
             SetAlpha ();
@@ -66,12 +62,12 @@ public class FadeWhenBehind : MonoBehaviour
 
     IEnumerator FadingIn ()
     {
-        while (currentAlpha < MAX_ALPHA)
+        while (t < 1)
         {
-            currentAlpha += Time.deltaTime * FADING_TIME;
-            if (currentAlpha > MAX_ALPHA)
+            t += Time.deltaTime * FADING_SPEED;
+            if (t > 1)
             {
-                currentAlpha = MAX_ALPHA;
+                t = 1;
             }
 
             SetAlpha ();
@@ -84,9 +80,13 @@ public class FadeWhenBehind : MonoBehaviour
     {
         foreach (MeshRenderer rend in objectsToFade)
         {
+            // Alpha
             Color col = rend.material.GetColor ("_Color");
-            col.a = currentAlpha;
+            col.a = t * MAX_ALPHA + (1 - t) * MIN_ALPHA;
             rend.material.SetColor ("_Color", col);
+
+            // Emission
+            rend.material.SetFloat ("_EmissionIntensity", t * MAX_INTENSITY + (1 - t) * MIN_INTENSITY);
         }
     }
 }

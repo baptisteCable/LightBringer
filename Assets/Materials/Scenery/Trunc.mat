@@ -64,11 +64,12 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
+    - _EmissionIntensity: 1
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 0.61
     - _GlossyReflections: 1
     - _Height: 10
-    - _Metallic: 0
+    - _Metallic: 0.32
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -86,6 +87,7 @@ Material:
     - _Center: {r: 6.5, g: 0, b: 6.5, a: 0}
     - _Center1: {r: 0, g: 0, b: 0, a: 0}
     - _Center2: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.24528301, g: 0.21135609, b: 0.09487362, a: 1}
+    - _Color: {r: 0.8584906, g: 0.48593807, b: 0.8091822, a: 1}
+    - _Emission: {r: 0.21698111, g: 0.20871586, b: 0.0982556, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _WindDir: {r: 1, g: 0, b: 0, a: 0}

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if (UNITY_EDITOR) 
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -78,7 +79,6 @@ namespace LightBringer.TerrainGeneration
                 alphamapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
                 baseMapResolution = TERRAIN_WIDTH * HEIGHT_POINT_PER_UNIT,
                 terrainLayers = terrainLayers,
-                thickness = 2,
                 size = new Vector3 (TERRAIN_WIDTH, DEPTH, TERRAIN_WIDTH)
             };
             terrainData.SetDetailResolution (1024, 16);
@@ -557,3 +557,4 @@ namespace LightBringer.TerrainGeneration
         }
     }
 }
+#endif

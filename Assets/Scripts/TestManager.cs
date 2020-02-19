@@ -32,6 +32,9 @@ public class TestManager : MonoBehaviour
 
     [SerializeField] private List<GameObject> NotToDestroyItems = null;
 
+    [SerializeField] private GameObject treePackPrefab = null;
+    [SerializeField] private GameObject grassPrefab = null;
+
     private void Start ()
     {
         singleton = this;
@@ -74,6 +77,26 @@ public class TestManager : MonoBehaviour
 
         kc = knight.GetComponent<KnightController> ();
         kc.passive = knightPassive;
+
+        // Scenery
+        
+        if (treePackPrefab != null)
+        {
+            GameObject treePack = Instantiate (treePackPrefab);
+            treePack.transform.position = knightSpawnCoord + 15 * Vector3.left;
+            treePack = Instantiate (treePackPrefab);
+            treePack.transform.position = knightSpawnCoord + 15 * Vector3.right;
+            treePack = Instantiate (treePackPrefab);
+            treePack.transform.position = knightSpawnCoord + 15 * Vector3.forward;
+            treePack = Instantiate (treePackPrefab);
+            treePack.transform.position = knightSpawnCoord + 15 * Vector3.back;
+        }
+        
+        if (grassPrefab != null)
+        {
+            GameObject grass = Instantiate (grassPrefab);
+            grass.transform.position = knightSpawnCoord;
+        }
     }
 
     private void DestroyEverything ()

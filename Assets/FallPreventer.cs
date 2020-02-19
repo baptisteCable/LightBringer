@@ -9,13 +9,16 @@ namespace LightBringer
         {
             if (other.tag == "Player" || other.tag == "Enemy")
             {
+                // message
+                Debug.Log("Fall preventer triggered.");
+
                 // Cast a ray from sky
-                Physics.Raycast (
+                Physics.Raycast(
                     other.transform.position + 50 * Vector3.up,
                     Vector3.down,
                     out RaycastHit hit,
-                    60,
-                    9);
+                    70,
+                    LayerMask.GetMask("Environment"));
 
                 // Drop the entity on the ground
                 other.transform.position = hit.point;
