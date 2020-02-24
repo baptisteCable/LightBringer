@@ -112,18 +112,17 @@ namespace LightBringer.TerrainGeneration
             {
                 lock (heightsToAdd)
                 {
-                    foreach (KeyValuePair<Dic2DKey, float[,]> pair in heightsToAdd)
-                    {
-                        GenerateNewTerrain(pair.Key.x, pair.Key.y, pair.Value, mapsToAdd[pair.Key]);
+                    Dic2DKey key = (new List<Dic2DKey>(heightsToAdd.Keys))[0];
+                    GenerateNewTerrain(key.x, key.y, heightsToAdd[key], mapsToAdd[key]);
 
-                        lock (tileCounterLock)
-                        {
-                            tileWorkDone--;
-                            newTilesExpected--;
-                        }
+                    lock (tileCounterLock)
+                    {
+                        tileWorkDone--;
+                        newTilesExpected--;
                     }
-                    heightsToAdd.Clear();
-                    mapsToAdd.Clear();
+
+                    heightsToAdd.Remove(key);
+                    mapsToAdd.Remove(key);
                 }
 
                 // if all work done, bake nav mesh
@@ -729,7 +728,7 @@ namespace LightBringer.TerrainGeneration
 
                     float convertedAngle = -angle / 2f / (float)Math.PI * 360f - 90;
 
-                    Vector3 position = islandPosition + 
+                    Vector3 position = islandPosition +
                         Quaternion.AngleAxis(convertedAngle, Vector3.up) * Vector3.forward * dist * Island.SCALE;
 
                     if (position.x >= xBase && position.x < xBase + TERRAIN_WIDTH
@@ -764,21 +763,28 @@ namespace LightBringer.TerrainGeneration
 
         private void AddSceneryElements()
         {
+            int counter = 0;
             lock (sceneryElementsToAdd)
             {
-                foreach (KeyValuePair<Dic2DKey, List<SceneryElement>> pair in sceneryElementsToAdd)
-                {
-                    // TODO regrouper par game object pour chaque zone
-                    // TODO charger 15 par 15
-                    foreach (SceneryElement element in pair.Value)
-                    {
-                        GameObject prefab = Resources.Load(element.PrefabPath()) as GameObject;
-                        GameObject go = Instantiate(prefab);
-                        go.transform.position = element.position;
-                    }
-                }
+                List<Dic2DKey> keys = new List<Dic2DKey>(sceneryElementsToAdd.Keys);
 
-                sceneryElementsToAdd.Clear();
+                // load the scenery element in the terrain GO (if already created, else wait for it)
+                // max 5 objects per frame
+                while (keys.Count > 0 && counter < 5 && sceneryElementsToAdd[keys[0]].Count > 0 && loadedTiles.ContainsKey(keys[0]))
+                {
+                    SceneryElement element = sceneryElementsToAdd[keys[0]][0];
+                    GameObject prefab = Resources.Load(element.PrefabPath()) as GameObject;
+                    GameObject go = Instantiate(prefab, loadedTiles[keys[0]].transform);
+                    go.transform.position = element.position;
+
+                    sceneryElementsToAdd[keys[0]].RemoveAt(0);
+                    if (sceneryElementsToAdd[keys[0]].Count == 0)
+                    {
+                        sceneryElementsToAdd.Remove(keys[0]);
+                        keys = new List<Dic2DKey>(sceneryElementsToAdd.Keys);
+                    }
+                    counter += 1;
+                }
             }
         }
 
