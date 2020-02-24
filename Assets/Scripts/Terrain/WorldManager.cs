@@ -715,7 +715,6 @@ namespace LightBringer.TerrainGeneration
                     zBase + TERRAIN_WIDTH / 2,
                     TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)
                 );
-                Debug.Log("x : " + (xBase + TERRAIN_WIDTH / 2) + " ; z : " + (zBase + TERRAIN_WIDTH / 2) + " ; dist : " + (TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)));
             }
 
             Vector2 terrainPosition = new Vector2(xBase, zBase);
@@ -760,8 +759,6 @@ namespace LightBringer.TerrainGeneration
                 }
             }
 
-            Debug.Log(elements.Count);
-
             return elements;
         }
 
@@ -775,7 +772,6 @@ namespace LightBringer.TerrainGeneration
                     // TODO charger 15 par 15
                     foreach (SceneryElement element in pair.Value)
                     {
-                        Debug.Log(element.PrefabPath());
                         GameObject prefab = Resources.Load(element.PrefabPath()) as GameObject;
                         GameObject go = Instantiate(prefab);
                         go.transform.position = element.position;
