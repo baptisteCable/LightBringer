@@ -7,6 +7,9 @@ namespace LightBringer.TerrainGeneration
     [Serializable]
     public class Biome
     {
+        [NonSerialized]
+        public static readonly string[] types = { "Undefined", "Light", "Darkness", "Fire", "Ice", "Earth", "Air" };
+
         [Serializable]
         public enum Type
         {
@@ -193,6 +196,11 @@ namespace LightBringer.TerrainGeneration
 
             return fourClosest;
 
+        }
+
+        public static string GetName(Biome.Type type)
+        {
+            return types[(int)type];
         }
 
     }

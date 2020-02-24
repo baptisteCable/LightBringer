@@ -1,4 +1,5 @@
 ﻿#if (UNITY_EDITOR) 
+using LightBringer.Scenery;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -32,6 +33,10 @@ namespace LightBringer.TerrainGeneration
         private SpatialDictionary<Island> islands;
         private WorldCreator wc;
 
+        // Scenery elements
+        private SpatialDictionary<SceneryElement> sceneryELements;
+
+
         // test button
         public bool doWork = true;
 
@@ -60,7 +65,7 @@ namespace LightBringer.TerrainGeneration
         private void InitWorldData ()
         {
             wc = new WorldCreator (Application.persistentDataPath + "/");
-            wc.LoadData (out biomes, out islands);
+            wc.LoadData (out biomes, out islands, out sceneryELements);
 
             if (biomes == null || islands == null)
             {

@@ -1114,8 +1114,14 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private float Ground1Dist (float angle)
+        // coord in island units
+        public float Ground1Dist (float angle)
         {
+            if (vertices == null)
+            {
+                GenerateIslandVertices();
+            }
+
             angle = (angle + 2 * (float)Math.PI) % (2 * (float)Math.PI);
             float sectorLength = 2 * (float)Math.PI / GROUND_1_FUNCTION_PARTS;
             int i = (int)(angle / sectorLength);
@@ -1133,6 +1139,18 @@ namespace LightBringer.TerrainGeneration
             }
 
             return pos.magnitude < Ground1Dist (Vector2.SignedAngle (Vector2.left, pos) / 180 * (float)Math.PI);
+        }
+
+        // coord in world unit
+        public bool WorldIsInGround1(Vector3 pos)
+        {
+            if (vertices == null)
+            {
+                GenerateIslandVertices();
+            }
+
+            Vector2 islandCoord = (new Vector2(pos.x - 3, pos.z - 3) - centerInWorld) / SCALE;
+            return islandCoord.magnitude < Ground1Dist(Vector2.SignedAngle(Vector2.left, islandCoord) / 180 * (float)Math.PI);
         }
 
         public void GenerateGround1 (ref GroundType[,] groundMap, Vector2 terrainPosition)

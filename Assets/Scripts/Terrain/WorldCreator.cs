@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightBringer.Scenery;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
@@ -102,10 +103,13 @@ namespace LightBringer.TerrainGeneration
             return false;
         }
 
-        public void SaveData (ref SpatialDictionary<Biome> biomes, ref SpatialDictionary<Island> islands)
+        public void SaveData (ref SpatialDictionary<Biome> biomes,
+            ref SpatialDictionary<Island> islands,
+            ref SpatialDictionary<SceneryElement> sceneryElements)
         {
             SaveSpDic (biomes, "biomes.dat");
-            SaveSpDic (islands, "islands.dat");
+            SaveSpDic(islands, "islands.dat");
+            SaveSpDic(sceneryElements, "scenery.dat");
         }
 
         public void SaveSpDic (object spDic, string fileName)
@@ -136,10 +140,13 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        public void LoadData (out SpatialDictionary<Biome> biomes, out SpatialDictionary<Island> islands)
+        public void LoadData (out SpatialDictionary<Biome> biomes,
+            out SpatialDictionary<Island> islands,
+            out SpatialDictionary<SceneryElement> sceneryElements)
         {
             biomes = (SpatialDictionary<Biome>)LoadSpDic ("biomes.dat");
             islands = (SpatialDictionary<Island>)LoadSpDic ("islands.dat");
+            sceneryElements = (SpatialDictionary<SceneryElement>)LoadSpDic("scenery.dat");
         }
 
         public object LoadSpDic (string fileName)
@@ -210,6 +217,11 @@ namespace LightBringer.TerrainGeneration
             }
 
             int tryCount = 0;
+
+            if (rnd == null)
+            {
+                rnd = new System.Random();
+            }
 
             while (tryCount < biomeMaxTry)
             {

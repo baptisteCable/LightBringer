@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LightBringer.Scenery;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LightBringer.TerrainGeneration
@@ -24,48 +25,48 @@ namespace LightBringer.TerrainGeneration
         [SerializeField] WorldManager wm;
 
         // Update is called once per frame
-        void Update ()
+        void Update()
         {
             if (!createMapAndSaveBin)
             {
-                SetWC ();
+                SetWC();
                 createMapAndSaveBin = true;
-                CreateMapAndSaveToBinary ();
+                CreateMapAndSaveToBinary();
             }
 
             if (!loadAndPrintMap)
             {
-                SetWC ();
+                SetWC();
                 loadAndPrintMap = true;
-                LoadAndPrintMap ();
+                LoadAndPrintMap();
             }
 
             if (!test)
             {
                 test = true;
-                Test ();
+                Test();
             }
         }
 
-        private void Test ()
+        private void Test()
         {
-            Debug.Log ("Test");
+            Debug.Log("Test");
         }
 
-        private void SetWC ()
+        private void SetWC()
         {
-            wc = new WorldCreator (Application.persistentDataPath + "/");
+            wc = new WorldCreator(Application.persistentDataPath + "/");
         }
 
-        private void CreateMapAndSaveToBinary ()
+        private void CreateMapAndSaveToBinary()
         {
-            SpatialDictionary<Biome> biomes = new SpatialDictionary<Biome> ();
-            SpatialDictionary<Island> islands = new SpatialDictionary<Island> ();
+            SpatialDictionary<Biome> biomes = new SpatialDictionary<Biome>();
+            SpatialDictionary<Island> islands = new SpatialDictionary<Island>();
 
             if (NB_SQUARE_RADIUS == 0)
             {
-                wc.GenerateBiomesInSquareAndNeighborSquares (ref biomes, 0, 0);
-                wc.GenerateIslandsInSquare (ref biomes, ref islands, 0, 0);
+                wc.GenerateBiomesInSquareAndNeighborSquares(ref biomes, 0, 0);
+                wc.GenerateIslandsInSquare(ref biomes, ref islands, 0, 0);
             }
             else
             {
@@ -73,24 +74,26 @@ namespace LightBringer.TerrainGeneration
                 {
                     for (int j = -NB_SQUARE_RADIUS * GEN_SQUARE_RADIUS * 2; j <= NB_SQUARE_RADIUS * GEN_SQUARE_RADIUS * 2; j += GEN_SQUARE_RADIUS * 2)
                     {
-                        wc.GenerateBiomesInSquareAndNeighborSquares (ref biomes, i, j);
-                        wc.GenerateIslandsInSquare (ref biomes, ref islands, i, j);
+                        wc.GenerateBiomesInSquareAndNeighborSquares(ref biomes, i, j);
+                        wc.GenerateIslandsInSquare(ref biomes, ref islands, i, j);
                     }
                 }
             }
 
-            wc.SaveSpDic (biomes, "biomes.dat");
-            wc.SaveSpDic (islands, "islands.dat");
+            wc.SaveSpDic(biomes, "biomes.dat");
+            wc.SaveSpDic(islands, "islands.dat");
         }
 
-        private void LoadAndPrintMap ()
+        private void LoadAndPrintMap()
         {
-            wc.LoadData (out SpatialDictionary<Biome> biomes, out SpatialDictionary<Island> islands);
+            wc.LoadData(out SpatialDictionary<Biome> biomes,
+                out SpatialDictionary<Island> islands,
+                out SpatialDictionary<SceneryElement> sceneryElements);
 
             int squareRadius = (NB_SQUARE_RADIUS * 2 + 1) * GEN_SQUARE_RADIUS;
 
-            MapPainter mp = new MapPainter ();
-            mp.DrawIslands (ref biomes, ref islands, 0, 0, squareRadius, UPP/*, (NB_SQUARE_RADIUS * 2 + 1)*/);
+            MapPainter mp = new MapPainter();
+            mp.DrawIslands(ref biomes, ref islands, 0, 0, squareRadius, UPP/*, (NB_SQUARE_RADIUS * 2 + 1)*/);
         }
     }
 }
