@@ -35,8 +35,6 @@ Monde :
 	- terrain data sync (to prevent lag when loading ?)
 	- explosions avec les compétences
 
-	- mémoriser le décor (et ne pas le calculer mais le charger s'il existe déjà)
-
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?
 	- Surcharge CPU sur premier lancement.
