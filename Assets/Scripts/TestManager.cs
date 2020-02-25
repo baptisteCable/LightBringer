@@ -70,10 +70,10 @@ public class TestManager : MonoBehaviour
         playerMotor.transform.position = playerSpawnCoord;
 
         // Knight
-        //knight = Instantiate (knightPrefab, knightSpawnCoord, Quaternion.AngleAxis (180, Vector3.up));
+        knight = Instantiate (knightPrefab, knightSpawnCoord, Quaternion.AngleAxis (180, Vector3.up));
 
-        //kc = knight.GetComponent<KnightController> ();
-        //kc.passive = knightPassive;
+        kc = knight.GetComponent<KnightController> ();
+        kc.passive = knightPassive;
 
     }
 

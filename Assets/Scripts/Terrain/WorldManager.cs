@@ -703,58 +703,80 @@ namespace LightBringer.TerrainGeneration
             xBase *= TERRAIN_WIDTH;
             zBase *= TERRAIN_WIDTH;
 
-            List<SceneryElement> elements = new List<SceneryElement>();
+            List<SceneryElement> elements;
 
-            // Look for islands to be added
-            List<Island> islandList;
-            lock (biomeIslandLock)
+            lock (sceneryElements)
             {
-                islandList = islands.GetAround(
-                    xBase + TERRAIN_WIDTH / 2,
-                    zBase + TERRAIN_WIDTH / 2,
-                    TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)
-                );
-            }
-
-            Vector2 terrainPosition = new Vector2(xBase, zBase);
-            foreach (Island island in islandList)
-            {
-                Vector3 islandPosition = new Vector3(island.centerInWorld.x + 3, 0, island.centerInWorld.y + 3);
-
-                // Generate beacons
-                for (float angle = 0; angle < 2 * (float)Math.PI; angle += 2 * (float)Math.PI / NB_BEACON_PER_TURN)
+                // if not in memory, generate it
+                if (sceneryElements.IsEmpty(xBase + TERRAIN_WIDTH / 2, zBase + TERRAIN_WIDTH / 2, TERRAIN_WIDTH / 4))
                 {
-                    float dist = island.Ground1Dist(angle);
+                    Debug.Log("Generate for " + xBase + " - " + zBase);
+                    elements = new List<SceneryElement>();
 
-                    float convertedAngle = -angle / 2f / (float)Math.PI * 360f - 90;
-
-                    Vector3 position = islandPosition +
-                        Quaternion.AngleAxis(convertedAngle, Vector3.up) * Vector3.forward * dist * Island.SCALE;
-
-                    if (position.x >= xBase && position.x < xBase + TERRAIN_WIDTH
-                        && position.z >= zBase && position.z < zBase + TERRAIN_WIDTH)
+                    // Look for islands to be added
+                    List<Island> islandList;
+                    lock (biomeIslandLock)
                     {
-                        bool outsideEveryG1 = true;
-                        foreach (Island isl in islandList)
-                        {
-                            if (isl == island)
-                            {
-                                continue;
-                            }
+                        islandList = islands.GetAround(
+                            xBase + TERRAIN_WIDTH / 2,
+                            zBase + TERRAIN_WIDTH / 2,
+                            TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)
+                        );
+                    }
 
-                            outsideEveryG1 = !isl.WorldIsInGround1(position);
-                            if (!outsideEveryG1)
-                            {
-                                break;
-                            }
-                        }
+                    Vector2 terrainPosition = new Vector2(xBase, zBase);
+                    foreach (Island island in islandList)
+                    {
+                        Vector3 islandPosition = new Vector3(island.centerInWorld.x + 3, 0, island.centerInWorld.y + 3);
 
-                        if (outsideEveryG1)
+                        // Generate beacons
+                        for (float angle = 0; angle < 2 * (float)Math.PI; angle += 2 * (float)Math.PI / NB_BEACON_PER_TURN)
                         {
-                            SceneryElement element = new SceneryElement(position, island.biomeType, SceneryElement.type.beacon);
-                            elements.Add(element);
+                            float dist = island.Ground1Dist(angle);
+
+                            float convertedAngle = -angle / 2f / (float)Math.PI * 360f - 90;
+
+                            Vector3 position = islandPosition +
+                                Quaternion.AngleAxis(convertedAngle, Vector3.up) * Vector3.forward * dist * Island.SCALE;
+
+                            if (position.x >= xBase && position.x < xBase + TERRAIN_WIDTH
+                                && position.z >= zBase && position.z < zBase + TERRAIN_WIDTH)
+                            {
+                                bool outsideEveryG1 = true;
+                                foreach (Island isl in islandList)
+                                {
+                                    if (isl == island)
+                                    {
+                                        continue;
+                                    }
+
+                                    outsideEveryG1 = !isl.WorldIsInGround1(position);
+                                    if (!outsideEveryG1)
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                if (outsideEveryG1)
+                                {
+                                    SceneryElement element = new SceneryElement(position, island.biomeType, SceneryElement.type.beacon);
+                                    elements.Add(element);
+                                    sceneryElements.Add((int)position.x, (int)position.z, element);
+                                }
+                            }
                         }
                     }
+                }
+
+                // If scenery exists, load it
+                else
+                {
+                    Debug.Log("Load for " + xBase + " - " + zBase);
+                    elements = sceneryElements.GetAround(
+                        xBase + TERRAIN_WIDTH / 2,
+                        zBase + TERRAIN_WIDTH / 2,
+                        TERRAIN_WIDTH / 2
+                    );
                 }
             }
 

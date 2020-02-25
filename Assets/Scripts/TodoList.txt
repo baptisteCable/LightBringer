@@ -15,6 +15,15 @@ Autre
 	
 	- Touches configurables
 
+	- Dash uniquement sur zone de lumière (et très petit CD)
+		* Cancel le reste
+		* Calcule une arrivée sans collider (permet de traverser le monstre)
+		* Quasi instant
+		* Dégat sur la trajectoire et face à la sortie
+		* Conserver la portée, mais elle peut être alongée par la sortie derrière l'ennemi
+	- Aptitude de contre : cancel le reste
+		* au lieu de charger l'arme, pose une zone de lumière
+
 Bugs :
 	- tremblement du knight lors de la rotation de début de chargement de certaines compétences.
 	- Dual screen : camera qui va bien trop loin. Bloquer au max de la fenêtre.
@@ -26,8 +35,7 @@ Monde :
 	- terrain data sync (to prevent lag when loading ?)
 	- explosions avec les compétences
 
-	- vider le décor quand on s'éloigne
-	- le mémoriser (et ne pas le calculer mais le charger s'il existe déjà)
+	- mémoriser le décor (et ne pas le calculer mais le charger s'il existe déjà)
 
 Retours :
 	- Crash sur "ignore CD", sur premier lancement ?
