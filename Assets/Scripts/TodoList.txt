@@ -32,6 +32,7 @@ Bugs :
 
 Monde :
 	- génération, sauvegarde et chargement du décor (arbres, etc.)
+		* Rotation es scale des SceneryElements (stocker la donnée et l'utiliser pour placer)
 	- terrain data sync (to prevent lag when loading ?)
 	- explosions avec les compétences
 

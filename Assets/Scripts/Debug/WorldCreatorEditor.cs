@@ -10,7 +10,7 @@ namespace LightBringer.TerrainGeneration
         // General data
         public int GEN_SQUARE_RADIUS = 1024;
         public int NB_SQUARE_RADIUS = 0;
-        public int UPP = 4;
+        public int UPP = 4; // units per pixel
 
         // Debug checkBoxed
         public bool createMapAndSaveBin = true;

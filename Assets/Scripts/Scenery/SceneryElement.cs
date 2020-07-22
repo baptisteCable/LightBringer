@@ -19,10 +19,10 @@ namespace LightBringer.Scenery
             rock = 3
         }
 
+        public Vector3 position;
         public Biome.Type biome;
         public type elementType;
         public int version;
-        public Vector3 position;
 
         public SceneryElement (Vector3 position, Biome.Type biome, type elementType, int version = 0)
         {

@@ -26,9 +26,6 @@ namespace LightBringer.TerrainGeneration
         public const int NB_GROUND_TYPE = 5;
         private const int BIOME_APPROX = 8;
 
-        // Scenery density
-        private const int NB_BEACON_PER_TURN = 12;
-
         // Blur
         public const int BLUR_RADIUS = 6;
 
@@ -52,6 +49,7 @@ namespace LightBringer.TerrainGeneration
 
         // Scenery
         private SpatialDictionary<SceneryElement> sceneryElements;
+        private SceneryCreator scCre;
 
         // Thread messages
         private Dictionary<Dic2DKey, float[,]> heightsToAdd;
@@ -84,11 +82,24 @@ namespace LightBringer.TerrainGeneration
             InitWorldData();
             //InitDebugWorldData();
 
+            // Scenery creator
+            scCre = new SceneryCreator(
+                    TERRAIN_WIDTH,
+                    biomeIslandLock,
+                    islands,
+                    biomes,
+                    sceneryElements,
+                    sceneryElementsToAdd,
+                    loadedTiles
+                );
+
             // Init 4 first tiles
             InitFirstTiles();
 
             // Nav mesh
             CreateNavMesh();
+
+
         }
 
         private void InitFirstTiles()
@@ -98,8 +109,8 @@ namespace LightBringer.TerrainGeneration
                 for (int v = -1; v <= 0; v++)
                 {
                     GenerateTerrainData(u, v, out float[,] heights, out float[,,] map);
-                    sceneryElementsToAdd.Add(new Dic2DKey(u, v), GenerateTileScenery(u, v));
-                    AddSceneryElements();
+                    sceneryElementsToAdd.Add(new Dic2DKey(u, v), scCre.GenerateTileScenery(u, v));
+                    scCre.AddSceneryElements();
                     GenerateNewTerrain(u, v, heights, map);
                 }
             }
@@ -140,7 +151,7 @@ namespace LightBringer.TerrainGeneration
 
             if (sceneryElementsToAdd.Count > 0)
             {
-                AddSceneryElements();
+                scCre.AddSceneryElements();
             }
         }
 
@@ -698,118 +709,6 @@ namespace LightBringer.TerrainGeneration
             }
         }
 
-        private List<SceneryElement> GenerateTileScenery(int xBase, int zBase)
-        {
-            xBase *= TERRAIN_WIDTH;
-            zBase *= TERRAIN_WIDTH;
-
-            List<SceneryElement> elements;
-
-            lock (sceneryElements)
-            {
-                // if not in memory, generate it
-                if (sceneryElements.IsEmpty(xBase + TERRAIN_WIDTH / 2, zBase + TERRAIN_WIDTH / 2, TERRAIN_WIDTH / 4))
-                {
-                    Debug.Log("Generate for " + xBase + " - " + zBase);
-                    elements = new List<SceneryElement>();
-
-                    // Look for islands to be added
-                    List<Island> islandList;
-                    lock (biomeIslandLock)
-                    {
-                        islandList = islands.GetAround(
-                            xBase + TERRAIN_WIDTH / 2,
-                            zBase + TERRAIN_WIDTH / 2,
-                            TERRAIN_WIDTH / 2 + (int)((Island.MAX_RADIUS + 1) * Island.SCALE * 3)
-                        );
-                    }
-
-                    Vector2 terrainPosition = new Vector2(xBase, zBase);
-                    foreach (Island island in islandList)
-                    {
-                        Vector3 islandPosition = new Vector3(island.centerInWorld.x + 3, 0, island.centerInWorld.y + 3);
-
-                        // Generate beacons
-                        for (float angle = 0; angle < 2 * (float)Math.PI; angle += 2 * (float)Math.PI / NB_BEACON_PER_TURN)
-                        {
-                            float dist = island.Ground1Dist(angle);
-
-                            float convertedAngle = -angle / 2f / (float)Math.PI * 360f - 90;
-
-                            Vector3 position = islandPosition +
-                                Quaternion.AngleAxis(convertedAngle, Vector3.up) * Vector3.forward * dist * Island.SCALE;
-
-                            if (position.x >= xBase && position.x < xBase + TERRAIN_WIDTH
-                                && position.z >= zBase && position.z < zBase + TERRAIN_WIDTH)
-                            {
-                                bool outsideEveryG1 = true;
-                                foreach (Island isl in islandList)
-                                {
-                                    if (isl == island)
-                                    {
-                                        continue;
-                                    }
-
-                                    outsideEveryG1 = !isl.WorldIsInGround1(position);
-                                    if (!outsideEveryG1)
-                                    {
-                                        break;
-                                    }
-                                }
-
-                                if (outsideEveryG1)
-                                {
-                                    SceneryElement element = new SceneryElement(position, island.biomeType, SceneryElement.type.beacon);
-                                    elements.Add(element);
-                                    sceneryElements.Add((int)position.x, (int)position.z, element);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // If scenery exists, load it
-                else
-                {
-                    Debug.Log("Load for " + xBase + " - " + zBase);
-                    elements = sceneryElements.GetAround(
-                        xBase + TERRAIN_WIDTH / 2,
-                        zBase + TERRAIN_WIDTH / 2,
-                        TERRAIN_WIDTH / 2
-                    );
-                }
-            }
-
-            return elements;
-        }
-
-        private void AddSceneryElements()
-        {
-            int counter = 0;
-            lock (sceneryElementsToAdd)
-            {
-                List<Dic2DKey> keys = new List<Dic2DKey>(sceneryElementsToAdd.Keys);
-
-                // load the scenery element in the terrain GO (if already created, else wait for it)
-                // max 5 objects per frame
-                while (keys.Count > 0 && counter < 5 && sceneryElementsToAdd[keys[0]].Count > 0 && loadedTiles.ContainsKey(keys[0]))
-                {
-                    SceneryElement element = sceneryElementsToAdd[keys[0]][0];
-                    GameObject prefab = Resources.Load(element.PrefabPath()) as GameObject;
-                    GameObject go = Instantiate(prefab, loadedTiles[keys[0]].transform);
-                    go.transform.position = element.position;
-
-                    sceneryElementsToAdd[keys[0]].RemoveAt(0);
-                    if (sceneryElementsToAdd[keys[0]].Count == 0)
-                    {
-                        sceneryElementsToAdd.Remove(keys[0]);
-                        keys = new List<Dic2DKey>(sceneryElementsToAdd.Keys);
-                    }
-                    counter += 1;
-                }
-            }
-        }
-
         // works for 6 biomes
         static public int GetLayerIndex(GroundType type, Biome.Type biome)
         {
@@ -946,7 +845,7 @@ namespace LightBringer.TerrainGeneration
             int zBase = Convert.ToInt32(array[1]);
 
             GenerateTerrainData(xBase, zBase, out float[,] heights, out float[,,] map);
-            List<SceneryElement> sceneryElements = GenerateTileScenery(xBase, zBase);
+            List<SceneryElement> sceneryElements = scCre.GenerateTileScenery(xBase, zBase);
 
             lock (heightsToAdd)
             {
